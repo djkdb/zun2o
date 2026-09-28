@@ -81,6 +81,11 @@ function ActiveCall({ id }: { id: string }) {
           setLines((x) => [...x.slice(-3), l]);
           if (l.who === 'sfx') sfx(l.text.includes('종료') ? 'hangup' : 'static');
           else if (sound && l.voice) speak(l.text, l.voice);
+          // When *she* speaks on the line, her face flickers on the screen.
+          if (l.who === 'other' && call.id === 'dohyun1') {
+            setRt({ scare: { kind: 'reflect', nonce: Date.now() } });
+            setTimeout(() => setRt({ scare: null }), 320);
+          }
         }, l.at),
       ),
     );

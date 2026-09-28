@@ -281,6 +281,8 @@ export const BEATS: Beat[] = [
       { t: 'msg', th: 'self', from: 'me', text: '그 여자가 두 시에 교대한대. 내가 남아야 한대', typing: 2400 },
       { t: 'msg', th: 'self', from: 'me', text: '기록보관소 사이트 013번. 그 여자가 무서워하는 게 거기 있어', typing: 2600 },
       { t: 'msg', th: 'self', from: 'me', text: '라디오 숫자 순서대로 열어야 나와. 메모에 적어 놨어', typing: 2000 },
+      { t: 'wait', ms: 1500 },
+      { t: 'draft', th: 'self', text: '그 여자 지금 내 뒤에' },
       { t: 'time', hm: '01:44' },
       {
         t: 'objective',
@@ -321,6 +323,10 @@ export const BEATS: Beat[] = [
       { t: 'msg', th: 'unknown', text: '열쇠를 쓰면 색인이 끝나요. 아무도 기록되지 않아요. 아무도 기억되지 않아요.', typing: 2600 },
       { t: 'note', id: 'n4' },
       { t: 'msg', th: 'dohyun', text: '곧 두 시예요. 제발 그 폰 꺼요', typing: 800 },
+      { t: 'wait', ms: 5000 },
+      { t: 'unsend', th: 'dohyun', match: '그 폰 꺼요' },
+      { t: 'msg', th: 'unknown', text: '이 폰 시계는 01:50이지만, 당신 쪽은 {real}이죠?', typing: 2000 },
+      { t: 'dialog', title: '배터리 부족', body: '배터리가 6% 남았습니다. 저전력 모드를 켤 수 없습니다: 야간 색인이 사용 중.' },
       {
         t: 'objective',
         text: '02:00이 오기 전에 준비하자',

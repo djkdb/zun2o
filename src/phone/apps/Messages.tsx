@@ -46,6 +46,7 @@ function Chat({ th }: { th: ThreadId }) {
   const msgs = useGame((s) => s.save.threads[th]);
   const typing = useGame((s) => !!s.rt.typing[th]);
   const choice = useGame((s) => (s.save.choice?.thread === th ? s.save.choice : null));
+  const draft = useGame((s) => (s.rt.draft?.th === th ? s.rt.draft.text : null));
   const endRef = useRef<HTMLDivElement>(null);
   const [nameMode, setNameMode] = useState<string | null>(null);
   const [name, setName] = useState('');
@@ -124,7 +125,15 @@ function Chat({ th }: { th: ThreadId }) {
           </button>
         </form>
       )}
-      {!choice && !nameMode && <div className="chat-input-disabled">{th === 'dohyun' || th === 'mom' ? '메시지를 보낼 수 없습니다 (네트워크 없음)' : '　'}</div>}
+      {!choice && !nameMode && draft !== null && (
+        <div className="chat-draft" aria-live="polite">
+          {draft}
+          <span className="caret" />
+        </div>
+      )}
+      {!choice && !nameMode && draft === null && (
+        <div className="chat-input-disabled">{th === 'dohyun' || th === 'mom' ? '메시지를 보낼 수 없습니다 (네트워크 없음)' : '　'}</div>
+      )}
     </div>
   );
 }

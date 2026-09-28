@@ -29,6 +29,7 @@ export function BrowserApp() {
     const page = ARCHIVE[id];
     const seen = seenPages();
     sfx('click');
+    setNotice(null);
     if (page.access === 'restricted' && !(seen.includes('r001') && seen.includes('r003'))) {
       setView({ kind: 'page', id: '__restricted' });
       return;

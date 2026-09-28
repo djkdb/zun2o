@@ -31,6 +31,8 @@ export interface Runtime {
   finale: boolean;
   ending: EndingId | null;
   dialog: { title: string; body: string } | null;
+  /** Text appearing in a reply box by itself. */
+  draft: { th: ThreadId; text: string } | null;
   hintOpen: boolean;
   audioReady: boolean;
   debug: boolean;
@@ -118,6 +120,7 @@ const initialRuntime = (debug: boolean): Runtime => ({
   finale: false,
   ending: null,
   dialog: null,
+  draft: null,
   hintOpen: false,
   audioReady: false,
   debug,
@@ -199,6 +202,8 @@ export function fill(text: string): string {
     start: `${String(start.getHours()).padStart(2, '0')}:${String(start.getMinutes()).padStart(2, '0')}`,
     photos: String(s.seenPhotos.length),
     memos: s.flags.includes('memo-done') ? '1' : '0',
+    // The player's real local time — the one thing the phone should not know.
+    real: `${String(new Date().getHours()).padStart(2, '0')}:${String(new Date().getMinutes()).padStart(2, '0')}`,
   };
   return text.replace(/\{(\w+)\}/g, (m, k: string) => values[k] ?? m);
 }

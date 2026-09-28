@@ -1,197 +1,93 @@
-# 심야 기록보관소 (THE NIGHT ARCHIVE)
+# 새벽 2시의 휴대폰
 
-> 새벽 2시에 이 사이트를 열면 안 된다.
+> 폐쇄된 해원군청 별관 앞 공중전화 부스. 선반 위에 휴대폰 한 대가 놓여 있다. 배터리 12%.
 
-1995년 폐쇄된 가상의 **해원군청 별관** 기록을 보존한다는, 2000년대 초 자원봉사자 홈페이지처럼 보이는 **인터랙티브 아날로그 호러 / ARG 웹 경험**입니다.
-오래 머물수록, 다시 방문할수록, 그리고 **사용자 로컬 시간**이 새벽 2시에 가까워질수록 사이트의 규칙이 조금씩 무너집니다.
+**주운 휴대폰 호러 게임**입니다 (Simulacra, Sara Is Missing 계열). 화면 전체가 실종된 폐건물 유튜버 **윤채원**의 휴대폰입니다.
+잠금을 풀고, 메시지·사진·녹음·통화·브라우저를 뒤져 그날 밤 무슨 일이 있었는지 알아내세요.
+정체불명의 번호 **“02:00”** 이 실시간으로 말을 걸고, 폰 속 시계는 새벽 2시를 향해 갑니다.
 
-- 01:30 이전 — 완전히 평범함 (아주 드물게 "버그 같은" 현상 하나)
-- 01:30 ~ 01:45 — 미세한 이상현상
-- 01:45 ~ 01:55 — 행동과 연결된 이상현상 증가
-- 01:55 ~ 01:59 — 레이아웃이 서서히 깨짐
-- 01:59 — 60초 동안 화면이 어두워지고 시계가 커짐
-- **02:00:00 — MAIN EVENT (약 32초 다단계 연출)**
-- 02:00 ~ 02:59 — 사이트가 완전히 다른 곳(UNKNOWN)이 됨
-- 03:00 이후 — 조용해지지만, 사이트는 당신을 기억함
+- 플레이 시간 15–20분 · 챕터 5개 · 엔딩 3개 · 이어폰 권장
+- **실제 시간과 상관없이 언제든** 플레이할 수 있습니다. (진짜 새벽 2시에 끝까지 가면 대사 한 줄이 더 나옵니다)
+- 휴대폰에서 **“홈 화면에 추가”** 하면 앱처럼 전체 화면으로 설치됩니다 (PWA, 오프라인 동작).
+- 외부 이미지·음원 없음: 사진은 SVG로 그렸고, 소리는 Web Audio로 합성, 목소리는 브라우저 음성 합성 + 자막.
 
-**처음 들어오면** 아날로그 호러식 입장 경고문이 규칙(실제 시각에 반응한다, 이상한 점을 찾아라, 새벽 2시에는 열지 마라)을 알려 주고, 입장 버튼으로 소리를 켭니다. 재방문 때는 "다시 오셨네요. 3번째 방문 · 발견한 이상현상 5개"처럼 짧게 기억을 보여 줍니다.
-사이드바의 **열람 수첩**은 발견한 이상현상·비밀·엔딩 수와 **다음 단서**(답이 아니라 방향)를 알려 줍니다.
+## 게임 흐름 (스포일러 약간)
 
-그리고 **그녀**(야간 기록사 서미령)가 있습니다. 처음엔 사진 속 문간의 작은 그림자였다가, 방문할수록 가까워지고, 새벽이 되면 화면 밖으로 나옵니다 (점프스케어).
-
-외부 이미지·음원은 하나도 없습니다. 사진은 전부 SVG로 그렸고, 모든 소리는 Web Audio API로 실시간 합성합니다.
-
-## 귀신 / 점프스케어
-
-점프스케어는 무작위로 터지지 않습니다. 전부 **사이트가 이미 이상해진 뒤(레벨 2~3 이상)**, **사용자가 한 행동**에 반응합니다. 낮의 첫 방문에서는 절대 나오지 않습니다.
-
-| 종류 | 조건 | 연출 |
+| 챕터 | 폰 시계 | 내용 |
 |---|---|---|
-| 02:00 클라이맥스 | 메인 이벤트 27.4초 — 사진 속 인물이 카메라를 본 직후 | 사진에서 튀어나와 화면으로 돌진 + 비명 |
-| 6번 테이프 | 레벨 3+에서 기록 006(녹취록)을 끝까지 읽음 ("마이크 바로 앞의 숨소리") | 돌진 + 비명 |
-| 별관 | 레벨 4+에서 기록 005를 끝까지 읽음 | 돌진 + 비명 |
-| 이름 부르기 | 레벨 4+에서 검색창에 `서미령` / 터미널에서 `서미령` 입력(레벨 2+) | "그녀는 지금 바쁩니다." → 돌진 |
-| 응시 | 레벨 3+에서 45초 동안 가만히 있음 | 속삭임 → 화면 중앙에 얼굴이 천천히 떠오름 → 3.6초 후 돌진 |
-| 엿보기 | 레벨 3+ 앰비언트 (세션당 최대 2회) | 화면 오른쪽 가장자리에 얼굴 반쪽, 0.8초 |
-| 반사 | 레벨 2+ 화면 암전 이상현상 | 0.16초 암전 속에 희미한 얼굴 |
+| 0 잠금 | 23:51 | 잠금 화면 알림과 배경 사진에서 암호를 찾는다 |
+| 1 채원의 폰 | 23:52 | 모르는 번호가 말을 건다 → 마지막 사진을 밝게 보정하면… |
+| 2 목소리 | 00:47 | 도현의 전화 → 채원의 마지막 녹음 → “당신 이름은 뭐예요?” |
+| 3 02호실 | 01:12 | 숨김 앨범 → 셀카 → 이 폰으로 “나에게” 메시지가 온다 |
+| 4 두 시 전 | 01:50 | 스스로 설치되는 앱, 지워지는 메시지, 꺼지지 않는 전원 |
+| 5 02:00 | 02:00 | 시계 정지, 알림 폭주, 영상 통화, 그리고 선택 |
 
-- 같은 얼굴이 레코드 003 사진, Annex 창문 속에 먼저 작게 등장합니다 (예고 → 회수).
-- 비명은 Web Audio로 합성합니다 (디스토션 톤 + 노이즈 + 저음 타격). 사운드는 첫 클릭 이후에만 켜집니다.
-- **Reduce effects / prefers-reduced-motion**에서는 스트로브·확대·흔들림 없이 얼굴이 나타났다 사라지는 순한 버전으로 바뀝니다. 흰색 플래시는 사용하지 않습니다.
-- 디버그 패널: `Jump scare`, `Stare`, `Peek` 버튼으로 바로 확인할 수 있습니다.
-
----
+공포 연출은 전부 **플레이어의 행동이 방아쇠**입니다: 사진 밝기를 직접 올리거나, 셀카를 넘기거나, 녹음을 끝까지 듣거나.
+그 사이사이에는 어두운 홈 화면에 얼굴이 비치는 순간, 아무도 적지 않은 일정이 캘린더 위젯에 생기는 순간 같은 작은 이상현상이 끼어 있습니다.
+막히면 오른쪽 위 **`?`** 가 지금 할 일과 힌트를 알려 줍니다 (45초 이상 막히면 노랗게 깜빡입니다).
 
 ## 실행
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173
-npm run build      # dist/ 생성 (tsc -b + vite build)
-npm run preview    # 빌드 결과 확인 (http://localhost:4173)
+npm run dev          # http://localhost:5173
+npm run build        # dist/ (타입체크 + 빌드 + PWA 서비스워커)
+npm run preview      # http://localhost:4173
 npm run lint
 npm run typecheck
-npm test           # 엔진 단위 테스트 (vitest)
-npm run qa         # E2E QA (preview 서버가 떠 있어야 함, 아래 참고)
+npm test             # 스토리 스크립트 무결성 테스트
+npm run qa           # 자동 플레이 봇 (preview 서버가 떠 있어야 함)
 ```
 
-빌드는 `base: './'` + 해시 라우팅이라 GitHub Pages, Netlify, 어떤 정적 호스팅에 올려도 서버 설정 없이 동작합니다.
-`.github/workflows/deploy.yml`이 포함되어 있어, 저장소 **Settings → Pages → Source: GitHub Actions**로 설정하면 `main` 푸시 시 자동 배포됩니다.
+### 배포
 
-### Cloudflare 배포
+정적 사이트라 어디든 올라갑니다 (`base: './'`).
+- **Cloudflare**: Workers & Pages → Create → Pages → Connect to Git → Build `npm run build`, Output `dist` (Node 22는 `.nvmrc`로 고정). 또는 `npx wrangler login && npm run deploy:cf`.
+- **GitHub Pages**: `.github/workflows/deploy.yml` 포함 (Settings → Pages → Source: GitHub Actions).
 
-순수 정적 사이트라(서버 코드 없음, 해시 라우팅) 리다이렉트 설정 없이 그대로 올라갑니다. Node 버전은 `.nvmrc`(22)로 고정되어 있습니다.
+## 디버그 / 촬영
 
-**방법 A — GitHub 연결 (자동 배포, 추천)**
-1. Cloudflare 대시보드 → **Workers & Pages** → **Create** → **Pages** → **Connect to Git** → 이 저장소 선택
-2. Production branch: `main` (또는 작업 브랜치)
-3. Framework preset: `Vite` (또는 None) · Build command: `npm run build` · Build output directory: `dist`
-4. **Save and Deploy** → `https://<프로젝트명>.pages.dev` 발급. 이후 푸시할 때마다 자동 재배포, 다른 브랜치는 미리보기 URL 생성
+`?debug=1` → 왼쪽 가장자리 **DBG** 버튼: 챕터 점프(CH1–CH4, 02:00), ×6 빨리감기, 새 게임.
+`?debug=1&speed=4` 는 대화·대기 시간을 4배 빠르게 합니다 (점프스케어·연출 길이는 그대로).
 
-**방법 B — CLI로 바로 배포**
-```bash
-npx wrangler login     # 브라우저로 Cloudflare 로그인 (최초 1회)
-npm run deploy:cf      # 빌드 후 wrangler.jsonc 설정으로 업로드 → https://night-archive.<계정>.workers.dev
-```
-
-커스텀 도메인은 프로젝트 → **Custom domains**에서 연결합니다. GitHub Pages를 쓰지 않는다면 `.github/workflows/deploy.yml`은 지워도 됩니다.
-
----
-
-## Debug Mode
-
-URL에 `?debug=true`를 붙이면 (세션 동안 유지) 오른쪽 아래에 디버그 패널이 나타납니다. `?debug=false`로 끕니다.
-
-- 표시: HORROR LEVEL / CURRENT TIME / VISIT COUNT / SESSION TIME / CLICKS / MAIN EVENT 단계 / 열어본 기록 / 기록 순서 / SECRET / FLAGS / ENDINGS / 발견한 이상현상 수 / 트리거 로그
-- 버튼: `L0`~`L5` 강제, `auto`, `Jump scare` / `Stare` / `Peek`, 시간 점프(`12:00` `01:30` `01:45` `01:55` `01:59` `01:59:50` `02:03` `03:10` `real`), **Trigger 02:00**, Random anomaly, 특정 anomaly Fire, Unlock all, Reset save, 엔딩 테스트(normal/secret/true)
-- 시작 시각 지정: `?debug=true&t=01:59:50` — 방문 기록 자체가 그 시각으로 저장되므로 촬영용으로 적합
-- 입장 경고 건너뛰기: `?debug=true&intro=0`
-
-프로덕션(쿼리 없음)에서는 패널이 렌더링되지 않습니다.
-
----
-
-## 릴스 촬영 가이드 (9:16)
-
-| Scene | URL / 행동 |
-|---|---|
-| 00 입장 경고 | 시크릿 창으로 `/#/` 첫 방문 → 경고문 |
-| 01 평범한 사이트 | 입장 직후의 기록 색인 |
-| 02 "어? 방금 뭐였지?" | 기록 #007에 여러 번 마우스 올리기 → `열지 마십시오`가 0.6초 보임. 또는 `?debug=true&t=01:47` 후 대기 |
-| 03 01:59:59 | `?debug=true&t=01:59:50#/` → 패널 `—`로 접기 → 커진 시계, 어두워지는 화면 |
-| 04 02:00 | 그대로 대기 → 시계 정지, 침묵, 제목이 `당신을 보관합니다`로 스크램블 |
-| 05 사이트 전체 변화 | 메뉴가 하나씩 사라지고 화면이 꺼짐 → 기록이 스스로 타이핑되며 **당신의 행동을 회상** |
-| 06 숨겨진 페이지 | 사진 속 인물이 카메라를 봄 → **그대로 화면으로 튀어나옴(점프스케어)** → 자동으로 기록 009(방문자 기록) 이동, 메뉴에 `미상` |
-| 07 예상하지 못한 메시지 | `#/record/003`의 마지막 문장 클릭 → `/system` 단말기 (`기록 검색 중... 열겠습니까? [Y/N]`) |
-
-각 이벤트는 시작/끝이 명확하도록 설계되었습니다 (02:00 연출 타임라인: `src/data/mainEvent.ts`).
-Web Audio는 첫 클릭 이후에만 켜지므로, 촬영 전에 화면을 한 번 클릭해 두세요.
-
----
+릴스용 추천 장면: 잠금 화면 알림(0:10) · 사진 밝기 올리기 점프스케어 · 도현의 전화 마지막 “끄지 마세요” · 셀카 점프스케어 · 02:00 영상 통화.
 
 ## 구조
 
 ```
 src/
-  game/                 ← 모든 판단은 여기서 (React 비의존)
-    horrorEngine.ts     시간 + 행동 → HORROR LEVEL, 사진 단계, 레벨별 프로필
-    eventManager.ts     이상현상 선택 규칙 (레벨/쿨다운/횟수/once/확률/선행조건/화면에 보이는지)
-    secretManager.ts    기록 접근 규칙, Secret A 순서 판정
-    endingManager.ts    엔딩 조건 평가
-    search.ts           검색 (일반 결과 + 조건부 숨은 결과)
-    store.ts            상태 저장소 (save + session), 모든 변경 액션
-    director.ts         앱의 유일한 반복 타이머 (벽시계 초에 정렬된 1초 틱)
-    clock.ts            가상 시계 (실제 로컬 시간 + 디버그 오프셋)
-    save.ts             localStorage 스키마 v1, 검증/초기화
-    template.ts         기록 텍스트 {placeholder} 치환
-  data/                 ← 콘텐츠는 전부 데이터
-    anomalies.ts        이상현상 48종 (점프스케어 6종 포함)
-    records.ts          기록 001–009, 013 (레벨별 variants)
-    secrets.ts endings.ts mainEvent.ts copy.ts hints.ts(열람 수첩 단서)
-  components/           EntryGate(입장 경고), ReadingNotes(열람 수첩), Ghost(그녀 + 점프스케어), Header, Navigation, Clock, RecordList, GlitchText, AnomalyOverlay,
-                        AudioController, HorrorTransition(02:00), Terminal, DebugPanel, photos/…
-  pages/                Index, Records, Record, Search, About, Contact, System, Room02, Unknown, Ending, NotFound
-  hooks/                useGame(selector), useAnomaly(target), useLocalTime, useTypewriter, …
-  utils/                audio(Web Audio 합성), storage(안전 래퍼), time, router, random
-scripts/qa.mjs          Playwright E2E QA (98 checks)
+  engine/     types, state(저장+런타임), director(비트 실행기), storage
+  content/    script.ts(스토리 전체가 데이터), threads, media(사진·메모·녹음), calls, archive(폰 속 브라우저)
+  phone/      PhoneShell, LockScreen, HomeScreen, CalendarWidget, Overlays(알림·통화·챕터·점프스케어·힌트), Finale, Ending, ColdOpen
+  phone/apps/ Messages, Gallery, Notes, Memos, Browser, PhoneApp, Settings, IndexApp
+  art/        Ghost(그녀), scenes(건물·열람실·평면도…), phonePhotos(폰 카메라 사진·영상 통화)
+  audio/      engine(합성 효과음·벨소리·심장박동), speech(음성 합성)
+scripts/      playtest.mjs(자동 플레이 봇), icons.mjs(PWA 아이콘 생성)
 ```
 
-### 이상현상 추가하기
-
-`src/data/anomalies.ts`에 항목 하나를 추가하면 됩니다.
+스토리 수정은 `src/content/script.ts`만 고치면 됩니다. 비트 하나는 `이벤트 → 액션 목록`입니다:
 
 ```ts
-{
-  id: 'clock-freeze', label: 'The seconds stop', category: 'time',
-  target: 'clock', effect: 'freeze',
-  minLevel: 1, maxLevel: 4,
-  trigger: { kind: 'ambient' },                 // 또는 { kind: 'action', type: 'hover', match: 'record-007' }
-  probability: 1, duration: 3500, cooldown: 120_000, maxTriggers: 3,
-  once?: true, weight?: 2, intense?: true, requires?: { minVisits, flags, records, … }, sound?: 'anomaly',
-}
+{ id: 'memo-end', on: 'memo:m1:end', actions: [
+  { t: 'msg', th: 'unknown', text: '당신 이름은 뭐예요?', typing: 1800 },
+  { t: 'choice', th: 'unknown', id: 'c2', options: [{ id: 'name', label: '이름을 알려 준다', input: 'name' }, …] },
+]}
 ```
 
-`target`을 구독하는 컴포넌트(`useAnomaly('clock')`)가 `effect` 키를 해석합니다. 기존 effect를 재사용하면 컴포넌트 수정이 필요 없습니다.
-스케줄러는 **현재 화면에 마운트된 target에만** 이상현상을 발생시키므로, 보이지 않는 곳에서 낭비되지 않습니다.
+진행 상황은 브라우저 localStorage에만 저장되고, 대화 도중 새로고침해도 이어서 진행됩니다.
 
----
+## 개인정보 · 접근성
 
-## 저장 데이터와 개인정보
-
-- 모든 진행은 브라우저 `localStorage`(`night-archive:save`, `saveVersion: 1`)에만 저장됩니다. 서버 전송, 쿠키, 트래커, 외부 요청이 없습니다.
-- 카메라·마이크·위치 권한을 요청하지 않습니다. "사이트가 당신을 기억하는" 효과는 전부 로컬 방문 기록으로 만듭니다.
-- 손상된 저장 데이터는 필드 단위로 검증되고, 파싱 불가/버전 불일치 시 안전하게 초기화됩니다.
-- localStorage가 막힌 환경(시크릿 모드 등)에서는 메모리로 대체되어 탭을 닫을 때까지 플레이할 수 있습니다.
-- About 페이지에서 로컬 데이터를 직접 지울 수 있습니다.
-
-## 접근성
-
-- 키보드 탐색, focus-visible, skip link, aria-label, 44px 터치 영역
-- 사운드 OFF 상태에서도 전체 진행 가능 (소리는 연출 보조일 뿐 단서가 아님)
-- `prefers-reduced-motion` 또는 푸터의 **Reduce effects** 토글 → 깜빡임/흔들림 계열(`intense`) 이상현상 제외, 애니메이션 정지, 타이핑 즉시 표시
-- 02:00 연출은 SKIP 버튼으로 건너뛸 수 있음
-
----
+- 이름과 진행 기록은 **이 기기에만** 저장되며 어디로도 전송되지 않습니다. 카메라·마이크·위치를 사용하지 않습니다. 전화 앱은 가짜이며 실제 전화를 걸지 않습니다.
+- 설정 앱 → **효과 줄이기**: 번쩍임·진동·흔들림 없이 순한 버전으로 진행. `prefers-reduced-motion`도 존중합니다.
+- 소리를 꺼도 자막으로 전부 진행할 수 있습니다.
 
 <details>
-<summary><strong>스포일러: Secret Path와 엔딩</strong></summary>
+<summary><strong>공략 (스포일러)</strong></summary>
 
-**Secret A — The Broadcast Order**
-기록 001의 라디오 운영자가 들은 숫자: *공공일, 공공삼, 공공칠, 일삼*. 이 순서로 기록을 열면(007은 001·003을 먼저 봐야 열림) 기록 013이 색인에 추가됩니다. 013을 열면 완료. 013에는 단말기용 열쇠 `HAEWON-0200`이 있습니다.
-
-**Secret B — Her Last Sentence**
-기록 003의 마지막 문장 *"색인은 밤이 되면 길어진다."* 를 클릭 → `/system` 단말기 해금 → `열겠습니까? [Y/N]` (N을 눌러도 파일은 열립니다) → LAST_ENTRY.TXT. 단말기는 `도움말`, `목록`, `열기 003` 같은 한국어 명령도 받습니다.
-
-**Secret C — The Visitor Log**
-기록 009는 02:00–02:59에만 열립니다. 02:00 이벤트를 목격하면 자동으로 이동합니다. 당신의 실제 방문 시각 목록이 나옵니다.
-
-**Secret D — ROOM_02**
-레벨 2 이상에서 검색창에 `02호실`(또는 `방`, `room`) → `ROOM_02 [파일 손상]` → 봉인된 방.
-
-**엔딩**
-1. **퇴실 처리 (Normal)** — 연락 페이지의 퇴실하기, 02:00 이후 기록 017에서 떠난다, 또는 단말기 `퇴실`/`LOGOUT`
-2. **색인 (Secret)** — A+B 완료 후 단말기에 `열쇠 HAEWON-0200`
-3. **야간 근무 (True)** — A+B+C 완료 후 **02:00–02:59에** `#/unknown`(기록 017)에서 *근무를 인수한다*. 이후 사이트는 영원히 조용해지고, 당신을 "기록사님"이라고 부릅니다.
-
-그 외: 404 페이지의 흰 글씨(드래그), 탭을 떠나면 바뀌는 제목, 레벨마다 바뀌는 기록 문장, 방문할 때마다 다가오는 사진 속 인물.
+- 잠금: `0113` (채원이 건물에 들어간 시각)
+- 숨김 앨범: `1340` (해원방송 주파수 — 이름을 알려 주면 02:00이 그냥 알려 줍니다)
+- 브라우저 “심야 기록보관소”에서 기록 001 → 003 → 007을 순서대로 열면 013이 나타남 → 열쇠 `HAEWON-0200`
+- 02:00: **전원을 끈다**(엔딩 1) · **내가 남는다**(엔딩 2) · **열쇠 + 첫 근무자의 이름 `서미령`**(엔딩 3, 진엔딩)
+- 숨은 것: 전화 앱에서 `1340`, `0200`에 걸어 보기 · 엄마의 메시지를 읽었는지에 따라 달라지는 대사
 </details>

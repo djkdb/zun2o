@@ -2389,3 +2389,23 @@ svg {
   opacity: 0.2;
   filter: blur(1.5px) grayscale(1);
 }
+
+.chat-draft {
+  margin: 8px 12px 10px;
+  padding: 10px 16px;
+  border-radius: 22px;
+  border: 1px solid #3a3b40;
+  background: #0a0a0b;
+  font-size: 16px;
+  color: #e8e8ea;
+}
+
+.caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  margin-left: 2px;
+  vertical-align: -0.2em;
+  background: #3a82f7;
+  animation: breathe 0.9s steps(1) infinite;
+}

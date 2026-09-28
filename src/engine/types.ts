@@ -78,6 +78,9 @@ export type Action =
   | { t: 'countdown'; from: string; to: string; stepMs: number }
   | { t: 'emit'; ev: string }
   | { t: 'finale' }
+  | { t: 'unsend'; th: ThreadId; match: string }
+  | { t: 'dialog'; title: string; body: string }
+  | { t: 'draft'; th: ThreadId; text: string }
   | { t: 'vibrate'; ms: number[] };
 
 export interface Beat {

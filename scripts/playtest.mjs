@@ -206,7 +206,9 @@ mark('found the key → CH4');
 
 // ── CH4 ────────────────────────────────────────────────────────────────
 await waitFor('.chapter-card', 15000);
-await wait(3500);
+await waitFor('.dialog', 30000);
+await snap('ch4-battery-dialog');
+await tapText('확인');
 await home();
 await wait(800);
 await snap('ch4-home-shuffled');

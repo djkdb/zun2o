@@ -8,7 +8,7 @@ function useSvgId(): string {
   return useId().replace(/[^a-zA-Z0-9_-]/g, '');
 }
 
-function Defs({ id, flashX = 50, flashY = 50 }: { id: string; flashX?: number; flashY?: number }) {
+function Defs({ id, flashX = 50, flashY = 50, r = 60 }: { id: string; flashX?: number; flashY?: number; r?: number }) {
   return (
     <defs>
       <filter id={`${id}-n`} x="0" y="0" width="100%" height="100%">
@@ -17,7 +17,7 @@ function Defs({ id, flashX = 50, flashY = 50 }: { id: string; flashX?: number; f
         <feBlend in="SourceGraphic" in2="mono" mode="multiply" result="b" />
         <feComposite in="b" in2="SourceGraphic" operator="in" />
       </filter>
-      <radialGradient id={`${id}-flash`} cx={`${flashX}%`} cy={`${flashY}%`} r="60%">
+      <radialGradient id={`${id}-flash`} cx={`${flashX}%`} cy={`${flashY}%`} r={`${r}%`}>
         <stop offset="0%" stopColor="#fff" stopOpacity="0.35" />
         <stop offset="45%" stopColor="#fff" stopOpacity="0.06" />
         <stop offset="100%" stopColor="#000" stopOpacity="0.85" />
@@ -39,7 +39,7 @@ export const WallpaperPhoto = memo(function WallpaperPhoto() {
   const id = useSvgId();
   return (
     <svg viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <Defs id={id} flashX={50} flashY={40} />
+      <Defs id={id} flashX={50} flashY={52} r={95} />
       <g filter={`url(#${id}-n)`}>
         <rect width="390" height="844" fill="#07080a" />
         <rect x="40" y="300" width="310" height="330" fill="#23252a" />
@@ -56,8 +56,8 @@ export const WallpaperPhoto = memo(function WallpaperPhoto() {
         ))}
         <rect width="390" height="844" fill={`url(#${id}-flash)`} />
       </g>
-      <circle cx="30" cy="774" r="7" fill="#ff3b30" />
-      <text x="44" y="780" fontFamily="IBM Plex Mono, monospace" fontSize="17" fill="#fff" opacity="0.9">
+      <circle cx="30" cy="704" r="7" fill="#ff3b30" />
+      <text x="44" y="710" fontFamily="IBM Plex Mono, monospace" fontSize="17" fill="#fff" opacity="0.9">
         REC 01:13
       </text>
       <text x="24" y="820" fontFamily="IBM Plex Mono, monospace" fontSize="12" fill="#fff" opacity="0.45">

@@ -239,6 +239,37 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
     case 'vibrate':
       vibrate(a.ms);
       return;
+    case 'unsend':
+      // Someone deletes a message you already read.
+      setSave((s) => ({
+        threads: {
+          ...s.threads,
+          [a.th]: s.threads[a.th].map((m) => (m.text.includes(a.match) ? { ...m, text: '메시지가 삭제되었습니다.', from: 'system' as const } : m)),
+        },
+      }));
+      sfx('glitch');
+      return;
+    case 'dialog':
+      setRt({ dialog: { title: a.title, body: fill(a.body) } });
+      sfx('error');
+      return;
+    case 'draft': {
+      // Someone types into the reply box… and deletes it.
+      const text = fill(a.text);
+      for (let i = 1; i <= text.length; i++) {
+        if (myEpoch !== epoch) return;
+        setRt({ draft: { th: a.th, text: text.slice(0, i) } });
+        if (isViewing(a.th)) sfx('key');
+        await sleepReal(170);
+      }
+      await sleepReal(1400);
+      for (let i = text.length - 1; i >= 0; i--) {
+        if (myEpoch !== epoch) return;
+        setRt({ draft: i ? { th: a.th, text: text.slice(0, i) } : null });
+        await sleepReal(60);
+      }
+      return;
+    }
   }
 }
 
@@ -370,6 +401,7 @@ export function newGame(): void {
     finale: false,
     ending: null,
     dialog: null,
+    draft: null,
     hintOpen: false,
   });
 }
