@@ -1794,7 +1794,8 @@ svg {
 }
 
 .scare-lunge .ghost {
-  filter: drop-shadow(4px 0 0 rgba(255, 20, 40, 0.4)) drop-shadow(-4px 0 0 rgba(0, 220, 255, 0.3));
+  /* photographed, not drawn: soft focus, crushed, grainy (grain layer below) */
+  filter: blur(0.7px) contrast(1.3) brightness(0.86);
   animation:
     lunge 1.3s cubic-bezier(0.15, 0.9, 0.2, 1) both,
     jitter 0.07s steps(2) infinite;
@@ -2581,8 +2582,9 @@ svg {
 .scare-lunge.look-hang .ghost {
   height: 125%;
   transform-origin: 50% 30%;
+  /* dropped frames: she moves in jerks */
   animation:
-    lunge-hang 1.3s cubic-bezier(0.3, 1.4, 0.4, 1) both,
+    lunge-hang 1.3s steps(11, end) both,
     jitter 0.07s steps(2) infinite;
 }
 
@@ -2616,7 +2618,7 @@ svg {
   height: 125%;
   transform-origin: 34% 45%;
   animation:
-    lunge-side 1.3s cubic-bezier(0.15, 0.9, 0.2, 1) both,
+    lunge-side 1.3s steps(10, end) both,
     jitter 0.07s steps(2) infinite;
 }
 
@@ -2753,4 +2755,219 @@ svg {
   margin-top: 2px;
   font-size: 11px;
   color: #6c6d73;
+}
+
+/* ─── round 4: chats that lead somewhere ─────────────────────────────── */
+
+.composer {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+}
+
+.composer input {
+  flex: 1;
+  min-width: 0;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 19px;
+  border: 1px solid #3a3b40;
+  background: #0d0d0f;
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+}
+
+.composer button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--accent);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.composer button:disabled {
+  background: #2a2b30;
+  color: #66676d;
+}
+
+.bubble.failed {
+  opacity: 0.55;
+}
+
+.send-failed {
+  color: #ff5b52;
+  font-weight: 600;
+}
+
+.attach {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  padding: 0;
+  width: 220px;
+  max-width: 100%;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.35);
+  color: inherit;
+  text-align: left;
+  overflow: hidden;
+}
+
+.bubble-row.has-attach .bubble {
+  max-width: 82%;
+}
+
+.attach-photo {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+}
+
+.attach-photo svg {
+  display: block;
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  background: #000;
+}
+
+.attach-cap,
+.attach small {
+  display: block;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #a4a6ad;
+}
+
+.attach-memo,
+.attach-link {
+  padding: 10px 12px;
+}
+
+.attach-memo strong,
+.attach-link strong {
+  display: block;
+  font-size: 14px;
+}
+
+.attach-memo small,
+.attach-link small {
+  padding: 0;
+}
+
+.attach-play,
+.attach-icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #d8413a;
+  color: #fff;
+  font-size: 14px;
+}
+
+.attach-icon {
+  border-radius: 9px;
+  background: #1b1c20;
+  color: #ff8a80;
+}
+
+.attach:active {
+  filter: brightness(1.2);
+}
+
+/* provided photographs are graded to match the phone's look */
+.art-photo,
+.ghost-photo {
+  filter: grayscale(0.35) contrast(1.12) brightness(0.92);
+}
+
+.scare .ghost-photo {
+  object-fit: cover;
+  width: 100%;
+  max-width: none;
+}
+
+/* the edges of every scare fall off into the dark, like a flash photo */
+.scare-lunge::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 42%, transparent 30%, rgba(0, 0, 0, 0.55) 62%, rgba(0, 0, 0, 0.95) 88%);
+}
+
+/* recording 17: the scream cuts the screen to black for a moment */
+.memo-scream::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #000;
+  animation: memo-cut 1.4s steps(1) both;
+  pointer-events: none;
+}
+
+@keyframes memo-cut {
+  0% {
+    opacity: 1;
+  }
+  16% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  36%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.reduce-fx .memo-scream::after {
+  display: none;
+}
+
+.memo-player {
+  position: relative;
+}
+
+/* the playhead's bars move with the sound */
+.wave i.live {
+  animation: bar-live 0.16s ease-in-out infinite alternate;
+  transform-origin: 50% 50%;
+}
+
+.wave i.live.loud {
+  animation-duration: 0.07s;
+  background: #ff3b30;
+}
+
+@keyframes bar-live {
+  from {
+    transform: scaleY(0.6);
+  }
+  to {
+    transform: scaleY(1.35);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .memo-scream::after,
+  .wave i.live {
+    animation: none !important;
+  }
+  .memo-scream::after {
+    display: none;
+  }
 }

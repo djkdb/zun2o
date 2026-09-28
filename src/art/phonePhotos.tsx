@@ -1,5 +1,6 @@
 import { memo, useId } from 'react';
 import { GhostCurtain, GhostHanging, GhostProfile } from './Ghost';
+import { art, type ArtSlot } from './photoArt';
 
 // Photos taken on 채원's phone inside the Annex. Phone-camera look: flash
 // falloff, noise, crushed blacks. All SVG — no third-party imagery.
@@ -17,6 +18,10 @@ function Defs({ id, flashX = 50, flashY = 50, r = 60 }: { id: string; flashX?: n
         <feBlend in="SourceGraphic" in2="mono" mode="multiply" result="b" />
         <feComposite in="b" in2="SourceGraphic" operator="in" />
       </filter>
+      {/* motion blur for things that moved during the exposure */}
+      <filter id={`${id}-mb`} x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="4 0.8" />
+      </filter>
       <radialGradient id={`${id}-flash`} cx={`${flashX}%`} cy={`${flashY}%`} r={`${r}%`}>
         <stop offset="0%" stopColor="#fff" stopOpacity="0.35" />
         <stop offset="45%" stopColor="#fff" stopOpacity="0.06" />
@@ -24,6 +29,13 @@ function Defs({ id, flashX = 50, flashY = 50, r = 60 }: { id: string; flashX?: n
       </radialGradient>
     </defs>
   );
+}
+
+/** A photographic slot image, if one was provided (see photoArt.ts). */
+function ArtImage({ slot, w, h, style }: { slot: ArtSlot; w: number; h: number; style?: React.CSSProperties }) {
+  const url = art(slot);
+  if (!url) return null;
+  return <image href={url} x="0" y="0" width={w} height={h} preserveAspectRatio="xMidYMid slice" className="art-photo" style={style} />;
 }
 
 function Stamp({ text, x = 16, y = 30 }: { text: string; x?: number; y?: number }) {
@@ -204,10 +216,11 @@ function ChaewonDefs({ id, blur }: { id: string; blur: string }) {
       </filter>
       {/* phone light from below: bright chin, eyes and forehead lost in shadow */}
       <linearGradient id={`${id}-skin`} x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="#0d0a09" />
-        <stop offset="38%" stopColor="#2b211c" />
-        <stop offset="72%" stopColor="#8a6f60" />
-        <stop offset="100%" stopColor="#d4b8a3" />
+        <stop offset="0%" stopColor="#040303" />
+        <stop offset="46%" stopColor="#0e0a09" />
+        <stop offset="64%" stopColor="#3d2f28" />
+        <stop offset="84%" stopColor="#9a7e6d" />
+        <stop offset="100%" stopColor="#dcc0aa" />
       </linearGradient>
       <linearGradient id={`${id}-neck`} x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stopColor="#6e5a4e" />
@@ -250,18 +263,28 @@ export const SelfiePhoto = memo(function SelfiePhoto({ stage }: { stage: 1 | 2 }
           Array.from({ length: 6 }).map((__, c) => <rect key={`${r}${c}`} x={10 + c * 70} y={10 + r * 46} width="62" height="38" fill="#1c1813" />),
         )}
         {/* her behind 채원 */}
+        {art(stage === 1 ? 'selfie-far' : 'selfie-close') ? (
+          <ArtImage slot={stage === 1 ? 'selfie-far' : 'selfie-close'} w={420} h={560} />
+        ) : (
+          <>
         {/* stage 1: far back, between the shelves. stage 2: her cheek against 채원's hair */}
         {stage === 1 && (
-          <g transform="translate(330 180) scale(0.3)" opacity="0.5">
-            <GhostCurtain distort={false} />
+          <g filter={`url(#${id}-mb)`} opacity="0.5">
+            <g transform="translate(330 180) scale(0.3)">
+              <GhostCurtain distort={false} />
+            </g>
           </g>
         )}
         {stage === 2 && (
-          <g transform="translate(362 236) scale(0.72)" opacity="0.96">
-            <GhostProfile distort={false} />
+          <g filter={`url(#${id}-mb)`} opacity="0.92">
+            <g transform="translate(362 236) scale(0.72)">
+              <GhostProfile distort={false} />
+            </g>
           </g>
         )}
         <ChaewonFigure id={id} />
+          </>
+        )}
         <rect width="420" height="560" fill={`url(#${id}-flash)`} />
       </g>
       <Stamp text="01:58" />
@@ -288,11 +311,14 @@ export const BlackPhoto = memo(function BlackPhoto({ brightness = 0 }: { brightn
         <rect x="186" y="330" width="48" height="70" rx="4" fill="#120f0b" />
       </g>
       {/* she was on the ceiling, right above the lens — outside the brightness boost, so she stays grey */}
-      {b >= 0.92 && (
-        <g transform="translate(222 150) scale(0.85)" style={{ filter: 'brightness(0.8) contrast(1.15)' }}>
-          <GhostHanging distort={false} />
-        </g>
-      )}
+      {b >= 0.92 &&
+        (art('black-reveal') ? (
+          <ArtImage slot="black-reveal" w={420} h={560} />
+        ) : (
+          <g transform="translate(222 150) scale(0.85)" style={{ filter: 'brightness(0.8) contrast(1.15)' }}>
+            <GhostHanging distort={false} />
+          </g>
+        ))}
       <text x="14" y="30" fontFamily="IBM Plex Mono, monospace" fontSize="15" fill="#ff5a3c" opacity={0.25 + b * 0.5}>
         01:59
       </text>
@@ -311,6 +337,9 @@ export const BoothPhoto = memo(function BoothPhoto({ behind = false }: { behind?
         <polygon points="0,420 640,420 520,150 120,150" fill="#101114" />
         <line x1="120" y1="150" x2="0" y2="420" stroke="#1a1b1f" strokeWidth="3" />
         <line x1="520" y1="150" x2="640" y2="420" stroke="#1a1b1f" strokeWidth="3" />
+        {art(behind ? 'booth-behind' : 'booth') && <ArtImage slot={behind ? 'booth-behind' : 'booth'} w={640} h={420} />}
+        {!art(behind ? 'booth-behind' : 'booth') && (
+          <>
         {/* the booth, lit from inside */}
         <ellipse cx="330" cy="300" rx="110" ry="90" fill="#dfe6d0" opacity="0.07" />
         <rect x="284" y="214" width="92" height="146" fill="#cfd6c4" opacity="0.2" />
@@ -334,6 +363,8 @@ export const BoothPhoto = memo(function BoothPhoto({ behind = false }: { behind?
             <path d="M350 282 C344 300 338 316 334 330" stroke="#050505" strokeWidth="6" fill="none" strokeLinecap="round" />
             <path d="M340 326 L332 334 M338 330 L334 340" stroke="#c9c3b4" strokeWidth="2" opacity="0.5" />
           </g>
+        )}
+          </>
         )}
         <rect x="0" y="0" width="640" height="26" fill="#030303" />
         <rect x="0" y="0" width="30" height="420" fill="#030303" />
@@ -370,6 +401,8 @@ export const VideoFeed = memo(function VideoFeed({ close = 0, pip = 0 }: { close
         <g transform="translate(-40 200) scale(1.12)">
           <ChaewonFigure id={id} />
         </g>
+        <ArtImage slot="video-chaewon" w={390} h={844} />
+        {her > 0 && <ArtImage slot="video-behind" w={390} h={844} style={{ opacity: Math.min(1, her * 1.4) }} />}
         <rect width="390" height="844" fill={`url(#${id}-flash)`} />
       </g>
       {pip === 0 ? (

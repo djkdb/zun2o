@@ -1,4 +1,4 @@
-import type { AppId, ChatMsg, EndingId, ScareKind, Save, ThreadId } from './types';
+import type { AppId, Attach, ChatMsg, EndingId, ScareKind, Save, ThreadId } from './types';
 import { INITIAL_THREADS, INITIAL_UNREAD } from '../content/threads';
 import { readItem, removeItem, writeItem } from './storage';
 import type { GhostLook } from '../art/Ghost';
@@ -37,6 +37,10 @@ export interface Runtime {
   hintOpen: boolean;
   /** A voice memo is playing: scripted pop-ups wait until it ends. */
   memoPlaying: boolean;
+  /** Where a tapped chat attachment should land inside the app it opens. */
+  deep: Attach | null;
+  /** The player is zoomed into a photo, editing it, or typing: hold scripted pop-ups. */
+  engaged: boolean;
   audioReady: boolean;
   debug: boolean;
 }
@@ -130,6 +134,8 @@ const initialRuntime = (debug: boolean): Runtime => ({
   draft: null,
   hintOpen: false,
   memoPlaying: false,
+  deep: null,
+  engaged: false,
   audioReady: false,
   debug,
 });

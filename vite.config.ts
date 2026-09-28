@@ -32,7 +32,7 @@ export default defineConfig({
       workbox: {
         // Korean fonts ship as ~100 unicode-range slices: cache the ones the
         // game actually uses, on demand, instead of precaching all of them.
-        globPatterns: ['**/*.{js,css,html,svg,png}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,jpg,jpeg,webp,avif}'],
         runtimeCaching: [
           {
             urlPattern: ({ url }) => /\.woff2?$/.test(url.pathname),

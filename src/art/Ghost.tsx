@@ -1,4 +1,5 @@
 import { memo, useId } from 'react';
+import { art } from './photoArt';
 
 // ─────────────────────────────────────────────────────────────────────────
 // Her. Drawn in SVG (no third-party imagery). She is never shown the same
@@ -222,3 +223,10 @@ export const GhostSvg = memo(function GhostSvg({ className, distort, look = 'fac
     </svg>
   );
 });
+
+/** The scare image: a provided photograph for that look if there is one, else the drawing. */
+export function GhostVisual({ look, className }: { look: GhostLook; className?: string }) {
+  const url = art(look === 'curtain' ? 'reflect' : `scare-${look}`);
+  if (url) return <img className={`${className ?? ''} ghost-photo`} src={url} alt="" draggable={false} />;
+  return <GhostSvg className={className} look={look} distort />;
+}

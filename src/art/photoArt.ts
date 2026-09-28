@@ -1,0 +1,31 @@
+// ─────────────────────────────────────────────────────────────────────────
+// Optional photographic art. Drop an image named after a slot into
+// src/assets/art/ (e.g. `scare-hang.webp`) and the game uses it instead of
+// the SVG drawing for that moment. Nothing there → SVG fallback, so the game
+// always builds and runs. See ART_PROMPTS.md for what each slot should show.
+// ─────────────────────────────────────────────────────────────────────────
+
+export type ArtSlot =
+  | 'black-reveal'
+  | 'selfie-far'
+  | 'selfie-close'
+  | 'booth'
+  | 'booth-behind'
+  | 'video-chaewon'
+  | 'video-behind'
+  | 'scare-hang'
+  | 'scare-profile'
+  | 'scare-face'
+  | 'reflect';
+
+const FILES = import.meta.glob('../assets/art/*.{jpg,jpeg,png,webp,avif}', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+
+const BY_SLOT: Partial<Record<ArtSlot, string>> = {};
+for (const [path, url] of Object.entries(FILES)) {
+  const name = path.split('/').pop()!.replace(/\.[a-z]+$/i, '') as ArtSlot;
+  BY_SLOT[name] = url;
+}
+
+export function art(slot: ArtSlot): string | undefined {
+  return BY_SLOT[slot];
+}

@@ -87,6 +87,18 @@ await tapText('누구세요?');
 await page.waitForFunction(() => window.__game.getState().save.flags.includes('asked-photo'), null, { timeout: 30000 });
 mark('asked to look at the last photo');
 await snap('unknown-asks-photo');
+// the player can always type back — and gets answered
+check('chat always has a reply box', (await page.locator('.composer input').count()) === 1);
+await page.fill('.composer input', '당신 누구야?');
+await page.press('.composer input', 'Enter');
+await page.waitForFunction(() => window.__game.getState().save.threads.unknown.some((m) => m.text.includes('기록하는 사람이요')), null, { timeout: 15000 });
+check('free-text message gets an in-character reply', true);
+await snap('free-text-reply');
+// the shared photo card opens that exact photo
+await page.locator('.attach-photo').last().click();
+await wait(800);
+check('photo card in chat opens the photo', (await page.locator('.viewer .edit-btn').count()) === 1);
+await snap('attach-opens-photo');
 
 await openThread('도현');
 await wait(600);
@@ -205,6 +217,8 @@ await snap('archive-013-key');
 mark('found the key → CH4');
 
 // ── CH4 ────────────────────────────────────────────────────────────────
+// Chapter 4 is a real-time countdown: play it at 1× like a person would.
+await page.evaluate(() => window.__game.setSpeed(1));
 await waitFor('.chapter-card', 15000);
 await wait(3500);
 await home();
@@ -215,26 +229,50 @@ await openApp('설정');
 await tapText('전원 끄기');
 await wait(500);
 await snap('power-blocked');
-await tapText('확인');
+await page.locator('.dialog button').first().click({ force: true });
 await page.waitForFunction(() => window.__game.getState().save.memos.includes('m2'), null, { timeout: 60000 });
 await openApp('녹음');
 check('memo 18 (the phone recorded you) appears', (await page.locator('.memo-list', { hasText: '새 녹음 18' }).count()) === 1);
-await tapText('새 녹음 18');
-await tap('.memo-play');
-await wait(9000);
+const dismissDialog = async (name) => {
+  if (await page.locator('.dialog').count()) {
+    if (name) await snap(name);
+    await page.locator('.dialog button').first().click({ force: true });
+    await wait(400);
+    return true;
+  }
+  return false;
+};
+// Chapter 4 runs on a clock: pop-ups can land at any moment. Deal with them like a player would.
+const calmClick = async (locator) => {
+  for (let i = 0; i < 12; i++) {
+    await dismissDialog(i === 0 ? 'ch4-dialog' : undefined);
+    await page.waitForSelector('.banner', { state: 'detached', timeout: 5000 }).catch(() => undefined);
+    try {
+      await locator.first().click({ timeout: 2500 });
+      return;
+    } catch {
+      /* something slid in front; try again */
+    }
+  }
+  await snap('calm-fail');
+  throw new Error(`could not click through chapter 4 pop-ups: ${locator}`);
+};
+await calmClick(page.locator('.memo-list button', { hasText: '새 녹음 18' }));
+await calmClick(page.locator('.memo-play'));
+await wait(6000);
 await snap('memo18');
-await openApp('사진');
-await tapText('최근 항목');
+const calmOpen = async (name) => {
+  await calmClick(page.locator('.homebar'));
+  await wait(300);
+  await calmClick(page.locator('.app-icon', { hasText: name }));
+  await wait(400);
+};
+await calmOpen('사진');
+await calmClick(page.getByText('최근 항목'));
 await wait(400);
 await snap('gallery-autobackup');
-await waitFor('.dialog', 90000);
-await snap('ch4-battery-dialog');
-await tapText('확인');
-await openApp('사진');
-await tapText('최근 항목');
-await wait(400);
 // zoom into the auto-backup photo: double-tap
-await page.locator('.thumb', { hasText: '01:39' }).first().click();
+await calmClick(page.locator('.thumb', { hasText: '01:39' }));
 await wait(500);
 const img = page.locator('.viewer-img');
 await img.click();
@@ -243,15 +281,21 @@ await img.click();
 await wait(700);
 check('double-tap zooms into a photo', (await page.locator('.viewer-img.zoomed').count()) === 1);
 await snap('zoom-p08');
-await tap('.back');
+await calmClick(page.locator('.back'));
 await wait(300);
-await waitFor('.incoming', 60000);
-mark('01:57 call');
-await snap('ch4-call');
-await page.locator('.accept').first().click({ force: true });
-await wait(12000);
-await snap('ch4-call-voice');
+// the rest of chapter 4 happens on its own clock: battery warning, then 도현's call
+await page.waitForFunction(() => document.querySelector('.incoming, .dialog, .finale'), null, { timeout: 90000 });
+await dismissDialog('ch4-battery-dialog');
+await page.waitForFunction(() => document.querySelector('.incoming, .finale'), null, { timeout: 90000 });
+if (await page.locator('.incoming').count()) {
+  mark('01:57 call');
+  await snap('ch4-call');
+  await page.locator('.accept').first().click({ force: true });
+  await wait(12000);
+  await snap('ch4-call-voice');
+}
 
+await page.evaluate((x) => window.__game.setSpeed(x), SPEED);
 // ── 02:00 ──────────────────────────────────────────────────────────────
 await waitFor('.finale', 90000);
 mark('02:00 — finale');

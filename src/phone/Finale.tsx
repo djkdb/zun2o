@@ -4,7 +4,7 @@ import { reachEnding, sfx, vibrate } from '../engine/director';
 import { getState } from '../engine/state';
 import { HomeScreen } from './HomeScreen';
 import { VideoFeed } from '../art/phonePhotos';
-import { GhostSvg } from '../art/Ghost';
+import { GhostVisual } from '../art/Ghost';
 import { speak } from '../audio/speech';
 import { CONTINUATION_KEY, FIRST_KEEPER } from '../content/archive';
 import { CallIcon } from './CallIcon';
@@ -59,6 +59,10 @@ function buildRecall(): string[] {
   if (s.choices.c3 === 'chaewon') lines.push('채원 씨 이름을 먼저 불러 줬죠. 그 애가 울었어요.');
   if (s.flags.includes('refused-name')) lines.push('이름은 끝내 알려 주지 않았죠. 괜찮아요. 카드에 직접 쓰게 될 테니까.');
   if (s.flags.includes('heard-radio')) lines.push('1340에 전화도 걸었죠. 제 목소리, 들었잖아요.');
+  // Something the player actually typed tonight, quoted back.
+  const typed = [...s.inputs].reverse().map((e) => /보낸 메시지 "(.+)"$/.exec(e)?.[1]).find(Boolean);
+  if (typed) lines.push(`“${typed}”라고 보냈죠. 다 적어 뒀어요.`);
+  if (s.flags.includes('named-her')) lines.push('그 이름을 저한테 보냈죠. 한동안 대답을 못 했어요. 그건 인정할게요.');
   if (new Date().getHours() === 2) lines.push('그리고… 지금은 진짜로 새벽 두 시네요.');
   lines.push('이제 누군가는 근무를 서야 합니다.');
   return lines;
@@ -329,7 +333,7 @@ export function Finale() {
       {blackout && <div className="blackout" />}
       {scare && (
         <div className={`scare scare-lunge${step === 'video' ? ' from-pip' : ''}${save.reduceFx ? ' scare-reduced' : ''}`}>
-          <GhostSvg className="ghost" distort />
+          <GhostVisual className="ghost" look="face" />
           <div className="scare-grain" />
         </div>
       )}

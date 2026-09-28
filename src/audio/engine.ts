@@ -17,6 +17,11 @@ class AudioEngine {
   private drone: GainNode | null = null;
   private noise: AudioBuffer | null = null;
   private sources: AudioScheduledSourceNode[] = [];
+  /** Everything "in the building" goes through a synthesized room reverb. */
+  private space: GainNode | null = null;
+  private wetIn: GainNode | null = null;
+  private ambientTimer: ReturnType<typeof setTimeout> | null = null;
+  private ambientLevel = 0;
   private enabled = false;
   private failed = false;
   clickLow = false;
@@ -110,6 +115,86 @@ class AudioEngine {
     lfo.start();
     this.drone = drone;
     this.sources = [src, hum, o1, o2, lfo];
+
+    // Reverb: an impulse response made of decaying stereo noise — a long,
+    // empty concrete corridor. Dry + wet so near sounds stay near.
+    const irLen = Math.floor(ctx.sampleRate * 3.2);
+    const ir = ctx.createBuffer(2, irLen, ctx.sampleRate);
+    for (let ch = 0; ch < 2; ch++) {
+      const d = ir.getChannelData(ch);
+      for (let i = 0; i < irLen; i++) {
+        const k = i / irLen;
+        d[i] = (Math.random() * 2 - 1) * Math.pow(1 - k, 3.2) * (i < ctx.sampleRate * 0.012 ? 0.2 : 1);
+      }
+    }
+    const conv = ctx.createConvolver();
+    conv.buffer = ir;
+    const wetIn = ctx.createGain();
+    wetIn.gain.value = 1;
+    const wetOut = ctx.createGain();
+    wetOut.gain.value = 0.42;
+    const damp = ctx.createBiquadFilter();
+    damp.type = 'lowpass';
+    damp.frequency.value = 3200;
+    wetIn.connect(conv).connect(damp).connect(wetOut).connect(master);
+    const space = ctx.createGain();
+    space.connect(master);
+    space.connect(wetIn);
+    this.space = space;
+    this.wetIn = wetIn;
+  }
+
+  /**
+   * The building is alive: random, sparse sounds from somewhere else in it.
+   * Denser and closer each chapter; 0 = silence (hush, 02:00).
+   */
+  setAmbientLevel(level: number): void {
+    if (level === this.ambientLevel) return;
+    this.ambientLevel = level;
+    if (this.ambientTimer) clearTimeout(this.ambientTimer);
+    this.ambientTimer = null;
+    if (level > 0) this.scheduleAmbient();
+  }
+
+  private scheduleAmbient(): void {
+    const lvl = this.ambientLevel;
+    const wait = (14 + Math.random() * 26) / (1 + lvl * 0.35);
+    this.ambientTimer = setTimeout(() => {
+      this.ambientEvent();
+      if (this.ambientLevel > 0) this.scheduleAmbient();
+    }, wait * 1000);
+  }
+
+  private ambientEvent(): void {
+    if (!this.enabled || !this.ctx || !this.space || this.ctx.state !== 'running') return;
+    const lvl = this.ambientLevel;
+    const pool: SoundId[] = ['drip', 'creak'];
+    if (lvl >= 2) pool.push('stepsAbove', 'drip');
+    if (lvl >= 3) pool.push('knock', 'drawer', 'breath');
+    if (lvl >= 4) pool.push('knock', 'breath', 'whisper', 'stepsAbove');
+    const id = pool[Math.floor(Math.random() * pool.length)];
+    const ctx = this.ctx;
+    // Somewhere to the side, and further away in the early chapters.
+    const bus = ctx.createGain();
+    bus.gain.value = 0.35 + lvl * 0.12;
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 900 + lvl * 700;
+    let tail: AudioNode = lp;
+    if (typeof ctx.createStereoPanner === 'function') {
+      const pan = ctx.createStereoPanner();
+      pan.pan.value = (Math.random() < 0.5 ? -1 : 1) * (0.4 + Math.random() * 0.5);
+      lp.connect(pan);
+      tail = pan;
+    }
+    bus.connect(lp);
+    tail.connect(this.space);
+    try {
+      SOUNDS[id](ctx, bus, this);
+    } catch {
+      /* decoration */
+    }
+    setTimeout(() => bus.disconnect(), 6000);
   }
 
   setEnabled(on: boolean): void {
@@ -139,6 +224,8 @@ class AudioEngine {
   }
 
   dispose(): void {
+    if (this.ambientTimer) clearTimeout(this.ambientTimer);
+    this.ambientTimer = null;
     this.sources.forEach((s) => {
       try {
         s.stop();
@@ -180,7 +267,8 @@ class AudioEngine {
   play(id: SoundId): void {
     if (!this.enabled || !this.ctx || !this.master || this.ctx.state !== 'running') return;
     try {
-      SOUNDS[id](this.ctx, this.master, this);
+      // Phone UI sounds are dry (in your hand); everything else is in the building.
+      SOUNDS[id](this.ctx, DRY.has(id) || !this.space ? this.master : this.space, this);
     } catch {
       /* a failed blip must never break the page */
     }
@@ -211,6 +299,11 @@ class AudioEngine {
         out = pan;
       }
       out.connect(this.master);
+      if (this.wetIn) {
+        const send = ctx.createGain();
+        send.gain.value = 0.25;
+        out.connect(send).connect(this.wetIn);
+      }
       const FORMANTS: [number, number][] = [
         [700, 1200], [400, 2200], [300, 800], [550, 1800], [350, 1500],
       ];
@@ -298,7 +391,101 @@ function noiseBurst(ctx: Ctx, out: AudioNode, engine: AudioEngine, peak: number,
   n.stop(at + dur + 0.05);
 }
 
+const DRY = new Set<SoundId>(['click', 'hover', 'key', 'type', 'ding', 'error', 'unlock', 'send', 'hangup', 'transition']);
+
 const SOUNDS: Record<SoundId, (ctx: Ctx, out: GainNode, engine: AudioEngine) => void> = {
+  send(ctx, out, engine) {
+    const n = engine.noiseSource();
+    if (!n) return;
+    const t = ctx.currentTime;
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.Q.value = 2;
+    bp.frequency.setValueAtTime(700, t);
+    bp.frequency.exponentialRampToValueAtTime(3400, t + 0.18);
+    const g = ctx.createGain();
+    env(ctx, g, 0.08, 0.02, 0.16, t);
+    n.connect(bp).connect(g).connect(out);
+    n.start(t);
+    n.stop(t + 0.25);
+  },
+  knock(ctx, out, engine) {
+    // Three knuckles on a door, somewhere down the corridor.
+    const t = ctx.currentTime;
+    const gap = 0.24 + Math.random() * 0.1;
+    for (let i = 0; i < 3; i++) {
+      tone(ctx, out, 'sine', 120, 0.4, 0.003, 0.14, t + i * gap, 70);
+      noiseBurst(ctx, out, engine, 0.3, 0.06, 'lowpass', 700, t + i * gap);
+    }
+  },
+  creak(ctx, out) {
+    // A door or floorboard: a slow, rough, wandering squeal.
+    const t = ctx.currentTime;
+    const o = ctx.createOscillator();
+    o.type = 'sawtooth';
+    const base = 55 + Math.random() * 40;
+    o.frequency.setValueAtTime(base, t);
+    o.frequency.linearRampToValueAtTime(base * 1.6, t + 0.5);
+    o.frequency.linearRampToValueAtTime(base * 1.1, t + 1.2);
+    o.frequency.linearRampToValueAtTime(base * 1.9, t + 1.6);
+    const jitter = ctx.createOscillator();
+    jitter.type = 'square';
+    jitter.frequency.value = 23;
+    const jd = ctx.createGain();
+    jd.gain.value = base * 0.3;
+    jitter.connect(jd).connect(o.frequency);
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = 700;
+    bp.Q.value = 6;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.09, t + 0.25);
+    g.gain.setValueAtTime(0.09, t + 1.3);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 1.9);
+    o.connect(bp).connect(g).connect(out);
+    o.start(t);
+    jitter.start(t);
+    o.stop(t + 2);
+    jitter.stop(t + 2);
+  },
+  drip(ctx, out) {
+    const t = ctx.currentTime;
+    tone(ctx, out, 'sine', 1500, 0.06, 0.002, 0.07, t, 520);
+    tone(ctx, out, 'sine', 1300, 0.04, 0.002, 0.06, t + 0.9 + Math.random() * 0.6, 480);
+  },
+  breath(ctx, out, engine) {
+    // In… and out. Slow. Not yours.
+    const t = ctx.currentTime;
+    [
+      [0, 1100, 1.1, 0.14],
+      [1.7, 650, 1.6, 0.12],
+    ].forEach(([at, f, dur, peak]) => {
+      const n = engine.noiseSource();
+      if (!n) return;
+      const bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.frequency.value = f;
+      bp.Q.value = 1.4;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t + at);
+      g.gain.exponentialRampToValueAtTime(peak, t + at + dur * 0.6);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + at + dur);
+      n.connect(bp).connect(g).connect(out);
+      n.start(t + at);
+      n.stop(t + at + dur + 0.05);
+    });
+  },
+  stepsAbove(ctx, out, engine) {
+    // Someone walking across the floor above you. Then stopping.
+    const t = ctx.currentTime;
+    const n = 4 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < n; i++) {
+      const at = t + i * (0.62 + Math.random() * 0.1);
+      tone(ctx, out, 'sine', 62, 0.28, 0.006, 0.18, at, 40);
+      noiseBurst(ctx, out, engine, 0.16, 0.1, 'lowpass', 240, at);
+    }
+  },
   ding(ctx, out) {
     const t = ctx.currentTime;
     tone(ctx, out, 'sine', 1318, 0.06, 0.005, 0.35, t);

@@ -114,3 +114,5 @@ export const MEMO_M1 = {
     { at: 44, who: '', text: '(비명)', sfx: 'scream' },
   ] as MemoLine[],
 };
+
+export const MEMO_TITLES: Record<string, string> = { m1: '새 녹음 17', m2: '새 녹음 18' };

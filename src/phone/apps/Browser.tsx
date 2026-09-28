@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useGame } from '../../hooks/useGame';
 import { emit, openApp, sfx } from '../../engine/director';
-import { addFlag, getState, setSave } from '../../engine/state';
+import { addFlag, getState, setRt, setSave } from '../../engine/state';
 import { ARCHIVE, ARCHIVE_LIST, ARCHIVE_SEQUENCE } from '../../content/archive';
 import { AppHeader } from '../AppHeader';
 import { AnnexPhoto, FloorPlan, ReadingRoomPhoto, Room02Photo, TowerPhoto } from '../../art/scenes';
@@ -21,7 +21,10 @@ function seenPages(): string[] {
 }
 
 export function BrowserApp() {
-  const [view, setView] = useState<View>({ kind: 'home' });
+  const [view, setView] = useState<View>(() => (getState().rt.deep?.kind === 'archive' ? { kind: 'archive' } : { kind: 'home' }));
+  useEffect(() => {
+    if (getState().rt.deep) setRt({ deep: null });
+  }, []);
   const [notice, setNotice] = useState<string | null>(null);
   const indexed = useGame((s) => s.save.flags.includes('r013-indexed'));
 

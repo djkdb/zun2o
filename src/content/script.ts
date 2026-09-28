@@ -106,6 +106,7 @@ export const BEATS: Beat[] = [
     on: 'c1:done',
     actions: [
       { t: 'msg', th: 'unknown', text: '채원 씨 마지막 사진, 봤어요?', typing: 2000 },
+      { t: 'msg', th: 'unknown', text: '이거요.', typing: 900, attach: { kind: 'photo', id: 'p07' } },
       { t: 'flag', f: 'asked-photo' },
       {
         t: 'objective',
@@ -181,6 +182,7 @@ export const BEATS: Beat[] = [
       { t: 'flag', f: 'call1-done' },
       { t: 'chapter', n: 2, title: '목소리' },
       { t: 'time', hm: '00:47' },
+      { t: 'msg', th: 'dohyun', text: '채원이 마지막 녹음이에요. 꼭 끝까지 들어요.', typing: 1600, attach: { kind: 'memo', id: 'm1' } },
       {
         t: 'objective',
         text: '채원의 마지막 녹음을 듣자',
@@ -248,6 +250,7 @@ export const BEATS: Beat[] = [
         hint: '메모 앱 “비번들 (보지 마)”에 힌트가 있습니다. 그 방송의 주파수는 메모 “괴담 정리”나 브라우저의 기록 001에 나와요.',
         nudge: { th: 'unknown', text: '숫자를 읽던 그 방송. 주파수요.' },
       },
+      { t: 'msg', th: 'unknown', text: '채원 씨가 숨겨 둔 사진들이에요. 보고 싶죠?', typing: 1800, attach: { kind: 'album' } },
       // Found the code early? The album has finished syncing now.
       { t: 'emit', ev: 'album:recheck' },
     ],
@@ -272,7 +275,7 @@ export const BEATS: Beat[] = [
       { t: 'flag', f: 'album-open' },
       { t: 'wait', ms: 3500 },
       { t: 'notify', app: 'gallery', title: '사진', body: '숨김 앨범 동기화 완료 (5/5)' },
-      { t: 'msg', th: 'unknown', text: '비밀번호는 벌써 알고 있었네요. 이제 사진도 다 왔어요.', typing: 1800 },
+      { t: 'msg', th: 'unknown', text: '비밀번호는 벌써 알고 있었네요. 이제 사진도 다 왔어요.', typing: 1800, attach: { kind: 'album' } },
       { t: 'objective', text: '숨김 앨범을 끝까지 넘겨 보자', hint: '사진 앱 → 숨김. 사진을 연 뒤 옆으로 넘기세요. 마지막 사진까지.', nudge: { th: 'unknown', text: '끝까지 넘겨요.' } },
     ],
   },
@@ -327,7 +330,7 @@ export const BEATS: Beat[] = [
       { t: 'flag', f: 'self-contact' },
       { t: 'msg', th: 'self', from: 'me', text: '제발 도와줘. 여기 문이 없어. 서랍만 있어', typing: 2200 },
       { t: 'msg', th: 'self', from: 'me', text: '그 여자가 두 시에 교대한대. 내가 남아야 한대', typing: 2400 },
-      { t: 'msg', th: 'self', from: 'me', text: '기록보관소 사이트 013번. 그 여자가 무서워하는 게 거기 있어', typing: 2600 },
+      { t: 'msg', th: 'self', from: 'me', text: '기록보관소 사이트 013번. 그 여자가 무서워하는 게 거기 있어', typing: 2600, attach: { kind: 'archive' } },
       { t: 'msg', th: 'self', from: 'me', text: '라디오 숫자 순서대로 열어야 나와. 메모에 적어 놨어', typing: 2000 },
       { t: 'wait', ms: 1500 },
       { t: 'draft', th: 'self', text: '그 여자 지금 내 뒤에' },
@@ -342,7 +345,7 @@ export const BEATS: Beat[] = [
       { t: 'msg', th: 'unknown', text: '채원 씨랑 얘기하지 마세요.', typing: 1200 },
       { t: 'wait', ms: 7000 },
       { t: 'photo', id: 'p08' },
-      { t: 'msg', th: 'unknown', text: '사진 앱 봐요. 잘 나왔네요.', typing: 1600 },
+      { t: 'msg', th: 'unknown', text: '잘 나왔네요.', typing: 1600, attach: { kind: 'photo', id: 'p08' } },
       { t: 'msg', th: 'unknown', text: '두 번 눌러서 확대해 봐요. 부스 안이요.', typing: 1500 },
     ],
   },
@@ -393,6 +396,7 @@ export const BEATS: Beat[] = [
       { t: 'note', id: 'n4' },
       { t: 'memo', id: 'm2' },
       { t: 'notify', app: 'memos', title: '녹음', body: '새 녹음 18이 저장되었습니다.' },
+      { t: 'msg', th: 'unknown', text: '녹음 하나 더 있어요. 이번엔 채원 씨 거 아니에요.', typing: 1800, attach: { kind: 'memo', id: 'm2' } },
       { t: 'wait', ms: 11000 },
       { t: 'time', hm: '01:52' },
       { t: 'msg', th: 'unknown', text: '이 폰 시계는 {clock}이지만, 당신 쪽은 {real}이죠?', typing: 2000 },
@@ -404,7 +408,7 @@ export const BEATS: Beat[] = [
       { t: 'wait', ms: 6000 },
       { t: 'time', hm: '01:54' },
       { t: 'photo', id: 'p09' },
-      { t: 'msg', th: 'unknown', text: '또 찍었어요. 이번엔 뒤에 누가 있네요.', typing: 1600 },
+      { t: 'msg', th: 'unknown', text: '또 찍었어요. 이번엔 뒤에 누가 있네요.', typing: 1600, attach: { kind: 'photo', id: 'p09' } },
       { t: 'msg', th: 'unknown', text: '확대해서 봐요.', typing: 800 },
       { t: 'wait', ms: 10000 },
       { t: 'time', hm: '01:55' },
@@ -433,6 +437,15 @@ export const BEATS: Beat[] = [
     actions: [
       { t: 'wait', ms: 1500 },
       { t: 'msg', th: 'unknown', text: '{start}. 당신이 이 폰을 처음 집어 든 시각이에요. 이 폰 말고, 그쪽 시계로요.', typing: 2200 },
+    ],
+  },
+  {
+    id: 'call2-missed',
+    on: 'call:dohyun2:missed',
+    actions: [
+      { t: 'wait', ms: 1500 },
+      { t: 'msg', th: 'unknown', text: '왜 안 받아요? 도현 씨였는데.', typing: 900 },
+      { t: 'msg', th: 'unknown', text: '…아니었나.', typing: 1400 },
     ],
   },
   { id: 'power-ch4', on: 'power:try', requires: ['ch4'], repeat: true, actions: [{ t: 'msg', th: 'unknown', text: '아직이에요.', typing: 700 }] },

@@ -29,7 +29,13 @@ export type SoundId =
   | 'footsteps'
   | 'drawer'
   | 'glitch'
-  | 'hangup';
+  | 'hangup'
+  | 'send'
+  | 'knock'
+  | 'creak'
+  | 'drip'
+  | 'breath'
+  | 'stepsAbove';
 
 export interface ChatMsg {
   id: string;
@@ -39,7 +45,17 @@ export interface ChatMsg {
   time: string;
   /** Day label for history messages ("9월 26일"). */
   day?: string;
+  /** A photo / recording / link shared in the chat — tap to open it. */
+  attach?: Attach;
+  /** The player's text that never left the phone. */
+  failed?: boolean;
 }
+
+export type Attach =
+  | { kind: 'photo'; id: string }
+  | { kind: 'memo'; id: string }
+  | { kind: 'album' }
+  | { kind: 'archive' };
 
 export interface ChoiceOption {
   id: string;
@@ -67,7 +83,7 @@ export type ScareKind = 'lunge' | 'peek' | 'flash' | 'reflect';
 
 export type Action =
   | { t: 'wait'; ms: number }
-  | { t: 'msg'; th: ThreadId; text: string; from?: 'them' | 'me' | 'system'; typing?: number }
+  | { t: 'msg'; th: ThreadId; text: string; from?: 'them' | 'me' | 'system'; typing?: number; attach?: Attach }
   | { t: 'choice'; th: ThreadId; id: string; options: ChoiceOption[] }
   | { t: 'notify'; app: AppId; title: string; body: string; open?: { thread?: ThreadId } }
   | { t: 'flag'; f: string }

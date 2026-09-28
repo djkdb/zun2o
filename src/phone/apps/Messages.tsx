@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useGame } from '../../hooks/useGame';
-import { choose, openApp, openThread } from '../../engine/director';
+import { choose, openApp, openAttach, openThread, sendText } from '../../engine/director';
 import { THREAD_META, THREAD_ORDER } from '../../content/threads';
-import type { ThreadId } from '../../engine/types';
+import type { Attach, ThreadId } from '../../engine/types';
+import { MEMO_TITLES } from '../../content/media';
+import { PhotoView } from './Gallery';
 import { AppHeader } from '../AppHeader';
+import { setRt } from '../../engine/state';
 
 function ThreadList() {
   const threads = useGame((s) => s.save.threads);
@@ -39,6 +42,66 @@ function ThreadList() {
         })}
       </ul>
     </div>
+  );
+}
+
+/** A shared photo / recording / link: the bridge from a chat to the thing it talks about. */
+function AttachCard({ a }: { a: Attach }) {
+  const albumOpen = useGame((s) => s.save.flags.includes('album-open'));
+  if (a.kind === 'photo')
+    return (
+      <button type="button" className="attach attach-photo" onClick={() => openAttach(a)} aria-label="사진 열기">
+        <PhotoView id={a.id} />
+        <span className="attach-cap">사진 · 탭해서 열기</span>
+      </button>
+    );
+  if (a.kind === 'memo')
+    return (
+      <button type="button" className="attach attach-memo" onClick={() => openAttach(a)}>
+        <span className="attach-play">▶</span>
+        <span>
+          <strong>{MEMO_TITLES[a.id] ?? '녹음'}</strong>
+          <small>녹음 · 탭해서 듣기</small>
+        </span>
+      </button>
+    );
+  return (
+    <button type="button" className="attach attach-link" onClick={() => openAttach(a)}>
+      <span className="attach-icon">{a.kind === 'album' ? (albumOpen ? '▦' : '🔒') : '夜'}</span>
+      <span>
+        <strong>{a.kind === 'album' ? '숨김 앨범' : '심야 기록보관소'}</strong>
+        <small>{a.kind === 'album' ? (albumOpen ? '사진 5장' : '사진 · 암호 필요') : 'nightarchive.or.kr'}</small>
+      </span>
+    </button>
+  );
+}
+
+function Composer({ th }: { th: ThreadId }) {
+  const [text, setText] = useState('');
+  const offline = th === 'dohyun' || th === 'mom';
+  const send = (e: FormEvent) => {
+    e.preventDefault();
+    if (!text.trim()) return;
+    sendText(th, text);
+    setText('');
+  };
+  return (
+    <form className="composer" onSubmit={send}>
+      <input
+        value={text}
+        maxLength={80}
+        onChange={(e) => setText(e.target.value)}
+        placeholder={offline ? '메시지 (네트워크 불안정)' : '메시지 입력'}
+        aria-label="메시지 입력"
+        autoComplete="off"
+        enterKeyHint="send"
+        onFocus={() => setRt({ engaged: true })}
+        onBlur={() => setRt({ engaged: false })}
+      />
+      <button type="submit" disabled={!text.trim()} aria-label="보내기">
+        ↑
+      </button>
+    </form>
   );
 }
 
@@ -83,9 +146,12 @@ function Chat({ th }: { th: ThreadId }) {
           return (
             <div key={m.id}>
               {dayHeaders[i] && <div className="chat-day">{dayHeaders[i]}</div>}
-              <div className={`bubble-row ${m.from}`}>
-                <div className={`bubble ${m.from}`}>{m.text}</div>
-                <span className="bubble-time">{m.time}</span>
+              <div className={`bubble-row ${m.from}${m.attach ? ' has-attach' : ''}`}>
+                <div className={`bubble ${m.from}${m.failed ? ' failed' : ''}`}>
+                  {m.text}
+                  {m.attach && <AttachCard a={m.attach} />}
+                </div>
+                <span className="bubble-time">{m.failed ? <span className="send-failed">전송 실패 !</span> : m.time}</span>
               </div>
             </div>
           );
@@ -131,9 +197,7 @@ function Chat({ th }: { th: ThreadId }) {
           <span className="caret" />
         </div>
       )}
-      {!choice && !nameMode && draft === null && (
-        <div className="chat-input-disabled">{th === 'dohyun' || th === 'mom' ? '메시지를 보낼 수 없습니다 (네트워크 없음)' : '　'}</div>
-      )}
+      {!choice && !nameMode && draft === null && <Composer th={th} />}
     </div>
   );
 }

@@ -20,7 +20,11 @@ connectAudio(
     if (getState().save.sound) audio.play(id);
   },
   (id, on) => audio.setLoop(id, on && getState().save.sound),
-  (a, d, s, b) => audio.setMix(a, d, s, b),
+  (a, d, s, b) => {
+    audio.setMix(a, d, s, b);
+    // A hush (everything to zero) or 02:00 also silences the building.
+    audio.setAmbientLevel(a === 0 && d === 0 ? 0 : getState().rt.finale ? 0 : getState().save.chapter);
+  },
 );
 setSpeechEnabled(getState().save.sound);
 setEntityLayer((text) => {

@@ -1,4 +1,4 @@
-import type { Action, AppId, Beat, EndingId, SoundId, ThreadId } from './types';
+import type { Action, AppId, Attach, Beat, EndingId, SoundId, ThreadId } from './types';
 import { BEATS } from '../content/script';
 import { addFlag, appendMessage, fill, flush, getState, hasFlag, loadCheckpoint, logInput, newSave, saveCheckpoint, setRt, setSave, wipeSave } from './state';
 import { THREAD_META } from '../content/threads';
@@ -158,11 +158,15 @@ function fromMinutes(n: number): string {
 
 /** Never cover what the player is listening to: hold pop-ups during memos and calls. */
 async function whenFree(myEpoch: number): Promise<void> {
-  const busy = () => {
+  // Hard busy: a recording, a call, a dialog already up — always wait.
+  // Soft busy: the player is zooming, editing or typing — wait, but at most
+  // ~20 s so the night keeps moving.
+  const hard = () => {
     const r = getState().rt;
-    return r.memoPlaying || r.activeCall !== null || r.incoming !== null;
+    return r.memoPlaying || r.activeCall !== null || r.incoming !== null || r.dialog !== null;
   };
-  while (busy() && myEpoch === epoch) await sleepReal(400);
+  const t0 = Date.now();
+  while (myEpoch === epoch && (hard() || (getState().rt.engaged && Date.now() - t0 < 20000))) await sleepReal(400);
 }
 
 async function perform(a: Action, myEpoch: number): Promise<void> {
@@ -179,7 +183,7 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
         setRt((r) => ({ typing: { ...r.typing, [a.th]: false } }));
       }
       const text = fill(a.text);
-      appendMessage(a.th, { from: a.from ?? 'them', text, time: getState().save.clock });
+      appendMessage(a.th, { from: a.from ?? 'them', text, time: getState().save.clock, ...(a.attach ? { attach: a.attach } : {}) });
       if (isViewing(a.th)) {
         sfx('key');
       } else {
@@ -224,6 +228,15 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
       setRt({ incoming: a.id });
       loop('ring', true);
       vibrate([400, 200, 400, 200, 400]);
+      {
+        // Nobody answers forever: after ~15 s it becomes a missed call.
+        const id = a.id;
+        const t = setTimeout(() => {
+          timers.delete(t);
+          if (getState().rt.incoming === id) missCall();
+        }, 15000);
+        timers.add(t);
+      }
       return;
     case 'scare':
       setRt({ scare: { kind: a.kind, nonce: nonce++, look: a.look } });
@@ -380,6 +393,106 @@ function maybeReflect(): void {
   timers.add(t);
 }
 
+/** Tapping a shared photo / recording / link in a chat opens it in place. */
+export function openAttach(a: Attach): void {
+  sfx('click');
+  setRt({ deep: a, app: a.kind === 'memo' ? 'memos' : a.kind === 'archive' ? 'browser' : 'gallery', thread: null });
+  emit(`app:${a.kind === 'memo' ? 'memos' : a.kind === 'archive' ? 'browser' : 'gallery'}`);
+}
+
+/** Consumed by the app that was opened from an attachment. */
+export function takeDeep(): Attach | null {
+  const d = getState().rt.deep;
+  if (d) setRt({ deep: null });
+  return d;
+}
+
+let lastReply = 0;
+let silentUntil = 0;
+/**
+ * The player can always type. 도현 and 엄마 never receive it (no network);
+ * 02:00 and 채원 answer — usually with whatever the story is waiting for.
+ */
+export function sendText(th: ThreadId, raw: string): void {
+  const text = raw.replace(/\s+/g, ' ').trim().slice(0, 80);
+  if (!text) return;
+  const time = getState().save.clock;
+  logInput(`${THREAD_META[th].name}에게 보낸 메시지 "${text}"`);
+  if (th === 'dohyun' || th === 'mom') {
+    appendMessage(th, { from: 'me', text, time, failed: true });
+    sfx('error');
+    return;
+  }
+  appendMessage(th, { from: 'me', text, time });
+  sfx('send');
+  const now = Date.now();
+  const s = getState().save;
+  // Before 채원 is reachable, "나에게" is just a notepad.
+  if (th === 'self' && !s.flags.includes('selfie-scare')) return;
+  // Her real name, sent to her: she starts to answer… and stops. Then silence.
+  if (th === 'unknown' && /서\s*미\s*령|미령/.test(text) && !s.flags.includes('named-her')) {
+    addFlag('named-her');
+    silentUntil = now + 90000;
+    const myEpoch0 = epoch;
+    void (async () => {
+      await sleep(1200);
+      if (myEpoch0 !== epoch) return;
+      setRt((r) => ({ typing: { ...r.typing, unknown: true } }));
+      await sleepReal(3200);
+      setRt((r) => ({ typing: { ...r.typing, unknown: false } }));
+      sfx('glitch');
+    })();
+    return;
+  }
+  if (th === 'unknown' && now < silentUntil) return;
+  if (now - lastReply < 5000 || getState().rt.typing[th]) return;
+  lastReply = now;
+  const reply = pickReply(th, text);
+  const myEpoch = epoch;
+  void (async () => {
+    await sleep(900 + Math.random() * 900);
+    if (myEpoch !== epoch) return;
+    await perform({ t: 'msg', th, text: reply, typing: 1200 + reply.length * 40, ...(th === 'self' ? { from: 'me' as const } : {}) }, myEpoch);
+  })();
+}
+
+function pickReply(th: ThreadId, text: string): string {
+  const s = getState().save;
+  const rules: [RegExp, string][] =
+    th === 'unknown'
+      ? [
+          [/누구|정체|뭐야|who/i, '기록하는 사람이요. 채원 씨 다음 사람을 기다리고 있어요.'],
+          [/경찰|신고|112/, '경찰은 이미 왔다 갔어요. 3층엔 아무도 없었죠.'],
+          [/살려|도와|제발/, '여기선 아무도 못 도와줘요, {name}.'],
+          [/채원/, '채원 씨는 근무 대기 중이에요. 조용히 해 줘요.'],
+          [/끄|꺼|전원/, '끄지 마세요.'],
+          [/무서|싫어|그만/, '괜찮아요. 처음엔 다 그래요.'],
+          [/몇 ?시|시간/, '이 폰은 {clock}. 당신 쪽은 {real}.'],
+          [/haewon|열쇠|0200-?/i, '그 단어, 여기 쓰지 마요.'],
+          [/1340|라디오|방송/, '그 방송은 듣지 마요. 숫자를 세다 보면 이름이 나와요.'],
+          [/서미령|미령/, '…'],
+        ]
+      : [
+          [/누구|정체/, '나 윤채원이야. 이 폰 주인. 제발 장난 아니야'],
+          [/어디|위치/, '3층. 02호실. 근데 문이 없어. 서랍만 있어'],
+          [/경찰|신고|112/, '신고해도 여기 못 와. 도현이도 왔었는데 날 못 봤대'],
+          [/괜찮|다쳤/, '안 괜찮아. 추워. 누가 계속 내 이름을 적어'],
+          [/그 여자|귀신|누가/, '보지 마. 사진으로 보면 더 가까이 와'],
+          [/서미령|미령/, '그 이름… 서랍 카드에 있었어. 첫 번째 근무자. 그 여자가 그 이름만 나오면 멈춰'],
+          [/haewon|열쇠/i, '그거야. 그걸로 색인을 끝낼 수 있어. 두 시에 써'],
+          [/1340|라디오|방송/, '그 숫자 방송… 순서가 있어. 001 003 007'],
+        ];
+  for (const [re, line] of rules) if (re.test(text)) return line;
+  // Otherwise: whatever the story is waiting for, from whoever would say it.
+  const nudge = s.objective?.nudge;
+  if (nudge && nudge.th === th) return nudge.text;
+  const pool =
+    th === 'unknown'
+      ? ['대답은 나중에 해도 돼요.', '천천히 해요. 두 시까지는 시간 있어요.', '{name}, 지금 그게 중요한 게 아니에요.', '…다 적어 두고 있어요.']
+      : ['빨리. 시간 없어', '나 보여? 거기서 나 보여?', '그 여자가 듣고 있어. 짧게 보내'];
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
 export function openThread(th: ThreadId | null): void {
   setRt({ app: 'messages', thread: th });
   if (th) {
@@ -405,6 +518,18 @@ export function declineCall(): void {
   setRt({ incoming: null });
   setSave((s) => ({ calls: [{ who: label, time: s.clock, kind: 'missed' }, ...s.calls] }));
   emit(`call:${id}:decline`);
+}
+
+function missCall(): void {
+  const id = getState().rt.incoming;
+  if (!id) return;
+  loop('ring', false);
+  const label = CALLS[id]?.label ?? id;
+  setRt({ incoming: null });
+  setSave((s) => ({ calls: [{ who: label, time: s.clock, kind: 'missed' }, ...s.calls] }));
+  // Letting it ring out counts as not picking up.
+  emit(`call:${id}:decline`);
+  emit(`call:${id}:missed`);
 }
 
 export function startOutgoing(id: string): void {

@@ -92,7 +92,11 @@ function Player({ memo }: { memo: Memo }) {
       <small>{MEMO_M1.date}</small>
       <div className="wave" aria-hidden="true">
         {bars.map((h, i) => (
-          <i key={i} className={i / bars.length <= t / MEMO_M1.duration ? 'on' : ''} style={{ height: `${h * 100}%` }} />
+          <i
+            key={i}
+            className={`${i / bars.length <= t / MEMO_M1.duration ? 'on' : ''}${playing && Math.abs(i - Math.floor((t / MEMO_M1.duration) * bars.length)) <= 2 ? (scream ? ' live loud' : ' live') : ''}`}
+            style={{ height: `${h * 100}%` }}
+          />
         ))}
       </div>
       <div className="memo-time">
@@ -128,10 +132,21 @@ function Player({ memo }: { memo: Memo }) {
   );
 }
 
+function deepMemo(): Memo | null {
+  const d = getState().rt.deep;
+  if (d?.kind !== 'memo') return null;
+  if (d.id === 'm2') return buildM2();
+  return getState().save.flags.includes('call1-done') ? MEMO_M1 : null;
+}
+
 export function MemosApp() {
-  const [open, setOpen] = useState<Memo | null>(null);
+  // Opened from a recording shared in a chat: go straight to it.
+  const [open, setOpen] = useState<Memo | null>(deepMemo);
   const memos = useGame((s) => s.save.memos);
   const synced = useGame((s) => s.save.flags.includes('call1-done'));
+  useEffect(() => {
+    if (getState().rt.deep) setRt({ deep: null });
+  }, []);
   return (
     <div className="memos-app">
       <AppHeader title="녹음" onBack={() => (open ? setOpen(null) : openApp(null))} backLabel={open ? '목록' : '홈'} />

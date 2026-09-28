@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useGame } from '../../hooks/useGame';
 import { applyChapterMix, emit, markPhoto, mix, openApp, sfx, vibrate } from '../../engine/director';
-import { addFlag, hasFlag, logInput } from '../../engine/state';
+import { addFlag, getState, hasFlag, logInput, setRt } from '../../engine/state';
 import { HIDDEN_ALBUM_CODE, PHOTOS, type PhotoItem } from '../../content/media';
 import { AppHeader } from '../AppHeader';
 import { AnnexPhoto, FloorPlan, ReadingRoomPhoto, Room02Photo } from '../../art/scenes';
@@ -74,6 +74,12 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
 
   // Leaving the editor puts the room tone back.
   useEffect(() => () => applyChapterMix(1), []);
+
+  // While the player is looking closely, scripted pop-ups hold off.
+  useEffect(() => {
+    setRt({ engaged: zoom !== null || edit });
+  }, [zoom, edit]);
+  useEffect(() => () => setRt({ engaged: false }), []);
 
   const onBright = (v: number) => {
     setBrightness(v);
@@ -238,9 +244,25 @@ function SyncingAlbum({ onBack }: { onBack: () => void }) {
   );
 }
 
+/** Opened from a photo shared in a chat: land on that photo (or its album). */
+function deepTarget(): { album: 'recent' | 'hidden' | null; open: number | null } {
+  const d = getState().rt.deep;
+  if (d?.kind === 'album') return { album: 'hidden', open: null };
+  if (d?.kind !== 'photo') return { album: null, open: null };
+  const p = PHOTOS.find((x) => x.id === d.id);
+  if (!p) return { album: null, open: null };
+  const s = getState().save;
+  const list = PHOTOS.filter((x) => x.album === p.album && (!x.extra || s.photos.includes(x.id)));
+  const locked = p.album === 'hidden' && !(s.flags.includes('album-code') || s.flags.includes('album-open'));
+  return { album: p.album, open: locked ? null : Math.max(0, list.findIndex((x) => x.id === p.id)) };
+}
+
 export function GalleryApp() {
-  const [album, setAlbum] = useState<'recent' | 'hidden' | null>(null);
-  const [open, setOpen] = useState<number | null>(null);
+  const [album, setAlbum] = useState<'recent' | 'hidden' | null>(() => deepTarget().album);
+  const [open, setOpen] = useState<number | null>(() => deepTarget().open);
+  useEffect(() => {
+    if (getState().rt.deep) setRt({ deep: null });
+  }, []);
   const [locked, setLocked] = useState(true);
   const albumOpen = useGame((s) => s.save.flags.includes('album-code') || s.save.flags.includes('album-open'));
   // The code can be found early, but the photos only arrive once 02:00 wants you to see them.

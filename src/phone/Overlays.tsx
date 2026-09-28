@@ -3,7 +3,7 @@ import { useGame, useTicker } from '../hooks/useGame';
 import { answerCall, declineCall, endCall, emit, openApp, openThread, sfx } from '../engine/director';
 import { setRt } from '../engine/state';
 import { CALLS } from '../content/calls';
-import { GhostSvg } from '../art/Ghost';
+import { GhostVisual } from '../art/Ghost';
 import { speak, stopSpeech } from '../audio/speech';
 import { THREAD_META } from '../content/threads';
 import type { CallLine } from '../engine/types';
@@ -205,7 +205,7 @@ export function ScareOverlay() {
   const look = scare.look ?? (scare.kind === 'lunge' ? 'face' : 'curtain');
   return (
     <div key={scare.nonce} className={`scare scare-${scare.kind} look-${look}${reduce ? ' scare-reduced' : ''}`} aria-hidden="true">
-      {scare.kind !== 'flash' && <GhostSvg className="ghost" look={look} distort />}
+      {scare.kind !== 'flash' && <GhostVisual className="ghost" look={look} />}
       {scare.kind === 'lunge' && <div className="scare-grain" />}
     </div>
   );
