@@ -28,6 +28,20 @@ export const CALLS: Record<string, CallScript> = {
       { at: 23000, who: 'sfx', text: '(통화 종료)' },
     ],
   },
+  dohyun2: {
+    id: 'dohyun2',
+    from: 'dohyun',
+    label: '도현',
+    duration: 0,
+    lines: [
+      { at: 700, who: 'caller', text: '여보세요? 아직 그 폰 켜져 있어요?', voice: 'male' },
+      { at: 3600, who: 'caller', text: '끄라니까요. 이제 삼 분도 안 남았어요. 제발—', voice: 'male' },
+      { at: 7200, who: 'sfx', text: '(잡음)' },
+      { at: 8400, who: 'caller', text: '끄지 마세요.', voice: 'entity' },
+      { at: 10600, who: 'caller', text: '도현 씨 목소리, 비슷했죠?', voice: 'entity' },
+      { at: 13200, who: 'sfx', text: '(통화 종료)' },
+    ],
+  },
   radio: {
     id: 'radio',
     from: '1340',

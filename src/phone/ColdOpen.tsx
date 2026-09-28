@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { audio } from '../audio/engine';
 import { setSpeechEnabled } from '../audio/speech';
-import { emit } from '../engine/director';
+import { applyChapterMix, emit } from '../engine/director';
 import { setRt, setSave } from '../engine/state';
 
 const LINES = ['9월 27일 토요일, 밤 11시 51분.', '폐쇄된 해원군청 별관 앞.', '공중전화 부스 선반 위에 휴대폰 한 대가 놓여 있다.', '화면이 켜진다. 배터리 12%.'];
@@ -19,6 +19,7 @@ export function ColdOpen() {
       const ok = await audio.unlock();
       audio.setEnabled(true);
       setRt({ audioReady: ok });
+      applyChapterMix(5);
     } else audio.setEnabled(false);
     setSpeechEnabled(sound);
     emit('start');

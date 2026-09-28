@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useGame } from '../hooks/useGame';
 import { WallpaperPhoto } from '../art/phonePhotos';
 import { emit, sfx, vibrate } from '../engine/director';
-import { setSave } from '../engine/state';
+import { logInput, setSave } from '../engine/state';
 import { THREAD_META } from '../content/threads';
 import type { ThreadId } from '../engine/types';
 
@@ -39,6 +39,7 @@ export function LockScreen() {
     if (next.length < 4) return;
     setTimeout(() => {
       if (next === CODE) {
+        logInput('잠금 해제 0113');
         sfx('unlock');
         setSave({ unlocked: true });
         emit('unlock');
@@ -46,6 +47,7 @@ export function LockScreen() {
         sfx('error');
         vibrate([80, 40, 80]);
         setShake((x) => x + 1);
+        logInput(`잠금 암호 ${next} — 틀림`);
         const n = fails + 1;
         setSave({ passcodeFails: n });
         if (n >= 3) emit('lock:fail3');

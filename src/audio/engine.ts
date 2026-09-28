@@ -169,7 +169,7 @@ class AudioEngine {
       else heartbeat(this.ctx, this.master);
     };
     fire();
-    this.loops.set(id, setInterval(fire, id === 'ring' ? 2600 : 920));
+    this.loops.set(id, setInterval(fire, id === 'ring' ? 2600 : 640));
   }
 
   stopAllLoops(): void {

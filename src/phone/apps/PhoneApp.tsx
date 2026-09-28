@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useGame } from '../../hooks/useGame';
 import { emit, openApp, sfx, startOutgoing } from '../../engine/director';
-import { setRt } from '../../engine/state';
+import { logInput, setRt } from '../../engine/state';
 import { AppHeader } from '../AppHeader';
 import { CallIcon } from '../CallIcon';
 
@@ -17,6 +17,7 @@ export function PhoneApp() {
     const n = num.replace(/\D/g, '');
     if (!n) return;
     emit(`dial:${n}`);
+    logInput(`${n}에 전화`);
     setNum('');
     if (SPECIAL[n]) {
       startOutgoing(SPECIAL[n]);
@@ -49,7 +50,10 @@ export function PhoneApp() {
                   {c.who}
                   {c.count ? ` (${c.count})` : ''}
                 </span>
-                <small>{c.kind === 'missed' ? '부재중' : c.kind === 'out' ? '발신' : '수신'}</small>
+                <small>
+                  {c.kind === 'missed' ? '부재중' : c.kind === 'out' ? '발신' : '수신'}
+                  {c.duration ? ` · ${c.duration}` : ''}
+                </small>
                 <time>{c.time}</time>
               </button>
             </li>

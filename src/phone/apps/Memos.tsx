@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useGame } from '../../hooks/useGame';
 import { emit, openApp, sfx } from '../../engine/director';
-import { MEMO_M1 } from '../../content/media';
+import { MEMO_M1, type MemoLine } from '../../content/media';
+import { getState } from '../../engine/state';
 import { AppHeader } from '../AppHeader';
 import { speak, stopSpeech } from '../../audio/speech';
 
@@ -10,7 +11,32 @@ import { speak, stopSpeech } from '../../audio/speech';
 
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
-function Player() {
+interface Memo {
+  id: string;
+  title: string;
+  date: string;
+  duration: number;
+  lines: MemoLine[];
+}
+
+/** 새 녹음 18: the phone "recorded" everything you typed into it tonight. */
+function buildM2(): Memo {
+  const s = getState().save;
+  const start = new Date(s.startedAtReal);
+  const hm = `${String(start.getHours()).padStart(2, '0')}:${String(start.getMinutes()).padStart(2, '0')}`;
+  const lines: MemoLine[] = [{ at: 0, who: '', text: '(휴대폰을 집어 드는 소리)', sfx: 'static' }];
+  let at = 4;
+  for (const entry of s.inputs.slice(-7)) {
+    lines.push({ at, who: '', text: `(키패드 소리) ${entry}` });
+    at += 4;
+  }
+  lines.push({ at, who: '???', text: '다 적어 뒀어요.', sfx: 'whisper' });
+  lines.push({ at: at + 4, who: '???', text: s.playerName ? `${s.playerName} 씨. 두 시에 봐요.` : '이름은 몰라도 괜찮아요. 두 시에 봐요.' });
+  return { id: 'm2', title: '새 녹음 18', date: `오늘 ${hm}`, duration: at + 9, lines };
+}
+
+function Player({ memo }: { memo: Memo }) {
+  const MEMO_M1 = memo;
   const [t, setT] = useState(0);
   const [playing, setPlaying] = useState(false);
   const fired = useRef(new Set<number>());
@@ -25,14 +51,15 @@ function Player() {
         setT(MEMO_M1.duration);
         setPlaying(false);
         clearInterval(iv);
-        emit('memo:m1:end');
+        emit(`memo:${memo.id}:end`);
         return;
       }
       setT(now);
       MEMO_M1.lines.forEach((l, i) => {
         if (now >= l.at && !fired.current.has(i)) {
           fired.current.add(i);
-          if (l.sfx) sfx(l.sfx === 'scream' ? 'scream' : l.sfx);
+          if (l.sfx) sfx(l.sfx);
+          else if (l.text.startsWith('(키패드')) sfx('key');
           if (sound && l.who === '채원') speak(l.text, 'female');
           if (sound && l.who === '???') speak(l.text, 'entity');
         }
@@ -92,21 +119,38 @@ function Player() {
 }
 
 export function MemosApp() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<Memo | null>(null);
+  const memos = useGame((s) => s.save.memos);
+  const synced = useGame((s) => s.save.flags.includes('call1-done'));
   return (
     <div className="memos-app">
-      <AppHeader title="녹음" onBack={() => (open ? setOpen(false) : openApp(null))} backLabel={open ? '목록' : '홈'} />
+      <AppHeader title="녹음" onBack={() => (open ? setOpen(null) : openApp(null))} backLabel={open ? '목록' : '홈'} />
       {open ? (
-        <Player />
+        <Player memo={open} />
       ) : (
         <ul className="memo-list">
+          {memos.includes('m2') && (
+            <li>
+              <button type="button" className="new" onClick={() => setOpen(buildM2())}>
+                <strong>새 녹음 18</strong>
+                <span>오늘 · 방금 저장됨</span>
+              </button>
+            </li>
+          )}
           <li>
-            <button type="button" onClick={() => setOpen(true)}>
-              <strong>{MEMO_M1.title}</strong>
-              <span>
-                {MEMO_M1.date} · {fmt(MEMO_M1.duration)}
-              </span>
-            </button>
+            {synced ? (
+              <button type="button" onClick={() => setOpen(MEMO_M1)}>
+                <strong>{MEMO_M1.title}</strong>
+                <span>
+                  {MEMO_M1.date} · {fmt(MEMO_M1.duration)}
+                </span>
+              </button>
+            ) : (
+              <div className="memo-old syncing">
+                <strong>{MEMO_M1.title}</strong>
+                <span>클라우드에서 불러오는 중… (신호 약함)</span>
+              </div>
+            )}
           </li>
           <li className="memo-old">
             <strong>새 녹음 16</strong>

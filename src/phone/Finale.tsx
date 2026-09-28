@@ -16,7 +16,7 @@ import { setSave } from '../engine/state';
 // choose how the night ends.
 // ─────────────────────────────────────────────────────────────────────────
 
-type Step = 'freeze' | 'flood' | 'strip' | 'ring' | 'video' | 'dark' | 'recall' | 'choice' | 'key' | 'name' | 'off';
+type Step = 'freeze' | 'flood' | 'strip' | 'ring' | 'video' | 'dark' | 'recall' | 'choice' | 'key' | 'name' | 'sign' | 'off';
 
 const FLOOD = [
   ['도현', '채원아'],
@@ -55,6 +55,9 @@ function buildRecall(): string[] {
     `사진 ${s.seenPhotos.length}장을 보았습니다.`,
     s.flags.includes('read-mom') ? '채원 씨 어머니의 메시지도 읽었죠.' : '채원 씨 어머니의 메시지는 끝내 읽지 않았죠.',
   ];
+  if (s.choices.c1 === 'silent') lines.push('처음부터 대답하지 않았죠. 그래도 전부 읽었잖아요.');
+  if (s.choices.c3 === 'chaewon') lines.push('채원 씨 이름을 먼저 불러 줬죠. 그 애가 울었어요.');
+  if (s.flags.includes('refused-name')) lines.push('이름은 끝내 알려 주지 않았죠. 괜찮아요. 카드에 직접 쓰게 될 테니까.');
   if (s.flags.includes('heard-radio')) lines.push('1340에 전화도 걸었죠. 제 목소리, 들었잖아요.');
   if (new Date().getHours() === 2) lines.push('그리고… 지금은 진짜로 새벽 두 시네요.');
   lines.push('이제 누군가는 근무를 서야 합니다.');
@@ -73,6 +76,9 @@ export function Finale() {
   const [tries, setTries] = useState(0);
   const [scare, setScare] = useState(false);
   const [recall, setRecall] = useState<string[]>([]);
+  const [pip, setPip] = useState(0);
+  const [slide, setSlide] = useState(0);
+  const [blackout, setBlackout] = useState(false);
 
   // Scripted timeline up to the ringing video call.
   useEffect(() => {
@@ -114,10 +120,15 @@ export function Finale() {
     };
     const start = performance.now();
     const iv = setInterval(() => setClose(Math.min(1, (performance.now() - start) / 9500)), 80);
+    const pipStart = performance.now() + 6500;
+    const pipIv = setInterval(() => setPip(Math.max(0, Math.min(1, (performance.now() - pipStart) / 2600))), 80);
     const ts = [
       setTimeout(() => say('…들려?'), 600),
       setTimeout(() => say('여기 너무 어두워. 서랍 소리가 멈추질 않아'), 2800),
-      setTimeout(() => say('잠깐. 네 뒤에—'), 6800),
+      setTimeout(() => {
+        say('잠깐. 네 카메라… 네 뒤에—');
+        sfx('whisper');
+      }, 6500),
       setTimeout(() => {
         setScare(true);
         sfx('scream');
@@ -130,6 +141,7 @@ export function Finale() {
     ];
     return () => {
       clearInterval(iv);
+      clearInterval(pipIv);
       ts.forEach(clearTimeout);
     };
   }, [step]);
@@ -179,9 +191,10 @@ export function Finale() {
     const n = tries + 1;
     setTries(n);
     setInput('');
-    setScare(true);
-    sfx('scream');
-    setTimeout(() => setScare(false), 1100);
+    setBlackout(true);
+    sfx('thud');
+    vibrate([200]);
+    setTimeout(() => setBlackout(false), 1600);
     if (n >= 2) {
       setErr('그건 그녀의 이름이 아닙니다. 색인이 당신을 등록합니다.');
       setTimeout(() => reachEnding('shift'), 2600);
@@ -192,6 +205,20 @@ export function Finale() {
     setStep('off');
     sfx('hangup');
     setTimeout(() => reachEnding('poweroff'), 1600);
+  };
+
+  const onSlide = (v: number) => {
+    setSlide(v);
+    if (v >= 0.97) powerOff();
+  };
+
+  const sign = (e: FormEvent) => {
+    e.preventDefault();
+    const name = input.trim();
+    if (!name) return;
+    setSave({ playerName: name.slice(0, 12) });
+    sfx('ending');
+    reachEnding('shift');
   };
 
   return (
@@ -229,22 +256,38 @@ export function Finale() {
       )}
       {step === 'video' && (
         <div className="video-call">
-          <VideoFeed close={close} />
+          <VideoFeed close={Math.min(close, 0.3)} pip={pip} />
           <div className="video-label">채원 · 영상 통화</div>
           <p className="video-sub">{sub}</p>
         </div>
       )}
-      {(step === 'recall' || step === 'choice' || step === 'key' || step === 'name') && (
+      {(step === 'recall' || step === 'choice' || step === 'key' || step === 'name' || step === 'sign') && (
         <div className="index-final">
           {(step === 'recall' ? typed : recall).map((l, i) => (
             <p key={i}>{l}</p>
           ))}
           {step === 'choice' && (
             <div className="final-choices">
-              <button type="button" onClick={powerOff}>
-                전원을 끈다
-              </button>
-              <button type="button" onClick={() => reachEnding('shift')}>
+              <label className="power-slider">
+                <span style={{ opacity: 1 - slide }}>밀어서 전원 끄기 ›</span>
+                <input
+                  type="range"
+                  min={0}
+                  max={1}
+                  step={0.01}
+                  value={slide}
+                  onChange={(e) => onSlide(Number(e.target.value))}
+                  onPointerUp={() => slide < 0.97 && setSlide(0)}
+                  aria-label="밀어서 전원 끄기"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={() => {
+                  setInput(save.playerName ?? '');
+                  setStep('sign');
+                }}
+              >
                 내가 남는다 — 채원을 보내 준다
               </button>
               <button type="button" disabled={!foundKey} onClick={() => setStep('key')}>
@@ -260,6 +303,18 @@ export function Finale() {
               {err && <p className="final-err">{err}</p>}
             </form>
           )}
+          {step === 'sign' && (
+            <form className="final-form" onSubmit={sign}>
+              <label htmlFor="fs">근무자 카드에 이름을 적으십시오</label>
+              <input id="fs" autoFocus value={input} maxLength={12} onChange={(e) => setInput(e.target.value)} autoComplete="off" />
+              <button type="submit" disabled={!input.trim()}>
+                서명한다
+              </button>
+              <button type="button" className="final-back" onClick={() => setStep('choice')}>
+                …아직은
+              </button>
+            </form>
+          )}
           {step === 'name' && (
             <form className="final-form" onSubmit={submitName}>
               <label htmlFor="fn">첫 번째 근무자의 이름</label>
@@ -271,6 +326,7 @@ export function Finale() {
         </div>
       )}
       {step === 'off' && <div className="power-off" />}
+      {blackout && <div className="blackout" />}
       {scare && (
         <div className={`scare scare-lunge${save.reduceFx ? ' scare-reduced' : ''}`}>
           <GhostSvg className="ghost" distort />

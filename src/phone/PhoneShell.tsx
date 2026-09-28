@@ -1,4 +1,7 @@
+import { useEffect, useState } from 'react';
 import { useGame } from '../hooks/useGame';
+import { addFlag, getState, setRt } from '../engine/state';
+import { sfx } from '../engine/director';
 import { openApp } from '../engine/director';
 import { StatusBar } from './StatusBar';
 import { LockScreen } from './LockScreen';
@@ -38,6 +41,44 @@ function AppView({ app }: { app: AppId }) {
   }
 }
 
+/**
+ * Put the phone down for 25 s and its screen dims like a real one — and in
+ * the dark glass, once per chapter, something is standing behind you.
+ */
+function useIdleDim(active: boolean): boolean {
+  const [idle, setIdle] = useState(false);
+  useEffect(() => {
+    if (!active) return;
+    let t: ReturnType<typeof setTimeout>;
+    const arm = () => {
+      clearTimeout(t);
+      setIdle(false);
+      t = setTimeout(() => {
+        setIdle(true);
+        const { save, rt } = getState();
+        const key = `idle-refl-${save.chapter}`;
+        if (save.chapter >= 1 && !save.flags.includes(key) && !rt.activeCall && !rt.incoming) {
+          addFlag(key);
+          setTimeout(() => {
+            setRt({ scare: { kind: 'reflect', nonce: Date.now() } });
+            sfx('whisper');
+            setTimeout(() => setRt({ scare: null }), 380);
+          }, 1800);
+        }
+      }, 25000);
+    };
+    arm();
+    window.addEventListener('pointerdown', arm);
+    window.addEventListener('keydown', arm);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener('pointerdown', arm);
+      window.removeEventListener('keydown', arm);
+    };
+  }, [active]);
+  return idle && active;
+}
+
 export function PhoneShell() {
   const started = useGame((s) => s.save.started);
   const unlocked = useGame((s) => s.save.unlocked);
@@ -45,6 +86,8 @@ export function PhoneShell() {
   const finale = useGame((s) => s.rt.finale);
   const ending = useGame((s) => s.rt.ending);
   const chapter = useGame((s) => s.save.chapter);
+  const busy = useGame((s) => s.rt.activeCall !== null || s.rt.incoming !== null || s.rt.app === 'memos');
+  const idle = useIdleDim(started && unlocked && !finale && !ending && !busy);
 
   if (!started) return <ColdOpen />;
   if (ending) return <EndingScreen id={ending} />;
@@ -58,9 +101,9 @@ export function PhoneShell() {
       </div>
     );
 
-  const darkBar = !unlocked || app === null || app === 'index' || app === 'memos';
+  const darkBar = !unlocked || app === null || app === 'index';
   return (
-    <div className={`shell chapter-${chapter}`}>
+    <div className={`shell chapter-${chapter}${idle ? ' idle' : ''}`}>
       <StatusBar dark={darkBar} />
       <div className="screen">{!unlocked ? <LockScreen /> : app ? <AppView app={app} /> : <HomeScreen />}</div>
       {unlocked && (

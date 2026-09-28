@@ -7,7 +7,7 @@ import '@fontsource/ibm-plex-mono/400.css';
 import './styles/phone.css';
 import { App } from './App';
 import { flush, getState, initState } from './engine/state';
-import { connectAudio, emit, resume, setSpeed } from './engine/director';
+import { applyChapterMix, connectAudio, emit, onReturn, resume, setSpeed, startLifeTicker } from './engine/director';
 import { audio } from './audio/engine';
 import { setSpeechEnabled } from './audio/speech';
 
@@ -20,6 +20,7 @@ connectAudio(
     if (getState().save.sound) audio.play(id);
   },
   (id, on) => audio.setLoop(id, on && getState().save.sound),
+  (a, d, s, b) => audio.setMix(a, d, s, b),
 );
 setSpeechEnabled(getState().save.sound);
 
@@ -29,15 +30,28 @@ const unlockOnce = async () => {
   if (!getState().save.sound) return;
   await audio.unlock();
   audio.setEnabled(true);
+  applyChapterMix(4);
 };
 window.addEventListener('pointerdown', unlockOnce);
 
+// Leaving the phone is noticed: the tab title changes, and after a while
+// away the phone locks itself.
+let hiddenAt = 0;
+const baseTitle = document.title;
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') {
+    hiddenAt = Date.now();
     flush();
     audio.suspend();
-  } else audio.resume();
+    if (getState().save.unlocked) document.title = '(1) 02:00: 어디 가요?';
+  } else {
+    audio.resume();
+    document.title = baseTitle;
+    if (hiddenAt) onReturn(Date.now() - hiddenAt);
+    hiddenAt = 0;
+  }
 });
+startLifeTicker();
 window.addEventListener('pagehide', flush);
 
 if (debug) {

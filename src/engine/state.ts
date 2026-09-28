@@ -75,6 +75,10 @@ export function newSave(keep?: Partial<Save>): Save {
     sound: true,
     reduceFx: false,
     passcodeFails: 0,
+    photos: [],
+    memos: ['m1'],
+    inputs: [],
+    nudged: [],
     ...keep,
   };
 }
@@ -178,6 +182,26 @@ export function wipeSave(): void {
   removeItem(SAVE_KEY);
 }
 
+export function logInput(entry: string): void {
+  setSave((s) => ({ inputs: [...s.inputs, entry].slice(-12) }));
+}
+
+const CHECKPOINT_KEY = 'phone0200:checkpoint';
+/** Saved right before 02:00 so the finale can be replayed for other endings. */
+export function saveCheckpoint(): void {
+  writeItem(CHECKPOINT_KEY, JSON.stringify(state.save));
+}
+export function loadCheckpoint(): Save | null {
+  const t = readItem(CHECKPOINT_KEY);
+  if (!t) return null;
+  try {
+    const p: unknown = JSON.parse(t);
+    return isSave(p) ? { ...newSave(), ...p } : null;
+  } catch {
+    return null;
+  }
+}
+
 // ─── small helpers used by UI and director ───────────────────────────────
 
 export const hasFlag = (f: string): boolean => state.save.flags.includes(f);
@@ -204,6 +228,7 @@ export function fill(text: string): string {
     memos: s.flags.includes('memo-done') ? '1' : '0',
     // The player's real local time — the one thing the phone should not know.
     real: `${String(new Date().getHours()).padStart(2, '0')}:${String(new Date().getMinutes()).padStart(2, '0')}`,
+    clock: s.clock,
   };
   return text.replace(/\{(\w+)\}/g, (m, k: string) => values[k] ?? m);
 }

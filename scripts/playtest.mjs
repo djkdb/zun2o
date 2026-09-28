@@ -151,8 +151,8 @@ await snap('asks-name');
 await tapText('이름을 알려 준다');
 await page.fill('.name-form input', '테스터');
 await tap('.name-form button');
-await page.waitForFunction(() => window.__game.getState().save.threads.unknown.some((m) => m.text.includes('1340')), null, { timeout: 30000 });
-mark('got the album code (CH3)');
+await page.waitForFunction(() => window.__game.getState().save.threads.unknown.some((m) => m.text.includes('방송이에요')), null, { timeout: 30000 });
+mark('entity hints at the album code (CH3)');
 await snap('name-used');
 await wait(3500);
 
@@ -206,9 +206,7 @@ mark('found the key → CH4');
 
 // ── CH4 ────────────────────────────────────────────────────────────────
 await waitFor('.chapter-card', 15000);
-await waitFor('.dialog', 30000);
-await snap('ch4-battery-dialog');
-await tapText('확인');
+await wait(3500);
 await home();
 await wait(800);
 await snap('ch4-home-shuffled');
@@ -218,9 +216,26 @@ await tapText('전원 끄기');
 await wait(500);
 await snap('power-blocked');
 await tapText('확인');
-await openApp('메모');
-await wait(300);
-await snap('note-n4');
+await page.waitForFunction(() => window.__game.getState().save.memos.includes('m2'), null, { timeout: 60000 });
+await openApp('녹음');
+check('memo 18 (the phone recorded you) appears', (await page.locator('.memo-list', { hasText: '새 녹음 18' }).count()) === 1);
+await tapText('새 녹음 18');
+await tap('.memo-play');
+await wait(9000);
+await snap('memo18');
+await openApp('사진');
+await tapText('최근 항목');
+await wait(400);
+await snap('gallery-autobackup');
+await waitFor('.dialog', 90000);
+await snap('ch4-battery-dialog');
+await tapText('확인');
+await waitFor('.incoming', 60000);
+mark('01:57 call');
+await snap('ch4-call');
+await page.locator('.accept').first().click({ force: true });
+await wait(12000);
+await snap('ch4-call-voice');
 
 // ── 02:00 ──────────────────────────────────────────────────────────────
 await waitFor('.finale', 90000);
@@ -251,25 +266,74 @@ await waitFor('.ending-card', 20000);
 await snap('ending-release');
 
 // ── other endings via debug jump ────────────────────────────────────────
-for (const [label, pick, cls] of [
-  ['전원을 끈다', '전원을 끈다', 'poweroff'],
-  ['내가 남는다', '내가 남는다', 'shift'],
+for (const [label, cls] of [
+  ['전원 끄기 (슬라이드)', 'poweroff'],
+  ['내가 남는다 (서명)', 'shift'],
 ]) {
-  await page.getByText('처음부터 다시 하기').click();
-  await wait(500);
-  await page.evaluate(() => document.querySelector('.dbg-fab')?.click());
-  await page.getByRole('button', { name: '02:00', exact: true }).click();
-  await page.evaluate(() => document.querySelector('.dbg .dbg-row button')?.click());
+  // The checkpoint lets you replay 02:00 for the other endings.
+  await page.getByText('02:00부터 다시').click();
   await waitFor('.final-choices', 60000);
-  await tapText(pick);
+  if (cls === 'poweroff') {
+    await page.evaluate(() => {
+      const el = document.querySelector('.power-slider input');
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+      setter.call(el, '1');
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  } else {
+    await tapText('내가 남는다');
+    await page.fill('#fs', '테스터');
+    await tapText('서명한다');
+  }
   await waitFor(`.ending-${cls}`, 10000);
   await waitFor('.ending-card', 20000);
   mark(`ENDING — ${label}`);
   await snap(`ending-${cls}`);
 }
 
+// ── Regression: exploits found by the playtester ────────────────────────
+await page.getByText('처음부터 다시 하기').click();
+await waitFor('.coldopen-actions.show', 15000);
+await tapText('소리 없이 집는다');
+await waitFor('.lock');
+await tap('.lock-main');
+for (const d of '0113') await page.locator('.keypad .key', { hasText: new RegExp(`^${d}$`) }).first().click();
+await waitFor('.chapter-card');
+await wait(3300);
+// 1) solving the archive puzzle from the notes in chapter 1 must not skip to chapter 4
+await openApp('인터넷');
+await tapText('심야 기록보관소');
+for (const r of ['기록 001', '기록 003', '기록 007']) {
+  await page.locator('.archive li button', { hasText: r }).first().click();
+  await wait(500);
+  await tap('.back');
+  await wait(300);
+}
+await page.locator('.archive li button.new').click();
+await wait(4000);
+const early = await save();
+check('REGRESSION: early 013 does not skip chapters', early.chapter === 1 && !early.flags.includes('ch4'), `chapter ${early.chapter}`);
+check('REGRESSION: early 013 shows an in-world "not written yet" page', (await page.textContent('.archive-page')).includes('작성'));
+// 2) declining 도현 once must not also fire the "declined twice" branch
+await openApp('사진');
+await tapText('최근 항목');
+await page.locator('.thumb', { hasText: '01:59' }).first().click();
+await wait(400);
+await tapText('편집');
+await page.evaluate(() => {
+  const el = document.querySelector('#bright');
+  const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+  setter.call(el, '1');
+  el.dispatchEvent(new Event('input', { bubbles: true }));
+});
+await waitFor('.incoming', 30000);
+await page.locator('.decline').first().click({ force: true });
+await wait(4000);
+const afterDecline = (await save()).threads.dohyun.slice(-3).map((m) => m.text).join(' | ');
+check('REGRESSION: one decline → one reaction', afterDecline.includes('받아 주세요') && !afterDecline.includes('그럼 이것만'), afterDecline);
+
 const final = await save();
-check('all three endings recorded', final.endings.length === 3, final.endings.join(','));
+check('all three endings recorded', ['release', 'poweroff', 'shift'].every((e) => final.endings.includes(e)), final.endings.join(','));
 check('no console errors', errors.length === 0, errors.slice(0, 3).join(' | '));
 await browser.close();
 console.log('\n' + log.join('\n'));

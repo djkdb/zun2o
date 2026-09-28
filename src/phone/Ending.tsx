@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useGame } from '../hooks/useGame';
-import { newGame, sfx } from '../engine/director';
+import { newGame, replayFinale, sfx } from '../engine/director';
 import type { EndingId } from '../engine/types';
 
 interface EndingDef {
@@ -92,7 +92,12 @@ export function EndingScreen({ id }: { id: EndingId }) {
           <p>{def.line}</p>
           {id === 'release' && new Date().getHours() === 2 && <p className="badge-real">★ 진짜 새벽 2시에 색인을 끝냈습니다</p>}
           {endings.length < 3 && <p className="ending-more">다른 선택도 있습니다. 결말은 세 가지.</p>}
-          <button type="button" onClick={newGame}>
+          {endings.length < 3 && (
+            <button type="button" onClick={() => replayFinale() || newGame()}>
+              02:00부터 다시 (다른 선택)
+            </button>
+          )}
+          <button type="button" className={endings.length < 3 ? 'secondary' : undefined} onClick={newGame}>
             처음부터 다시 하기
           </button>
         </div>

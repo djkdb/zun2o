@@ -2409,3 +2409,108 @@ svg {
   background: #3a82f7;
   animation: breathe 0.9s steps(1) infinite;
 }
+
+/* ─── round-2 playtest fixes ──────────────────────────────────────────── */
+
+.shell .screen {
+  transition: opacity 2.5s ease;
+}
+
+.shell.idle .screen {
+  opacity: 0.3;
+}
+
+.memo-list button.new strong {
+  color: #ff8a80;
+}
+
+.memo-old.syncing {
+  opacity: 0.55;
+}
+
+.memo-old.syncing span {
+  animation: breathe 1.8s ease-in-out infinite;
+}
+
+.power-slider {
+  position: relative;
+  display: block;
+  height: 56px;
+  border-radius: 28px;
+  background: #1a1b1e;
+  border: 1px solid #3c4637;
+  overflow: hidden;
+}
+
+.power-slider span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font);
+  color: #9a9ca2;
+  pointer-events: none;
+  animation: breathe 2s ease-in-out infinite;
+}
+
+.power-slider input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.power-slider input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #ff453a;
+  border: 0;
+}
+
+.power-slider input::-moz-range-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #ff453a;
+  border: 0;
+}
+
+.final-back {
+  background: transparent !important;
+  color: #7d8a74 !important;
+  font-weight: 400 !important;
+}
+
+.blackout {
+  position: absolute;
+  inset: 0;
+  z-index: 101;
+  background: #000;
+  animation: fade-in 0.1s ease both;
+}
+
+.ending-card button.secondary {
+  background: transparent;
+  color: #d7d7da;
+  border: 1px solid #3a3b40;
+  margin-top: 8px;
+}
+
+/* finale: notifications stack cleanly above a collapsing home screen */
+.finale .home {
+  padding-top: 470px;
+}
+
+.finale-flood {
+  top: 140px;
+}
+
+.flood-item {
+  background: rgba(30, 30, 34, 0.98);
+}

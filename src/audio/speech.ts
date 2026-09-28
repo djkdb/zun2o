@@ -42,8 +42,8 @@ export function speak(text: string, voice: Voice): void {
     const v = pickVoice();
     if (v) u.voice = v;
     if (voice === 'entity') {
-      u.pitch = 0.1;
-      u.rate = 0.62;
+      u.pitch = 0.35;
+      u.rate = 0.72;
       u.volume = 0.9;
     } else if (voice === 'male') {
       u.pitch = 0.55;

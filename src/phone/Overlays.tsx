@@ -12,6 +12,14 @@ import { CallIcon } from './CallIcon';
 export function BannerView() {
   const banner = useGame((s) => s.rt.banner);
   const finale = useGame((s) => s.rt.finale);
+  useEffect(() => {
+    if (!banner) return;
+    const off = (e: PointerEvent) => {
+      if (!(e.target instanceof Element && e.target.closest('.banner'))) setRt({ banner: null });
+    };
+    window.addEventListener('pointerdown', off, true);
+    return () => window.removeEventListener('pointerdown', off, true);
+  }, [banner]);
   if (!banner || finale) return null;
   const open = () => {
     setRt({ banner: null });
@@ -206,13 +214,16 @@ export function HintChip() {
   const obj = useGame((s) => s.save.objective);
   const open = useGame((s) => s.rt.hintOpen);
   const finale = useGame((s) => s.rt.finale);
+  const busy = useGame((s) => s.rt.activeCall !== null || s.rt.incoming !== null || s.rt.app === 'memos');
   const now = useTicker(5000);
-  if (!obj || finale) return null;
-  const stuck = now - obj.since > 45000;
+  // No permanent game UI: the hint only surfaces after a real stall.
+  if (!obj || finale || busy) return null;
+  const stuck = now - obj.since > 100000;
+  if (!stuck && !open) return null;
   return (
     <>
-      <button type="button" className={`hint-chip${stuck ? ' stuck' : ''}`} onClick={() => setRt({ hintOpen: !open })} aria-expanded={open}>
-        {open ? '닫기' : stuck ? '? 힌트' : '?'}
+      <button type="button" className="hint-chip stuck" onClick={() => setRt({ hintOpen: !open })} aria-expanded={open}>
+        {open ? '닫기' : '? 막혔나요'}
       </button>
       {open && (
         <div className="hint-sheet" role="dialog" aria-label="목표">

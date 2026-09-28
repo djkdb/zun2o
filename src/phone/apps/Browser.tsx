@@ -38,6 +38,11 @@ export function BrowserApp() {
     setSave((s) => ({
       choices: { ...s.choices, archiveSeq: seq.join(','), archiveSeen: Array.from(new Set([...seen, id])).join(',') },
     }));
+    if (id === 'r013' && !getState().save.flags.includes('self-contact')) {
+      setView({ kind: 'page', id: '__early' });
+      emit('browser:r013-early');
+      return;
+    }
     setView({ kind: 'page', id });
     emit(`browser:${id}`);
     if (!indexed && seq.join(',') === ARCHIVE_SEQUENCE.join(',')) {
@@ -93,6 +98,13 @@ export function BrowserApp() {
               </li>
             ))}
           </ul>
+        </div>
+      )}
+      {view.kind === 'page' && view.id === '__early' && (
+        <div className="archive-page denied">
+          <div className="stamp">작성 중</div>
+          <p>기록 013 — 아직 작성되지 않았습니다.</p>
+          <p className="archive-sub">작성 예정: 01:44 · 작성자: 야간 색인</p>
         </div>
       )}
       {view.kind === 'page' && view.id === '__restricted' && (

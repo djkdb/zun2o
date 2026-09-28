@@ -56,6 +56,13 @@ export interface PendingChoice {
   options: ChoiceOption[];
 }
 
+/** A character texts a stuck player (in-world hint). */
+export interface Nudge {
+  th: ThreadId;
+  text: string;
+  from?: 'them' | 'me';
+}
+
 export type ScareKind = 'lunge' | 'peek' | 'flash' | 'reflect';
 
 export type Action =
@@ -64,7 +71,7 @@ export type Action =
   | { t: 'choice'; th: ThreadId; id: string; options: ChoiceOption[] }
   | { t: 'notify'; app: AppId; title: string; body: string; open?: { thread?: ThreadId } }
   | { t: 'flag'; f: string }
-  | { t: 'objective'; text: string; hint: string }
+  | { t: 'objective'; text: string; hint: string; nudge?: Nudge }
   | { t: 'chapter'; n: number; title: string }
   | { t: 'time'; hm: string; lost?: boolean }
   | { t: 'battery'; v: number }
@@ -81,6 +88,10 @@ export type Action =
   | { t: 'unsend'; th: ThreadId; match: string }
   | { t: 'dialog'; title: string; body: string }
   | { t: 'draft'; th: ThreadId; text: string }
+  | { t: 'hush'; ms: number }
+  | { t: 'photo'; id: string }
+  | { t: 'memo'; id: string }
+  | { t: 'calllog'; entry: CallLogEntry }
   | { t: 'vibrate'; ms: number[] };
 
 export interface Beat {
@@ -120,6 +131,7 @@ export interface CallLogEntry {
   time: string;
   kind: 'missed' | 'in' | 'out';
   count?: number;
+  duration?: string;
 }
 
 export interface Save {
@@ -135,7 +147,7 @@ export interface Save {
   unread: Record<ThreadId, number>;
   choice: PendingChoice | null;
   choices: Record<string, string>;
-  objective: { text: string; hint: string; since: number } | null;
+  objective: { text: string; hint: string; since: number; nudge?: Nudge } | null;
   clock: string; // game clock HH:MM
   battery: number;
   installed: AppId[];
@@ -150,4 +162,12 @@ export interface Save {
   sound: boolean;
   reduceFx: boolean;
   passcodeFails: number;
+  /** Extra photos that appeared during play (auto-backup…). */
+  photos: string[];
+  /** Voice memos available (m1 always; m2 is the phone recording you). */
+  memos: string[];
+  /** What the player typed/dialed — for the memo that recorded them. */
+  inputs: string[];
+  /** Objectives already nudged by a character. */
+  nudged: string[];
 }

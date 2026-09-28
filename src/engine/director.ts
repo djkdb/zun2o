@@ -1,6 +1,6 @@
 import type { Action, AppId, Beat, EndingId, SoundId, ThreadId } from './types';
 import { BEATS } from '../content/script';
-import { addFlag, appendMessage, fill, flush, getState, hasFlag, newSave, setRt, setSave, wipeSave } from './state';
+import { addFlag, appendMessage, fill, flush, getState, hasFlag, loadCheckpoint, logInput, newSave, saveCheckpoint, setRt, setSave, wipeSave } from './state';
 import { THREAD_META } from '../content/threads';
 import { CALLS } from '../content/calls';
 
@@ -13,11 +13,31 @@ import { CALLS } from '../content/calls';
 
 type SoundHook = (id: SoundId) => void;
 type LoopHook = (id: 'ring' | 'heartbeat', on: boolean) => void;
+type MixHook = (ambience: number, drone: number, seconds: number, brightness: number) => void;
 let playSound: SoundHook = () => undefined;
 let setLoop: LoopHook = () => undefined;
-export function connectAudio(play: SoundHook, loop: LoopHook): void {
+let setMix: MixHook = () => undefined;
+export function connectAudio(play: SoundHook, loop: LoopHook, mixer: MixHook): void {
   playSound = play;
   setLoop = loop;
+  setMix = mixer;
+}
+
+/** Room tone / drone per chapter: the phone gets louder inside as the night goes on. */
+const CHAPTER_MIX: Record<number, [number, number, number]> = {
+  0: [0.1, 0, 420],
+  1: [0.16, 0.03, 420],
+  2: [0.2, 0.08, 480],
+  3: [0.24, 0.16, 700],
+  4: [0.16, 0.34, 900],
+  5: [0, 0, 420],
+};
+export function applyChapterMix(seconds = 3): void {
+  const [a, d, b] = CHAPTER_MIX[getState().save.chapter] ?? CHAPTER_MIX[0];
+  setMix(a, d, seconds, b);
+}
+export function mix(ambience: number, drone: number, seconds: number, brightness = 420): void {
+  setMix(ambience, drone, seconds, brightness);
 }
 export const sfx = (id: SoundId): void => playSound(id);
 export const loop = (id: 'ring' | 'heartbeat', on: boolean): void => setLoop(id, on);
@@ -67,9 +87,10 @@ function eligible(b: Beat): boolean {
 }
 
 export function emit(ev: string): void {
-  for (const beat of BEATS) {
-    if (matches(beat.on, ev) && eligible(beat)) void run(beat, 0);
-  }
+  // Decide the targets first: a beat's own flags must not make a sibling
+  // beat eligible within the same event (e.g. "declined once" → "twice").
+  const targets = BEATS.filter((beat) => matches(beat.on, ev) && eligible(beat));
+  targets.forEach((beat) => void run(beat, 0));
 }
 
 async function run(beat: Beat, from: number): Promise<void> {
@@ -112,7 +133,7 @@ export function showBanner(app: AppId, title: string, body: string, thread?: Thr
   const t = setTimeout(() => {
     timers.delete(t);
     if (getState().rt.banner?.id === id) setRt({ banner: null });
-  }, 4200);
+  }, 3200);
   timers.add(t);
 }
 
@@ -167,10 +188,12 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
       addFlag(a.f);
       return;
     case 'objective':
-      setSave({ objective: { text: a.text, hint: a.hint, since: Date.now() } });
+      setSave({ objective: { text: a.text, hint: a.hint, since: Date.now(), nudge: a.nudge } });
+      setRt({ hintOpen: false });
       return;
     case 'chapter':
       setSave({ chapter: a.n });
+      applyChapterMix();
       setRt({ chapterCard: { n: a.n, title: a.title, nonce: nonce++ } });
       sfx('thud');
       await sleepReal(3000);
@@ -232,8 +255,11 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
       emit(a.ev);
       return;
     case 'finale':
+      saveCheckpoint();
       addFlag('finale');
       loop('heartbeat', false);
+      loop('ring', false);
+      setRt({ incoming: null, activeCall: null, dialog: null });
       setRt({ finale: true, app: null, thread: null });
       return;
     case 'vibrate':
@@ -252,6 +278,21 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
     case 'dialog':
       setRt({ dialog: { title: a.title, body: fill(a.body) } });
       sfx('error');
+      return;
+    case 'hush':
+      // The silence right before something happens.
+      setMix(0, 0, 0.05, 420);
+      await sleepReal(a.ms);
+      applyChapterMix(0.4);
+      return;
+    case 'calllog':
+      setSave((s) => ({ calls: [a.entry, ...s.calls] }));
+      return;
+    case 'photo':
+      setSave((s) => ({ photos: s.photos.includes(a.id) ? s.photos : [...s.photos, a.id] }));
+      return;
+    case 'memo':
+      setSave((s) => ({ memos: s.memos.includes(a.id) ? s.memos : [...s.memos, a.id] }));
       return;
     case 'draft': {
       // Someone types into the reply box… and deletes it.
@@ -286,6 +327,7 @@ export function choose(optionId: string, input?: string): void {
     const name = (input ?? '').replace(/[<>{}]/g, '').trim().slice(0, 12);
     if (!name) return;
     setSave({ playerName: name });
+    logInput(`이름 “${name}”`);
     reply = name;
   }
   if (reply) appendMessage(c.thread, { from: 'me', text: reply, time: s.clock });
@@ -404,6 +446,58 @@ export function newGame(): void {
     draft: null,
     hintOpen: false,
   });
+}
+
+/** Replay the 02:00 finale from the checkpoint (for the other endings). */
+export function replayFinale(): boolean {
+  const cp = loadCheckpoint();
+  if (!cp) return false;
+  epoch++;
+  timers.forEach((t) => clearTimeout(t));
+  timers.clear();
+  setSave({ ...cp, endings: getState().save.endings, lastEnding: null, running: [], flags: [...cp.flags.filter((f) => f !== 'finale'), 'finale'] });
+  flush();
+  setRt({ ending: null, finale: true, app: null, thread: null, scare: null, dialog: null, incoming: null, activeCall: null });
+  return true;
+}
+
+// ─── the phone keeps living between beats ─────────────────────────────────
+
+/** Minutes on a night axis starting at noon, so 23:51 < 00:30. */
+const night = (hm: string) => (toMinutes(hm) + 720) % 1440;
+const CLOCK_CAP: Record<number, string> = { 0: '23:59', 1: '00:30', 2: '01:11', 3: '01:49' };
+
+/**
+ * One slow tick: the clock creeps forward (never past the chapter's next
+ * scripted time), the battery drains, and a character nudges a stuck player.
+ */
+export function startLifeTicker(): () => void {
+  let n = 0;
+  const iv = setInterval(() => {
+    const { save: s, rt } = getState();
+    if (!s.started || rt.finale || rt.ending) return;
+    n++;
+    const cap = CLOCK_CAP[s.chapter];
+    if (s.unlocked && cap && n % 5 === 0 && night(s.clock) < night(cap)) {
+      setSave({ clock: fromMinutes(toMinutes(s.clock) + 1) });
+    }
+    if (s.unlocked && n % 36 === 0 && s.battery > 7 && s.chapter < 4) setSave({ battery: s.battery - 1 });
+    const o = s.objective;
+    if (o?.nudge && !s.nudged.includes(o.text) && Date.now() - o.since > 80000 && !rt.activeCall && !rt.incoming) {
+      setSave({ nudged: [...s.nudged, o.text] });
+      void perform({ t: 'msg', th: o.nudge.th, text: o.nudge.text, from: o.nudge.from, typing: 1500 }, epoch);
+    }
+  }, 5000);
+  return () => clearInterval(iv);
+}
+
+/** Player left the app and came back after a while: the phone locked itself. */
+export function onReturn(awayMs: number): void {
+  const { save: s, rt } = getState();
+  if (!s.started || !s.unlocked || rt.finale || rt.ending || rt.activeCall || rt.incoming || awayMs < 20000) return;
+  setSave({ unlocked: false });
+  setRt({ app: null, thread: null });
+  void perform({ t: 'msg', th: 'unknown', text: '어디 갔었어요?' }, epoch);
 }
 
 export { hasFlag, fromMinutes, toMinutes };

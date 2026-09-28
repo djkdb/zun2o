@@ -114,9 +114,10 @@ export const StairsPhoto = memo(function StairsPhoto({ figure = false }: { figur
         <rect x="120" y="0" width="16" height="420" fill="#0f0f0e" />
         <rect x="504" y="0" width="16" height="420" fill="#0f0f0e" />
         {figure && (
-          <g opacity="0.55">
-            <ellipse cx="320" cy="58" rx="11" ry="14" fill="#050505" />
-            <path d="M305 72 L335 72 L342 118 L298 118 Z" fill="#050505" />
+          <g>
+            <ellipse cx="320" cy="80" rx="70" ry="60" fill="#8a8272" opacity="0.35" />
+            <ellipse cx="320" cy="56" rx="12" ry="15" fill="#000" />
+            <path d="M304 71 L336 71 L346 128 L294 128 Z" fill="#000" />
           </g>
         )}
         <rect width="640" height="420" fill={`url(#${id}-flash)`} />
@@ -212,28 +213,21 @@ function ChaewonDefs({ id, blur }: { id: string; blur: string }) {
 
 /** 채원, drawn in the 420×560 selfie frame. */
 function ChaewonFigure({ id }: { id: string }) {
+  // Lit only from below by her phone: a silhouette with a rim of light.
+  // No drawn eyes or mouth — the dark does the work.
   return (
-    <>
-      {/* 채원 — lit from below by her own flashlight, motion-blurred, terrified */}
-        <g filter={`url(#${id}-blur)`}>
-          <path d="M104 560 C116 468 150 428 210 418 C270 428 304 468 316 560 Z" fill="#1d1c22" />
-          <path d="M118 262 C104 172 158 118 212 120 C270 122 318 172 304 268 C302 318 296 352 290 392 L134 392 C126 350 120 306 118 262 Z" fill="#0c0a0b" />
-          <ellipse cx="210" cy="276" rx="66" ry="88" fill={`url(#${id}-skin)`} />
-          <path d="M140 250 C150 176 270 166 282 250 C268 214 244 200 212 200 C182 200 154 214 140 250 Z" fill="#0c0a0b" />
-          {/* raised, pinched brows — fear */}
-          <path d="M168 240 Q182 228 198 236" stroke="#2a1d17" strokeWidth="4" fill="none" strokeLinecap="round" />
-          <path d="M222 236 Q238 228 252 240" stroke="#2a1d17" strokeWidth="4" fill="none" strokeLinecap="round" />
-          {/* wide eyes, looking past the camera */}
-          <ellipse cx="184" cy="262" rx="11" ry="9" fill="#e9e0d6" />
-          <ellipse cx="236" cy="262" rx="11" ry="9" fill="#e9e0d6" />
-          <circle cx="190" cy="262" r="5" fill="#140e0b" />
-          <circle cx="242" cy="262" r="5" fill="#140e0b" />
-          {/* mouth open, breath caught */}
-          <ellipse cx="210" cy="326" rx="10" ry="13" fill="#2a1210" />
-          <path d="M152 300 C160 350 190 362 210 362 C230 362 260 350 268 300" stroke="#000" strokeOpacity="0.25" strokeWidth="10" fill="none" />
-          <rect x="176" y="358" width="68" height="70" fill="#8d7263" />
-        </g>
-    </>
+    <g filter={`url(#${id}-blur)`}>
+      <path d="M104 560 C116 468 150 428 210 418 C270 428 304 468 316 560 Z" fill="#141317" />
+      <path d="M118 262 C104 172 158 118 212 120 C270 122 318 172 304 268 C302 318 296 352 290 392 L134 392 C126 350 120 306 118 262 Z" fill="#070606" />
+      <ellipse cx="210" cy="278" rx="64" ry="86" fill={`url(#${id}-skin)`} />
+      <path d="M140 252 C150 176 270 166 282 252 C266 220 242 206 212 206 C182 206 156 220 140 252 Z" fill="#070606" />
+      <path d="M146 262 C140 300 150 330 170 350" stroke="#070606" strokeWidth="18" fill="none" strokeLinecap="round" />
+      <ellipse cx="184" cy="262" rx="14" ry="9" fill="#0b0807" opacity="0.75" />
+      <ellipse cx="236" cy="262" rx="14" ry="9" fill="#0b0807" opacity="0.75" />
+      <circle cx="188" cy="263" r="1.6" fill="#d8d4cc" opacity="0.7" />
+      <circle cx="240" cy="263" r="1.6" fill="#d8d4cc" opacity="0.7" />
+      <rect x="178" y="356" width="64" height="70" fill="#5a4a41" />
+    </g>
   );
 }
 
@@ -243,7 +237,7 @@ export const SelfiePhoto = memo(function SelfiePhoto({ stage }: { stage: 1 | 2 }
   return (
     <svg viewBox="0 0 420 560" role="img" aria-label="겁에 질린 젊은 여성의 셀카. 손전등 불빛. 뒤쪽 어둠 속에 무언가가 있다.">
       <Defs id={id} flashX={50} flashY={62} />
-      <ChaewonDefs id={id} blur={stage === 2 ? '2.2 0.6' : '1.2 0.4'} />
+      <ChaewonDefs id={id} blur={stage === 2 ? '3 0.8' : '2 0.6'} />
       <g filter={`url(#${id}-n)`}>
         <rect width="420" height="560" fill="#0b0a09" />
         {Array.from({ length: 7 }).map((_, r) =>
@@ -277,14 +271,19 @@ export const BlackPhoto = memo(function BlackPhoto({ brightness = 0 }: { brightn
   return (
     <svg viewBox="0 0 420 560" role="img" aria-label="거의 완전히 검은 사진.">
       <rect width="420" height="560" fill="#030303" />
-      <g opacity={Math.max(0, (b - 0.35) * 1.55)} style={{ filter: `brightness(${0.3 + b * 1.3}) contrast(${1 + b})` }}>
+      <g opacity={Math.min(1, Math.max(0, (b - 0.2) * 1.4))} style={{ filter: `brightness(${0.3 + b * 1.3}) contrast(${1 + b})` }}>
         <rect width="420" height="560" fill="#15130f" />
         {Array.from({ length: 8 }).map((_, r) =>
           Array.from({ length: 6 }).map((__, c) => <rect key={`${r}${c}`} x={10 + c * 70} y={10 + r * 46} width="62" height="38" fill="#2a241c" />),
         )}
-        <g transform={`translate(210 ${320 - b * 40}) scale(${0.45 + b * 0.75})`}>
-          <GhostFaceShape distort={false} />
-        </g>
+        {/* an empty chair, a desk… nothing else. Until there is. */}
+        <rect x="150" y="400" width="120" height="14" fill="#1d1812" />
+        <rect x="186" y="330" width="48" height="70" rx="4" fill="#120f0b" />
+        {b >= 0.92 && (
+          <g transform="translate(210 290) scale(1.25)">
+            <GhostFaceShape distort={false} />
+          </g>
+        )}
       </g>
       <text x="14" y="30" fontFamily="IBM Plex Mono, monospace" fontSize="15" fill="#ff5a3c" opacity={0.25 + b * 0.5}>
         01:59
@@ -293,11 +292,46 @@ export const BlackPhoto = memo(function BlackPhoto({ brightness = 0 }: { brightn
   );
 });
 
+/** Taken from the Annex's 3rd-floor window: the phone booth — and you. */
+export const BoothPhoto = memo(function BoothPhoto({ behind = false }: { behind?: boolean }) {
+  const id = useSvgId();
+  return (
+    <svg viewBox="0 0 640 420" role="img" aria-label="높은 창문에서 내려다본 밤거리. 불 켜진 공중전화 부스 안에 휴대폰을 든 사람이 서 있다.">
+      <Defs id={id} flashX={52} flashY={70} r={70} />
+      <g filter={`url(#${id}-n)`}>
+        <rect width="640" height="420" fill="#08090b" />
+        <polygon points="0,420 640,420 520,150 120,150" fill="#101114" />
+        <line x1="120" y1="150" x2="0" y2="420" stroke="#1a1b1f" strokeWidth="3" />
+        <line x1="520" y1="150" x2="640" y2="420" stroke="#1a1b1f" strokeWidth="3" />
+        <rect x="300" y="250" width="56" height="92" fill="#cfd6c4" opacity="0.18" />
+        <rect x="300" y="250" width="56" height="92" fill="none" stroke="#7f8a78" strokeWidth="3" />
+        <ellipse cx="328" cy="296" rx="70" ry="60" fill="#dfe6d0" opacity="0.06" />
+        <ellipse cx="328" cy="286" rx="6" ry="7" fill="#0a0a0a" />
+        <path d="M319 294 L337 294 L340 332 L316 332 Z" fill="#0a0a0a" />
+        <rect x="330" y="296" width="5" height="7" fill="#e8f0ff" />
+        <circle cx="332" cy="299" r="10" fill="#cfe0ff" opacity="0.25" />
+        {behind && (
+          <g>
+            <ellipse cx="372" cy="292" rx="6" ry="8" fill="#c9c3b4" opacity="0.55" />
+            <path d="M362 300 L382 300 L386 344 L358 344 Z" fill="#050505" />
+          </g>
+        )}
+        <rect x="0" y="0" width="640" height="26" fill="#030303" />
+        <rect x="0" y="0" width="30" height="420" fill="#030303" />
+        <rect x="610" y="0" width="30" height="420" fill="#030303" />
+        <rect x="312" y="0" width="16" height="420" fill="#030303" opacity="0.9" />
+        <rect width="640" height="420" fill={`url(#${id}-flash)`} />
+      </g>
+      <Stamp text={behind ? '01:54' : '01:39'} x={40} y={52} />
+    </svg>
+  );
+});
+
 /**
  * Video call at 02:00: 채원's face lit by her phone. `close` 0..1 — past
  * 0.35 something rises behind her shoulder and keeps coming.
  */
-export const VideoFeed = memo(function VideoFeed({ close = 0 }: { close?: number }) {
+export const VideoFeed = memo(function VideoFeed({ close = 0, pip = 0 }: { close?: number; pip?: number }) {
   const id = useSvgId();
   const her = Math.max(0, (close - 0.35) / 0.65);
   return (
@@ -319,10 +353,27 @@ export const VideoFeed = memo(function VideoFeed({ close = 0 }: { close?: number
         </g>
         <rect width="390" height="844" fill={`url(#${id}-flash)`} />
       </g>
-      <rect x="272" y="96" width="96" height="140" rx="10" fill="#111" stroke="#333" />
-      <text x="320" y="170" textAnchor="middle" fontFamily="IBM Plex Sans KR, sans-serif" fontSize="11" fill="#666">
-        카메라 꺼짐
-      </text>
+      {pip === 0 ? (
+        <>
+          <rect x="272" y="96" width="96" height="140" rx="10" fill="#111" stroke="#333" />
+          <text x="320" y="170" textAnchor="middle" fontFamily="IBM Plex Sans KR, sans-serif" fontSize="11" fill="#666">
+            카메라 꺼짐
+          </text>
+        </>
+      ) : (
+        <g>
+          {/* "your" side — a drawn silhouette, not a camera */}
+          <rect x="272" y="96" width="96" height="140" rx="10" fill="#0d0e10" stroke="#555" />
+          <ellipse cx="320" cy="210" rx="30" ry="34" fill="#050505" />
+          <path d="M280 236 C290 214 350 214 360 236 Z" fill="#050505" />
+          <g transform={`translate(${340 - pip * 12} ${170 - pip * 6}) scale(${0.07 + pip * 0.05})`} opacity={0.4 + pip * 0.6}>
+            <GhostFaceShape distort={false} />
+          </g>
+          <text x="320" y="110" textAnchor="middle" fontFamily="IBM Plex Sans KR, sans-serif" fontSize="9" fill="#9a9">
+            카메라 켜짐
+          </text>
+        </g>
+      )}
     </svg>
   );
 });
