@@ -59,7 +59,7 @@ await wait(2500);
 await snap('coldopen');
 await waitFor('.coldopen-actions.show', 12000);
 mark('cold open finished typing');
-await tapText('소리 없이 집는다');
+await tap('.coldopen-actions .primary');
 
 // ── Lock ───────────────────────────────────────────────────────────────
 await waitFor('.lock');
@@ -353,7 +353,7 @@ for (const [label, cls] of [
 // ── Regression: exploits found by the playtester ────────────────────────
 await page.getByText('처음부터 다시 하기').click();
 await waitFor('.coldopen-actions.show', 15000);
-await tapText('소리 없이 집는다');
+await tap('.coldopen-actions .primary');
 await waitFor('.lock');
 await tap('.lock-main');
 for (const d of '0113') await page.locator('.keypad .key', { hasText: new RegExp(`^${d}$`) }).first().click();

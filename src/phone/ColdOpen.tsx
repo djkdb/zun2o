@@ -35,12 +35,10 @@ export function ColdOpen() {
       <div className={`coldopen-actions${n >= LINES.length ? ' show' : ''}`}>
         <h1>새벽 2시의 휴대폰</h1>
         <button type="button" className="primary" onClick={() => begin(true)}>
-          폰을 집는다 🎧
+          집는다
         </button>
-        <button type="button" onClick={() => begin(false)}>
-          소리 없이 집는다
-        </button>
-        <p>이어폰 권장 · 약 15–20분 · 갑작스러운 소리와 장면이 있습니다</p>
+        <p>🎧 이어폰 권장 · 약 15–20분 · 갑작스러운 소리와 장면이 있습니다</p>
+        <p>소리는 폰 안의 설정 앱에서 끌 수 있습니다.</p>
         <p className="coldopen-privacy">진행 기록은 이 기기에만 저장됩니다. 카메라·마이크·위치를 쓰지 않습니다.</p>
       </div>
     </div>
