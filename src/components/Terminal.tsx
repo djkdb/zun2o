@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
-import { findSecret, getState, playSound, unlockEnding } from '../game/store';
+import { emit, findSecret, getState, playSound, unlockEnding } from '../game/store';
 import { getNow } from '../game/clock';
 import { listedRecords } from '../game/secretManager';
 import { CONTINUATION_KEY } from '../data/records';
@@ -236,7 +236,7 @@ export function Terminal() {
         break;
       case 'varga':
       case 'ilse':
-        print([you, { text: 'SHE IS BUSY.', kind: 'err' }]);
+        print([you, { text: 'SHE IS BUSY.', kind: 'err' }], () => setTimeout(() => emit({ type: 'command', target: 'varga' }), 900));
         break;
       case 'hello':
       case 'hi':

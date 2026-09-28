@@ -79,9 +79,10 @@ export type AnomalyTarget =
   | 'screen'
   | 'scroll'
   | 'audio'
+  | 'scare'
   | 'footer';
 
-export type ActionType = 'hover' | 'click' | 'route' | 'section' | 'idle' | 'search' | 'revisit';
+export type ActionType = 'hover' | 'click' | 'route' | 'section' | 'idle' | 'search' | 'revisit' | 'command';
 
 export type AnomalyTrigger =
   | { kind: 'ambient' }
@@ -210,7 +211,8 @@ export type SoundId =
   | 'ending'
   | 'whisper'
   | 'type'
-  | 'thud';
+  | 'thud'
+  | 'scream';
 
 // ─── Main event ──────────────────────────────────────────────────────────
 
@@ -225,6 +227,7 @@ export type MainEventStage =
   | 'record'
   | 'recall'
   | 'photo'
+  | 'scare'
   | 'navigate'
   | 'reveal'
   | 'done';

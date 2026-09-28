@@ -304,6 +304,60 @@ const SOUNDS: Record<SoundId, (ctx: Ctx, out: GainNode, engine: AudioEngine) => 
   thud(ctx, out) {
     tone(ctx, out, 'sine', 70, 0.3, 0.005, 0.5, ctx.currentTime, 28);
   },
+  scream(ctx, out, engine) {
+    // A jump-scare hit: distorted detuned shriek with wild vibrato, a burst of
+    // noise and a sub-bass punch. Loud relative to the room tone, but capped.
+    const t = ctx.currentTime;
+    const bus = ctx.createGain();
+    bus.gain.setValueAtTime(0.0001, t);
+    bus.gain.exponentialRampToValueAtTime(0.42, t + 0.015);
+    bus.gain.setValueAtTime(0.42, t + 0.35);
+    bus.gain.exponentialRampToValueAtTime(0.0001, t + 1.3);
+    const shaper = ctx.createWaveShaper();
+    const curve = new Float32Array(1024);
+    for (let i = 0; i < curve.length; i++) {
+      const x = (i / (curve.length - 1)) * 2 - 1;
+      curve[i] = Math.tanh(x * 6);
+    }
+    shaper.curve = curve;
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = 1500;
+    bp.Q.value = 0.7;
+    shaper.connect(bp).connect(bus).connect(out);
+    const vib = ctx.createOscillator();
+    vib.frequency.value = 17;
+    const vibDepth = ctx.createGain();
+    vibDepth.gain.value = 45;
+    vib.connect(vibDepth);
+    [620, 657, 702, 1240].forEach((f, i) => {
+      const o = ctx.createOscillator();
+      o.type = i === 3 ? 'square' : 'sawtooth';
+      o.frequency.setValueAtTime(f * 0.7, t);
+      o.frequency.exponentialRampToValueAtTime(f, t + 0.06);
+      o.frequency.exponentialRampToValueAtTime(f * 0.62, t + 1.3);
+      vibDepth.connect(o.frequency);
+      const g = ctx.createGain();
+      g.gain.value = i === 3 ? 0.12 : 0.3;
+      o.connect(g).connect(shaper);
+      o.start(t);
+      o.stop(t + 1.35);
+    });
+    vib.start(t);
+    vib.stop(t + 1.35);
+    const n = engine.noiseSource();
+    if (n) {
+      const hp = ctx.createBiquadFilter();
+      hp.type = 'highpass';
+      hp.frequency.value = 900;
+      const ng = ctx.createGain();
+      env(ctx, ng, 0.5, 0.005, 0.6);
+      n.connect(hp).connect(ng).connect(out);
+      n.start(t);
+      n.stop(t + 0.7);
+    }
+    tone(ctx, out, 'sine', 90, 0.6, 0.004, 0.7, t, 32);
+  },
 };
 
 export const audio = new AudioEngine();

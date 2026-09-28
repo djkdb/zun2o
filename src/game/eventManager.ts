@@ -54,7 +54,7 @@ export function rejectReason(def: AnomalyDef, ctx: AnomalyContext): RejectReason
     if (req.records && !req.records.every((r) => ctx.viewedRecords.includes(r))) return 'requirements';
   }
   // Global targets (screen/audio/scroll) are always "mounted".
-  const alwaysOn: AnomalyTarget[] = ['screen', 'audio', 'scroll'];
+  const alwaysOn: AnomalyTarget[] = ['screen', 'audio', 'scroll', 'scare'];
   if (!alwaysOn.includes(def.target) && !(ctx.mountedTargets[def.target] ?? 0)) return 'unmounted';
   if (ctx.busyTargets.has(def.target)) return 'busy';
   return null;

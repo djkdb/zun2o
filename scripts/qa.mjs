@@ -107,7 +107,15 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   await page.screenshot({ path: `${OUT}/B-event-record.png` });
   await wait(6500);
   await page.screenshot({ path: `${OUT}/B-event-recall.png` });
-  await wait(9000);
+  const scared = await page.waitForSelector('.scare-lunge', { timeout: 8000 }).then(() => true, () => false);
+  check('B 02:00 climax: she comes out of the photograph (jump scare)', scared);
+  await wait(250);
+  await page.screenshot({ path: `${OUT}/B-event-scare.png` });
+  await page.waitForURL(/#\/record\/009/, { timeout: 10000 }).catch(() => null);
+  await page
+    .waitForFunction(() => document.querySelector('.debug-stats')?.textContent?.includes('MAIN EVENTdone'), null, { timeout: 12000 })
+    .catch(() => null);
+  await wait(700);
   check('B event ends on Record 009', page.url().includes('#/record/009'), page.url());
   check('B site is now in UNKNOWN mode', (await level(page)) === '5');
   check('B nav shows UNKNOWN', (await page.locator('.nav li.unknown').count()) === 1);
@@ -283,6 +291,48 @@ for (const [w, h] of [
   check('F2 phone: 02:00 sequence completes on Record 009', page.url().includes('#/record/009'));
   check('F2 phone: no horizontal overflow after the event', overflow <= 1, `overflow ${overflow}px`);
   check('F2 phone: no JS errors', errors.length === 0, errors.join(' | '));
+  await context.close();
+}
+
+// ── Test J — her: jump scares are earned, never on a normal first visit ─
+{
+  const { context, page, errors } = await newPage();
+  const scareWithin = (ms) => page.waitForSelector('.scare', { timeout: ms }).then(() => true, () => false);
+  const toEnd = () => page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+
+  await page.goto(`${BASE}?debug=true&t=12:00#/record/006`);
+  await page.waitForSelector('.debug');
+  await page.click('.debug-head button');
+  await toEnd();
+  check('J no jump scare in daylight (reading Tape 6 at 12:00)', !(await scareWithin(2500)));
+
+  await page.goto(`${BASE}?debug=true&t=01:56#/record/006`);
+  await page.waitForSelector('.record-title');
+  await wait(400);
+  await toEnd();
+  const tape = await page.waitForSelector('.scare-lunge', { timeout: 5000 }).then(() => true, () => false);
+  check('J reading Tape 6 to the end at 01:56 → jump scare', tape);
+  await wait(200);
+  await page.screenshot({ path: `${OUT}/J-tape-lunge.png` });
+  await wait(1500);
+  check('J the scare clears itself', (await page.locator('.scare').count()) === 0);
+
+  await page.goto(`${BASE}#/record/003`);
+  await page.click('.secret-sentence button');
+  await page.goto(`${BASE}#/system`);
+  await page.waitForSelector('.terminal-choices button', { timeout: 15000 });
+  await page.click('.terminal-choices button >> text=[Y]');
+  await page.waitForSelector('#cmd:not([disabled])', { timeout: 20000 });
+  await page.fill('#cmd', 'varga');
+  await page.press('#cmd', 'Enter');
+  check('J saying her name in the terminal → jump scare', await page.waitForSelector('.scare-lunge', { timeout: 6000 }).then(() => true, () => false));
+
+  await page.goto(`${BASE}#/`);
+  await page.evaluate(() => [...document.querySelectorAll('.footer button')].find((b) => b.textContent === 'Reduce effects')?.click());
+  if (await page.locator('.debug-fab').count()) await page.click('.debug-fab');
+  await page.click('.debug button:text-is("Jump scare")');
+  check('J reduced effects → soft version (no strobe/zoom)', await page.waitForSelector('.scare-reduced', { timeout: 2000 }).then(() => true, () => false));
+  check('J no JS errors', errors.length === 0, errors.join(' | '));
   await context.close();
 }
 

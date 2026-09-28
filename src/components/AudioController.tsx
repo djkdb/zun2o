@@ -100,6 +100,11 @@ export function AudioController() {
         drone = 0.13;
         ramp = 2;
         break;
+      case 'scare':
+        amb = 0;
+        drone = 0;
+        ramp = 0.05;
+        break;
       case 'photo':
         amb = 0.1;
         bright = 3000;

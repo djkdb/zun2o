@@ -7,6 +7,7 @@ import { useTypewriter } from '../hooks/useTypewriter';
 import { navigate } from '../utils/router';
 import { formatHM } from '../utils/time';
 import { ReadingRoomPhoto } from './photos/Photos';
+import { ScareView } from './Ghost';
 import type { MainEventStage, SaveData } from '../game/types';
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -110,6 +111,7 @@ export function HorrorTransition() {
           </div>
         )}
       </div>
+      {stage === 'scare' && <ScareView kind="lunge" nonce={startedAt ?? 0} silent />}
       <button type="button" className="event-skip" onClick={skip}>
         SKIP ›
       </button>

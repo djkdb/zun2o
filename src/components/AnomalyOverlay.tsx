@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { usePeekAnomaly, useVisualLevel } from '../hooks/useGame';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import { LEVEL_PROFILES } from '../game/horrorEngine';
+import { GhostSvg } from './Ghost';
 
 // Full-screen effect layers plus the scroll anomalies. Layers are always
 // mounted (cheap, opacity-only) so switching them never causes layout work.
@@ -45,7 +46,7 @@ export function AnomalyOverlay() {
       <div className={`fx-layer fx-scanlines${level === 4 ? ' on' : ''}`} />
       <div className={`fx-layer fx-vignette${level >= 3 ? ' on' : ''}`} />
       <div className={`fx-layer fx-dim${effect === 'dim' ? ' on' : ''}`} />
-      <div className={`fx-layer fx-dark${effect === 'dark' && !reduced ? ' on' : ''}`} />
+      <div className={`fx-layer fx-dark${effect === 'dark' && !reduced ? ' on' : ''}`}>{effect === 'dark' && !reduced && <GhostSvg className="ghost" />}</div>
       {effect === 'tear' && !reduced && <div key={screen?.nonce} className="fx-tear" />}
     </div>
   );

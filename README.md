@@ -14,7 +14,28 @@
 - 02:00 ~ 02:59 — 사이트가 완전히 다른 곳(UNKNOWN)이 됨
 - 03:00 이후 — 조용해지지만, 사이트는 당신을 기억함
 
+그리고 **그녀**가 있습니다. 처음엔 사진 속 문간의 작은 그림자였다가, 방문할수록 가까워지고, 새벽이 되면 화면 밖으로 나옵니다 (점프스케어).
+
 외부 이미지·음원은 하나도 없습니다. 사진은 전부 SVG로 그렸고, 모든 소리는 Web Audio API로 실시간 합성합니다.
+
+## 귀신 / 점프스케어
+
+점프스케어는 무작위로 터지지 않습니다. 전부 **사이트가 이미 이상해진 뒤(레벨 2~3 이상)**, **사용자가 한 행동**에 반응합니다. 낮의 첫 방문에서는 절대 나오지 않습니다.
+
+| 종류 | 조건 | 연출 |
+|---|---|---|
+| 02:00 클라이맥스 | 메인 이벤트 27.4초 — 사진 속 인물이 카메라를 본 직후 | 사진에서 튀어나와 화면으로 돌진 + 비명 |
+| Tape 6 | 레벨 3+에서 Record 006(녹음 전사)을 끝까지 읽음 ("마이크 바로 앞의 숨소리") | 돌진 + 비명 |
+| Annex | 레벨 4+에서 Record 005를 끝까지 읽음 | 돌진 + 비명 |
+| 이름 부르기 | 레벨 4+에서 검색창에 `varga` / 터미널에서 `varga` 입력(레벨 2+) | "SHE IS BUSY." → 돌진 |
+| 응시 | 레벨 3+에서 45초 동안 가만히 있음 | 속삭임 → 화면 중앙에 얼굴이 천천히 떠오름 → 3.6초 후 돌진 |
+| 엿보기 | 레벨 3+ 앰비언트 (세션당 최대 2회) | 화면 오른쪽 가장자리에 얼굴 반쪽, 0.8초 |
+| 반사 | 레벨 2+ 화면 암전 이상현상 | 0.16초 암전 속에 희미한 얼굴 |
+
+- 같은 얼굴이 레코드 003 사진, Annex 창문 속에 먼저 작게 등장합니다 (예고 → 회수).
+- 비명은 Web Audio로 합성합니다 (디스토션 톤 + 노이즈 + 저음 타격). 사운드는 첫 클릭 이후에만 켜집니다.
+- **Reduce effects / prefers-reduced-motion**에서는 스트로브·확대·흔들림 없이 얼굴이 나타났다 사라지는 순한 버전으로 바뀝니다. 흰색 플래시는 사용하지 않습니다.
+- 디버그 패널: `Jump scare`, `Stare`, `Peek` 버튼으로 바로 확인할 수 있습니다.
 
 ---
 
@@ -41,7 +62,7 @@ npm run qa         # E2E QA (preview 서버가 떠 있어야 함, 아래 참고)
 URL에 `?debug=true`를 붙이면 (세션 동안 유지) 오른쪽 아래에 디버그 패널이 나타납니다. `?debug=false`로 끕니다.
 
 - 표시: HORROR LEVEL / CURRENT TIME / VISIT COUNT / SESSION TIME / CLICKS / MAIN EVENT 단계 / 열어본 기록 / 기록 순서 / SECRET / FLAGS / ENDINGS / 발견한 이상현상 수 / 트리거 로그
-- 버튼: `L0`~`L5` 강제, `auto`, 시간 점프(`12:00` `01:30` `01:45` `01:55` `01:59` `01:59:50` `02:03` `03:10` `real`), **Trigger 02:00**, Random anomaly, 특정 anomaly Fire, Unlock all, Reset save, 엔딩 테스트(normal/secret/true)
+- 버튼: `L0`~`L5` 강제, `auto`, `Jump scare` / `Stare` / `Peek`, 시간 점프(`12:00` `01:30` `01:45` `01:55` `01:59` `01:59:50` `02:03` `03:10` `real`), **Trigger 02:00**, Random anomaly, 특정 anomaly Fire, Unlock all, Reset save, 엔딩 테스트(normal/secret/true)
 - 시작 시각 지정: `?debug=true&t=01:59:50` — 방문 기록 자체가 그 시각으로 저장되므로 촬영용으로 적합
 
 프로덕션(쿼리 없음)에서는 패널이 렌더링되지 않습니다.
@@ -57,7 +78,7 @@ URL에 `?debug=true`를 붙이면 (세션 동안 유지) 오른쪽 아래에 디
 | 03 01:59:59 | `?debug=true&t=01:59:50#/` → 패널 `—`로 접기 → 커진 시계, 어두워지는 화면 |
 | 04 02:00 | 그대로 대기 → 시계 정지, 침묵, 제목이 `THE NIGHT ARCHIVES YOU`로 스크램블 |
 | 05 사이트 전체 변화 | 메뉴가 하나씩 사라지고 화면이 꺼짐 → 기록이 스스로 타이핑되며 **당신의 행동을 회상** |
-| 06 숨겨진 페이지 | 사진 속 인물이 카메라를 봄 → 자동으로 Record 009(방문자 로그) 이동, 메뉴에 `UNKNOWN` |
+| 06 숨겨진 페이지 | 사진 속 인물이 카메라를 봄 → **그대로 화면으로 튀어나옴(점프스케어)** → 자동으로 Record 009(방문자 로그) 이동, 메뉴에 `UNKNOWN` |
 | 07 예상하지 못한 메시지 | `#/record/003`의 마지막 문장 클릭 → `/system` 터미널 (`ACCESSING ARCHIVE... OPEN? [Y/N]`) |
 
 각 이벤트는 시작/끝이 명확하도록 설계되었습니다 (02:00 연출 타임라인: `src/data/mainEvent.ts`).
@@ -81,15 +102,15 @@ src/
     save.ts             localStorage 스키마 v1, 검증/초기화
     template.ts         기록 텍스트 {placeholder} 치환
   data/                 ← 콘텐츠는 전부 데이터
-    anomalies.ts        이상현상 42종
+    anomalies.ts        이상현상 48종 (점프스케어 6종 포함)
     records.ts          기록 001–009, 013 (레벨별 variants)
     secrets.ts endings.ts mainEvent.ts copy.ts
-  components/           Header, Navigation, Clock, RecordList, GlitchText, AnomalyOverlay,
+  components/           Ghost(그녀 + 점프스케어), Header, Navigation, Clock, RecordList, GlitchText, AnomalyOverlay,
                         AudioController, HorrorTransition(02:00), Terminal, DebugPanel, photos/…
   pages/                Index, Records, Record, Search, About, Contact, System, Room02, Unknown, Ending, NotFound
   hooks/                useGame(selector), useAnomaly(target), useLocalTime, useTypewriter, …
   utils/                audio(Web Audio 합성), storage(안전 래퍼), time, router, random
-scripts/qa.mjs          Playwright E2E QA (83 checks)
+scripts/qa.mjs          Playwright E2E QA (90 checks)
 ```
 
 ### 이상현상 추가하기

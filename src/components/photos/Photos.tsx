@@ -1,5 +1,6 @@
 import { memo, useId } from 'react';
 import type { HorrorLevel } from '../../game/types';
+import { GhostFaceShape } from '../Ghost';
 
 // ─────────────────────────────────────────────────────────────────────────
 // Archive photographs, drawn as SVG so the project ships no third-party
@@ -41,26 +42,10 @@ function FilmDefs({ id }: { id: string }) {
 }
 
 function Face({ x, y, s, opacity }: { x: number; y: number; s: number; opacity: number }) {
-  // Not a mask: a pale, under-exposed smear with two hollows. Less detail reads as more wrong.
-  const id = useSvgId();
+  // The same face that later fills the screen — seen first, small, in a photograph.
   return (
-    <g transform={`translate(${x} ${y}) scale(${s})`} opacity={opacity}>
-      <defs>
-        <radialGradient id={`${id}-skin`} cx="50%" cy="42%" r="60%">
-          <stop offset="0%" stopColor="#b9b2a0" />
-          <stop offset="70%" stopColor="#7d776a" />
-          <stop offset="100%" stopColor="#2a2722" stopOpacity="0" />
-        </radialGradient>
-        <filter id={`${id}-soft`} x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="0.9" />
-        </filter>
-      </defs>
-      <g filter={`url(#${id}-soft)`}>
-        <ellipse cx="0" cy="0" rx="9" ry="12.5" fill={`url(#${id}-skin)`} />
-        <ellipse cx="-3.4" cy="-1.5" rx="1.9" ry="2.6" fill="#0d0b09" />
-        <ellipse cx="3.4" cy="-1.5" rx="1.9" ry="2.6" fill="#0d0b09" />
-        <path d="M-2.2 6.4 Q0 7.2 2.2 6.4" stroke="#1d1a16" strokeWidth="0.9" fill="none" />
-      </g>
+    <g transform={`translate(${x} ${y}) scale(${s * 0.1})`} opacity={opacity}>
+      <GhostFaceShape distort={false} />
     </g>
   );
 }

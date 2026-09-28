@@ -57,6 +57,13 @@ describe('eligibility rules', () => {
     expect(rejectReason(ANOMALY_BY_ID['screen-dark'], ctx({ level: 3, reduceEffects: true }))).toBe('reduced');
   });
 
+  it('never jump-scares before the archive is already wrong (level 2+)', () => {
+    const scares = ANOMALIES.filter((a) => a.target === 'scare');
+    expect(scares.length).toBeGreaterThanOrEqual(4);
+    for (const a of scares) expect(a.minLevel).toBeGreaterThanOrEqual(2);
+    for (const a of scares.filter((x) => x.effect === 'lunge')) expect(a.trigger.kind).toBe('action');
+  });
+
   it('keeps level 0 almost silent', () => {
     const early = ANOMALIES.filter((a) => a.trigger.kind === 'ambient' && rejectReason(a, ctx({ level: 0, sessionSeconds: 10 })) === null);
     expect(early).toEqual([]);

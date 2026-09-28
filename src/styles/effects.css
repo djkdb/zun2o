@@ -265,3 +265,180 @@
     opacity: 0;
   }
 }
+
+/* ─── Her ──────────────────────────────────────────────────────────────── */
+
+.scare {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.scare .ghost {
+  height: 100vh;
+  height: 100dvh;
+  width: auto;
+  max-width: none;
+}
+
+/* Lunge: black frame, she rushes the lens, strobing and doubling. */
+.scare-lunge {
+  background: #000;
+  animation: scare-bg 1.25s linear both;
+}
+
+.scare-lunge .ghost {
+  height: 118vh;
+  filter: drop-shadow(4px 0 0 rgba(255, 20, 40, 0.4)) drop-shadow(-4px 0 0 rgba(0, 220, 255, 0.32));
+  animation:
+    lunge 1.25s cubic-bezier(0.15, 0.9, 0.2, 1) both,
+    scare-jitter 0.07s steps(2) infinite;
+}
+
+@keyframes lunge {
+  0% {
+    transform: scale(0.35);
+    opacity: 0;
+  }
+  4% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  30% {
+    transform: scale(1.25);
+  }
+  85% {
+    transform: scale(1.55);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+@keyframes scare-jitter {
+  50% {
+    translate: 6px -4px;
+  }
+}
+
+@keyframes scare-bg {
+  0%,
+  20% {
+    background: #000;
+    opacity: 1;
+  }
+  21%,
+  23% {
+    background: #2a0000;
+  }
+  24%,
+  88% {
+    background: #000;
+    opacity: 1;
+  }
+  100% {
+    background: #000;
+    opacity: 0;
+  }
+}
+
+/* Peek: half a face at the edge of the screen, then gone. */
+.scare-peek {
+  place-items: center end;
+}
+
+.scare-peek .ghost {
+  height: 70vh;
+  -webkit-mask-image: radial-gradient(ellipse 48% 55% at 50% 45%, #000 60%, transparent 100%);
+  mask-image: radial-gradient(ellipse 48% 55% at 50% 45%, #000 60%, transparent 100%);
+  opacity: 0.92;
+  animation: peek 0.85s ease-in-out both;
+}
+
+@keyframes peek {
+  0% {
+    transform: translateX(100%);
+  }
+  35%,
+  70% {
+    transform: translateX(52%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Stare: she fades in, very slowly, in the middle of the page. */
+.scare-stare .ghost {
+  height: 88vh;
+  opacity: 0;
+  -webkit-mask-image: radial-gradient(ellipse 34% 40% at 50% 44%, #000 50%, transparent 100%);
+  mask-image: radial-gradient(ellipse 34% 40% at 50% 44%, #000 50%, transparent 100%);
+  mix-blend-mode: multiply;
+  animation: stare 3.6s ease-in forwards;
+}
+
+:root[data-level='5'] .scare-stare .ghost {
+  mix-blend-mode: screen;
+}
+
+@keyframes stare {
+  to {
+    opacity: 0.42;
+  }
+}
+
+/* Reduced effects: same story, no strobe, zoom or shake. */
+.scare-reduced.scare-lunge {
+  animation: scare-fade 1.4s ease both;
+}
+
+.scare-reduced .ghost {
+  filter: none !important;
+  animation: scare-fade 1.4s ease both !important;
+  transform: none !important;
+}
+
+.scare-reduced.scare-peek .ghost {
+  transform: translateX(52%) !important;
+}
+
+@keyframes scare-fade {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  20%,
+  75% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scare .ghost {
+    filter: none !important;
+    animation: scare-fade 1.4s ease both !important;
+    transform: none !important;
+  }
+  .scare-lunge {
+    animation: scare-fade 1.4s ease both;
+  }
+}
+
+/* A face in the dark frame of the screen-dark anomaly. */
+.fx-dark .ghost {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 80vh;
+  width: auto;
+  max-width: none;
+  transform: translate(-50%, -50%);
+  opacity: 0.22;
+}

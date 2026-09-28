@@ -13,20 +13,22 @@ import { href } from '../utils/router';
 import { formatClock, partsOf } from '../utils/time';
 import type { ArchiveRecord, HorrorLevel, RecordBlock, SaveData } from '../game/types';
 
-function SectionMarker({ id, label }: { id: string; label: string }) {
+function SectionMarker({ id, label, recordId }: { id: string; label: string; recordId: string }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;
     if (!el || typeof IntersectionObserver === 'undefined') return;
     const io = new IntersectionObserver(
       (entries) => {
-        if (entries.some((e) => e.isIntersecting)) emit({ type: 'section', target: id });
+        if (!entries.some((e) => e.isIntersecting)) return;
+        emit({ type: 'section', target: id });
+        emit({ type: 'section', target: `${id}@${recordId}` });
       },
       { threshold: 0.6 },
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [id]);
+  }, [id, recordId]);
   return (
     <div ref={ref} className={`section-marker${id === 'record-end' ? ' end' : ''}`} data-section={id}>
       {id === 'record-end' ? `— ${label} —` : label}
@@ -80,7 +82,7 @@ function VisitorLog({ save }: { save: SaveData }) {
   );
 }
 
-function Block({ block, level, save, now, disturbed }: { block: RecordBlock; level: HorrorLevel; save: SaveData; now: number; disturbed: boolean }) {
+function Block({ block, level, save, now, disturbed, recordId }: { block: RecordBlock; level: HorrorLevel; save: SaveData; now: number; disturbed: boolean; recordId: string }) {
   const anomaly = useAnomaly('record-body');
   const t = (text: string) => fillTemplate(text, { save, now });
   switch (block.type) {
@@ -119,7 +121,7 @@ function Block({ block, level, save, now, disturbed }: { block: RecordBlock; lev
     case 'notice':
       return <div className="notice">{t(variantFor(block.text, block.variants, level))}</div>;
     case 'section':
-      return <SectionMarker id={block.id} label={block.label} />;
+      return <SectionMarker id={block.id} label={block.label} recordId={recordId} />;
     case 'secret-sentence':
       return <SecretSentence block={block} />;
     case 'visitor-log':
@@ -219,7 +221,7 @@ export function RecordPage({ id }: { id: string }) {
       </header>
       <div className="record-body">
         {record.blocks.map((block, i) => (
-          <Block key={i} block={block} level={level} save={save} now={now} disturbed={i === firstDisturbable} />
+          <Block key={i} block={block} level={level} save={save} now={now} disturbed={i === firstDisturbable} recordId={record.id} />
         ))}
         {id === '007' && (
           <div className="notice">

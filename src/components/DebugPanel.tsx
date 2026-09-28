@@ -124,6 +124,15 @@ export function DebugPanel() {
         <button type="button" onClick={() => setLastRandom(triggerRandomAnomaly() ?? 'none eligible')}>
           Random anomaly
         </button>
+        <button type="button" className="danger" onClick={() => fireAnomalyById('tape-lunge')}>
+          Jump scare
+        </button>
+        <button type="button" onClick={() => fireAnomalyById('ghost-stare')}>
+          Stare
+        </button>
+        <button type="button" onClick={() => fireAnomalyById('ghost-peek')}>
+          Peek
+        </button>
       </div>
       <div className="debug-group">
         <select value={pick} onChange={(e) => setPick(e.target.value)} aria-label="Anomaly">

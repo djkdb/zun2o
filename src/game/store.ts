@@ -407,7 +407,7 @@ export function triggerRandomAnomaly(): string | null {
       d.trigger.kind === 'ambient' &&
       ctx.level >= d.minLevel &&
       ctx.level <= d.maxLevel &&
-      (['screen', 'audio', 'scroll'].includes(d.target) || (ctx.mountedTargets[d.target] ?? 0) > 0),
+      (['screen', 'audio', 'scroll', 'scare'].includes(d.target) || (ctx.mountedTargets[d.target] ?? 0) > 0),
   );
   const def = pick(rng, pool);
   if (!def) return null;

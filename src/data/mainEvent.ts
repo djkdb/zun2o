@@ -12,12 +12,13 @@ export const MAIN_EVENT_TIMELINE: MainEventStep[] = [
   { at: 15000, stage: 'record', sound: 'type' }, //     a record types itself
   { at: 19500, stage: 'recall' }, //                    it recalls what you did
   { at: 25500, stage: 'photo', sound: 'anomaly' }, //   the photograph, facing you
-  { at: 27500, stage: 'navigate', sound: 'transition' }, // taken to Record 009
-  { at: 30000, stage: 'reveal', sound: 'unlock' }, //   the night archive
-  { at: 32000, stage: 'done' },
+  { at: 27400, stage: 'scare', sound: 'scream' }, //    …and then it is not in the photograph
+  { at: 29000, stage: 'navigate', sound: 'transition' }, // taken to Record 009
+  { at: 31500, stage: 'reveal', sound: 'unlock' }, //   the night archive
+  { at: 33500, stage: 'done' },
 ];
 
-export const MAIN_EVENT_DURATION = 32000;
+export const MAIN_EVENT_DURATION = 33500;
 
 export const NEW_TITLE = 'THE NIGHT ARCHIVES YOU';
 

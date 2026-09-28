@@ -26,6 +26,7 @@ const EVENT_ORDER: MainEventStage[] = [
   'record',
   'recall',
   'photo',
+  'scare',
   'navigate',
   'reveal',
   'done',

@@ -9,6 +9,7 @@ import { AudioController } from './components/AudioController';
 import { HorrorTransition } from './components/HorrorTransition';
 import { NoticeToast } from './components/NoticeToast';
 import { DebugPanel } from './components/DebugPanel';
+import { JumpScare } from './components/Ghost';
 import { IndexPage } from './pages/IndexPage';
 import { RecordsPage } from './pages/RecordsPage';
 import { RecordPage } from './pages/RecordPage';
@@ -137,6 +138,7 @@ export function App() {
       <AnomalyOverlay />
       <AudioController />
       <HorrorTransition />
+      <JumpScare />
       <NoticeToast />
       {debug && <DebugPanel />}
     </>
