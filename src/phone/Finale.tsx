@@ -328,7 +328,7 @@ export function Finale() {
       {step === 'off' && <div className="power-off" />}
       {blackout && <div className="blackout" />}
       {scare && (
-        <div className={`scare scare-lunge${save.reduceFx ? ' scare-reduced' : ''}`}>
+        <div className={`scare scare-lunge${step === 'video' ? ' from-pip' : ''}${save.reduceFx ? ' scare-reduced' : ''}`}>
           <GhostSvg className="ghost" distort />
         </div>
       )}

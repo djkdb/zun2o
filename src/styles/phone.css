@@ -2514,3 +2514,29 @@ svg {
 .flood-item {
   background: rgba(30, 30, 34, 0.98);
 }
+
+/* 02:00: she comes out of your own self-view window */
+.scare-lunge.from-pip .ghost {
+  transform-origin: 82% 16%;
+  animation:
+    lunge-pip 1.3s cubic-bezier(0.15, 0.9, 0.2, 1) both,
+    jitter 0.07s steps(2) infinite;
+}
+
+@keyframes lunge-pip {
+  0% {
+    transform: translate(28%, -30%) scale(0.12);
+    opacity: 1;
+  }
+  18% {
+    transform: translate(0, 0) scale(1.1);
+  }
+  85% {
+    transform: scale(1.6);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.75);
+    opacity: 0;
+  }
+}
