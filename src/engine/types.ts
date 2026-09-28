@@ -1,0 +1,150 @@
+// ─────────────────────────────────────────────────────────────────────────
+// 새벽 2시의 휴대폰 — shared types.
+// The story is data (content/script.ts): beats listen for events and run
+// actions. The director (engine/director.ts) executes them, persists
+// progress and resumes half-finished sequences after a reload.
+// ─────────────────────────────────────────────────────────────────────────
+
+export type AppId = 'messages' | 'gallery' | 'notes' | 'memos' | 'browser' | 'phone' | 'settings' | 'index';
+export type ThreadId = 'dohyun' | 'mom' | 'unknown' | 'self';
+export type EndingId = 'poweroff' | 'shift' | 'release';
+
+export type SoundId =
+  | 'click'
+  | 'hover'
+  | 'error'
+  | 'transition'
+  | 'unlock'
+  | 'anomaly'
+  | 'event'
+  | 'ending'
+  | 'whisper'
+  | 'type'
+  | 'thud'
+  | 'scream'
+  | 'ding'
+  | 'key'
+  | 'static'
+  | 'heartbeat'
+  | 'footsteps'
+  | 'drawer'
+  | 'glitch'
+  | 'hangup';
+
+export interface ChatMsg {
+  id: string;
+  from: 'them' | 'me' | 'system';
+  text: string;
+  /** Display time HH:MM (game clock at delivery, or scripted). */
+  time: string;
+  /** Day label for history messages ("9월 26일"). */
+  day?: string;
+}
+
+export interface ChoiceOption {
+  id: string;
+  label: string;
+  /** Free-text input instead of a fixed reply. Stored locally only. */
+  input?: 'name';
+  /** What the player "sends". Defaults to label. Empty = silent. */
+  reply?: string;
+}
+
+export interface PendingChoice {
+  thread: ThreadId;
+  id: string;
+  options: ChoiceOption[];
+}
+
+export type ScareKind = 'lunge' | 'peek' | 'flash' | 'reflect';
+
+export type Action =
+  | { t: 'wait'; ms: number }
+  | { t: 'msg'; th: ThreadId; text: string; from?: 'them' | 'me' | 'system'; typing?: number }
+  | { t: 'choice'; th: ThreadId; id: string; options: ChoiceOption[] }
+  | { t: 'notify'; app: AppId; title: string; body: string; open?: { thread?: ThreadId } }
+  | { t: 'flag'; f: string }
+  | { t: 'objective'; text: string; hint: string }
+  | { t: 'chapter'; n: number; title: string }
+  | { t: 'time'; hm: string; lost?: boolean }
+  | { t: 'battery'; v: number }
+  | { t: 'call'; id: string }
+  | { t: 'scare'; kind: ScareKind }
+  | { t: 'glitch'; ms: number }
+  | { t: 'sound'; id: SoundId }
+  | { t: 'install'; app: AppId }
+  | { t: 'note'; id: string }
+  | { t: 'shuffle' }
+  | { t: 'countdown'; from: string; to: string; stepMs: number }
+  | { t: 'emit'; ev: string }
+  | { t: 'finale' }
+  | { t: 'vibrate'; ms: number[] };
+
+export interface Beat {
+  id: string;
+  /** Event name. A trailing '*' matches any suffix. */
+  on: string;
+  requires?: string[];
+  forbids?: string[];
+  /** Can fire every time (default: once per playthrough). */
+  repeat?: boolean;
+  actions: Action[];
+}
+
+export interface CallLine {
+  at: number;
+  who: 'caller' | 'other' | 'sfx';
+  text: string;
+  /** Speak with speechSynthesis (subtitles are always shown). */
+  voice?: 'male' | 'female' | 'entity';
+}
+
+export interface CallScript {
+  id: string;
+  from: string;
+  /** Contact label on the incoming-call screen. */
+  label: string;
+  video?: boolean;
+  lines: CallLine[];
+  /** Choice shown at `choiceAt` ms; the call pauses until answered. */
+  choice?: { at: number; options: { id: string; label: string }[] };
+  after?: CallLine[];
+  duration: number;
+}
+
+export interface CallLogEntry {
+  who: string;
+  time: string;
+  kind: 'missed' | 'in' | 'out';
+  count?: number;
+}
+
+export interface Save {
+  v: 2;
+  started: boolean;
+  unlocked: boolean;
+  chapter: number;
+  flags: string[];
+  doneBeats: string[];
+  /** Sequences in progress: resume from `index` after a reload. */
+  running: { beat: string; index: number }[];
+  threads: Record<ThreadId, ChatMsg[]>;
+  unread: Record<ThreadId, number>;
+  choice: PendingChoice | null;
+  choices: Record<string, string>;
+  objective: { text: string; hint: string; since: number } | null;
+  clock: string; // game clock HH:MM
+  battery: number;
+  installed: AppId[];
+  notes: string[];
+  seenPhotos: string[];
+  calls: CallLogEntry[];
+  playerName: string | null;
+  startedAtReal: number;
+  endings: EndingId[];
+  lastEnding: EndingId | null;
+  shuffled: boolean;
+  sound: boolean;
+  reduceFx: boolean;
+  passcodeFails: number;
+}

@@ -1,0 +1,117 @@
+import { useState } from 'react';
+import { useGame } from '../../hooks/useGame';
+import { emit, openApp, sfx } from '../../engine/director';
+import { addFlag, getState, setSave } from '../../engine/state';
+import { ARCHIVE, ARCHIVE_LIST, ARCHIVE_SEQUENCE } from '../../content/archive';
+import { AppHeader } from '../AppHeader';
+import { AnnexPhoto, FloorPlan, ReadingRoomPhoto, Room02Photo, TowerPhoto } from '../../art/scenes';
+
+const PHOTO = {
+  'reading-room': () => <ReadingRoomPhoto level={3} stage={1} />,
+  annex: () => <AnnexPhoto level={3} />,
+  floorplan: () => <FloorPlan level={3} />,
+  tower: () => <TowerPhoto level={0} />,
+  'room-02': () => <Room02Photo level={5} />,
+};
+
+type View = { kind: 'home' } | { kind: 'archive' } | { kind: 'page'; id: string };
+
+function seenPages(): string[] {
+  return (getState().save.choices.archiveSeen ?? '').split(',').filter(Boolean);
+}
+
+export function BrowserApp() {
+  const [view, setView] = useState<View>({ kind: 'home' });
+  const [notice, setNotice] = useState<string | null>(null);
+  const indexed = useGame((s) => s.save.flags.includes('r013-indexed'));
+
+  const openPage = (id: string) => {
+    const page = ARCHIVE[id];
+    const seen = seenPages();
+    sfx('click');
+    if (page.access === 'restricted' && !(seen.includes('r001') && seen.includes('r003'))) {
+      setView({ kind: 'page', id: '__restricted' });
+      return;
+    }
+    const seq = [...(getState().save.choices.archiveSeq ?? '').split(',').filter(Boolean), id].slice(-3);
+    setSave((s) => ({
+      choices: { ...s.choices, archiveSeq: seq.join(','), archiveSeen: Array.from(new Set([...seen, id])).join(',') },
+    }));
+    setView({ kind: 'page', id });
+    emit(`browser:${id}`);
+    if (!indexed && seq.join(',') === ARCHIVE_SEQUENCE.join(',')) {
+      addFlag('r013-indexed');
+      setTimeout(() => {
+        sfx('unlock');
+        setNotice('기록 013이 색인에 추가되었습니다.');
+      }, 900);
+    }
+  };
+
+  const back = () => {
+    setNotice(null);
+    if (view.kind === 'page') setView({ kind: view.id === 'news' ? 'home' : 'archive' });
+    else if (view.kind === 'archive') setView({ kind: 'home' });
+    else openApp(null);
+  };
+
+  const url = view.kind === 'home' ? '즐겨찾기' : view.kind === 'archive' || (view.kind === 'page' && view.id !== 'news') ? 'nightarchive.or.kr' : 'haewon-ilbo.kr';
+
+  return (
+    <div className="browser">
+      <AppHeader title={url} onBack={back} backLabel={view.kind === 'home' ? '홈' : '뒤로'} />
+      {view.kind === 'home' && (
+        <div className="bookmarks">
+          <p className="bm-label">즐겨찾기</p>
+          <button type="button" className="bm" onClick={() => setView({ kind: 'archive' })}>
+            <span className="bm-icon archive">夜</span>
+            <span>
+              <strong>심야 기록보관소</strong>
+              <small>nightarchive.or.kr — 해원군청 별관 기록 보존</small>
+            </span>
+          </button>
+          <button type="button" className="bm" onClick={() => openPage('news')}>
+            <span className="bm-icon news">해</span>
+            <span>
+              <strong>해원일보 — 폐건물 촬영 나선 유튜버 실종</strong>
+              <small>오늘 · 방문 기록 없음</small>
+            </span>
+          </button>
+        </div>
+      )}
+      {view.kind === 'archive' && (
+        <div className="archive">
+          <h2>심야 기록보관소</h2>
+          <p className="archive-sub">1995년 폐쇄된 해원군청 별관 기록 · 자원봉사자 운영 · 최종 수정 2004.11.02</p>
+          <ul>
+            {[...ARCHIVE_LIST, ...(indexed ? ['r013'] : [])].map((id) => (
+              <li key={id}>
+                <button type="button" className={id === 'r013' ? 'new' : undefined} onClick={() => openPage(id)}>
+                  {ARCHIVE[id].title}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {view.kind === 'page' && view.id === '__restricted' && (
+        <div className="archive-page denied">
+          <div className="stamp">열람 제한</div>
+          <p>이 기록이 참조하는 기록(001, 003)을 먼저 열람한 사람만 볼 수 있습니다.</p>
+        </div>
+      )}
+      {view.kind === 'page' && ARCHIVE[view.id] && (
+        <article className={`archive-page${ARCHIVE[view.id].access === 'denied' ? ' denied' : ''}`}>
+          <h2>{ARCHIVE[view.id].title}</h2>
+          {ARCHIVE[view.id].photo && <div className="archive-photo">{PHOTO[ARCHIVE[view.id].photo!]()}</div>}
+          {ARCHIVE[view.id].lines.map((l, i) => (
+            <p key={i} className={l.includes('HAEWON-0200') ? 'key-line' : undefined}>
+              {l}
+            </p>
+          ))}
+          {notice && <div className="archive-notice">{notice}</div>}
+        </article>
+      )}
+    </div>
+  );
+}

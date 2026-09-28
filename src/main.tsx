@@ -1,37 +1,52 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import '@fontsource/ibm-plex-sans/400.css';
-import '@fontsource/ibm-plex-sans/500.css';
-import '@fontsource/ibm-plex-sans/600.css';
-import '@fontsource/ibm-plex-serif/400.css';
-import '@fontsource/ibm-plex-serif/400-italic.css';
-import '@fontsource/ibm-plex-mono/400.css';
-import '@fontsource/ibm-plex-mono/500.css';
 import '@fontsource/ibm-plex-sans-kr/400.css';
 import '@fontsource/ibm-plex-sans-kr/500.css';
 import '@fontsource/ibm-plex-sans-kr/600.css';
-import '@fontsource/noto-serif-kr/400.css';
-import '@fontsource/nanum-pen-script/400.css';
-import './styles/base.css';
-import './styles/components.css';
-import './styles/effects.css';
-import './styles/pages.css';
-import './styles/debug.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import './styles/phone.css';
 import { App } from './App';
-import { bootstrap } from './game/store';
-import { setVirtualTime } from './game/clock';
-import { detectDebug, detectStartTime } from './utils/env';
-import { parseClockString } from './utils/time';
+import { flush, getState, initState } from './engine/state';
+import { connectAudio, emit, resume, setSpeed } from './engine/director';
+import { audio } from './audio/engine';
+import { setSpeechEnabled } from './audio/speech';
 
-const debug = detectDebug();
+const params = new URLSearchParams(window.location.search);
+const debug = params.get('debug') === '1' || params.get('debug') === 'true';
+initState(debug);
 
-// ?debug=true&t=01:59:50 — start at a given local time (for filming / QA).
-// Applied before bootstrap so the visit itself is recorded at that time.
-const start = debug ? detectStartTime() : null;
-const parsed = start ? parseClockString(start) : null;
-if (parsed) setVirtualTime(parsed.hours, parsed.minutes, parsed.seconds);
+connectAudio(
+  (id) => {
+    if (getState().save.sound) audio.play(id);
+  },
+  (id, on) => audio.setLoop(id, on && getState().save.sound),
+);
+setSpeechEnabled(getState().save.sound);
 
-bootstrap(debug);
+// Returning player: sound resumes on their first touch (autoplay policy).
+const unlockOnce = async () => {
+  window.removeEventListener('pointerdown', unlockOnce);
+  if (!getState().save.sound) return;
+  await audio.unlock();
+  audio.setEnabled(true);
+};
+window.addEventListener('pointerdown', unlockOnce);
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') {
+    flush();
+    audio.suspend();
+  } else audio.resume();
+});
+window.addEventListener('pagehide', flush);
+
+if (debug) {
+  const speed = Number(params.get('speed'));
+  if (speed > 0) setSpeed(speed);
+  (window as unknown as { __game: unknown }).__game = { emit, getState, setSpeed };
+}
+
+resume();
 
 const root = document.getElementById('root');
 if (root) {

@@ -1,0 +1,94 @@
+// The browser app: the old "심야 기록보관소" fan archive 채원 was researching,
+// plus a news article about her. Kept short — this is a game, not homework.
+
+export interface ArchivePage {
+  id: string;
+  title: string;
+  lines: string[];
+  photo?: 'reading-room' | 'annex' | 'floorplan' | 'tower' | 'room-02';
+  access?: 'restricted' | 'denied' | 'hidden';
+}
+
+export const ARCHIVE_LIST = ['r001', 'r002', 'r003', 'r005', 'r007', 'r009'];
+
+export const ARCHIVE: Record<string, ArchivePage> = {
+  r001: {
+    id: 'r001',
+    title: '기록 001 — 해원방송 심야 송출 일지',
+    photo: 'tower',
+    lines: [
+      '해원방송(AM 1340kHz) 야간 운영자의 일지, 1994년 3월 15일.',
+      '02:00 — 무음 61초. 반송파 아래로 여자 목소리가 숫자를 읽음.',
+      '운영자 메모: “공공일. 공공삼. 공공칠. 일삼. 그리고 숫자가 아닌 무언가. 이 근방에 다른 방송국은 없다.”',
+    ],
+  },
+  r002: {
+    id: 'r002',
+    title: '기록 002 — 기상 관측 기록',
+    lines: ['1994년 3월 14일 별관 옥상 관측소.', '01:59 — 3.8 °C', '02:00 — −11.0 °C (계기 오류?)', '연필 메모: “건물 안 시계가 전부 같은 분에 멈췄다.”'],
+  },
+  r003: {
+    id: 'r003',
+    title: '기록 003 — 실종자 신고: 서미령',
+    photo: 'reading-room',
+    lines: [
+      '성명: 서미령 (41) · 해원군청 별관 야간 기록사',
+      '1994년 3월 14일 01:50경 열람실에서 마지막으로 목격. 외투는 의자에, 색인 서랍은 열린 채.',
+      '재고 조사표 마지막 줄: “색인은 밤이 되면 길어진다.”',
+      '열람실 시계는 02:00에 멈춰 있었다.',
+    ],
+  },
+  r005: {
+    id: 'r005',
+    title: '기록 005 — 해원군청 별관 (폐쇄)',
+    photo: 'floorplan',
+    lines: ['1995년 11월 폐쇄. 사유: “02:00 전후 반복되는 전기 이상.”', '02호실(색인실)은 밤마다 서랍 여는 소리가 들린다는 이유로 봉인. 내부 물품은 이관되지 않았다.'],
+  },
+  r007: {
+    id: 'r007',
+    title: '기록 007 — 접근 기록 (열람 제한)',
+    access: 'restricted',
+    lines: [
+      '야간 색인 접근 기록. 1994년 3월 15일 출력.',
+      '02:00 03/14 — 색인 열림 — 담당: 서미령',
+      '02:00 03/14 — 기록 013 생성 — 담당: 없음',
+      '02:01 03/14 — 서미령 — 상태: 근무 중',
+      '방송 순서를 따라온 열람자는 013으로 넘어갈 수 있다.',
+    ],
+  },
+  r009: {
+    id: 'r009',
+    title: '기록 009 — [접근 거부]',
+    access: 'denied',
+    lines: ['이 기록은 02:00–02:59 사이에만 열람할 수 있습니다.'],
+  },
+  r013: {
+    id: 'r013',
+    title: '기록 013 — 색인 연장',
+    access: 'hidden',
+    photo: 'room-02',
+    lines: [
+      '이 기록은 직원이 등록한 것이 아닙니다.',
+      '색인은 매일 밤 02:00, 방문자 한 명을 근무자로 등록합니다. 근무자는 다음 방문자가 올 때까지 남습니다.',
+      '색인을 끝내는 방법은 하나뿐입니다. 02:00에, 연장 열쇠와 첫 근무자의 이름을 함께 입력할 것.',
+      '연장 열쇠: HAEWON-0200',
+      '(첫 근무자의 이름은 기록 003에 있습니다.)',
+    ],
+  },
+  news: {
+    id: 'news',
+    title: '해원일보 — 폐건물 촬영 나선 유튜버 실종',
+    photo: 'annex',
+    lines: [
+      '[해원일보] 폐쇄된 해원군청 별관에서 심야 촬영을 하던 유튜버 윤채원(24) 씨가 실종돼 경찰이 수색 중이다.',
+      '동행한 박도현(25) 씨는 “27일 새벽 1시 13분 건물에 들어간 뒤 연락이 끊겼다”고 말했다.',
+      '경찰에 따르면 윤 씨의 휴대전화 신호는 별관 정문 앞에서 마지막으로 잡혔다. 3층 02호실 입구는 1995년 폐쇄 이후 벽돌로 막혀 있는 상태다.',
+      '한 수사 관계자는 “벽돌이 안쪽에서 쌓인 것처럼 보인다”고 말했다.',
+    ],
+  },
+};
+
+/** Opening these in order (consecutively) reveals 013. */
+export const ARCHIVE_SEQUENCE = ['r001', 'r003', 'r007'];
+export const CONTINUATION_KEY = 'HAEWON-0200';
+export const FIRST_KEEPER = '서미령';
