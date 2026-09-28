@@ -46,6 +46,11 @@ export function BrowserApp() {
     setView({ kind: 'page', id });
     emit(`browser:${id}`);
     if (!indexed && seq.join(',') === ARCHIVE_SEQUENCE.join(',')) {
+      // Too early: record 013 is being written about *you*, and you aren't there yet.
+      if (!getState().save.flags.includes('self-contact')) {
+        setTimeout(() => setNotice('기록 013 — 작성 중입니다. 나중에 다시 순서대로 열람하세요.'), 900);
+        return;
+      }
       addFlag('r013-indexed');
       setTimeout(() => {
         sfx('unlock');

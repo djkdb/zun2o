@@ -49,6 +49,10 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
   const [edit, setEdit] = useState(false);
   const [brightness, setBrightness] = useState(0);
   const touch = useRef<number | null>(null);
+  // Double-tap to zoom 2.5×, drag to look around.
+  const [zoom, setZoom] = useState<{ x: number; y: number } | null>(null);
+  const press = useRef<{ x: number; y: number; ox: number; oy: number; moved: boolean } | null>(null);
+  const lastTap = useRef(0);
   const photo = list[i];
 
   useEffect(() => {
@@ -64,6 +68,7 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
     setI(n);
     setEdit(false);
     setBrightness(0);
+    setZoom(null);
     sfx('click');
   };
 
@@ -80,22 +85,67 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
     }
   };
 
+  const onDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    press.current = { x: e.clientX, y: e.clientY, ox: zoom?.x ?? 50, oy: zoom?.y ?? 50, moved: false };
+  };
+  const onMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const p = press.current;
+    if (!p) return;
+    const dx = e.clientX - p.x;
+    const dy = e.clientY - p.y;
+    if (Math.abs(dx) + Math.abs(dy) > 8) p.moved = true;
+    if (!zoom || !p.moved) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    const clamp = (v: number) => Math.max(0, Math.min(100, v));
+    setZoom({ x: clamp(p.ox - (dx / r.width) * 70), y: clamp(p.oy - (dy / r.height) * 70) });
+  };
+  const onUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    const p = press.current;
+    press.current = null;
+    if (!p || p.moved || edit) return;
+    const now = Date.now();
+    if (now - lastTap.current > 320) {
+      lastTap.current = now;
+      return;
+    }
+    lastTap.current = 0;
+    if (zoom) {
+      setZoom(null);
+      return;
+    }
+    const r = e.currentTarget.getBoundingClientRect();
+    setZoom({ x: ((e.clientX - r.left) / r.width) * 100, y: ((e.clientY - r.top) / r.height) * 100 });
+    sfx('click');
+    emit(`photo:${photo.id}:zoom`);
+  };
+
   return (
     <div
       className="viewer"
       onTouchStart={(e) => (touch.current = e.touches[0].clientX)}
       onTouchEnd={(e) => {
-        if (touch.current === null) return;
+        if (touch.current === null || zoom) return;
         const dx = e.changedTouches[0].clientX - touch.current;
         touch.current = null;
         if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
       }}
     >
       <AppHeader title={photo.time} subtitle={photo.album === 'hidden' ? '숨김' : '9월 27일'} onBack={onClose} backLabel="앨범" />
-      <div className={`viewer-img${photo.portrait ? ' portrait' : ''}`}>
-        <PhotoView id={photo.id} brightness={brightness} />
+      <div
+        className={`viewer-img${photo.portrait ? ' portrait' : ''}${zoom ? ' zoomed' : ''}`}
+        onPointerDown={onDown}
+        onPointerMove={onMove}
+        onPointerUp={onUp}
+        onPointerCancel={() => (press.current = null)}
+      >
+        <div className="viewer-zoom" style={zoom ? { transform: 'scale(2.5)', transformOrigin: `${zoom.x}% ${zoom.y}%` } : undefined}>
+          <PhotoView id={photo.id} brightness={brightness} />
+        </div>
       </div>
-      <p className="viewer-caption">{photo.caption || ' '}</p>
+      <p className="viewer-caption">
+        {photo.caption || ' '}
+        {!edit && <small className="viewer-zoomhint">{zoom ? '두 번 탭: 원래대로' : '두 번 탭: 확대'}</small>}
+      </p>
       {edit && photo.id === 'p07' ? (
         <div className="editor">
           <label htmlFor="bright">밝기</label>
@@ -136,7 +186,7 @@ function HiddenLock({ onOpen, onBack }: { onOpen: () => void; onBack: () => void
     setTimeout(() => {
       if (next === HIDDEN_ALBUM_CODE) {
         sfx('unlock');
-        addFlag('album-open');
+        addFlag('album-code');
         emit('album:unlock');
         onOpen();
       } else {
@@ -174,16 +224,33 @@ function HiddenLock({ onOpen, onBack }: { onOpen: () => void; onBack: () => void
   );
 }
 
+function SyncingAlbum({ onBack }: { onBack: () => void }) {
+  return (
+    <div className="gallery">
+      <AppHeader title="숨김" onBack={onBack} backLabel="앨범" />
+      <p className="sync-note">클라우드에서 사진을 받는 중… (0/5)</p>
+      <div className="grid">
+        {[0, 1, 2, 3, 4].map((i) => (
+          <span key={i} className="thumb syncing" aria-label="동기화 중인 사진" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function GalleryApp() {
   const [album, setAlbum] = useState<'recent' | 'hidden' | null>(null);
   const [open, setOpen] = useState<number | null>(null);
   const [locked, setLocked] = useState(true);
-  const albumOpen = useGame((s) => s.save.flags.includes('album-open'));
+  const albumOpen = useGame((s) => s.save.flags.includes('album-code') || s.save.flags.includes('album-open'));
+  // The code can be found early, but the photos only arrive once 02:00 wants you to see them.
+  const synced = useGame((s) => s.save.chapter >= 3);
   const seen = useGame((s) => s.save.seenPhotos);
   const extra = useGame((s) => s.save.photos);
   const visible = (p: PhotoItem) => !p.extra || extra.includes(p.id);
 
   if (album === 'hidden' && !albumOpen && locked) return <HiddenLock onOpen={() => setLocked(false)} onBack={() => setAlbum(null)} />;
+  if (album === 'hidden' && !synced) return <SyncingAlbum onBack={() => setAlbum(null)} />;
   const list = album ? PHOTOS.filter((p) => p.album === album && visible(p)) : [];
   if (album && open !== null) return <Viewer list={list} index={open} onClose={() => setOpen(null)} />;
 
@@ -217,9 +284,9 @@ export function GalleryApp() {
           <small>{recent.length}</small>
         </button>
         <button type="button" className="album" onClick={() => setAlbum('hidden')}>
-          <span className="album-cover locked">{albumOpen ? <PhotoView id="h01" /> : <span className="lock-glyph">🔒</span>}</span>
+          <span className="album-cover locked">{albumOpen && synced ? <PhotoView id="h01" /> : <span className="lock-glyph">{albumOpen ? '☁' : '🔒'}</span>}</span>
           <strong>숨김</strong>
-          <small>{albumOpen ? 5 : '잠김'}</small>
+          <small>{!albumOpen ? '잠김' : synced ? 5 : '동기화 중'}</small>
         </button>
       </div>
     </div>

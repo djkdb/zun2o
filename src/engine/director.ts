@@ -126,6 +126,8 @@ function isViewing(th: ThreadId): boolean {
 }
 
 export function showBanner(app: AppId, title: string, body: string, thread?: ThreadId): void {
+  // Nothing drops over a recording that is playing; the unread badge is enough.
+  if (getState().rt.memoPlaying) return;
   const id = bannerSeq++;
   setRt({ banner: { id, app, title, body, thread } });
   sfx('ding');
@@ -152,6 +154,15 @@ function toMinutes(hm: string): number {
 function fromMinutes(n: number): string {
   const x = ((n % 1440) + 1440) % 1440;
   return `${String(Math.floor(x / 60)).padStart(2, '0')}:${String(x % 60).padStart(2, '0')}`;
+}
+
+/** Never cover what the player is listening to: hold pop-ups during memos and calls. */
+async function whenFree(myEpoch: number): Promise<void> {
+  const busy = () => {
+    const r = getState().rt;
+    return r.memoPlaying || r.activeCall !== null || r.incoming !== null;
+  };
+  while (busy() && myEpoch === epoch) await sleepReal(400);
 }
 
 async function perform(a: Action, myEpoch: number): Promise<void> {
@@ -182,6 +193,7 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
       setSave({ choice: { thread: a.th, id: a.id, options: a.options } });
       return;
     case 'notify':
+      await whenFree(myEpoch);
       showBanner(a.app, a.title, a.body, a.open?.thread);
       return;
     case 'flag':
@@ -207,13 +219,14 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
       setSave({ battery: a.v });
       return;
     case 'call':
-      if (getState().rt.activeCall || getState().rt.incoming) await sleep(4000);
+      await whenFree(myEpoch);
+      if (myEpoch !== epoch) return;
       setRt({ incoming: a.id });
       loop('ring', true);
       vibrate([400, 200, 400, 200, 400]);
       return;
     case 'scare':
-      setRt({ scare: { kind: a.kind, nonce: nonce++ } });
+      setRt({ scare: { kind: a.kind, nonce: nonce++, look: a.look } });
       if (a.kind === 'lunge') {
         sfx('scream');
         vibrate([300, 60, 500]);
@@ -276,6 +289,7 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
       sfx('glitch');
       return;
     case 'dialog':
+      await whenFree(myEpoch);
       setRt({ dialog: { title: a.title, body: fill(a.body) } });
       sfx('error');
       return;

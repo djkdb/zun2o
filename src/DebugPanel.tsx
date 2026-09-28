@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { emit, newGame, setSpeed } from './engine/director';
-import { addFlag, getState, setRt, setSave } from './engine/state';
+import { addFlag, getState, saveCheckpoint, setRt, setSave } from './engine/state';
 import { useGame } from './hooks/useGame';
 
 // ?debug=1 — jump between chapters, fast-forward waits, trigger the finale.
@@ -9,8 +9,8 @@ const JUMPS: [string, () => void][] = [
   ['CH1', () => (setSave({ started: true, unlocked: true }), emit('start'), emit('unlock'))],
   ['CH2', () => (setSave({ started: true, unlocked: true }), ['unlocked', 'reveal-scare'].forEach(addFlag), emit('call1:done'))],
   ['CH3', () => (setSave({ started: true, unlocked: true, playerName: getState().save.playerName ?? '테스터' }), ['unlocked', 'reveal-scare', 'call1-done', 'memo-done', 'gave-name'].forEach(addFlag), emit('c2:done'))],
-  ['CH4', () => (setSave({ started: true, unlocked: true }), ['unlocked', 'reveal-scare', 'call1-done', 'memo-done', 'album-open', 'selfie-scare', 'self-contact', 'read-miryeong', 'found-key'].forEach(addFlag), emit('ch4'))],
-  ['02:00', () => (setSave({ started: true, unlocked: true }), addFlag('found-key'), addFlag('finale'), setRt({ finale: true }))],
+  ['CH4', () => (setSave({ started: true, unlocked: true }), ['unlocked', 'reveal-scare', 'call1-done', 'memo-done', 'ch3', 'album-code', 'album-open', 'selfie-scare', 'self-contact', 'read-miryeong', 'found-key'].forEach(addFlag), emit('ch4'))],
+  ['02:00', () => (setSave({ started: true, unlocked: true, chapter: 4 }), addFlag('found-key'), saveCheckpoint(), addFlag('finale'), setRt({ finale: true }))],
 ];
 
 export function DebugPanel() {
@@ -53,6 +53,20 @@ export function DebugPanel() {
         <button type="button" onClick={newGame}>
           새 게임
         </button>
+      </div>
+      <div className="dbg-row">
+        {(['hang', 'profile', 'face', 'curtain'] as const).map((look) => (
+          <button
+            key={look}
+            type="button"
+            onClick={() => {
+              setRt({ scare: { kind: look === 'curtain' ? 'reflect' : 'lunge', nonce: Date.now(), look } });
+              setTimeout(() => setRt({ scare: null }), 1300);
+            }}
+          >
+            {look}
+          </button>
+        ))}
       </div>
       <div className="dbg-flags">{flags.join(', ')}</div>
     </div>

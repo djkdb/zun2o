@@ -76,7 +76,7 @@ export type Action =
   | { t: 'time'; hm: string; lost?: boolean }
   | { t: 'battery'; v: number }
   | { t: 'call'; id: string }
-  | { t: 'scare'; kind: ScareKind }
+  | { t: 'scare'; kind: ScareKind; look?: 'face' | 'hang' | 'profile' | 'curtain' }
   | { t: 'glitch'; ms: number }
   | { t: 'sound'; id: SoundId }
   | { t: 'install'; app: AppId }

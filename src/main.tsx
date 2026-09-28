@@ -9,7 +9,7 @@ import { App } from './App';
 import { flush, getState, initState } from './engine/state';
 import { applyChapterMix, connectAudio, emit, onReturn, resume, setSpeed, startLifeTicker } from './engine/director';
 import { audio } from './audio/engine';
-import { setSpeechEnabled } from './audio/speech';
+import { setEntityLayer, setSpeechEnabled } from './audio/speech';
 
 const params = new URLSearchParams(window.location.search);
 const debug = params.get('debug') === '1' || params.get('debug') === 'true';
@@ -23,6 +23,9 @@ connectAudio(
   (a, d, s, b) => audio.setMix(a, d, s, b),
 );
 setSpeechEnabled(getState().save.sound);
+setEntityLayer((text) => {
+  if (getState().save.sound) audio.voice(text);
+});
 
 // Returning player: sound resumes on their first touch (autoplay policy).
 const unlockOnce = async () => {

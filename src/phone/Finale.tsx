@@ -222,7 +222,7 @@ export function Finale() {
   };
 
   return (
-    <div className={`finale finale-${step}`}>
+    <div className={`finale step-${step}`}>
       {(step === 'freeze' || step === 'flood' || step === 'strip') && (
         <>
           <div className="finale-clock">02:00</div>
@@ -330,6 +330,7 @@ export function Finale() {
       {scare && (
         <div className={`scare scare-lunge${step === 'video' ? ' from-pip' : ''}${save.reduceFx ? ' scare-reduced' : ''}`}>
           <GhostSvg className="ghost" distort />
+          <div className="scare-grain" />
         </div>
       )}
     </div>

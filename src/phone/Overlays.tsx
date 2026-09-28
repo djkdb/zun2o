@@ -12,6 +12,11 @@ import { CallIcon } from './CallIcon';
 export function BannerView() {
   const banner = useGame((s) => s.rt.banner);
   const finale = useGame((s) => s.rt.finale);
+  const listening = useGame((s) => s.rt.memoPlaying);
+  // Inside an app the banner drops *below* the app header, so it never
+  // swallows a tap meant for the back button.
+  const inApp = useGame((s) => s.rt.app !== null && s.save.unlocked);
+  const swipe = useRef<number | null>(null);
   useEffect(() => {
     if (!banner) return;
     const off = (e: PointerEvent) => {
@@ -20,7 +25,7 @@ export function BannerView() {
     window.addEventListener('pointerdown', off, true);
     return () => window.removeEventListener('pointerdown', off, true);
   }, [banner]);
-  if (!banner || finale) return null;
+  if (!banner || finale || listening) return null;
   const open = () => {
     setRt({ banner: null });
     if (banner.thread) openThread(banner.thread);
@@ -28,7 +33,22 @@ export function BannerView() {
   };
   const avatar = banner.thread ? THREAD_META[banner.thread] : null;
   return (
-    <button key={banner.id} type="button" className="banner" onClick={open}>
+    <button
+      key={banner.id}
+      type="button"
+      className={`banner${inApp ? ' in-app' : ''}`}
+      onClick={open}
+      onTouchStart={(e) => (swipe.current = e.touches[0].clientY)}
+      onTouchEnd={(e) => {
+        const y0 = swipe.current;
+        swipe.current = null;
+        // Flick it up to dismiss.
+        if (y0 !== null && e.changedTouches[0].clientY - y0 < -24) {
+          e.preventDefault();
+          setRt({ banner: null });
+        }
+      }}
+    >
       <span className="banner-icon" style={{ background: avatar?.color ?? '#111' }}>
         {avatar?.avatar ?? '夜'}
       </span>
@@ -76,6 +96,8 @@ function ActiveCall({ id }: { id: string }) {
   const [choice, setChoice] = useState(false);
   const [phase, setPhase] = useState<'main' | 'after'>('main');
   const [elapsed, setElapsed] = useState(0);
+  // The moment the voice on 도현's line stops being 도현.
+  const [hijacked, setHijacked] = useState(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const call = CALLS[id] ?? null;
 
@@ -90,7 +112,8 @@ function ActiveCall({ id }: { id: string }) {
           if (l.who === 'sfx') sfx(l.text.includes('종료') ? 'hangup' : 'static');
           else if (sound && l.voice) speak(l.text, l.voice);
           // When *she* speaks on the line, her face flickers on the screen.
-          if (l.who === 'other' && call.id === 'dohyun1') {
+          if (l.who === 'other' && call.from === 'dohyun') setHijacked(true);
+          if (l.who === 'other' && call.from === 'dohyun') {
             setRt({ scare: { kind: 'reflect', nonce: Date.now() } });
             setTimeout(() => setRt({ scare: null }), 320);
           }
@@ -133,8 +156,8 @@ function ActiveCall({ id }: { id: string }) {
   return (
     <div className="callscreen" role="dialog" aria-label="통화 중">
       <div className="call-top">
-        <span className="call-avatar">{call.label.slice(0, 1)}</span>
-        <h2>{call.label}</h2>
+        <span className={`call-avatar${hijacked ? ' hijacked' : ''}`}>{hijacked ? '?' : call.label.slice(0, 1)}</span>
+        <h2 className={hijacked ? 'hijacked' : undefined}>{hijacked ? '02:00' : call.label}</h2>
         <small>
           {Math.floor(elapsed / 60)}:{String(elapsed % 60).padStart(2, '0')}
         </small>
@@ -178,9 +201,12 @@ export function ScareOverlay() {
   const scare = useGame((s) => s.rt.scare);
   const reduce = useGame((s) => s.save.reduceFx);
   if (!scare) return null;
+  // Big scares say which look; the small ones never show her face.
+  const look = scare.look ?? (scare.kind === 'lunge' ? 'face' : 'curtain');
   return (
-    <div key={scare.nonce} className={`scare scare-${scare.kind}${reduce ? ' scare-reduced' : ''}`} aria-hidden="true">
-      {scare.kind !== 'flash' && <GhostSvg className="ghost" distort />}
+    <div key={scare.nonce} className={`scare scare-${scare.kind} look-${look}${reduce ? ' scare-reduced' : ''}`} aria-hidden="true">
+      {scare.kind !== 'flash' && <GhostSvg className="ghost" look={look} distort />}
+      {scare.kind === 'lunge' && <div className="scare-grain" />}
     </div>
   );
 }

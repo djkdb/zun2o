@@ -1,6 +1,7 @@
 import type { AppId, ChatMsg, EndingId, ScareKind, Save, ThreadId } from './types';
 import { INITIAL_THREADS, INITIAL_UNREAD } from '../content/threads';
 import { readItem, removeItem, writeItem } from './storage';
+import type { GhostLook } from '../art/Ghost';
 
 // ─────────────────────────────────────────────────────────────────────────
 // Game state: a persisted Save (localStorage) + volatile Runtime (what is on
@@ -24,7 +25,7 @@ export interface Runtime {
   banner: Banner | null;
   incoming: string | null;
   activeCall: string | null;
-  scare: { kind: ScareKind; nonce: number } | null;
+  scare: { kind: ScareKind; nonce: number; look?: GhostLook } | null;
   glitchUntil: number;
   chapterCard: { n: number; title: string; nonce: number } | null;
   lostNonce: number;
@@ -34,6 +35,8 @@ export interface Runtime {
   /** Text appearing in a reply box by itself. */
   draft: { th: ThreadId; text: string } | null;
   hintOpen: boolean;
+  /** A voice memo is playing: scripted pop-ups wait until it ends. */
+  memoPlaying: boolean;
   audioReady: boolean;
   debug: boolean;
 }
@@ -126,6 +129,7 @@ const initialRuntime = (debug: boolean): Runtime => ({
   dialog: null,
   draft: null,
   hintOpen: false,
+  memoPlaying: false,
   audioReady: false,
   debug,
 });

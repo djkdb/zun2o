@@ -1,5 +1,5 @@
 import { memo, useId } from 'react';
-import { GhostFaceShape } from './Ghost';
+import { GhostCurtain, GhostHanging, GhostProfile } from './Ghost';
 
 // Photos taken on 채원's phone inside the Annex. Phone-camera look: flash
 // falloff, noise, crushed blacks. All SVG — no third-party imagery.
@@ -202,11 +202,17 @@ function ChaewonDefs({ id, blur }: { id: string; blur: string }) {
       <filter id={`${id}-blur`} x="-10%" y="-10%" width="120%" height="120%">
         <feGaussianBlur stdDeviation={blur} />
       </filter>
-      <radialGradient id={`${id}-skin`} cx="50%" cy="80%" r="75%">
-        <stop offset="0%" stopColor="#d9bda8" />
-        <stop offset="55%" stopColor="#9a7c6a" />
-        <stop offset="100%" stopColor="#2a1f1a" />
-      </radialGradient>
+      {/* phone light from below: bright chin, eyes and forehead lost in shadow */}
+      <linearGradient id={`${id}-skin`} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="#0d0a09" />
+        <stop offset="38%" stopColor="#2b211c" />
+        <stop offset="72%" stopColor="#8a6f60" />
+        <stop offset="100%" stopColor="#d4b8a3" />
+      </linearGradient>
+      <linearGradient id={`${id}-neck`} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="#6e5a4e" />
+        <stop offset="100%" stopColor="#120e0c" />
+      </linearGradient>
     </defs>
   );
 }
@@ -222,11 +228,11 @@ function ChaewonFigure({ id }: { id: string }) {
       <ellipse cx="210" cy="278" rx="64" ry="86" fill={`url(#${id}-skin)`} />
       <path d="M140 252 C150 176 270 166 282 252 C266 220 242 206 212 206 C182 206 156 220 140 252 Z" fill="#070606" />
       <path d="M146 262 C140 300 150 330 170 350" stroke="#070606" strokeWidth="18" fill="none" strokeLinecap="round" />
-      <ellipse cx="184" cy="262" rx="14" ry="9" fill="#0b0807" opacity="0.75" />
-      <ellipse cx="236" cy="262" rx="14" ry="9" fill="#0b0807" opacity="0.75" />
-      <circle cx="188" cy="263" r="1.6" fill="#d8d4cc" opacity="0.7" />
-      <circle cx="240" cy="263" r="1.6" fill="#d8d4cc" opacity="0.7" />
-      <rect x="178" y="356" width="64" height="70" fill="#5a4a41" />
+      {/* only the wet glint of her eyes catches the light */}
+      <circle cx="188" cy="264" r="1.8" fill="#e8e2d8" opacity="0.8" />
+      <circle cx="238" cy="264" r="1.8" fill="#e8e2d8" opacity="0.8" />
+      <ellipse cx="210" cy="334" rx="7" ry="5" fill="#1a110e" opacity="0.85" />
+      <rect x="178" y="356" width="64" height="70" fill={`url(#${id}-neck)`} />
     </g>
   );
 }
@@ -244,14 +250,15 @@ export const SelfiePhoto = memo(function SelfiePhoto({ stage }: { stage: 1 | 2 }
           Array.from({ length: 6 }).map((__, c) => <rect key={`${r}${c}`} x={10 + c * 70} y={10 + r * 46} width="62" height="38" fill="#1c1813" />),
         )}
         {/* her behind 채원 */}
+        {/* stage 1: far back, between the shelves. stage 2: her cheek against 채원's hair */}
         {stage === 1 && (
-          <g transform="translate(318 170) scale(0.28)" opacity="0.55">
-            <GhostFaceShape distort={false} />
+          <g transform="translate(330 180) scale(0.3)" opacity="0.5">
+            <GhostCurtain distort={false} />
           </g>
         )}
         {stage === 2 && (
-          <g transform="translate(300 232) scale(0.62)" opacity="0.95">
-            <GhostFaceShape distort={false} />
+          <g transform="translate(362 236) scale(0.72)" opacity="0.96">
+            <GhostProfile distort={false} />
           </g>
         )}
         <ChaewonFigure id={id} />
@@ -279,12 +286,13 @@ export const BlackPhoto = memo(function BlackPhoto({ brightness = 0 }: { brightn
         {/* an empty chair, a desk… nothing else. Until there is. */}
         <rect x="150" y="400" width="120" height="14" fill="#1d1812" />
         <rect x="186" y="330" width="48" height="70" rx="4" fill="#120f0b" />
-        {b >= 0.92 && (
-          <g transform="translate(210 290) scale(1.25)">
-            <GhostFaceShape distort={false} />
-          </g>
-        )}
       </g>
+      {/* she was on the ceiling, right above the lens — outside the brightness boost, so she stays grey */}
+      {b >= 0.92 && (
+        <g transform="translate(222 150) scale(0.85)" style={{ filter: 'brightness(0.8) contrast(1.15)' }}>
+          <GhostHanging distort={false} />
+        </g>
+      )}
       <text x="14" y="30" fontFamily="IBM Plex Mono, monospace" fontSize="15" fill="#ff5a3c" opacity={0.25 + b * 0.5}>
         01:59
       </text>
@@ -303,23 +311,34 @@ export const BoothPhoto = memo(function BoothPhoto({ behind = false }: { behind?
         <polygon points="0,420 640,420 520,150 120,150" fill="#101114" />
         <line x1="120" y1="150" x2="0" y2="420" stroke="#1a1b1f" strokeWidth="3" />
         <line x1="520" y1="150" x2="640" y2="420" stroke="#1a1b1f" strokeWidth="3" />
-        <rect x="300" y="250" width="56" height="92" fill="#cfd6c4" opacity="0.18" />
-        <rect x="300" y="250" width="56" height="92" fill="none" stroke="#7f8a78" strokeWidth="3" />
-        <ellipse cx="328" cy="296" rx="70" ry="60" fill="#dfe6d0" opacity="0.06" />
-        <ellipse cx="328" cy="286" rx="6" ry="7" fill="#0a0a0a" />
-        <path d="M319 294 L337 294 L340 332 L316 332 Z" fill="#0a0a0a" />
-        <rect x="330" y="296" width="5" height="7" fill="#e8f0ff" />
-        <circle cx="332" cy="299" r="10" fill="#cfe0ff" opacity="0.25" />
+        {/* the booth, lit from inside */}
+        <ellipse cx="330" cy="300" rx="110" ry="90" fill="#dfe6d0" opacity="0.07" />
+        <rect x="284" y="214" width="92" height="146" fill="#cfd6c4" opacity="0.2" />
+        <rect x="284" y="214" width="92" height="146" fill="none" stroke="#7f8a78" strokeWidth="4" />
+        <rect x="284" y="206" width="92" height="10" fill="#4d5549" />
+        <line x1="330" y1="214" x2="330" y2="360" stroke="#7f8a78" strokeWidth="2" opacity="0.6" />
+        {/* you: head bowed over a phone, the screen lighting your chin */}
+        <ellipse cx="322" cy="258" rx="11" ry="13" fill="#0a0a0a" />
+        <path d="M322 262 C328 262 332 268 331 272 C326 274 320 272 318 268 Z" fill="#b9c7dc" opacity="0.55" />
+        <path d="M306 274 L338 274 L344 350 L302 350 Z" fill="#0a0a0a" />
+        <path d="M312 282 C318 290 324 292 330 286" stroke="#0a0a0a" strokeWidth="7" fill="none" />
+        <rect x="327" y="276" width="7" height="11" rx="1" fill="#e8f0ff" />
+        <circle cx="330" cy="281" r="16" fill="#cfe0ff" opacity="0.22" />
         {behind && (
           <g>
-            <ellipse cx="372" cy="292" rx="6" ry="8" fill="#c9c3b4" opacity="0.55" />
-            <path d="M362 300 L382 300 L386 344 L358 344 Z" fill="#050505" />
+            {/* right behind you, taller than you, head tilted: hair where a face should be */}
+            <path d="M356 236 C348 236 344 246 346 258 C348 272 356 280 364 280 C372 280 378 270 376 256 C374 244 366 236 356 236 Z" fill="#050505" transform="rotate(-18 360 258)" />
+            <path d="M358 256 C362 256 364 264 362 272 C360 276 356 276 356 270 Z" fill="#c9c3b4" opacity="0.6" />
+            <circle cx="360" cy="262" r="1.3" fill="#fff" opacity="0.9" />
+            <path d="M348 280 L376 280 L382 352 L342 352 Z" fill="#050505" />
+            <path d="M350 282 C344 300 338 316 334 330" stroke="#050505" strokeWidth="6" fill="none" strokeLinecap="round" />
+            <path d="M340 326 L332 334 M338 330 L334 340" stroke="#c9c3b4" strokeWidth="2" opacity="0.5" />
           </g>
         )}
         <rect x="0" y="0" width="640" height="26" fill="#030303" />
         <rect x="0" y="0" width="30" height="420" fill="#030303" />
         <rect x="610" y="0" width="30" height="420" fill="#030303" />
-        <rect x="312" y="0" width="16" height="420" fill="#030303" opacity="0.9" />
+        <rect x="206" y="0" width="16" height="420" fill="#030303" opacity="0.9" />
         <rect width="640" height="420" fill={`url(#${id}-flash)`} />
       </g>
       <Stamp text={behind ? '01:54' : '01:39'} x={40} y={52} />
@@ -345,7 +364,7 @@ export const VideoFeed = memo(function VideoFeed({ close = 0, pip = 0 }: { close
         )}
         {her > 0 && (
           <g transform={`translate(${300 - her * 60} ${300 + her * 30}) scale(${0.3 + her * 0.55})`} opacity={Math.min(1, her * 1.6)}>
-            <GhostFaceShape distort={false} />
+            <GhostCurtain distort={false} />
           </g>
         )}
         <g transform="translate(-40 200) scale(1.12)">
@@ -366,8 +385,14 @@ export const VideoFeed = memo(function VideoFeed({ close = 0, pip = 0 }: { close
           <rect x="272" y="96" width="96" height="140" rx="10" fill="#0d0e10" stroke="#555" />
           <ellipse cx="320" cy="210" rx="30" ry="34" fill="#050505" />
           <path d="M280 236 C290 214 350 214 360 236 Z" fill="#050505" />
-          <g transform={`translate(${340 - pip * 12} ${170 - pip * 6}) scale(${0.07 + pip * 0.05})`} opacity={0.4 + pip * 0.6}>
-            <GhostFaceShape distort={false} />
+          {/* above your shoulder, leaning in from the top of the frame */}
+          <clipPath id={`${id}-pip`}>
+            <rect x="272" y="96" width="96" height="140" rx="10" />
+          </clipPath>
+          <g clipPath={`url(#${id}-pip)`}>
+            <g transform={`translate(${346 - pip * 8} ${80 + pip * 26}) scale(${0.18 + pip * 0.06})`} opacity={0.5 + pip * 0.5}>
+              <GhostCurtain distort={false} />
+            </g>
           </g>
           <text x="320" y="110" textAnchor="middle" fontFamily="IBM Plex Sans KR, sans-serif" fontSize="9" fill="#9a9">
             카메라 켜짐

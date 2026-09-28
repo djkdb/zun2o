@@ -230,6 +230,21 @@ await snap('gallery-autobackup');
 await waitFor('.dialog', 90000);
 await snap('ch4-battery-dialog');
 await tapText('확인');
+await openApp('사진');
+await tapText('최근 항목');
+await wait(400);
+// zoom into the auto-backup photo: double-tap
+await page.locator('.thumb', { hasText: '01:39' }).first().click();
+await wait(500);
+const img = page.locator('.viewer-img');
+await img.click();
+await wait(120);
+await img.click();
+await wait(700);
+check('double-tap zooms into a photo', (await page.locator('.viewer-img.zoomed').count()) === 1);
+await snap('zoom-p08');
+await tap('.back');
+await wait(300);
 await waitFor('.incoming', 60000);
 mark('01:57 call');
 await snap('ch4-call');
@@ -305,15 +320,24 @@ await openApp('인터넷');
 await tapText('심야 기록보관소');
 for (const r of ['기록 001', '기록 003', '기록 007']) {
   await page.locator('.archive li button', { hasText: r }).first().click();
-  await wait(500);
+  await wait(1400);
+  if (r === '기록 007') check('REGRESSION: early archive order says 013 is "being written"', (await page.textContent('.archive-page')).includes('작성 중'));
   await tap('.back');
   await wait(300);
 }
-await page.locator('.archive li button.new').click();
-await wait(4000);
 const early = await save();
-check('REGRESSION: early 013 does not skip chapters', early.chapter === 1 && !early.flags.includes('ch4'), `chapter ${early.chapter}`);
-check('REGRESSION: early 013 shows an in-world "not written yet" page', (await page.textContent('.archive-page')).includes('작성'));
+check('REGRESSION: early 013 is not indexed, chapters not skipped', (await page.locator('.archive li button.new').count()) === 0 && early.chapter === 1 && !early.flags.includes('ch4'), `chapter ${early.chapter}`);
+// 1b) the hidden album code found early: album stays "syncing" until chapter 3
+await openApp('사진');
+await tapText('숨김');
+for (const d of '1340') await page.locator('.keypad .key', { hasText: new RegExp(`^${d}$`) }).first().click();
+await wait(800);
+check('REGRESSION: early album code → syncing album, no selfie yet', (await page.locator('.thumb.syncing').count()) === 5 && !(await save()).flags.includes('album-open'));
+await snap('album-syncing');
+await tap('.back');
+await wait(300);
+await tap('.back');
+await wait(300);
 // 2) declining 도현 once must not also fire the "declined twice" branch
 await openApp('사진');
 await tapText('최근 항목');

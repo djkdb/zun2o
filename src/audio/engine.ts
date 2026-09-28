@@ -186,6 +186,63 @@ class AudioEngine {
     }
   }
 
+  /**
+   * Her voice: not words, but breath shaped like syllables — one band-passed
+   * noise burst per character, with vowel-like formants, pressed close to one
+   * ear, over a sub-bass swell. The subtitle carries the words.
+   */
+  voice(text: string): void {
+    if (!this.enabled || !this.ctx || !this.master || this.ctx.state !== 'running') return;
+    const ctx = this.ctx;
+    const syllables = [...text.replace(/[^가-힣a-zA-Z0-9]/g, '')];
+    if (!syllables.length) return;
+    try {
+      const t0 = ctx.currentTime + 0.05;
+      const step = 0.24;
+      const total = syllables.length * step + 0.6;
+      const bus = ctx.createGain();
+      bus.gain.value = 0.9;
+      let out: AudioNode = bus;
+      if (typeof ctx.createStereoPanner === 'function') {
+        const pan = ctx.createStereoPanner();
+        pan.pan.setValueAtTime(0.65, t0);
+        pan.pan.linearRampToValueAtTime(-0.2, t0 + total);
+        bus.connect(pan);
+        out = pan;
+      }
+      out.connect(this.master);
+      const FORMANTS: [number, number][] = [
+        [700, 1200], [400, 2200], [300, 800], [550, 1800], [350, 1500],
+      ];
+      syllables.forEach((ch, i) => {
+        const at = t0 + i * step + (Math.random() - 0.5) * 0.04;
+        const n = this.noiseSource();
+        if (!n) return;
+        const [f1, f2] = FORMANTS[ch.charCodeAt(0) % FORMANTS.length];
+        const g = ctx.createGain();
+        env(ctx, g, 0.16, 0.04, 0.2, at);
+        [f1, f2].forEach((f, k) => {
+          const bp = ctx.createBiquadFilter();
+          bp.type = 'bandpass';
+          bp.frequency.setValueAtTime(f * 0.92, at);
+          bp.frequency.linearRampToValueAtTime(f * 1.05, at + 0.22);
+          bp.Q.value = 9;
+          const lvl = ctx.createGain();
+          lvl.gain.value = k === 0 ? 1.4 : 0.9;
+          n.connect(bp).connect(lvl).connect(g);
+        });
+        g.connect(bus);
+        n.start(at);
+        n.stop(at + 0.3);
+      });
+      // A throat that is far too deep, under the breath.
+      tone(ctx, bus, 'sine', 46, 0.22, 0.4, total, t0, 38);
+      tone(ctx, bus, 'sawtooth', 92, 0.012, 0.3, total, t0, 76);
+    } catch {
+      /* decoration */
+    }
+  }
+
   noiseSource(): AudioBufferSourceNode | null {
     if (!this.ctx || !this.noise) return null;
     const s = this.ctx.createBufferSource();

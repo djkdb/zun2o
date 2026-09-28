@@ -1,5 +1,5 @@
 import { memo, useId } from 'react';
-import { GhostFaceShape } from './Ghost';
+import { GhostCurtain } from './Ghost';
 
 type HorrorLevel = 0 | 1 | 2 | 3 | 4 | 5;
 
@@ -43,10 +43,10 @@ function FilmDefs({ id }: { id: string }) {
 }
 
 function Face({ x, y, s, opacity }: { x: number; y: number; s: number; opacity: number }) {
-  // The same face that later fills the screen — seen first, small, in a photograph.
+  // Seen small, in a photograph: her face is always behind her hair.
   return (
     <g transform={`translate(${x} ${y}) scale(${s * 0.1})`} opacity={opacity}>
-      <GhostFaceShape distort={false} />
+      <GhostCurtain distort={false} />
     </g>
   );
 }

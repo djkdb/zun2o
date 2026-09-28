@@ -136,7 +136,7 @@ export const BEATS: Beat[] = [
     actions: [
       { t: 'flag', f: 'reveal-scare' },
       { t: 'hush', ms: 900 },
-      { t: 'scare', kind: 'lunge' },
+      { t: 'scare', kind: 'lunge', look: 'hang' },
       { t: 'wait', ms: 1700 },
       { t: 'glitch', ms: 1000 },
       { t: 'time', hm: '00:31', lost: true },
@@ -239,6 +239,7 @@ export const BEATS: Beat[] = [
     id: 'c2-done',
     on: 'c2:done',
     actions: [
+      { t: 'flag', f: 'ch3' },
       { t: 'chapter', n: 3, title: '02호실' },
       { t: 'time', hm: '01:12' },
       {
@@ -247,6 +248,8 @@ export const BEATS: Beat[] = [
         hint: '메모 앱 “비번들 (보지 마)”에 힌트가 있습니다. 그 방송의 주파수는 메모 “괴담 정리”나 브라우저의 기록 001에 나와요.',
         nudge: { th: 'unknown', text: '숫자를 읽던 그 방송. 주파수요.' },
       },
+      // Found the code early? The album has finished syncing now.
+      { t: 'emit', ev: 'album:recheck' },
     ],
   },
 
@@ -254,16 +257,29 @@ export const BEATS: Beat[] = [
   {
     id: 'album-open',
     on: 'album:unlock',
-    requires: ['memo-done'],
+    requires: ['ch3'],
     actions: [
       { t: 'flag', f: 'album-open' },
       { t: 'objective', text: '숨김 앨범을 끝까지 넘겨 보자', hint: '사진을 연 뒤 옆으로 넘기세요. 마지막 사진까지.', nudge: { th: 'unknown', text: '끝까지 넘겨요.' } },
     ],
   },
   {
+    id: 'album-open-late',
+    on: 'album:recheck',
+    requires: ['ch3', 'album-code'],
+    forbids: ['album-open'],
+    actions: [
+      { t: 'flag', f: 'album-open' },
+      { t: 'wait', ms: 3500 },
+      { t: 'notify', app: 'gallery', title: '사진', body: '숨김 앨범 동기화 완료 (5/5)' },
+      { t: 'msg', th: 'unknown', text: '비밀번호는 벌써 알고 있었네요. 이제 사진도 다 왔어요.', typing: 1800 },
+      { t: 'objective', text: '숨김 앨범을 끝까지 넘겨 보자', hint: '사진 앱 → 숨김. 사진을 연 뒤 옆으로 넘기세요. 마지막 사진까지.', nudge: { th: 'unknown', text: '끝까지 넘겨요.' } },
+    ],
+  },
+  {
     id: 'card',
     on: 'photo:h03',
-    requires: ['memo-done'],
+    requires: ['ch3'],
     actions: [
       { t: 'flag', f: 'saw-card' },
       { t: 'wait', ms: 1600 },
@@ -273,11 +289,11 @@ export const BEATS: Beat[] = [
   {
     id: 'selfie',
     on: 'photo:h05:dwell',
-    requires: ['memo-done'],
+    requires: ['ch3'],
     actions: [
       { t: 'flag', f: 'selfie-scare' },
       { t: 'hush', ms: 700 },
-      { t: 'scare', kind: 'lunge' },
+      { t: 'scare', kind: 'lunge', look: 'profile' },
       { t: 'wait', ms: 1800 },
       { t: 'glitch', ms: 700 },
       { t: 'time', hm: '01:38', lost: true },
@@ -327,6 +343,7 @@ export const BEATS: Beat[] = [
       { t: 'wait', ms: 7000 },
       { t: 'photo', id: 'p08' },
       { t: 'msg', th: 'unknown', text: '사진 앱 봐요. 잘 나왔네요.', typing: 1600 },
+      { t: 'msg', th: 'unknown', text: '두 번 눌러서 확대해 봐요. 부스 안이요.', typing: 1500 },
     ],
   },
   {
@@ -388,6 +405,7 @@ export const BEATS: Beat[] = [
       { t: 'time', hm: '01:54' },
       { t: 'photo', id: 'p09' },
       { t: 'msg', th: 'unknown', text: '또 찍었어요. 이번엔 뒤에 누가 있네요.', typing: 1600 },
+      { t: 'msg', th: 'unknown', text: '확대해서 봐요.', typing: 800 },
       { t: 'wait', ms: 10000 },
       { t: 'time', hm: '01:55' },
       { t: 'battery', v: 4 },
@@ -409,7 +427,33 @@ export const BEATS: Beat[] = [
       { t: 'finale' },
     ],
   },
+  {
+    id: 'memo18-end',
+    on: 'memo:m2:end',
+    actions: [
+      { t: 'wait', ms: 1500 },
+      { t: 'msg', th: 'unknown', text: '{start}. 당신이 이 폰을 처음 집어 든 시각이에요. 이 폰 말고, 그쪽 시계로요.', typing: 2200 },
+    ],
+  },
   { id: 'power-ch4', on: 'power:try', requires: ['ch4'], repeat: true, actions: [{ t: 'msg', th: 'unknown', text: '아직이에요.', typing: 700 }] },
+  {
+    id: 'zoom-p08',
+    on: 'photo:p08:zoom',
+    actions: [
+      { t: 'wait', ms: 1400 },
+      { t: 'msg', th: 'unknown', text: '맞아요. 당신이에요. 3층 창문에서 찍었어요.', typing: 1600 },
+    ],
+  },
+  {
+    id: 'zoom-p09',
+    on: 'photo:p09:zoom',
+    actions: [
+      { t: 'wait', ms: 900 },
+      { t: 'sound', id: 'whisper' },
+      { t: 'vibrate', ms: [80, 60, 80] },
+      { t: 'msg', th: 'unknown', text: '뒤돌아보지 마요.', typing: 500 },
+    ],
+  },
   { id: 'radio', on: 'dial:1340', actions: [{ t: 'flag', f: 'heard-radio' }] },
   { id: 'read-mom', on: 'thread:mom', actions: [{ t: 'flag', f: 'read-mom' }] },
 ];

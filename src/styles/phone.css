@@ -1911,7 +1911,12 @@ svg {
 }
 
 .finale .home {
-  padding-top: 150px;
+  overflow: hidden;
+}
+
+/* at 02:00 the clock replaces the calendar */
+.finale .home .widget {
+  display: none;
 }
 
 .finale-clock {
@@ -2539,4 +2544,213 @@ svg {
     transform: scale(1.75);
     opacity: 0;
   }
+}
+
+/* ─── round 3: a different her every time ────────────────────────────── */
+
+/* photographic grain over the big scares: she looks captured, not drawn */
+.scare-grain {
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.32;
+  mix-blend-mode: overlay;
+  animation: grain 0.18s steps(3) infinite;
+}
+
+@keyframes grain {
+  33% {
+    transform: translate(-4%, 3%);
+  }
+  66% {
+    transform: translate(3%, -5%);
+  }
+}
+
+/* the finale close-up: cropped to the eyes and the mouth */
+.finale .scare-lunge .ghost {
+  height: 175%;
+}
+
+/* p07: she drops from the ceiling, upside down */
+.scare-lunge.look-hang {
+  place-items: start center;
+}
+
+.scare-lunge.look-hang .ghost {
+  height: 125%;
+  transform-origin: 50% 30%;
+  animation:
+    lunge-hang 1.3s cubic-bezier(0.3, 1.4, 0.4, 1) both,
+    jitter 0.07s steps(2) infinite;
+}
+
+@keyframes lunge-hang {
+  0% {
+    transform: translateY(-85%);
+    opacity: 1;
+  }
+  14% {
+    transform: translateY(-8%) scale(1.05);
+  }
+  22% {
+    transform: translateY(-14%) scale(1.1) rotate(3deg);
+  }
+  85% {
+    transform: translateY(-4%) scale(1.45) rotate(-2deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1.55);
+    opacity: 0;
+  }
+}
+
+/* the selfie: half a face slides in from the edge, eye first */
+.scare-lunge.look-profile {
+  place-items: center start;
+}
+
+.scare-lunge.look-profile .ghost {
+  height: 125%;
+  transform-origin: 34% 45%;
+  animation:
+    lunge-side 1.3s cubic-bezier(0.15, 0.9, 0.2, 1) both,
+    jitter 0.07s steps(2) infinite;
+}
+
+@keyframes lunge-side {
+  0% {
+    transform: translateX(60%) scale(0.9);
+    opacity: 0;
+  }
+  6% {
+    transform: translateX(14%) scale(1);
+    opacity: 1;
+  }
+  30% {
+    transform: translateX(4%) scale(1.15);
+  }
+  85% {
+    transform: translateX(0) scale(1.4);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0) scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* inside an app, the banner slides in under the header instead of from the top */
+.banner.in-app {
+  animation: banner-in 0.35s ease both;
+}
+
+@keyframes banner-in {
+  from {
+    transform: translateY(-14px);
+    opacity: 0;
+  }
+}
+
+.scare-reflect.look-curtain .ghost {
+  height: 105%;
+}
+
+/* the voice that isn't 도현's */
+.sub.other {
+  color: #ff6b61;
+  font-family: 'IBM Plex Mono', monospace;
+  letter-spacing: 0.08em;
+  text-shadow:
+    1px 0 rgba(255, 0, 40, 0.6),
+    -1px 0 rgba(0, 200, 255, 0.4);
+  animation: sub-shiver 0.12s steps(2) infinite;
+}
+
+@keyframes sub-shiver {
+  50% {
+    transform: translateX(1px);
+  }
+}
+
+.scare-reduced .scare-grain,
+.reduce-fx .sub.other {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scare-grain,
+  .sub.other {
+    animation: none !important;
+  }
+}
+
+.call-top .hijacked {
+  color: #ff6b61;
+  animation: sub-shiver 0.12s steps(2) infinite;
+}
+
+.call-avatar.hijacked {
+  background: #1a0606;
+}
+
+.banner.in-app {
+  top: calc(max(44px, calc(env(safe-area-inset-top) + 24px)) + 58px);
+}
+
+.sync-note {
+  margin: 14px 16px 4px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.thumb.syncing {
+  display: block;
+  aspect-ratio: 1;
+  background: linear-gradient(110deg, #16171a 30%, #24252a 50%, #16171a 70%);
+  background-size: 250% 100%;
+  animation: sync-shimmer 1.6s linear infinite;
+}
+
+@keyframes sync-shimmer {
+  to {
+    background-position: -150% 0;
+  }
+}
+
+/* photo zoom */
+.viewer-img {
+  touch-action: none;
+}
+
+.viewer-zoom {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  transition: transform 0.25s ease, transform-origin 0.08s linear;
+}
+
+.viewer-img.zoomed {
+  cursor: move;
+}
+
+.viewer-zoom svg {
+  max-height: 100%;
+  width: 100%;
+}
+
+.viewer-img.portrait .viewer-zoom svg {
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+}
+
+.viewer-zoomhint {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  color: #6c6d73;
 }

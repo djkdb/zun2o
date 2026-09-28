@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useGame } from '../../hooks/useGame';
 import { emit, openApp, sfx } from '../../engine/director';
 import { MEMO_M1, type MemoLine } from '../../content/media';
-import { getState } from '../../engine/state';
+import { getState, setRt } from '../../engine/state';
 import { AppHeader } from '../AppHeader';
 import { speak, stopSpeech } from '../../audio/speech';
 
@@ -24,7 +24,7 @@ function buildM2(): Memo {
   const s = getState().save;
   const start = new Date(s.startedAtReal);
   const hm = `${String(start.getHours()).padStart(2, '0')}:${String(start.getMinutes()).padStart(2, '0')}`;
-  const lines: MemoLine[] = [{ at: 0, who: '', text: '(휴대폰을 집어 드는 소리)', sfx: 'static' }];
+  const lines: MemoLine[] = [{ at: 0, who: '', text: `(휴대폰을 집어 드는 소리 · ${hm})`, sfx: 'static' }];
   let at = 4;
   for (const entry of s.inputs.slice(-7)) {
     lines.push({ at, who: '', text: `(키패드 소리) ${entry}` });
@@ -32,7 +32,7 @@ function buildM2(): Memo {
   }
   lines.push({ at, who: '???', text: '다 적어 뒀어요.', sfx: 'whisper' });
   lines.push({ at: at + 4, who: '???', text: s.playerName ? `${s.playerName} 씨. 두 시에 봐요.` : '이름은 몰라도 괜찮아요. 두 시에 봐요.' });
-  return { id: 'm2', title: '새 녹음 18', date: `오늘 ${hm}`, duration: at + 9, lines };
+  return { id: 'm2', title: '새 녹음 18', date: '오늘 01:51', duration: at + 9, lines };
 }
 
 function Player({ memo }: { memo: Memo }) {
@@ -70,7 +70,17 @@ function Player({ memo }: { memo: Memo }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playing]);
 
-  useEffect(() => () => stopSpeech(), []);
+  useEffect(() => {
+    setRt({ memoPlaying: playing });
+  }, [playing]);
+
+  useEffect(
+    () => () => {
+      stopSpeech();
+      setRt({ memoPlaying: false });
+    },
+    [],
+  );
 
   const current = [...MEMO_M1.lines].reverse().find((l) => t >= l.at);
   const scream = current?.sfx === 'scream' && playing;

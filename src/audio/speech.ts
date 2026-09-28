@@ -26,25 +26,34 @@ if (synth()) {
   };
 }
 
+let entityLayer: ((text: string) => void) | null = null;
+/** Her lines also get a synthesized breath layer from the audio engine. */
+export function setEntityLayer(fn: (text: string) => void): void {
+  entityLayer = fn;
+}
+
 export function setSpeechEnabled(on: boolean): void {
   enabled = on;
   if (!on) synth()?.cancel();
 }
 
 export function speak(text: string, voice: Voice): void {
-  const s = synth();
-  if (!s || !enabled) return;
+  if (!enabled) return;
   const clean = text.replace(/[()…—]/g, ' ').trim();
   if (!clean) return;
+  if (voice === 'entity') entityLayer?.(clean);
+  const s = synth();
+  if (!s) return;
   try {
     const u = new SpeechSynthesisUtterance(clean);
     u.lang = 'ko-KR';
     const v = pickVoice();
     if (v) u.voice = v;
     if (voice === 'entity') {
-      u.pitch = 0.35;
-      u.rate = 0.72;
-      u.volume = 0.9;
+      // Quiet under the breath layer: heard as a voice inside the whisper.
+      u.pitch = 0.1;
+      u.rate = 0.66;
+      u.volume = 0.45;
     } else if (voice === 'male') {
       u.pitch = 0.55;
       u.rate = 1.08;
