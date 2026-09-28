@@ -55,6 +55,24 @@ npm run qa         # E2E QA (preview 서버가 떠 있어야 함, 아래 참고)
 빌드는 `base: './'` + 해시 라우팅이라 GitHub Pages, Netlify, 어떤 정적 호스팅에 올려도 서버 설정 없이 동작합니다.
 `.github/workflows/deploy.yml`이 포함되어 있어, 저장소 **Settings → Pages → Source: GitHub Actions**로 설정하면 `main` 푸시 시 자동 배포됩니다.
 
+### Cloudflare 배포
+
+순수 정적 사이트라(서버 코드 없음, 해시 라우팅) 리다이렉트 설정 없이 그대로 올라갑니다. Node 버전은 `.nvmrc`(22)로 고정되어 있습니다.
+
+**방법 A — GitHub 연결 (자동 배포, 추천)**
+1. Cloudflare 대시보드 → **Workers & Pages** → **Create** → **Pages** → **Connect to Git** → 이 저장소 선택
+2. Production branch: `main` (또는 작업 브랜치)
+3. Framework preset: `Vite` (또는 None) · Build command: `npm run build` · Build output directory: `dist`
+4. **Save and Deploy** → `https://<프로젝트명>.pages.dev` 발급. 이후 푸시할 때마다 자동 재배포, 다른 브랜치는 미리보기 URL 생성
+
+**방법 B — CLI로 바로 배포**
+```bash
+npx wrangler login     # 브라우저로 Cloudflare 로그인 (최초 1회)
+npm run deploy:cf      # 빌드 후 wrangler.jsonc 설정으로 업로드 → https://night-archive.<계정>.workers.dev
+```
+
+커스텀 도메인은 프로젝트 → **Custom domains**에서 연결합니다. GitHub Pages를 쓰지 않는다면 `.github/workflows/deploy.yml`은 지워도 됩니다.
+
 ---
 
 ## Debug Mode
