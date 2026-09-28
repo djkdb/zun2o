@@ -1,0 +1,294 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   THE NIGHT ARCHIVE — base styles
+   The archive starts as a plain, slightly dated institutional website on
+   paper-coloured background. Tokens shift per horror level ([data-level] on
+   <html>) and slide over several seconds, so the change is felt before it
+   is noticed.
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --bg: #ebe8df;
+  --paper: #f5f3ed;
+  --ink: #1c1c1a;
+  --ink-soft: #3b3a35;
+  --muted: #6b6960;
+  --rule: #cbc6b8;
+  --rule-strong: #9d998c;
+  --link: #22386e;
+  --link-hover: #0d1f4d;
+  --mark: #e6dfc6;
+  --stamp: #8a2a1e;
+  --focus: #1f5fbf;
+  --photo-tone: sepia(0.55) contrast(0.95) brightness(1.02);
+  --shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+
+  --font-sans: 'IBM Plex Sans', 'Helvetica Neue', Arial, system-ui, sans-serif;
+  --font-serif: 'IBM Plex Serif', Georgia, 'Times New Roman', serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  --gutter: clamp(16px, 4vw, 40px);
+  --max: 1080px;
+  --tt: 5s; /* theme transition time */
+
+  color-scheme: light;
+}
+
+:root[data-level='2'] {
+  --bg: #e6e2d6;
+  --paper: #f0ede4;
+  --mark: #e2d9bc;
+}
+
+:root[data-level='3'] {
+  --bg: #dcd7c8;
+  --paper: #e9e5da;
+  --ink-soft: #33322d;
+  --rule: #bfb9a8;
+  --link: #2b3a5e;
+  --mark: #d9cfae;
+  --photo-tone: sepia(0.65) contrast(1.02) brightness(0.95);
+}
+
+:root[data-level='4'] {
+  --bg: #8f8b80;
+  --paper: #a29e92;
+  --ink: #0f0f0e;
+  --ink-soft: #1c1c1a;
+  --muted: #34332f;
+  --rule: #6f6b61;
+  --rule-strong: #4a4842;
+  --link: #151f38;
+  --mark: #b7ac8c;
+  --photo-tone: sepia(0.7) contrast(1.15) brightness(0.8);
+  --tt: 50s; /* the whole last minute: the room slowly loses its light */
+}
+
+:root[data-level='5'] {
+  --bg: #0a0b0a;
+  --paper: #10110f;
+  --ink: #d4cebe;
+  --ink-soft: #b9b3a3;
+  --muted: #7c786c;
+  --rule: #272824;
+  --rule-strong: #3a3b35;
+  --link: #c4ab6d;
+  --link-hover: #e2cc92;
+  --mark: #2a2519;
+  --stamp: #a33a2b;
+  --focus: #e2cc92;
+  --photo-tone: grayscale(0.6) sepia(0.3) contrast(1.2) brightness(0.75);
+  --tt: 2.5s;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background: var(--bg);
+  transition: background-color var(--tt) ease;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  transition:
+    background-color var(--tt) ease,
+    color var(--tt) ease;
+  overflow-x: hidden;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: var(--link);
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: var(--link-hover);
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--mark);
+  color: var(--ink);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: -40px;
+  z-index: 100;
+  padding: 6px 10px;
+  background: var(--paper);
+  border: 1px solid var(--rule-strong);
+}
+
+.skip-link:focus {
+  top: 8px;
+}
+
+/* ─── Page frame ───────────────────────────────────────────────────────── */
+
+.site {
+  position: relative;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 var(--gutter) 48px;
+  transition:
+    opacity 1.6s ease,
+    filter 1.6s ease;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 40px;
+  align-items: start;
+}
+
+.layout > main {
+  min-width: 0;
+}
+
+@media (max-width: 860px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+  .layout > aside {
+    order: -1;
+  }
+}
+
+.panel {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+  transition:
+    background-color var(--tt) ease,
+    border-color var(--tt) ease;
+}
+
+.panel + .panel {
+  margin-top: 16px;
+}
+
+.panel-title {
+  margin: 0 0 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.25;
+}
+
+.section-heading {
+  margin: 36px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.small {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.text-button {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-size: inherit;
+}
+
+.btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px 16px;
+  background: var(--paper);
+  border: 1px solid var(--rule-strong);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background: var(--mark);
+  color: var(--ink);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
