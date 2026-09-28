@@ -4,6 +4,7 @@ import { WallpaperPhoto } from '../art/phonePhotos';
 import { emit, sfx, vibrate } from '../engine/director';
 import { logInput, setSave } from '../engine/state';
 import { THREAD_META } from '../content/threads';
+import { Avatar } from './Avatar';
 import type { ThreadId } from '../engine/types';
 
 const CODE = '0113';
@@ -68,14 +69,33 @@ export function LockScreen() {
           <div className="lock-notes">
             {notifications.map((n, i) => (
               <div key={`${n.th}${i}`} className="lock-note">
-                <div className="lock-note-head">
-                  <span className="lock-note-app">메시지</span>
-                  <span>{n.time}</span>
+                <Avatar th={n.th} size={40} badge />
+                <div className="lock-note-body">
+                  <div className="lock-note-head">
+                    <strong>{THREAD_META[n.th].name}</strong>
+                    <span>{n.time}</span>
+                  </div>
+                  <p>{n.text}</p>
                 </div>
-                <strong>{THREAD_META[n.th].name}</strong>
-                <p>{n.text}</p>
               </div>
             ))}
+            {/* The passcode clue: when 채원 started filming tonight. */}
+            <div className="lock-note">
+              <span className="avatar pic camera-app" style={{ width: 40, height: 40 }}>
+                <svg viewBox="0 0 32 32" aria-hidden="true">
+                  <rect x="5" y="10" width="22" height="15" rx="3" fill="none" stroke="#fff" strokeWidth="2.2" />
+                  <path d="M12 10l2-3h4l2 3" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinejoin="round" />
+                  <circle cx="16" cy="17.5" r="4" fill="none" stroke="#fff" strokeWidth="2.2" />
+                </svg>
+              </span>
+              <div className="lock-note-body">
+                <div className="lock-note-head">
+                  <strong>카메라</strong>
+                  <span>01:58</span>
+                </div>
+                <p>녹화가 중단되었습니다. 01:13에 시작한 영상(45분)을 저장하지 못했습니다.</p>
+              </div>
+            </div>
           </div>
           <button type="button" className="lock-hint" onClick={() => setPad(true)}>
             눌러서 잠금 해제

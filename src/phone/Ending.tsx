@@ -20,7 +20,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
       { text: '다음 날 밤, 해원군청 별관 앞 공중전화 부스.' },
       { text: '선반 위에 휴대폰 한 대가 놓여 있다.' },
       { text: '화면이 켜진다. 배터리 12%.' },
-      { who: '02:00', text: '내일 밤에 봐요.', side: 'left' },
+      { who: '모르는 번호', text: '내일 밤에 봐요.', side: 'left' },
     ],
   },
   shift: {
@@ -43,7 +43,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
       { who: '도현', text: '채원이 찾았대요!!!', side: 'left' },
       { who: '도현', text: '02호실 안에서요. 살아 있어요', side: 'left' },
       { who: '엄마', text: '누구신지 몰라도, 정말 고맙습니다', side: 'left' },
-      { who: '02:00', text: '고마워요. 이제 집에 갈게요.', side: 'left' },
+      { who: '모르는 번호', text: '고마워요. 이제 집에 갈게요.', side: 'left' },
       { text: '(대화 상대를 찾을 수 없습니다)' },
     ],
   },

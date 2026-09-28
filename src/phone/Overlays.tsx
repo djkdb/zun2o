@@ -5,9 +5,10 @@ import { setRt } from '../engine/state';
 import { CALLS } from '../content/calls';
 import { GhostVisual } from '../art/Ghost';
 import { speak, stopSpeech } from '../audio/speech';
-import { THREAD_META } from '../content/threads';
 import type { CallLine } from '../engine/types';
 import { CallIcon } from './CallIcon';
+import { Avatar } from './Avatar';
+import { APP_META, AppGlyph } from './icons';
 
 export function BannerView() {
   const banner = useGame((s) => s.rt.banner);
@@ -31,7 +32,6 @@ export function BannerView() {
     if (banner.thread) openThread(banner.thread);
     else openApp(banner.app);
   };
-  const avatar = banner.thread ? THREAD_META[banner.thread] : null;
   return (
     <button
       key={banner.id}
@@ -49,15 +49,29 @@ export function BannerView() {
         }
       }}
     >
-      <span className="banner-icon" style={{ background: avatar?.color ?? '#111' }}>
-        {avatar?.avatar ?? '夜'}
-      </span>
+      {banner.thread ? (
+        <Avatar th={banner.thread} size={38} badge />
+      ) : (
+        <span className="banner-icon" style={{ background: APP_META[banner.app].bg }}>
+          <AppGlyph app={banner.app} />
+        </span>
+      )}
       <span className="banner-text">
         <strong>{banner.title}</strong>
         <span>{banner.body}</span>
       </span>
       <span className="banner-time">지금</span>
     </button>
+  );
+}
+
+function CallAvatar({ from, label, hijacked = false }: { from: string; label: string; hijacked?: boolean }) {
+  const th = from === 'dohyun' ? 'dohyun' : from === '0200' ? 'unknown' : null;
+  if (!th) return <span className="call-avatar">{label.slice(0, 1)}</span>;
+  return (
+    <span className={`call-avatar pic${hijacked ? ' hijacked' : ''}`}>
+      <Avatar th={th} size={96} />
+    </span>
   );
 }
 
@@ -68,7 +82,7 @@ export function IncomingCall() {
   return (
     <div className={`incoming${call.video ? ' video' : ''}`} role="dialog" aria-label="수신 전화">
       <div className="incoming-top">
-        <span className="call-avatar">{call.label.slice(0, 1)}</span>
+        <CallAvatar from={call.from} label={call.label} />
         <small>{call.video ? '영상 통화' : '휴대전화'}</small>
         <h2>{call.label}</h2>
       </div>
@@ -156,8 +170,8 @@ function ActiveCall({ id }: { id: string }) {
   return (
     <div className="callscreen" role="dialog" aria-label="통화 중">
       <div className="call-top">
-        <span className={`call-avatar${hijacked ? ' hijacked' : ''}`}>{hijacked ? '?' : call.label.slice(0, 1)}</span>
-        <h2 className={hijacked ? 'hijacked' : undefined}>{hijacked ? '02:00' : call.label}</h2>
+        <CallAvatar from={hijacked ? '0200' : call.from} label={call.label} hijacked={hijacked} />
+        <h2 className={hijacked ? 'hijacked' : undefined}>{hijacked ? '모르는 번호' : call.label}</h2>
         <small>
           {Math.floor(elapsed / 60)}:{String(elapsed % 60).padStart(2, '0')}
         </small>

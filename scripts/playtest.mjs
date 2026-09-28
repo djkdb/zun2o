@@ -65,7 +65,7 @@ await tap('.coldopen-actions .primary');
 await waitFor('.lock');
 await wait(800);
 await snap('lock');
-check('lock screen shows the passcode hint', (await page.textContent('.lock')).includes('들어간 시각'));
+check('lock screen shows the passcode hint', (await page.textContent('.lock')).includes('촬영을 시작한 시각') && (await page.textContent('.lock')).includes('01:13에 시작한'));
 await tap('.lock-main');
 for (const d of '0000') await page.locator('.keypad .key', { hasText: d }).first().click();
 await wait(500);
@@ -78,7 +78,7 @@ await wait(3200);
 await snap('home');
 
 // ── CH1: the unknown number ─────────────────────────────────────────────
-await openThread('02:00');
+await openThread('모르는 번호');
 await snap('unknown-thread');
 await waitFor('.choices', 20000);
 mark('first choice offered');
@@ -157,7 +157,7 @@ await snap('memo-scream');
 await page.waitForFunction(() => window.__game.getState().save.flags.includes('memo-done'), null, { timeout: 15000 });
 mark('memo finished');
 
-await openThread('02:00');
+await openThread('모르는 번호');
 await waitFor('.choices', 30000);
 await snap('asks-name');
 await tapText('이름을 알려 준다');

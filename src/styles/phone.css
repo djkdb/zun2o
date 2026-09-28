@@ -2971,3 +2971,92 @@ svg {
     display: none;
   }
 }
+
+/* ─── contact pictures & notification layout ─────────────────────────── */
+
+.avatar.pic {
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+  overflow: visible;
+  background: #2a2b30;
+}
+
+.avatar.pic > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.avatar-badge {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  width: 42%;
+  height: 42%;
+  min-width: 16px;
+  min-height: 16px;
+  border-radius: 28%;
+  border: 1.5px solid #222;
+  display: grid;
+  place-items: center;
+}
+
+.avatar-badge svg {
+  width: 80%;
+  height: 80%;
+}
+
+.avatar.camera-app {
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #8d939b, #50555c);
+}
+
+.avatar.camera-app > svg {
+  width: 70%;
+  height: 70%;
+  border-radius: 0;
+}
+
+.lock-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.lock-note-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.lock-note-head {
+  align-items: baseline;
+  gap: 8px;
+}
+
+.lock-note-head strong {
+  color: #fff;
+  font-size: 15px;
+}
+
+.banner-icon svg {
+  width: 70%;
+  height: 70%;
+}
+
+.call-avatar.pic {
+  background: none;
+  overflow: hidden;
+}
+
+.call-avatar.pic .avatar {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.call-avatar.pic.hijacked {
+  filter: grayscale(1) contrast(1.4) brightness(0.7);
+}

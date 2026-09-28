@@ -6,6 +6,7 @@ import type { Attach, ThreadId } from '../../engine/types';
 import { MEMO_TITLES } from '../../content/media';
 import { PhotoView } from './Gallery';
 import { AppHeader } from '../AppHeader';
+import { Avatar } from '../Avatar';
 import { setRt } from '../../engine/state';
 
 function ThreadList() {
@@ -25,9 +26,7 @@ function ThreadList() {
           return (
             <li key={th}>
               <button type="button" className="thread-row" onClick={() => openThread(th)}>
-                <span className="avatar" style={{ background: meta.color }}>
-                  {meta.avatar}
-                </span>
+                <Avatar th={th} />
                 <span className="thread-mid">
                   <strong>{meta.name}</strong>
                   <span className="thread-last">{typing[th] ? '입력 중…' : waiting ? '답장을 기다리고 있습니다' : last?.text}</span>
@@ -137,7 +136,7 @@ function Chat({ th }: { th: ThreadId }) {
     <div className="chat">
       <AppHeader
         title={meta.name}
-        subtitle={th === 'unknown' ? '알 수 없는 번호' : th === 'self' ? '나와의 채팅' : undefined}
+        subtitle={th === 'unknown' ? '0200 · 저장되지 않은 번호' : th === 'self' ? '나와의 채팅' : undefined}
         onBack={() => openThread(null)}
         backLabel="메시지"
       />

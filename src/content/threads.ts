@@ -13,7 +13,7 @@ export const THREAD_META: Record<ThreadId, ThreadMeta> = {
   dohyun: { id: 'dohyun', name: '도현', avatar: '도', color: '#3d6fd6' },
   mom: { id: 'mom', name: '엄마 ❤️', avatar: '엄', color: '#d65b8a' },
   self: { id: 'self', name: '나에게', avatar: '나', color: '#5b8a5b' },
-  unknown: { id: 'unknown', name: '02:00', avatar: '?', color: '#2a2a2a' },
+  unknown: { id: 'unknown', name: '모르는 번호', avatar: '?', color: '#2a2a2a' },
 };
 
 export const THREAD_ORDER: ThreadId[] = ['unknown', 'dohyun', 'mom', 'self'];
@@ -47,7 +47,7 @@ export const INITIAL_THREADS: Record<ThreadId, ChatMsg[]> = {
     m('them', '02:42', '02호실 문은 벽돌로 막혀 있어. 너 어디야'),
     m('them', '09:12', '경찰 불렀어', D27),
     m('them', '23:48', '이 폰 가지고 계신 분, 제발 연락 주세요'),
-    m('them', '23:49', '채원이는 폰 비번을 매번 촬영 들어간 시각으로 바꿔요. 걔 영상은 항상 시작 시각부터 찍혀요.'),
+    m('them', '23:49', '채원이 폰 비밀번호는 항상 마지막으로 촬영을 시작한 시각이에요. 네 자리로요.'),
   ],
   mom: [
     m('them', '19:02', '채원아 저녁은 먹었니', D26),

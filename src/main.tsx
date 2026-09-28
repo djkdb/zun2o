@@ -50,7 +50,7 @@ document.addEventListener('visibilitychange', () => {
     hiddenAt = Date.now();
     flush();
     audio.suspend();
-    if (getState().save.unlocked) document.title = '(1) 02:00: 어디 가요?';
+    if (getState().save.unlocked) document.title = '(1) 모르는 번호: 어디 가요?';
   } else {
     audio.resume();
     document.title = baseTitle;

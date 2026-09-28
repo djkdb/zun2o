@@ -68,10 +68,6 @@ export const WallpaperPhoto = memo(function WallpaperPhoto() {
         ))}
         <rect width="390" height="844" fill={`url(#${id}-flash)`} />
       </g>
-      <circle cx="30" cy="704" r="7" fill="#ff3b30" />
-      <text x="44" y="710" fontFamily="IBM Plex Mono, monospace" fontSize="17" fill="#fff" opacity="0.9">
-        REC 01:13
-      </text>
       <text x="24" y="820" fontFamily="IBM Plex Mono, monospace" fontSize="12" fill="#fff" opacity="0.45">
         밤채널 · 해원군청 별관
       </text>
