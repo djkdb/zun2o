@@ -50,6 +50,10 @@ export interface SessionState {
   debug: boolean;
   notice: { text: string; nonce: number } | null;
   audioReady: boolean;
+  /** Has the visitor passed the entry warning this browser session? */
+  entered: boolean;
+  /** Last time an anomaly was seen for the first time (for the notebook). */
+  lastDiscovery: { id: string; at: number } | null;
 }
 
 export interface GameState {
@@ -68,6 +72,12 @@ let nonce = 1;
 let persistTimer: ReturnType<typeof setTimeout> | null = null;
 
 const OVERRIDE_KEY = 'na_level_override';
+const ENTERED_KEY = 'na_entered';
+
+function skipIntroParam(): boolean {
+  if (typeof window === 'undefined') return false;
+  return new URLSearchParams(window.location.search).get('intro') === '0';
+}
 
 function initialSession(debug: boolean): SessionState {
   const now = Date.now();
@@ -94,6 +104,8 @@ function initialSession(debug: boolean): SessionState {
     debug,
     notice: null,
     audioReady: false,
+    entered: readItem(ENTERED_KEY, 'session') === '1' || (debug && skipIntroParam()),
+    lastDiscovery: null,
   };
 }
 
@@ -251,7 +263,7 @@ export function tick(): void {
   const visible = typeof document === 'undefined' || document.visibilityState === 'visible';
   const s = state;
   const phase = phaseOf(new Date(now));
-  const sessionSeconds = s.session.sessionSeconds + (visible ? 1 : 0);
+  const sessionSeconds = s.session.sessionSeconds + (visible && s.session.entered ? 1 : 0);
 
   // Expire anomalies whose timers were throttled (background tabs).
   let active = s.session.active;
@@ -298,6 +310,9 @@ export function tick(): void {
   state = draft;
   if (sessionSeconds % 10 === 0) schedulePersist();
   listeners.forEach((l) => l());
+
+  // Nothing happens until the visitor has walked past the entry warning.
+  if (!state.session.entered) return;
 
   if (mainEvent.pendingAt !== null && real >= mainEvent.pendingAt && !mainEventRunning()) {
     startMainEvent();
@@ -357,6 +372,7 @@ export function fireAnomaly(def: AnomalyDef, source: string): void {
         sessionCounts: { ...s.session.sessionCounts, [def.id]: (s.session.sessionCounts[def.id] ?? 0) + 1 },
         lastFired: { ...s.session.lastFired, [def.id]: real },
         triggeredLog: [...s.session.triggeredLog, { id: def.id, at: getNow(), source }].slice(-40),
+        lastDiscovery: s.save.discoveredAnomalies.includes(def.id) ? s.session.lastDiscovery : { id: def.id, at: real },
       },
     }),
     true,
@@ -433,6 +449,25 @@ export function registerClick(): void {
   patchSave((save) => ({ clickCount: save.clickCount + 1 }));
 }
 
+/** The visitor walked past the entry warning. */
+export function enterArchive(): void {
+  if (state.session.entered) return;
+  writeItem(ENTERED_KEY, '1', 'session');
+  const real = Date.now();
+  const profile = LEVEL_PROFILES[state.session.level];
+  const pending = state.session.mainEvent.pendingAt;
+  set((s) => ({
+    ...s,
+    session: {
+      ...s.session,
+      entered: true,
+      lastInteraction: real,
+      nextAmbientAt: real + profile.firstAmbientAfter * 1000,
+      mainEvent: pending !== null ? { ...s.session.mainEvent, pendingAt: Math.max(pending, real + 4000) } : s.session.mainEvent,
+    },
+  }));
+}
+
 export function setAudioReady(ready: boolean): void {
   if (state.session.audioReady !== ready) patchSession({ audioReady: ready });
 }
@@ -459,7 +494,7 @@ export function recordOpened(id: string): boolean {
     setFlag('record-013-indexed');
     later(() => {
       playSound('unlock');
-      showNotice('RECORD 013 has been added to the index.');
+      showNotice('기록 013이 색인에 추가되었습니다.');
     }, 1800);
   }
   emit({ type: 'route', target: `record/${id}` });

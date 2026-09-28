@@ -30,7 +30,7 @@ export function EndingPage({ id }: { id: string }) {
     <div className={`ending-page ending-${def.id}`} role="main">
       <div className="ending-inner">
         <div className="ending-number">
-          ENDING {def.index} / {ENDINGS.length}
+          엔딩 {def.index} / {ENDINGS.length}
         </div>
         <h1 className="ending-title">{def.title}</h1>
         <p className="ending-subtitle">{def.subtitle}</p>
@@ -43,10 +43,10 @@ export function EndingPage({ id }: { id: string }) {
         </div>
         <div className="ending-foot" style={{ animationDelay: `${1.4 + lines.length * step}s` }}>
           <a className="btn" href={href('/')}>
-            Return to the archive
+            보관소로 돌아가기
           </a>
           <span>
-            Endings found: {save.endingUnlocked.length} / {ENDINGS.length}
+            발견한 엔딩: {save.endingUnlocked.length} / {ENDINGS.length}
           </span>
         </div>
       </div>

@@ -32,8 +32,8 @@ export function canOpenRecord(record: ArchiveRecord, save: SaveData, level: Horr
       return {
         ok: false,
         reason: 'restricted',
-        message: 'This record is restricted.',
-        detail: 'Access is granted only to readers who have consulted the records it references (001, 003).',
+        message: '열람 제한 기록입니다.',
+        detail: '이 기록이 참조하는 기록(001, 003)을 먼저 열람한 사람만 볼 수 있습니다.',
       };
     }
     case 'denied':
@@ -41,16 +41,16 @@ export function canOpenRecord(record: ArchiveRecord, save: SaveData, level: Horr
       return {
         ok: false,
         reason: 'denied',
-        message: '[ACCESS DENIED]',
-        detail: 'Record 009 is not available at this hour.',
+        message: '[접근 거부]',
+        detail: '기록 009는 이 시간에 열람할 수 없습니다.',
       };
     case 'hidden':
       if (save.flags.includes('record-013-indexed')) return { ok: true };
       return {
         ok: false,
         reason: 'hidden',
-        message: 'RECORD NOT INDEXED.',
-        detail: 'The index lists this number only for readers who follow the broadcast order.',
+        message: '색인에 없는 기록',
+        detail: '이 번호는 방송 순서를 따라온 열람자에게만 색인에 나타납니다.',
       };
   }
 }

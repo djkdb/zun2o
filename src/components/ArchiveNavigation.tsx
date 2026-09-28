@@ -12,19 +12,19 @@ interface Item {
 }
 
 const BASE: Item[] = [
-  { key: 'archive', label: 'ARCHIVE', path: '/' },
-  { key: 'records', label: 'RECORDS', path: '/records' },
-  { key: 'search', label: 'SEARCH', path: '/search' },
-  { key: 'about', label: 'ABOUT', path: '/about' },
-  { key: 'contact', label: 'CONTACT', path: '/contact' },
+  { key: 'archive', label: '처음', path: '/' },
+  { key: 'records', label: '기록', path: '/records' },
+  { key: 'search', label: '검색', path: '/search' },
+  { key: 'about', label: '소개', path: '/about' },
+  { key: 'contact', label: '연락', path: '/contact' },
 ];
 
 const NIGHT: Item[] = [
-  { key: 'archive', label: 'ARCHIVE', path: '/' },
-  { key: 'records', label: 'RECORDS', path: '/records' },
+  { key: 'archive', label: '처음', path: '/' },
+  { key: 'records', label: '기록', path: '/records' },
   { key: '009', label: '009', path: '/record/009' },
-  { key: 'unknown', label: 'UNKNOWN', path: '/unknown', className: 'unknown' },
-  { key: 'leave', label: 'LEAVE', path: '/contact' },
+  { key: 'unknown', label: '미상', path: '/unknown', className: 'unknown' },
+  { key: 'leave', label: '떠나기', path: '/contact' },
 ];
 
 function isCurrent(path: string, current: string): boolean {
@@ -67,7 +67,7 @@ export function ArchiveNavigation({ currentPath }: { currentPath: string }) {
         list = [...list].sort(() => rng() - 0.5);
       }
       if (anomaly.effect === 'phantom') {
-        list = [...list.slice(0, 3), { key: 'staff', label: 'STAFF ONLY', path: '/system', className: 'phantom' }, ...list.slice(3)];
+        list = [...list.slice(0, 3), { key: 'staff', label: '직원 전용', path: '/system', className: 'phantom' }, ...list.slice(3)];
       }
       if (anomaly.effect === 'rename') {
         list = list.map((i) => (i.key === anomaly.payload?.from ? { ...i, label: String(anomaly.payload.text) } : i));
@@ -80,7 +80,7 @@ export function ArchiveNavigation({ currentPath }: { currentPath: string }) {
   const goneKeys = new Set(STRIP_ORDER.slice(0, stripping ? stripped : 0));
 
   return (
-    <nav className="nav" aria-label="Main">
+    <nav className="nav" aria-label="주 메뉴">
       <ul>
         {items.map((item, i) => {
           const gone = allGone || goneKeys.has(item.key);
@@ -101,7 +101,7 @@ export function ArchiveNavigation({ currentPath }: { currentPath: string }) {
         })}
         {staffUnlocked && !night && !eventRunning && (
           <li className="visually-hidden">
-            <a href={href('/system')}>Staff terminal</a>
+            <a href={href('/system')}>직원용 단말기</a>
           </li>
         )}
       </ul>

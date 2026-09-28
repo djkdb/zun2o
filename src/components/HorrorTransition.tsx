@@ -21,16 +21,16 @@ function recallLines(save: SaveData): string[] {
   const lines: string[] = [];
   const first = new Date(save.firstVisit);
   if (save.visitCount > 1) {
-    lines.push(`You first came at ${formatHM(first)}. You came back ${save.visitCount - 1} ${save.visitCount - 1 === 1 ? 'time' : 'times'}.`);
+    lines.push(`당신은 ${formatHM(first)}에 처음 왔습니다. 그 뒤로 ${save.visitCount - 1}번 다시 왔습니다.`);
   } else {
-    lines.push(`You arrived at ${formatHM(first)}. You stayed.`);
+    lines.push(`당신은 ${formatHM(first)}에 도착했습니다. 그리고 떠나지 않았습니다.`);
   }
   const v003 = save.recordViews['003'] ?? 0;
-  lines.push(v003 > 0 ? `You opened her report ${v003} ${v003 === 1 ? 'time' : 'times'}.` : 'You never opened her report. She opened yours.');
-  if (save.secretProgress.A.found) lines.push('You followed the broadcast order.');
-  else if (save.flags.includes('sentence-found')) lines.push('You found her last sentence.');
-  else lines.push(`You read ${save.discoveredRecords.length} records. You clicked ${save.clickCount} times.`);
-  lines.push('The index has a place for you.');
+  lines.push(v003 > 0 ? `그녀에 대한 보고서를 ${v003}번 열었습니다.` : '그녀에 대한 보고서는 한 번도 열지 않았습니다. 그녀는 당신의 것을 열었습니다.');
+  if (save.secretProgress.A.found) lines.push('당신은 방송 순서를 따라왔습니다.');
+  else if (save.flags.includes('sentence-found')) lines.push('당신은 그녀의 마지막 문장을 찾았습니다.');
+  else lines.push(`기록 ${save.discoveredRecords.length}건을 읽었습니다. ${save.clickCount}번 클릭했습니다.`);
+  lines.push('색인에 당신의 자리가 있습니다.');
   return lines;
 }
 
@@ -67,7 +67,7 @@ export function HorrorTransition() {
   };
 
   const recordLines = useMemo(
-    () => ['RECORD 009 — VISITOR LOG', 'ENTRY ADDED 02:00:00', `VISITOR #${String(visitCount).padStart(4, '0')}`],
+    () => ['기록 009 — 방문자 기록', '02:00:00 항목 추가됨', `방문자 #${String(visitCount).padStart(4, '0')}`],
     [visitCount],
   );
   // Recall lines are written from what the save knew when 02:00 began.
@@ -92,7 +92,7 @@ export function HorrorTransition() {
         aria-label="02:00"
       >
         <div className="event-record" aria-live="polite">
-          <p className="kicker">THE NIGHT INDEX</p>
+          <p className="kicker">야간 색인</p>
           {record.shown.map((l, i) => (
             <p key={`r${i}`}>{l}</p>
           ))}
@@ -113,7 +113,7 @@ export function HorrorTransition() {
       </div>
       {stage === 'scare' && <ScareView kind="lunge" nonce={startedAt ?? 0} silent />}
       <button type="button" className="event-skip" onClick={skip}>
-        SKIP ›
+        건너뛰기 ›
       </button>
       <span className="visually-hidden" aria-live="assertive">
         {stageAnnouncement(stage)}
@@ -129,11 +129,11 @@ function onType(): void {
 function stageAnnouncement(stage: MainEventStage): string {
   switch (stage) {
     case 'freeze':
-      return 'The clock has stopped at 02:00.';
+      return '시계가 02:00에 멈췄습니다.';
     case 'strip-menu':
-      return 'The menu is disappearing.';
+      return '메뉴가 사라지고 있습니다.';
     case 'dark':
-      return 'The page has gone dark.';
+      return '화면이 꺼졌습니다.';
     default:
       return '';
   }

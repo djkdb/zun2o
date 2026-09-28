@@ -22,9 +22,9 @@
   --photo-tone: sepia(0.55) contrast(0.95) brightness(1.02);
   --shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
 
-  --font-sans: 'IBM Plex Sans', 'Helvetica Neue', Arial, system-ui, sans-serif;
-  --font-serif: 'IBM Plex Serif', Georgia, 'Times New Roman', serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --font-sans: 'IBM Plex Sans', 'IBM Plex Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
+  --font-serif: 'IBM Plex Serif', 'Noto Serif KR', 'AppleMyungjo', 'Batang', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', 'IBM Plex Sans KR', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 
   --gutter: clamp(16px, 4vw, 40px);
   --max: 1080px;
@@ -103,6 +103,8 @@ body {
   font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.6;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
   transition:
     background-color var(--tt) ease,
     color var(--tt) ease;
@@ -225,9 +227,9 @@ button {
 .panel-title {
   margin: 0 0 8px;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--muted);
 }
@@ -245,7 +247,7 @@ h3 {
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
 }

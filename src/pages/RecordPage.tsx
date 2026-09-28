@@ -43,18 +43,18 @@ function SecretSentence({ block }: { block: Extract<RecordBlock, { type: 'secret
     setFlag('sentence-found');
     setFlag('system-unlocked');
     playSound('unlock');
-    showNotice('Something has been unlocked.');
+    showNotice('무언가가 열렸습니다.');
   };
   return (
     <blockquote className="secret-sentence">
       {block.before}
-      <button type="button" onClick={onClick} aria-label={found ? block.text : `${block.text} (the last line is pressed hard into the paper)`}>
+      <button type="button" onClick={onClick} aria-label={found ? block.text : `${block.text} (마지막 줄이 종이에 꾹 눌려 있다)`}>
         {block.text}
       </button>
       {block.after}
       {found && (
         <span className="revealed">
-          On the back of the sheet, in the same hand: <a href={href('/system')}>/system</a>
+          종이 뒷면에 같은 필체로: <a href={href('/system')}>/system</a>
         </span>
       )}
     </blockquote>
@@ -64,16 +64,16 @@ function SecretSentence({ block }: { block: Extract<RecordBlock, { type: 'secret
 function VisitorLog({ save }: { save: SaveData }) {
   const entries = save.visitLog.slice().reverse();
   return (
-    <ol className="visitor-log" aria-label="Visitor log">
+    <ol className="visitor-log" aria-label="방문자 기록">
       {entries.map((t, i) => {
         const d = new Date(t);
         return (
           <li key={t} className={i === 0 ? 'current' : undefined}>
             <span>
-              VISITOR #{String(save.visitCount).padStart(4, '0')} {i === 0 ? '(now)' : ''}
+              방문자 #{String(save.visitCount).padStart(4, '0')} {i === 0 ? '(지금)' : ''}
             </span>
             <span>
-              {d.toLocaleDateString('en-GB')} {formatClock(partsOf(d))}
+              {d.toLocaleDateString('ko-KR')} {formatClock(partsOf(d))}
             </span>
           </li>
         );
@@ -145,14 +145,14 @@ function Denied({ record, message, detail }: { record: ArchiveRecord; message: s
   return (
     <article>
       <div className="record-head">
-        <div className="record-kicker">Record #{record.id}</div>
+        <div className="record-kicker">기록 #{record.id}</div>
       </div>
       <div className="access-panel" role="alert">
         <div className="stamp">{message}</div>
         {detail && <p>{detail}</p>}
-        {record.access === 'denied' && <p>Server time: {formatClock(partsOf(new Date(now)))}</p>}
+        {record.access === 'denied' && <p>서버 시각: {formatClock(partsOf(new Date(now)))}</p>}
         <p>
-          <a href={href('/records')}>Return to the index</a>
+          <a href={href('/records')}>목록으로 돌아가기</a>
         </p>
       </div>
     </article>
@@ -179,10 +179,10 @@ export function RecordPage({ id }: { id: string }) {
     }
     recordOpened(id);
     if (id === '009') {
-      if (findSecret('C')) showNotice('Record 009 is open. It has been open since 02:00.');
+      if (findSecret('C')) showNotice('기록 009가 열렸습니다. 02:00부터 열려 있었습니다.');
     }
     if (id === '013') {
-      if (findSecret('A')) showNotice('Index continuation found.');
+      if (findSecret('A')) showNotice('색인 연장 기록을 찾았습니다.');
     }
   }, [id, ok, record]);
 
@@ -190,10 +190,10 @@ export function RecordPage({ id }: { id: string }) {
     return (
       <article>
         <div className="access-panel" role="alert">
-          <div className="stamp">RECORD NOT FOUND</div>
-          <p>Record #{id.replace(/[^0-9a-z]/gi, '').slice(0, 6)} was never assigned.</p>
+          <div className="stamp">기록 없음</div>
+          <p>기록 #{id.replace(/[^0-9a-z]/gi, '').slice(0, 6)}은(는) 배정된 적이 없습니다.</p>
           <p>
-            <a href={href('/records')}>Return to the index</a>
+            <a href={href('/records')}>목록으로 돌아가기</a>
           </p>
         </div>
       </article>
@@ -211,12 +211,12 @@ export function RecordPage({ id }: { id: string }) {
   return (
     <article className="record" aria-labelledby="record-title">
       <header className="record-head" id="record-title">
-        <div className="record-kicker">Record #{record.id}</div>
+        <div className="record-kicker">기록 #{record.id}</div>
         <RecordTitle record={record} level={level} />
         <div className="record-meta">
-          <span>Date: {record.date}</span>
-          <span>Classification: {record.classification}</span>
-          <span>Views: {save.recordViews[id] ?? 1}</span>
+          <span>일자: {record.date}</span>
+          <span>분류: {record.classification}</span>
+          <span>열람: {save.recordViews[id] ?? 1}회</span>
         </div>
       </header>
       <div className="record-body">
@@ -227,18 +227,18 @@ export function RecordPage({ id }: { id: string }) {
           <div className="notice">
             {indexed ? (
               <>
-                RECORD 013 has been added to the index. <a href={href('/record/013')}>Open Record 013 →</a>
+                기록 013이 색인에 추가되었습니다. <a href={href('/record/013')}>기록 013 열기 →</a>
               </>
             ) : (
-              'The continuation is issued only to readers who follow the broadcast order.'
+              '연장 기록은 방송 순서를 따라온 열람자에게만 발급됩니다.'
             )}
           </div>
         )}
       </div>
-      <nav className="record-nav" aria-label="Record navigation">
-        {prev ? <a href={href(`/record/${prev}`)}>← Record #{prev}</a> : <span />}
-        <a href={href('/records')}>Index</a>
-        {next ? <a href={href(`/record/${next}`)}>Record #{next} →</a> : <span />}
+      <nav className="record-nav" aria-label="기록 이동">
+        {prev ? <a href={href(`/record/${prev}`)}>← 기록 #{prev}</a> : <span />}
+        <a href={href('/records')}>목록</a>
+        {next ? <a href={href(`/record/${next}`)}>기록 #{next} →</a> : <span />}
       </nav>
     </article>
   );

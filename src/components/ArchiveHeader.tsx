@@ -6,13 +6,13 @@ import { useReducedMotion } from '../hooks/useReducedMotion';
 import { NEW_TITLE } from '../data/mainEvent';
 import { href } from '../utils/router';
 
-const TITLE = 'THE NIGHT ARCHIVE';
-const GLYPHS = '#%&/\\|=+*<>?!0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const TITLE = '심야 기록보관소';
+const GLYPHS = 'ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎ#%&/\\|=+*0123456789';
 
 const SUBTITLE: Record<number, string> = {
-  0: 'Harrow County Records Preservation Project · est. 1996',
-  3: 'Harrow County Records Preservation Project · est. 1994',
-  5: 'Night index · The reading room is staffed',
+  0: 'THE NIGHT ARCHIVE · 해원군청 별관 기록 보존 프로젝트 · 1996년 개설',
+  3: 'THE NIGHT ARCHIVE · 해원군청 별관 기록 보존 프로젝트 · 1994년 개설',
+  5: 'THE NIGHT ARCHIVE · 야간 색인 · 열람실 근무 중',
 };
 
 /** Scramble from one string to another over `duration` ms. */
@@ -65,7 +65,7 @@ export function ArchiveHeader() {
       <div className="header-top">
         <div>
           <h1 className="site-title">
-            <a href={href('/')} aria-label="The Night Archive — home">
+            <a href={href('/')} aria-label="심야 기록보관소 — 처음으로">
               <GlitchText text={title} anomaly={retitling || afterEvent ? null : anomaly} />
             </a>
           </h1>

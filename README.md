@@ -1,8 +1,8 @@
-# THE NIGHT ARCHIVE
+# 심야 기록보관소 (THE NIGHT ARCHIVE)
 
 > 새벽 2시에 이 사이트를 열면 안 된다.
 
-처음에는 1990년대 지방 기록보관소의 오래된 홈페이지처럼 보이는 **인터랙티브 아날로그 호러 / ARG 웹 경험**입니다.
+1995년 폐쇄된 가상의 **해원군청 별관** 기록을 보존한다는, 2000년대 초 자원봉사자 홈페이지처럼 보이는 **인터랙티브 아날로그 호러 / ARG 웹 경험**입니다.
 오래 머물수록, 다시 방문할수록, 그리고 **사용자 로컬 시간**이 새벽 2시에 가까워질수록 사이트의 규칙이 조금씩 무너집니다.
 
 - 01:30 이전 — 완전히 평범함 (아주 드물게 "버그 같은" 현상 하나)
@@ -14,7 +14,10 @@
 - 02:00 ~ 02:59 — 사이트가 완전히 다른 곳(UNKNOWN)이 됨
 - 03:00 이후 — 조용해지지만, 사이트는 당신을 기억함
 
-그리고 **그녀**가 있습니다. 처음엔 사진 속 문간의 작은 그림자였다가, 방문할수록 가까워지고, 새벽이 되면 화면 밖으로 나옵니다 (점프스케어).
+**처음 들어오면** 아날로그 호러식 입장 경고문이 규칙(실제 시각에 반응한다, 이상한 점을 찾아라, 새벽 2시에는 열지 마라)을 알려 주고, 입장 버튼으로 소리를 켭니다. 재방문 때는 "다시 오셨네요. 3번째 방문 · 발견한 이상현상 5개"처럼 짧게 기억을 보여 줍니다.
+사이드바의 **열람 수첩**은 발견한 이상현상·비밀·엔딩 수와 **다음 단서**(답이 아니라 방향)를 알려 줍니다.
+
+그리고 **그녀**(야간 기록사 서미령)가 있습니다. 처음엔 사진 속 문간의 작은 그림자였다가, 방문할수록 가까워지고, 새벽이 되면 화면 밖으로 나옵니다 (점프스케어).
 
 외부 이미지·음원은 하나도 없습니다. 사진은 전부 SVG로 그렸고, 모든 소리는 Web Audio API로 실시간 합성합니다.
 
@@ -25,9 +28,9 @@
 | 종류 | 조건 | 연출 |
 |---|---|---|
 | 02:00 클라이맥스 | 메인 이벤트 27.4초 — 사진 속 인물이 카메라를 본 직후 | 사진에서 튀어나와 화면으로 돌진 + 비명 |
-| Tape 6 | 레벨 3+에서 Record 006(녹음 전사)을 끝까지 읽음 ("마이크 바로 앞의 숨소리") | 돌진 + 비명 |
-| Annex | 레벨 4+에서 Record 005를 끝까지 읽음 | 돌진 + 비명 |
-| 이름 부르기 | 레벨 4+에서 검색창에 `varga` / 터미널에서 `varga` 입력(레벨 2+) | "SHE IS BUSY." → 돌진 |
+| 6번 테이프 | 레벨 3+에서 기록 006(녹취록)을 끝까지 읽음 ("마이크 바로 앞의 숨소리") | 돌진 + 비명 |
+| 별관 | 레벨 4+에서 기록 005를 끝까지 읽음 | 돌진 + 비명 |
+| 이름 부르기 | 레벨 4+에서 검색창에 `서미령` / 터미널에서 `서미령` 입력(레벨 2+) | "그녀는 지금 바쁩니다." → 돌진 |
 | 응시 | 레벨 3+에서 45초 동안 가만히 있음 | 속삭임 → 화면 중앙에 얼굴이 천천히 떠오름 → 3.6초 후 돌진 |
 | 엿보기 | 레벨 3+ 앰비언트 (세션당 최대 2회) | 화면 오른쪽 가장자리에 얼굴 반쪽, 0.8초 |
 | 반사 | 레벨 2+ 화면 암전 이상현상 | 0.16초 암전 속에 희미한 얼굴 |
@@ -82,6 +85,7 @@ URL에 `?debug=true`를 붙이면 (세션 동안 유지) 오른쪽 아래에 디
 - 표시: HORROR LEVEL / CURRENT TIME / VISIT COUNT / SESSION TIME / CLICKS / MAIN EVENT 단계 / 열어본 기록 / 기록 순서 / SECRET / FLAGS / ENDINGS / 발견한 이상현상 수 / 트리거 로그
 - 버튼: `L0`~`L5` 강제, `auto`, `Jump scare` / `Stare` / `Peek`, 시간 점프(`12:00` `01:30` `01:45` `01:55` `01:59` `01:59:50` `02:03` `03:10` `real`), **Trigger 02:00**, Random anomaly, 특정 anomaly Fire, Unlock all, Reset save, 엔딩 테스트(normal/secret/true)
 - 시작 시각 지정: `?debug=true&t=01:59:50` — 방문 기록 자체가 그 시각으로 저장되므로 촬영용으로 적합
+- 입장 경고 건너뛰기: `?debug=true&intro=0`
 
 프로덕션(쿼리 없음)에서는 패널이 렌더링되지 않습니다.
 
@@ -91,13 +95,14 @@ URL에 `?debug=true`를 붙이면 (세션 동안 유지) 오른쪽 아래에 디
 
 | Scene | URL / 행동 |
 |---|---|
-| 01 평범한 사이트 | `/#/` 첫 방문 (시크릿 창 권장) |
-| 02 "어? 방금 뭐였지?" | Record #007에 여러 번 마우스 올리기 → `DO NOT OPEN`이 0.6초 보임. 또는 `?debug=true&t=01:47` 후 대기 |
+| 00 입장 경고 | 시크릿 창으로 `/#/` 첫 방문 → 경고문 |
+| 01 평범한 사이트 | 입장 직후의 기록 색인 |
+| 02 "어? 방금 뭐였지?" | 기록 #007에 여러 번 마우스 올리기 → `열지 마십시오`가 0.6초 보임. 또는 `?debug=true&t=01:47` 후 대기 |
 | 03 01:59:59 | `?debug=true&t=01:59:50#/` → 패널 `—`로 접기 → 커진 시계, 어두워지는 화면 |
-| 04 02:00 | 그대로 대기 → 시계 정지, 침묵, 제목이 `THE NIGHT ARCHIVES YOU`로 스크램블 |
+| 04 02:00 | 그대로 대기 → 시계 정지, 침묵, 제목이 `당신을 보관합니다`로 스크램블 |
 | 05 사이트 전체 변화 | 메뉴가 하나씩 사라지고 화면이 꺼짐 → 기록이 스스로 타이핑되며 **당신의 행동을 회상** |
-| 06 숨겨진 페이지 | 사진 속 인물이 카메라를 봄 → **그대로 화면으로 튀어나옴(점프스케어)** → 자동으로 Record 009(방문자 로그) 이동, 메뉴에 `UNKNOWN` |
-| 07 예상하지 못한 메시지 | `#/record/003`의 마지막 문장 클릭 → `/system` 터미널 (`ACCESSING ARCHIVE... OPEN? [Y/N]`) |
+| 06 숨겨진 페이지 | 사진 속 인물이 카메라를 봄 → **그대로 화면으로 튀어나옴(점프스케어)** → 자동으로 기록 009(방문자 기록) 이동, 메뉴에 `미상` |
+| 07 예상하지 못한 메시지 | `#/record/003`의 마지막 문장 클릭 → `/system` 단말기 (`기록 검색 중... 열겠습니까? [Y/N]`) |
 
 각 이벤트는 시작/끝이 명확하도록 설계되었습니다 (02:00 연출 타임라인: `src/data/mainEvent.ts`).
 Web Audio는 첫 클릭 이후에만 켜지므로, 촬영 전에 화면을 한 번 클릭해 두세요.
@@ -122,13 +127,13 @@ src/
   data/                 ← 콘텐츠는 전부 데이터
     anomalies.ts        이상현상 48종 (점프스케어 6종 포함)
     records.ts          기록 001–009, 013 (레벨별 variants)
-    secrets.ts endings.ts mainEvent.ts copy.ts
-  components/           Ghost(그녀 + 점프스케어), Header, Navigation, Clock, RecordList, GlitchText, AnomalyOverlay,
+    secrets.ts endings.ts mainEvent.ts copy.ts hints.ts(열람 수첩 단서)
+  components/           EntryGate(입장 경고), ReadingNotes(열람 수첩), Ghost(그녀 + 점프스케어), Header, Navigation, Clock, RecordList, GlitchText, AnomalyOverlay,
                         AudioController, HorrorTransition(02:00), Terminal, DebugPanel, photos/…
   pages/                Index, Records, Record, Search, About, Contact, System, Room02, Unknown, Ending, NotFound
   hooks/                useGame(selector), useAnomaly(target), useLocalTime, useTypewriter, …
   utils/                audio(Web Audio 합성), storage(안전 래퍼), time, router, random
-scripts/qa.mjs          Playwright E2E QA (90 checks)
+scripts/qa.mjs          Playwright E2E QA (98 checks)
 ```
 
 ### 이상현상 추가하기
@@ -172,21 +177,21 @@ scripts/qa.mjs          Playwright E2E QA (90 checks)
 <summary><strong>스포일러: Secret Path와 엔딩</strong></summary>
 
 **Secret A — The Broadcast Order**
-Record 001의 라디오 운영자가 들은 숫자: *001, 003, 007, 13*. 이 순서로 기록을 열면(007은 001·003을 먼저 봐야 열림) Record 013이 색인에 추가됩니다. 013을 열면 완료. 013에는 터미널용 키 `HARROW-0200`이 있습니다.
+기록 001의 라디오 운영자가 들은 숫자: *공공일, 공공삼, 공공칠, 일삼*. 이 순서로 기록을 열면(007은 001·003을 먼저 봐야 열림) 기록 013이 색인에 추가됩니다. 013을 열면 완료. 013에는 단말기용 열쇠 `HAEWON-0200`이 있습니다.
 
 **Secret B — Her Last Sentence**
-Record 003의 마지막 문장 *"The index is longer at night."* 을 클릭 → `/system` 터미널 해금 → `OPEN? [Y/N]` (N을 눌러도 파일은 열립니다) → LAST_ENTRY.TXT.
+기록 003의 마지막 문장 *"색인은 밤이 되면 길어진다."* 를 클릭 → `/system` 단말기 해금 → `열겠습니까? [Y/N]` (N을 눌러도 파일은 열립니다) → LAST_ENTRY.TXT. 단말기는 `도움말`, `목록`, `열기 003` 같은 한국어 명령도 받습니다.
 
 **Secret C — The Visitor Log**
-Record 009는 02:00–02:59에만 열립니다. 02:00 이벤트를 목격하면 자동으로 이동합니다. 당신의 실제 방문 시각 목록이 나옵니다.
+기록 009는 02:00–02:59에만 열립니다. 02:00 이벤트를 목격하면 자동으로 이동합니다. 당신의 실제 방문 시각 목록이 나옵니다.
 
 **Secret D — ROOM_02**
-레벨 2 이상에서 검색창에 `room` → `ROOM_02 [FILE CORRUPTED]` → 봉인된 방.
+레벨 2 이상에서 검색창에 `02호실`(또는 `방`, `room`) → `ROOM_02 [파일 손상]` → 봉인된 방.
 
 **엔딩**
-1. **CHECKED OUT (Normal)** — Contact의 Check out, 02:00 이후 Record 017에서 Leave, 또는 터미널 `LOGOUT`
-2. **THE INDEX (Secret)** — A+B 완료 후 터미널에 `key HARROW-0200`
-3. **NIGHT SHIFT (True)** — A+B+C 완료 후 **02:00–02:59에** `#/unknown`(Record 017)에서 *Accept the shift*. 이후 사이트는 영원히 조용해지고, 당신을 "archivist"라고 부릅니다.
+1. **퇴실 처리 (Normal)** — 연락 페이지의 퇴실하기, 02:00 이후 기록 017에서 떠난다, 또는 단말기 `퇴실`/`LOGOUT`
+2. **색인 (Secret)** — A+B 완료 후 단말기에 `열쇠 HAEWON-0200`
+3. **야간 근무 (True)** — A+B+C 완료 후 **02:00–02:59에** `#/unknown`(기록 017)에서 *근무를 인수한다*. 이후 사이트는 영원히 조용해지고, 당신을 "기록사님"이라고 부릅니다.
 
 그 외: 404 페이지의 흰 글씨(드래그), 탭을 떠나면 바뀌는 제목, 레벨마다 바뀌는 기록 문장, 방문할 때마다 다가오는 사진 속 인물.
 </details>

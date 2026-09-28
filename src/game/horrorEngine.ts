@@ -85,7 +85,7 @@ export interface LevelProfile {
 }
 
 export const LEVEL_PROFILES: Record<HorrorLevel, LevelProfile> = {
-  0: { ambientGap: [75_000, 150_000], firstAmbientAfter: 40, maxConcurrent: 1, ambienceGain: 0.05, droneGain: 0, persistentGrain: false },
+  0: { ambientGap: [45_000, 90_000], firstAmbientAfter: 22, maxConcurrent: 1, ambienceGain: 0.05, droneGain: 0, persistentGrain: false },
   1: { ambientGap: [40_000, 80_000], firstAmbientAfter: 20, maxConcurrent: 1, ambienceGain: 0.045, droneGain: 0.01, persistentGrain: false },
   2: { ambientGap: [22_000, 45_000], firstAmbientAfter: 12, maxConcurrent: 1, ambienceGain: 0.035, droneGain: 0.03, persistentGrain: false },
   3: { ambientGap: [11_000, 24_000], firstAmbientAfter: 6, maxConcurrent: 2, ambienceGain: 0.025, droneGain: 0.05, persistentGrain: false },

@@ -72,7 +72,7 @@ function ReadingRoomInner({ stage = 0, effect }: SceneProps) {
   const chairTurned = stage === 4;
 
   return (
-    <svg viewBox="0 0 640 420" role="img" aria-label="Black-and-white photograph of an archive reading room: shelves, a desk with a lamp, a chair, and a doorway at the back.">
+    <svg viewBox="0 0 640 420" role="img" aria-label="기록보관소 열람실 흑백 사진. 서가, 전등이 놓인 책상, 의자, 그리고 뒤쪽의 문간.">
       <FilmDefs id={id} />
       <g filter={`url(#${id}-grain)`}>
         {/* back wall */}
@@ -173,7 +173,7 @@ function AnnexInner({ level, effect }: SceneProps) {
   const id = useSvgId();
   const litWindow = level >= 3 || effect === 'face';
   return (
-    <svg viewBox="0 0 640 420" role="img" aria-label="Photograph of a three-storey concrete municipal building at dusk, with rows of dark windows.">
+    <svg viewBox="0 0 640 420" role="img" aria-label="해 질 녘의 3층짜리 콘크리트 관공서 건물 사진. 어두운 창문이 줄지어 있다.">
       <FilmDefs id={id} />
       <g filter={`url(#${id}-grain)`}>
         <rect width="640" height="420" fill="#2b2d2e" />
@@ -198,8 +198,8 @@ function AnnexInner({ level, effect }: SceneProps) {
         {/* entrance */}
         <rect x="290" y="300" width="60" height="56" fill="#131414" />
         <rect x="280" y="292" width="80" height="8" fill="#4d4a43" />
-        <text x="320" y="286" textAnchor="middle" fontFamily="IBM Plex Mono, monospace" fontSize="9" fill="#bdb6a4" letterSpacing="2">
-          HARROW COUNTY ANNEX
+        <text x="320" y="286" textAnchor="middle" fontFamily="IBM Plex Mono, IBM Plex Sans KR, monospace" fontSize="9" fill="#bdb6a4" letterSpacing="2">
+          해원군청 별관
         </text>
         {/* ground, fence, trees */}
         <rect y="356" width="640" height="64" fill="#232424" />
@@ -225,15 +225,15 @@ function FloorPlanInner({ level }: SceneProps) {
   const ink = '#2c3a57';
   const doorOpen = level >= 3;
   const rooms: { id: string; x: number; y: number; w: number; h: number; label: string }[] = [
-    { id: '01', x: 40, y: 40, w: 180, h: 150, label: 'ROOM 01 — STACKS' },
-    { id: '02', x: 220, y: 40, w: 150, h: 150, label: 'ROOM 02 — INDEX' },
-    { id: '03', x: 370, y: 40, w: 230, h: 150, label: 'ROOM 03 — READING' },
-    { id: '04', x: 40, y: 250, w: 170, h: 130, label: 'ROOM 04 — NIGHT STAFF' },
-    { id: '05', x: 210, y: 250, w: 190, h: 130, label: 'ROOM 05 — MICROFILM' },
-    { id: '06', x: 400, y: 250, w: 200, h: 130, label: 'ROOM 06 — STORAGE' },
+    { id: '01', x: 40, y: 40, w: 180, h: 150, label: '01호실 — 서고' },
+    { id: '02', x: 220, y: 40, w: 150, h: 150, label: '02호실 — 색인실' },
+    { id: '03', x: 370, y: 40, w: 230, h: 150, label: '03호실 — 열람실' },
+    { id: '04', x: 40, y: 250, w: 170, h: 130, label: '04호실 — 야간 근무실' },
+    { id: '05', x: 210, y: 250, w: 190, h: 130, label: '05호실 — 마이크로필름' },
+    { id: '06', x: 400, y: 250, w: 200, h: 130, label: '06호실 — 창고' },
   ];
   return (
-    <svg viewBox="0 0 640 420" role="img" aria-label="Floor plan of the third floor: six rooms around a corridor. Room 02, the index room, is hatched and marked sealed.">
+    <svg viewBox="0 0 640 420" role="img" aria-label="3층 평면도. 복도를 둘러싼 방 여섯 개. 색인실인 02호실은 빗금이 쳐져 있고 봉인이라고 적혀 있다.">
       <defs>
         <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
           <line x1="0" y1="0" x2="0" y2="8" stroke={ink} strokeWidth="1" opacity="0.55" />
@@ -249,7 +249,7 @@ function FloorPlanInner({ level }: SceneProps) {
       {rooms.map((r) => (
         <g key={r.id}>
           <rect x={r.x} y={r.y} width={r.w} height={r.h} fill={r.id === '02' ? 'url(#hatch)' : 'none'} stroke={ink} strokeWidth="3" />
-          <text x={r.x + 10} y={r.y + 20} fontFamily="IBM Plex Mono, monospace" fontSize="11" fill={ink}>
+          <text x={r.x + 10} y={r.y + 20} fontFamily="IBM Plex Mono, IBM Plex Sans KR, monospace" fontSize="11" fill={ink}>
             {r.label}
           </text>
         </g>
@@ -270,14 +270,14 @@ function FloorPlanInner({ level }: SceneProps) {
       ) : (
         <rect x="278" y="186" width="34" height="8" fill={ink} />
       )}
-      <text x="244" y="120" fontFamily="IBM Plex Mono, monospace" fontSize="14" fill="#8a2a1e" letterSpacing="3" transform="rotate(-8 295 120)">
-        SEALED
+      <text x="244" y="120" fontFamily="IBM Plex Mono, IBM Plex Sans KR, monospace" fontSize="14" fill="#8a2a1e" letterSpacing="3" transform="rotate(-8 295 120)">
+        봉인
       </text>
-      <text x="320" y="224" textAnchor="middle" fontFamily="IBM Plex Mono, monospace" fontSize="10" fill={ink} letterSpacing="4">
-        CORRIDOR
+      <text x="320" y="224" textAnchor="middle" fontFamily="IBM Plex Mono, IBM Plex Sans KR, monospace" fontSize="10" fill={ink} letterSpacing="4">
+        복도
       </text>
-      <text x="600" y="408" textAnchor="end" fontFamily="IBM Plex Mono, monospace" fontSize="9" fill={ink}>
-        HARROW ANNEX · LEVEL 3 · 1:200
+      <text x="600" y="408" textAnchor="end" fontFamily="IBM Plex Mono, IBM Plex Sans KR, monospace" fontSize="9" fill={ink}>
+        해원군청 별관 · 3층 · 1:200
       </text>
     </svg>
   );
@@ -288,7 +288,7 @@ function FloorPlanInner({ level }: SceneProps) {
 function TowerInner(_: SceneProps) {
   const id = useSvgId();
   return (
-    <svg viewBox="0 0 640 420" role="img" aria-label="Night photograph of a radio transmitter mast on a hill, a small red light at the top.">
+    <svg viewBox="0 0 640 420" role="img" aria-label="언덕 위 라디오 송신탑의 야간 사진. 꼭대기에 작은 빨간 불빛.">
       <FilmDefs id={id} />
       <g filter={`url(#${id}-grain)`}>
         <rect width="640" height="420" fill="#1b1d22" />
@@ -329,7 +329,7 @@ function TowerInner(_: SceneProps) {
 function CassetteInner({ level }: SceneProps) {
   const id = useSvgId();
   return (
-    <svg viewBox="0 0 640 420" role="img" aria-label="A microcassette labelled Tape 6 in handwriting, lying on a desk.">
+    <svg viewBox="0 0 640 420" role="img" aria-label="책상 위의 마이크로카세트. 손글씨로 6번 테이프라고 적혀 있다.">
       <FilmDefs id={id} />
       <g filter={`url(#${id}-grain)`}>
         <rect width="640" height="420" fill="#4a3d2c" />
@@ -339,11 +339,11 @@ function CassetteInner({ level }: SceneProps) {
         <g transform="translate(320 210) rotate(-6)">
           <rect x="-170" y="-104" width="340" height="208" rx="14" fill="#1d1d1f" />
           <rect x="-150" y="-86" width="300" height="104" rx="4" fill="#e3dccb" />
-          <text x="-132" y="-48" fontFamily="'Bradley Hand', 'Segoe Script', 'Comic Sans MS', cursive" fontSize="26" fill="#23304f">
-            Tape 6 — 13/III
+          <text x="-132" y="-48" fontFamily="'Nanum Pen Script', cursive" fontSize="34" fill="#23304f">
+            6번 테이프 — 3/13
           </text>
-          <text x="-132" y="-14" fontFamily="'Bradley Hand', 'Segoe Script', 'Comic Sans MS', cursive" fontSize="17" fill="#23304f">
-            {level >= 3 ? 'inventory — do not play after 2' : 'inventory, drawers 2–3'}
+          <text x="-132" y="-14" fontFamily="'Nanum Pen Script', cursive" fontSize="26" fill="#23304f">
+            {level >= 3 ? '재고 조사 — 2시 이후 재생 금지' : '재고 조사, 서랍 2–3'}
           </text>
           <rect x="-90" y="34" width="180" height="46" rx="23" fill="#0d0d0e" />
           <circle cx="-56" cy="57" r="16" fill="#6b5a44" />
@@ -361,9 +361,9 @@ function CassetteInner({ level }: SceneProps) {
 
 function NoticeInner({ level }: SceneProps) {
   const id = useSvgId();
-  const lines = ['READING ROOM', '', 'OPEN 18:00 — 01:59', '', 'Return drawers to the index.', 'Speak quietly.', level >= 2 ? 'Do not stay after the clock stops.' : 'Thank you.'];
+  const lines = ['열 람 실', '', '이용 18:00 — 01:59', '', '서랍은 색인에 돌려놓으십시오.', '정숙해 주십시오.', level >= 2 ? '시계가 멈추면 머물지 마십시오.' : '감사합니다.'];
   return (
-    <svg viewBox="0 0 640 420" role="img" aria-label="A typed paper notice pinned to a wall with reading room hours.">
+    <svg viewBox="0 0 640 420" role="img" aria-label="열람실 이용 시간이 타자로 적힌 안내문이 벽에 붙어 있다.">
       <FilmDefs id={id} />
       <g filter={`url(#${id}-grain)`}>
         <rect width="640" height="420" fill="#5c5446" />
@@ -376,7 +376,7 @@ function NoticeInner({ level }: SceneProps) {
               x="0"
               y={-110 + i * 34}
               textAnchor="middle"
-              fontFamily="IBM Plex Mono, Courier New, monospace"
+              fontFamily="IBM Plex Mono, IBM Plex Sans KR, monospace"
               fontSize={i === 0 ? 24 : 15}
               fontWeight={i === 0 ? 600 : 400}
               fill="#211f1b"
@@ -396,7 +396,7 @@ function NoticeInner({ level }: SceneProps) {
 function Room02Inner(_: SceneProps) {
   const id = useSvgId();
   return (
-    <svg viewBox="0 0 640 420" role="img" aria-label="A dark room lined floor to ceiling with small index drawers. One drawer is open and lit. Someone sits at a desk with their back to the camera.">
+    <svg viewBox="0 0 640 420" role="img" aria-label="바닥부터 천장까지 작은 색인 서랍으로 덮인 어두운 방. 서랍 하나가 열려 불빛이 새어 나온다. 누군가 카메라를 등지고 책상에 앉아 있다.">
       <FilmDefs id={id} />
       <g filter={`url(#${id}-grain)`}>
         <rect width="640" height="420" fill="#141312" />

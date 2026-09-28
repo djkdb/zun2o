@@ -13,31 +13,31 @@ export function IndexPage() {
     <>
       <WelcomeLine />
       <GlitchText as="p" className="prose" text={INTRO_TEXT[level]} anomaly={intro} />
-      <h2 className="section-heading">Archive index</h2>
+      <h2 className="section-heading">기록 색인</h2>
       <RecordList />
-      <h2 className="section-heading">Recent additions</h2>
+      <h2 className="section-heading">최근 추가</h2>
       <ul className="status-list">
         {level >= 2 && (
           <li>
-            <span>{indexed ? 'Record #013 — Index continuation (unfiled)' : 'Record #0?? — (processing)'}</span>
+            <span>{indexed ? '기록 #013 — 색인 연장 (미등록)' : '기록 #0?? — (처리 중)'}</span>
             <span className="mono">02:00</span>
           </li>
         )}
         <li>
           <span>
-            <a href={href('/record/008')}>Record #008</a> — reading room notice updated
+            <a href={href('/record/008')}>기록 #008</a> — 열람실 안내문 수정
           </span>
           <span className="mono">2004-11-02</span>
         </li>
         <li>
           <span>
-            <a href={href('/record/006')}>Record #006</a> — transcript corrected
+            <a href={href('/record/006')}>기록 #006</a> — 녹취록 교정
           </span>
           <span className="mono">2004-06-19</span>
         </li>
         <li>
           <span>
-            <a href={href('/record/005')}>Record #005</a> — floor plan redrawn
+            <a href={href('/record/005')}>기록 #005</a> — 평면도 다시 그림
           </span>
           <span className="mono">2003-09-30</span>
         </li>

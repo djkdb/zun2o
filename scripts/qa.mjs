@@ -20,8 +20,9 @@ function check(name, ok, detail = '') {
   if (!ok) failures++;
 }
 
-async function newPage(opts = {}) {
+async function newPage(opts = {}, { skipGate = true } = {}) {
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, ...opts });
+  if (skipGate) await context.addInitScript(() => sessionStorage.setItem('na_entered', '1'));
   const page = await context.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
@@ -35,13 +36,46 @@ const readSave = (page) => page.evaluate(() => JSON.parse(localStorage.getItem('
 const level = (page) => page.evaluate(() => document.documentElement.dataset.level);
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// ── Test K — entry warning: a first-time visitor is told what this is ──
+{
+  const { context, page, errors } = await newPage({}, { skipGate: false });
+  await page.goto(BASE);
+  await page.waitForSelector('.gate');
+  const text = (await page.textContent('.gate')) ?? '';
+  check('K first visit shows the entry warning (Korean)', text.includes('실제 시각') && text.includes('새벽 2시'));
+  check('K warning explains what to do', text.includes('이상한 점') && text.includes('열람 수첩'));
+  await page.screenshot({ path: `${OUT}/K-gate.png` });
+  await page.click('.gate-btn:not(.primary)');
+  await page.waitForSelector('.gate', { state: 'detached' });
+  check('K entering removes the warning', (await page.locator('.gate').count()) === 0);
+  check('K "소리 없이" turns sound off', (await page.locator('.tool-toggle').getAttribute('aria-pressed')) === 'false');
+  check('K reading notes show a next hint', ((await page.textContent('.notes-hint')) ?? '').length > 10);
+  await page.reload();
+  await page.waitForSelector('.site-title');
+  check('K warning is not repeated on reload', (await page.locator('.gate').count()) === 0);
+  await page.screenshot({ path: `${OUT}/K-after-gate.png` });
+  const m = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const mp = await m.newPage();
+  await mp.goto(BASE);
+  await mp.waitForSelector('.gate');
+  const btnBottom = await mp.evaluate(() => document.querySelector('.gate-btn.primary')?.getBoundingClientRect().bottom ?? 9999);
+  check('K phone: entry buttons visible without scrolling', btnBottom < 844, `bottom ${Math.round(btnBottom)}`);
+  await mp.screenshot({ path: `${OUT}/K-gate-mobile.png` });
+  await mp.click('.gate-btn.primary');
+  await mp.waitForSelector('.gate', { state: 'detached' });
+  await mp.screenshot({ path: `${OUT}/K-mobile-index.png` });
+  await m.close();
+  check('K no JS errors', errors.length === 0, errors.join(' | '));
+  await context.close();
+}
+
 // ── Test A — first visit ────────────────────────────────────────────────
 {
   const { context, page, errors } = await newPage();
   await page.goto(BASE);
   await page.waitForSelector('.record-list li');
-  check('A1 first visit renders the archive', (await page.textContent('.site-title'))?.includes('THE NIGHT ARCHIVE'));
-  check('A2 welcome line is "Welcome."', (await page.textContent('.welcome'))?.trim() === 'Welcome.');
+  check('A1 first visit renders the archive', (await page.textContent('.site-title'))?.includes('심야 기록보관소'));
+  check('A2 welcome line is "어서 오세요."', (await page.textContent('.welcome'))?.trim() === '어서 오세요.');
   const rows = await page.locator('.record-list li').count();
   check('A3 nine records listed', rows === 9, `${rows} rows`);
   const lv = await level(page);
@@ -60,13 +94,14 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   const state = await context.storageState();
   await context.close();
   const c2 = await browser.newContext({ viewport: { width: 1440, height: 900 }, storageState: state });
+  await c2.addInitScript(() => sessionStorage.setItem('na_entered', '1'));
   const p2 = await c2.newPage();
   await p2.goto(BASE);
   await p2.waitForSelector('.welcome');
   await wait(600);
   save = await readSave(p2);
   check('C2 reopening the browser counts a new visit', save.visitCount === 2, `visitCount ${save.visitCount}`);
-  check('C3 site remembers you ("Welcome back.")', (await p2.textContent('.welcome'))?.trim() === 'Welcome back.');
+  check('C3 site remembers you ("다시 오셨네요.")', (await p2.textContent('.welcome'))?.trim() === '다시 오셨네요.');
   await c2.close();
 }
 
@@ -103,7 +138,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   check('B menu items vanish one by one', gone >= 2, `${gone} gone`);
   await page.screenshot({ path: `${OUT}/B-event-strip.png` });
   await wait(6000);
-  check('B a record types itself in the dark', (await page.textContent('.event-record'))?.includes('VISITOR LOG'));
+  check('B a record types itself in the dark', (await page.textContent('.event-record'))?.includes('방문자 기록'));
   await page.screenshot({ path: `${OUT}/B-event-record.png` });
   await wait(6500);
   await page.screenshot({ path: `${OUT}/B-event-recall.png` });
@@ -140,7 +175,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
     await page.waitForSelector('.record-title');
   }
   await page.waitForSelector('.toast', { timeout: 5000 }).catch(() => null);
-  check('D-A 013 is indexed after the broadcast order', (await page.textContent('.toast'))?.includes('RECORD 013') ?? false);
+  check('D-A 013 is indexed after the broadcast order', (await page.textContent('.toast'))?.includes('기록 013') ?? false);
   await page.goto(`${BASE}#/records`);
   check('D-A 013 appears in the index', (await page.locator('[data-record="013"]').count()) >= 1);
   await page.goto(`${BASE}#/record/013`);
@@ -149,7 +184,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   let save = await readSave(page);
   check('D-A secret A found', save.secretProgress.A.found);
   await page.goto(`${BASE}#/unknown`);
-  check('D record 017 pending before 02:00', (await page.textContent('main'))?.includes('It is not 02:00'));
+  check('D record 017 pending before 02:00', (await page.textContent('main'))?.includes('지금은 02:00이 아닙니다'));
 
   // Secret B
   await page.goto(`${BASE}#/system`);
@@ -167,7 +202,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   await page.fill('#cmd', 'help');
   await page.press('#cmd', 'Enter');
   await wait(2500);
-  check('D-B terminal responds to HELP', (await page.textContent('.terminal-screen'))?.includes('COMMANDS'));
+  check('D-B terminal responds to HELP', (await page.textContent('.terminal-screen'))?.includes('명령어'));
   await page.screenshot({ path: `${OUT}/D-terminal.png` });
 
   // Secret D
@@ -191,11 +226,11 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   await page.waitForSelector('.terminal-choices button', { timeout: 15000 });
   await page.click('.terminal-choices button >> text=[N]');
   await page.waitForSelector('#cmd:not([disabled])', { timeout: 20000 });
-  await page.fill('#cmd', 'key HARROW-0200');
+  await page.fill('#cmd', 'key HAEWON-0200');
   await page.press('#cmd', 'Enter');
   await page.waitForURL(/#\/ending\/secret/, { timeout: 15000 });
   await wait(9000);
-  check('E secret ending reached', (await page.textContent('.ending-title'))?.includes('THE INDEX'));
+  check('E secret ending reached', (await page.textContent('.ending-title'))?.includes('색인'));
   await page.screenshot({ path: `${OUT}/E-ending-secret.png` });
 
   // True ending: 02:00, A+B+C
@@ -213,20 +248,20 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   await page.click('.accept-shift button');
   await page.waitForURL(/#\/ending\/true/, { timeout: 10000 });
   await wait(12000);
-  check('E true ending reached', (await page.textContent('.ending-title'))?.includes('NIGHT SHIFT'));
+  check('E true ending reached', (await page.textContent('.ending-title'))?.includes('야간 근무'));
   await page.screenshot({ path: `${OUT}/E-ending-true.png` });
   await page.click('.ending-page a.btn');
   await wait(1500);
   check('E after the true ending the archive is calm', Number(await level(page)) <= 1, `level ${await level(page)}`);
-  check('E the archive greets you as archivist', (await page.textContent('.welcome'))?.includes('archivist'));
+  check('E the archive greets you as archivist', (await page.textContent('.welcome'))?.includes('기록사'));
 
   // Normal ending via contact
   await page.goto(`${BASE}#/contact`);
-  await page.click('button:text-is("Check out")');
-  await page.click('button:text-is("Yes, check out")');
+  await page.click('button:text-is("퇴실하기")');
+  await page.click('button:text-is("네, 퇴실합니다")');
   await page.waitForURL(/#\/ending\/normal/);
   await wait(9000);
-  check('E normal ending reached', (await page.textContent('.ending-title'))?.includes('CHECKED OUT'));
+  check('E normal ending reached', (await page.textContent('.ending-title'))?.includes('퇴실 처리'));
   await page.screenshot({ path: `${OUT}/E-ending-normal.png` });
   save = await readSave(page);
   check('E all three endings recorded', save.endingUnlocked.length === 3, save.endingUnlocked.join(','));
@@ -328,7 +363,7 @@ for (const [w, h] of [
   check('J saying her name in the terminal → jump scare', await page.waitForSelector('.scare-lunge', { timeout: 6000 }).then(() => true, () => false));
 
   await page.goto(`${BASE}#/`);
-  await page.evaluate(() => [...document.querySelectorAll('.footer button')].find((b) => b.textContent === 'Reduce effects')?.click());
+  await page.evaluate(() => [...document.querySelectorAll('.footer button')].find((b) => b.textContent === '효과 줄이기')?.click());
   if (await page.locator('.debug-fab').count()) await page.click('.debug-fab');
   await page.click('.debug button:text-is("Jump scare")');
   check('J reduced effects → soft version (no strobe/zoom)', await page.waitForSelector('.scare-reduced', { timeout: 2000 }).then(() => true, () => false));
@@ -368,7 +403,7 @@ for (const [w, h] of [
   });
   await page.goto(`${BASE}?debug=true#/`);
   await page.waitForSelector('.debug');
-  check('H malformed save does not break the site', (await page.textContent('.welcome'))?.trim() === 'Welcome.');
+  check('H malformed save does not break the site', (await page.textContent('.welcome'))?.trim() === '어서 오세요.');
   for (const l of ['0', '1', '2', '3', '4', '5']) {
     await page.click(`.debug button:text-is("L${l}")`);
     await wait(300);

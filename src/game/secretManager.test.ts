@@ -67,7 +67,8 @@ describe('save data', () => {
 describe('search', () => {
   it('finds ordinary records and hides ROOM_02 until the archive is uneasy', () => {
     const save = createSave(0);
-    expect(runSearch('broadcast', { save, level: 0 }).some((r) => r.key === '001')).toBe(true);
+    expect(runSearch('방송', { save, level: 0 }).some((r) => r.key === '001')).toBe(true);
+    expect(runSearch('02호실', { save, level: 2 }).some((r) => r.key === 'room-02')).toBe(true);
     expect(runSearch('room', { save, level: 0 }).some((r) => r.key === 'room-02')).toBe(false);
     expect(runSearch('room', { save, level: 2 }).some((r) => r.key === 'room-02')).toBe(true);
   });

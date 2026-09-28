@@ -25,10 +25,10 @@ export function UnknownPage() {
   if (save.flags.includes('ending-true')) {
     return (
       <article className="unknown-page prose">
-        <div className="record-kicker">Record #017</div>
-        <h2 className="record-title">Night Shift</h2>
-        <p>Assigned. Night archivist: VISITOR #{String(save.visitCount).padStart(4, '0')}.</p>
-        <p>Your shift begins at 02:00. Please do not be late. Someone will be waiting.</p>
+        <div className="record-kicker">기록 #017</div>
+        <h2 className="record-title">야간 근무</h2>
+        <p>배정 완료. 야간 기록사: 방문자 #{String(save.visitCount).padStart(4, '0')}.</p>
+        <p>근무는 02:00에 시작합니다. 늦지 마십시오. 누군가 기다리고 있을 겁니다.</p>
       </article>
     );
   }
@@ -37,10 +37,10 @@ export function UnknownPage() {
     return (
       <article className="unknown-page">
         <div className="access-panel" role="alert">
-          <div className="stamp">NO SUCH RECORD</div>
-          <p>The index ends at 009. Doesn’t it?</p>
+          <div className="stamp">없는 기록</div>
+          <p>색인은 009에서 끝납니다. 그렇죠?</p>
           <p>
-            <a href={href('/records')}>Return to the index</a>
+            <a href={href('/records')}>목록으로 돌아가기</a>
           </p>
         </div>
       </article>
@@ -50,11 +50,11 @@ export function UnknownPage() {
   if (!night) {
     return (
       <article className="unknown-page prose">
-        <div className="record-kicker">Record #017</div>
-        <h2 className="record-title">[PENDING]</h2>
-        <p>This record is written at 02:00. It is not 02:00.</p>
-        <p className="mono">Time until 02:00 — {formatDuration(msUntilNextTwo(new Date(now)))}</p>
-        <p className="small">Come back then. Leave the tab open if you like. The archive will wait with you.</p>
+        <div className="record-kicker">기록 #017</div>
+        <h2 className="record-title">[대기 중]</h2>
+        <p>이 기록은 02:00에 작성됩니다. 지금은 02:00이 아닙니다.</p>
+        <p className="mono">02:00까지 — {formatDuration(msUntilNextTwo(new Date(now)))}</p>
+        <p className="small">그때 다시 오십시오. 탭을 열어 두셔도 됩니다. 보관소가 함께 기다리겠습니다.</p>
       </article>
     );
   }
@@ -75,46 +75,46 @@ export function UnknownPage() {
 
   return (
     <article className="unknown-page prose">
-      <div className="record-kicker">Record #017 · written {formatHM(new Date(now))}</div>
-      <h2 className="record-title">Night Shift</h2>
+      <div className="record-kicker">기록 #017 · {formatHM(new Date(now))} 작성</div>
+      <h2 className="record-title">야간 근무</h2>
       <table className="data-table">
         <tbody>
           <tr>
-            <th scope="row">Subject</th>
-            <td>{fillTemplate('VISITOR #{visitCount}', { save, now })}</td>
+            <th scope="row">대상</th>
+            <td>{fillTemplate('방문자 #{visitCount}', { save, now })}</td>
           </tr>
           <tr>
-            <th scope="row">First arrived</th>
-            <td>{fillTemplate('{firstVisitTime}, {firstVisitDate}', { save, now })}</td>
+            <th scope="row">첫 방문</th>
+            <td>{fillTemplate('{firstVisitDate} {firstVisitTime}', { save, now })}</td>
           </tr>
           <tr>
-            <th scope="row">Records opened</th>
-            <td>{save.discoveredRecords.length}</td>
+            <th scope="row">열람한 기록</th>
+            <td>{save.discoveredRecords.length}건</td>
           </tr>
           <tr>
-            <th scope="row">Relieves</th>
-            <td>VARGA, I. (on shift since 14/03/1994 02:00)</td>
+            <th scope="row">교대 대상</th>
+            <td>서미령 (1994-03-14 02:00부터 근무 중)</td>
           </tr>
           <tr>
-            <th scope="row">Status</th>
-            <td>{accepting ? 'ACCEPTED' : 'OFFERED'}</td>
+            <th scope="row">상태</th>
+            <td>{accepting ? '수락됨' : '제안됨'}</td>
           </tr>
         </tbody>
       </table>
-      <p>Somebody has to stay on shift until the next visitor comes. She has stayed for a very long time.</p>
-      {save.secretProgress.D.found && <p>You have seen ROOM 02. You know what the job is.</p>}
+      <p>다음 방문자가 올 때까지 누군가는 근무를 서야 합니다. 그녀는 아주 오랫동안 남아 있었습니다.</p>
+      {save.secretProgress.D.found && <p>당신은 02호실을 보았습니다. 무슨 일인지 알고 있습니다.</p>}
       {trueReady ? (
         <p className="accept-shift">
           <button type="button" className="btn" onClick={accept} disabled={accepting}>
-            {accepting ? 'Filing…' : '[ Accept the shift ]'}
+            {accepting ? '등록 중…' : '[ 근무를 인수한다 ]'}
           </button>{' '}
           <button type="button" className="text-button" onClick={decline} disabled={accepting}>
-            Leave
+            떠난다
           </button>
         </p>
       ) : (
         <div className="notice">
-          The shift cannot be offered yet. The index is missing:
+          아직 근무를 제안할 수 없습니다. 색인에 빠진 것이 있습니다:
           {'\n'}
           {missing.map((id) => `— ${SECRET_BY_ID[id].hint}`).join('\n')}
         </div>

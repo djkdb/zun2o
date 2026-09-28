@@ -16,7 +16,7 @@ function ClockInner() {
   const nightMode = level >= 5 && !eventFrozen;
   let display = formatClock(partsOf(new Date(now)));
   let sync = formatDuration(msUntilNextTwo(new Date(now)));
-  let syncLabel = 'Next archive sync';
+  let syncLabel = '02:00 동기화까지';
 
   if (anomaly && !eventFrozen) {
     const startVirtual = anomaly.startedAt + getOffset();
@@ -47,15 +47,15 @@ function ClockInner() {
   } else if (nightMode) {
     // After 02:00 the clock no longer moves. Only the sync counter knows.
     display = anomaly?.effect === 'real' ? formatClock(partsOf(new Date(now))) : FROZEN;
-    syncLabel = 'Sync in progress';
+    syncLabel = '동기화 진행 중';
     const s = secondsOfDay(new Date(now)) - 2 * 3600;
     sync = formatDuration(Math.max(0, s) * 1000);
   }
 
   const className = ['panel', 'clock', level === 4 && !eventFrozen ? 'prominent' : '', eventFrozen || nightMode ? 'frozen' : ''].filter(Boolean).join(' ');
   return (
-    <section className={className} aria-label="Current local time">
-      <h2 className="panel-title">Current local time</h2>
+    <section className={className} aria-label="현재 시각">
+      <h2 className="panel-title">현재 시각</h2>
       <time className="clock-time" aria-live="off">
         {display}
       </time>

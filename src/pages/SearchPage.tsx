@@ -25,10 +25,10 @@ export function SearchPage() {
 
   return (
     <>
-      <h2 className="page-title">Search the archive</h2>
+      <h2 className="page-title">기록 검색</h2>
       <form className="search-form" role="search" onSubmit={submit}>
         <label htmlFor="q" className="visually-hidden">
-          Search terms
+          검색어
         </label>
         <input
           id="q"
@@ -36,21 +36,21 @@ export function SearchPage() {
           type="search"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="name, place, number…"
+          placeholder="이름, 장소, 번호…"
           autoComplete="off"
           spellCheck={false}
         />
         <button type="submit" className="btn">
-          Search
+          검색
         </button>
       </form>
       {query && (
         <p className="small" aria-live="polite">
-          {results.length} {results.length === 1 ? 'result' : 'results'} for “{query}”
+          “{query}” 검색 결과 {results.length}건
         </p>
       )}
       {query && results.length === 0 && (
-        <p className="prose">{level >= 3 ? 'No records found. Try again after 02:00.' : 'No records found. Try a record number or a place name.'}</p>
+        <p className="prose">{level >= 3 ? '찾은 기록이 없습니다. 02:00 이후에 다시 검색해 보십시오.' : '찾은 기록이 없습니다. 기록 번호나 장소 이름으로 검색해 보세요.'}</p>
       )}
       <ul className="search-results">
         {results.map((r) => (
@@ -60,7 +60,7 @@ export function SearchPage() {
           </li>
         ))}
       </ul>
-      {!query && <p className="small">Tip: records can be found by number (e.g. 003), by name or by place.</p>}
+      {!query && <p className="small">도움말: 번호(예: 003), 사람 이름, 장소로 기록을 찾을 수 있습니다.</p>}
     </>
   );
 }

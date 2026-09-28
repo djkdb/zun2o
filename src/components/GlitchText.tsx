@@ -6,7 +6,9 @@ import { seeded } from '../utils/random';
 // vocabulary of text effects; which one plays (and when) is decided by the
 // HorrorEngine and passed in as `anomaly`.
 
-const MIRROR: Record<string, string> = { E: 'Ǝ', N: 'И', R: 'Я', A: '∀', C: 'Ɔ', K: 'ꓘ', H: 'H', I: 'I' };
+// Any visible character can be mirrored (Latin or Hangul); spaces and punctuation cannot.
+const MIRRORABLE = /[A-Za-z가-힣]/;
+const LETTERS = /[^A-Za-z가-힣]/g;
 
 interface Props {
   text: string;
@@ -17,10 +19,10 @@ interface Props {
 
 function repeatWord(text: string, word: string | undefined, rngSeed: number): string {
   const words = text.split(' ');
-  let idx = word ? words.findIndex((w) => w.toLowerCase().replace(/[^a-z]/g, '') === word.toLowerCase()) : -1;
+  let idx = word ? words.findIndex((w) => w.toLowerCase().replace(LETTERS, '').startsWith(word.toLowerCase())) : -1;
   if (idx < 0) {
     const rng = seeded(rngSeed);
-    const candidates = words.map((w, i) => (w.replace(/[^A-Za-z]/g, '').length > 3 ? i : -1)).filter((i) => i >= 0);
+    const candidates = words.map((w, i) => (w.replace(LETTERS, '').length > 1 ? i : -1)).filter((i) => i >= 0);
     idx = candidates[Math.floor(rng() * candidates.length)] ?? Math.floor(words.length / 2);
   }
   const w = words[idx];
@@ -43,7 +45,7 @@ function GlitchTextInner({ text, anomaly, as: Tag = 'span', className }: Props) 
         return repeatWord(text, typeof anomaly.payload?.word === 'string' ? anomaly.payload.word : undefined, anomaly.nonce);
       case 'swap-letter': {
         const rng = seeded(anomaly.nonce);
-        const indices = [...text].map((ch, i) => (MIRROR[ch.toUpperCase()] ? i : -1)).filter((i) => i >= 0);
+        const indices = [...text].map((ch, i) => (MIRRORABLE.test(ch) ? i : -1)).filter((i) => i >= 0);
         const target = indices[Math.floor(rng() * indices.length)];
         return [...text].map((ch, i) =>
           i === target ? (

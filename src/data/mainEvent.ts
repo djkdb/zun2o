@@ -20,7 +20,7 @@ export const MAIN_EVENT_TIMELINE: MainEventStep[] = [
 
 export const MAIN_EVENT_DURATION = 33500;
 
-export const NEW_TITLE = 'THE NIGHT ARCHIVES YOU';
+export const NEW_TITLE = '당신을 보관합니다';
 
 /** Menu items disappear in this order during `strip-menu`. */
 export const STRIP_ORDER = ['contact', 'about', 'search', 'records', 'archive'];

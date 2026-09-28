@@ -90,7 +90,7 @@
   margin-right: 12px;
   font-family: var(--font-mono);
   font-size: 13px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.05em;
   text-decoration: none;
   color: var(--ink-soft);
 }
@@ -341,7 +341,7 @@
 .record-kicker {
   font-family: var(--font-mono);
   font-size: 12px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.06em;
   color: var(--muted);
   text-transform: uppercase;
 }
@@ -376,7 +376,7 @@
   margin: 28px 0 8px;
   font-family: var(--font-mono);
   font-size: 13px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
   font-weight: 500;
@@ -432,7 +432,7 @@
   margin: 30px 0 14px;
   font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
 }
@@ -763,4 +763,213 @@
   font-size: 13px;
   color: var(--muted);
   min-height: 1.6em;
+}
+
+/* ─── 열람 수첩 (reading notes) ─────────────────────────────────────────── */
+
+.notes summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  cursor: pointer;
+  list-style: none;
+  min-height: 28px;
+}
+
+.notes summary::-webkit-details-marker {
+  display: none;
+}
+
+.notes summary .panel-title {
+  margin: 0;
+}
+
+.notes summary .panel-title::before {
+  content: '▸ ';
+}
+
+.notes[open] summary .panel-title::before {
+  content: '▾ ';
+}
+
+.notes-summary {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.notes[open] .notes-summary {
+  display: none;
+}
+
+.notes .status-list {
+  margin-top: 8px;
+}
+
+.notes-alert {
+  margin: 8px 0 0;
+  min-height: 1.4em;
+  font-size: 12px;
+  color: var(--stamp);
+}
+
+.notes-hint {
+  margin: 6px 0 0;
+  padding-top: 10px;
+  border-top: 1px dotted var(--rule);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.notes-label {
+  display: block;
+  margin-bottom: 2px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.notes-flash {
+  animation: notes-flash 1.2s ease 2;
+}
+
+@keyframes notes-flash {
+  50% {
+    border-color: var(--stamp);
+  }
+}
+
+/* ─── 입장 경고 (entry gate) ────────────────────────────────────────────── */
+
+.gate {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  overflow-y: auto;
+  display: grid;
+  place-items: center;
+  padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+  background: #080807;
+  color: #d9d4c6;
+  font-family: var(--font-sans);
+}
+
+.gate-inner {
+  animation: gate-in 1.4s ease both;
+}
+
+@keyframes gate-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.gate-inner {
+  width: min(100%, 560px);
+}
+
+.gate-kicker {
+  margin: 0 0 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: #c9a45c;
+}
+
+.gate-title {
+  margin: 0 0 22px;
+  font-size: clamp(28px, 7vw, 40px);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #efeadc;
+}
+
+.gate p {
+  margin: 0 0 12px;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.gate strong {
+  color: #efeadc;
+  font-weight: 600;
+}
+
+.gate-rule {
+  margin-top: 20px !important;
+  padding: 12px 14px;
+  border-left: 3px solid #a33a2b;
+  background: rgba(163, 58, 43, 0.1);
+  color: #f0d6cf;
+}
+
+.gate-stats {
+  margin: 0 0 18px;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 2;
+  color: #a9a393;
+}
+
+.gate-time {
+  margin-top: 22px !important;
+  font-family: var(--font-mono);
+  font-size: 13px !important;
+  color: #8a8474;
+}
+
+.gate-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0 16px;
+}
+
+.gate-btn {
+  flex: 1 1 200px;
+  min-height: 52px;
+  padding: 10px 18px;
+  background: transparent;
+  border: 1px solid #4a4740;
+  color: #d9d4c6;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  letter-spacing: 0.02em;
+}
+
+.gate-btn:hover,
+.gate-btn:focus-visible {
+  border-color: #d9d4c6;
+  color: #fff;
+}
+
+.gate-btn.primary {
+  background: #d9d4c6;
+  border-color: #d9d4c6;
+  color: #0b0b0a;
+  font-weight: 600;
+}
+
+.gate-btn.primary:hover,
+.gate-btn.primary:focus-visible {
+  background: #fff;
+  color: #000;
+}
+
+.gate-note {
+  font-size: 12px !important;
+  color: #6f6a5e;
+}
+
+.gate-night .gate-title {
+  color: #e8b3a8;
+}
+
+.gate-night .gate-inner {
+  animation-duration: 2.6s;
 }

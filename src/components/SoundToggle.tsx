@@ -16,11 +16,11 @@ export function SoundToggle() {
       type="button"
       className="tool-toggle"
       aria-pressed={on}
-      aria-label={on ? 'Sound on. Turn sound off.' : 'Sound off. Turn sound on.'}
-      title={on && !ready ? 'Sound starts after your first click' : undefined}
+      aria-label={on ? '소리 켜짐. 누르면 소리를 끕니다.' : '소리 꺼짐. 누르면 소리를 켭니다.'}
+      title={on && !ready ? '처음 클릭한 뒤부터 소리가 납니다' : undefined}
       onClick={toggle}
     >
-      SOUND: {on ? 'ON' : 'OFF'}
+      소리: {on ? '켬' : '끔'}
     </button>
   );
 }

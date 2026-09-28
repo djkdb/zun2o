@@ -13,15 +13,15 @@ interface Row {
 }
 
 function rowTitle(record: ArchiveRecord, level: HorrorLevel): string {
-  if (record.access === 'denied' && level < 5) return '[ACCESS DENIED]';
-  if (record.access === 'restricted') return level >= 5 ? record.title : 'Restricted record';
+  if (record.access === 'denied' && level < 5) return '[접근 거부]';
+  if (record.access === 'restricted') return level >= 5 ? record.title : '열람 제한 기록';
   return variantFor(record.title, record.titleVariants, level);
 }
 
 function rowFlag(record: ArchiveRecord, level: HorrorLevel): string | null {
-  if (record.access === 'restricted') return 'RESTRICTED';
-  if (record.access === 'denied') return level >= 5 ? 'OPEN 02:00–02:59' : 'DENIED';
-  if (record.access === 'hidden') return 'UNFILED';
+  if (record.access === 'restricted') return '열람 제한';
+  if (record.access === 'denied') return level >= 5 ? '02:00–02:59 개방' : '접근 거부';
+  if (record.access === 'hidden') return '미등록';
   return null;
 }
 
@@ -58,12 +58,12 @@ export function RecordList({ showSummary = false }: { showSummary?: boolean }) {
               onPointerEnter={() => emit({ type: 'hover', target: `record-${record.id}` })}
               onFocus={() => emit({ type: 'hover', target: `record-${record.id}` })}
             >
-              <span className="rec-id">RECORD #{record.id}</span>
+              <span className="rec-id">기록 #{record.id}</span>
               <span className="rec-title">
-                {phantom ? 'Not indexed' : renamed ? String(anomaly.payload?.text ?? 'DO NOT OPEN') : rowTitle(record, level)}
+                {phantom ? '색인에 없음' : renamed ? String(anomaly.payload?.text ?? '열지 마십시오') : rowTitle(record, level)}
                 {flag && !phantom && <span className="rec-flag">{flag}</span>}
                 {showSummary && !phantom && (
-                  <span className="rec-summary">{record.access === 'denied' && level < 5 ? 'Not available at this hour.' : variantFor(record.summary, record.summaryVariants, level)}</span>
+                  <span className="rec-summary">{record.access === 'denied' && level < 5 ? '이 시간에는 열람할 수 없습니다.' : variantFor(record.summary, record.summaryVariants, level)}</span>
                 )}
               </span>
               <span className="rec-meta">{phantom ? '02:00' : record.date}</span>
