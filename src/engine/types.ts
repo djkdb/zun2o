@@ -184,6 +184,8 @@ export interface Save {
   memos: string[];
   /** What the player typed/dialed — for the memo that recorded them. */
   inputs: string[];
+  /** A story call that is ringing or in progress (re-rings after a reload). */
+  pendingCall?: string | null;
   /** Objectives already nudged by a character. */
   nudged: string[];
 }

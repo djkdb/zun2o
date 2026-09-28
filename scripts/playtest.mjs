@@ -399,6 +399,21 @@ await page.locator('.decline').first().click({ force: true });
 await wait(4000);
 const afterDecline = (await save()).threads.dohyun.slice(-3).map((m) => m.text).join(' | ');
 check('REGRESSION: one decline → one reaction', afterDecline.includes('받아 주세요') && !afterDecline.includes('그럼 이것만'), afterDecline);
+// 3) hanging up on 도현 mid-call (or losing the page) must never strand the story
+await waitFor('.incoming', 30000);
+await page.locator('.accept').first().click({ force: true });
+await wait(1500);
+await page.locator('.hangup').first().click({ force: true });
+await page.waitForFunction(() => window.__game.getState().save.threads.dohyun.some((m) => m.text.includes('끊겼어요')), null, { timeout: 15000 });
+check('REGRESSION: hanging up on 도현 → he texts and calls back', true);
+await page.reload();
+await waitFor('.incoming', 30000);
+check('REGRESSION: after a reload, the owed call rings again', true);
+await page.locator('.accept').first().click({ force: true });
+await wait(1500);
+await page.locator('.hangup').first().click({ force: true });
+await page.waitForFunction(() => window.__game.getState().save.flags.includes('call1-done'), null, { timeout: 30000 });
+check('REGRESSION: second hang-up → texts instead, chapter 2 starts', (await save()).chapter === 2);
 
 const final = await save();
 check('all three endings recorded', ['release', 'poweroff', 'shift'].every((e) => final.endings.includes(e)), final.endings.join(','));

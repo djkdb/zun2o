@@ -144,7 +144,7 @@ export const BEATS: Beat[] = [
       { t: 'calllog', entry: { who: '0200', time: '23:53', kind: 'out', duration: '38:12' } },
       { t: 'wait', ms: 1600 },
       { t: 'msg', th: 'unknown', text: '봤죠?', typing: 500 },
-      { t: 'objective', text: '…시간이 40분 가까이 사라졌다', hint: '전화 앱의 최근 기록을 보세요. 그리고 잠시 기다려 보세요. 누군가 전화를 걸어올 겁니다.' },
+      { t: 'objective', text: '…시간이 40분 가까이 사라졌다', hint: '곧 도현에게서 전화가 옵니다. 받으세요. 전화가 끊겼거나 놓쳤다면 전화 앱 → 최근 기록에서 도현을 눌러 다시 걸 수 있어요.' },
       { t: 'wait', ms: 3500 },
       { t: 'call', id: 'dohyun1' },
     ],
@@ -175,6 +175,30 @@ export const BEATS: Beat[] = [
     ],
   },
   { id: 'call1-end', on: 'call:dohyun1:end', actions: [{ t: 'emit', ev: 'call1:done' }] },
+  // Hung up (or the line dropped) before he finished: he calls back once, then texts.
+  {
+    id: 'call1-hangup',
+    on: 'call:dohyun1:hangup',
+    forbids: ['call1-done', 'hung-once'],
+    actions: [
+      { t: 'flag', f: 'hung-once' },
+      { t: 'msg', th: 'dohyun', text: '끊겼어요? 신호가 안 좋은가 봐요. 다시 걸게요.', typing: 900 },
+      { t: 'wait', ms: 6000 },
+      { t: 'call', id: 'dohyun1' },
+    ],
+  },
+  {
+    id: 'call1-hangup2',
+    on: 'call:dohyun1:hangup',
+    requires: ['hung-once'],
+    forbids: ['call1-done'],
+    actions: [
+      { t: 'msg', th: 'dohyun', text: '계속 끊기네요. 문자로 할게요.', typing: 1000 },
+      { t: 'msg', th: 'dohyun', text: '채원이 녹음 앱 켜 놓고 들어갔어요. 마지막 녹음 들어 보세요.', typing: 2200 },
+      { t: 'msg', th: 'dohyun', text: '그리고 두 시 전에 그 폰 꺼요.', typing: 1400 },
+      { t: 'emit', ev: 'call1:done' },
+    ],
+  },
   {
     id: 'call1-done',
     on: 'call1:done',

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useGame } from '../../hooks/useGame';
-import { emit, openApp, sfx, startOutgoing } from '../../engine/director';
+import { callBack, emit, openApp, sfx, startOutgoing } from '../../engine/director';
 import { logInput, setRt } from '../../engine/state';
 import { AppHeader } from '../AppHeader';
 import { CallIcon } from '../CallIcon';
@@ -33,6 +33,7 @@ export function PhoneApp() {
   };
 
   const callContact = (who: string) => {
+    if (callBack(who)) return;
     sfx('hangup');
     setRt({ dialog: { title: who, body: '상대방이 전화를 받을 수 없습니다.' } });
     if (who === '엄마') emit('dial:mom');

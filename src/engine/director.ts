@@ -116,6 +116,21 @@ export function resume(): void {
   }
   const s = getState().save;
   if (s.flags.includes('finale') && !s.lastEnding && !getState().rt.finale) setRt({ finale: true });
+  // A story call was ringing or in progress when the page went away: ring again.
+  // (Also rescues saves stuck after 도현's first call was cut off.)
+  const callBeats = ['reveal', 'call1-decline', 'call1-hangup'];
+  const owed =
+    s.pendingCall ??
+    (s.flags.includes('reveal-scare') && !s.flags.includes('call1-done') && !running.some((r) => callBeats.includes(r.beat)) ? 'dohyun1' : null);
+  if (owed && !s.flags.includes('finale')) {
+    const myEpoch = epoch;
+    const t = setTimeout(() => {
+      timers.delete(t);
+      const r = getState().rt;
+      if (myEpoch === epoch && !r.incoming && !r.activeCall && getState().save.started) ring(owed);
+    }, 4000);
+    timers.add(t);
+  }
 }
 
 // ─── actions ─────────────────────────────────────────────────────────────
@@ -225,18 +240,7 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
     case 'call':
       await whenFree(myEpoch);
       if (myEpoch !== epoch) return;
-      setRt({ incoming: a.id });
-      loop('ring', true);
-      vibrate([400, 200, 400, 200, 400]);
-      {
-        // Nobody answers forever: after ~15 s it becomes a missed call.
-        const id = a.id;
-        const t = setTimeout(() => {
-          timers.delete(t);
-          if (getState().rt.incoming === id) missCall();
-        }, 15000);
-        timers.add(t);
-      }
+      ring(a.id);
       return;
     case 'scare':
       setRt({ scare: { kind: a.kind, nonce: nonce++, look: a.look } });
@@ -516,8 +520,21 @@ export function declineCall(): void {
   sfx('hangup');
   const label = CALLS[id]?.label ?? id;
   setRt({ incoming: null });
-  setSave((s) => ({ calls: [{ who: label, time: s.clock, kind: 'missed' }, ...s.calls] }));
+  setSave((s) => ({ pendingCall: null, calls: [{ who: label, time: s.clock, kind: 'missed' }, ...s.calls] }));
   emit(`call:${id}:decline`);
+}
+
+function ring(id: string): void {
+  setSave({ pendingCall: id });
+  setRt({ incoming: id });
+  loop('ring', true);
+  vibrate([400, 200, 400, 200, 400]);
+  // Nobody answers forever: after ~15 s it becomes a missed call.
+  const t = setTimeout(() => {
+    timers.delete(t);
+    if (getState().rt.incoming === id) missCall();
+  }, 15000);
+  timers.add(t);
 }
 
 function missCall(): void {
@@ -526,10 +543,24 @@ function missCall(): void {
   loop('ring', false);
   const label = CALLS[id]?.label ?? id;
   setRt({ incoming: null });
-  setSave((s) => ({ calls: [{ who: label, time: s.clock, kind: 'missed' }, ...s.calls] }));
+  setSave((s) => ({ pendingCall: null, calls: [{ who: label, time: s.clock, kind: 'missed' }, ...s.calls] }));
   // Letting it ring out counts as not picking up.
   emit(`call:${id}:decline`);
   emit(`call:${id}:missed`);
+}
+
+/**
+ * Calling 도현 back from the call log. While his first call is still owed
+ * (dropped, declined, lost to a reload), he picks up and the call plays.
+ */
+export function callBack(who: string): boolean {
+  const s = getState().save;
+  const rt = getState().rt;
+  if (who !== '도현' || rt.activeCall || rt.incoming) return false;
+  if (!s.flags.includes('reveal-scare') || s.flags.includes('call1-done')) return false;
+  startOutgoing('dohyun1');
+  setSave({ pendingCall: 'dohyun1' });
+  return true;
 }
 
 export function startOutgoing(id: string): void {
@@ -541,6 +572,7 @@ export function startOutgoing(id: string): void {
 export function endCall(id: string, completed: boolean): void {
   sfx('hangup');
   setRt({ activeCall: null });
+  if (getState().save.pendingCall === id) setSave({ pendingCall: null });
   const label = CALLS[id]?.label ?? id;
   if (CALLS[id]?.from !== '1340' && CALLS[id]?.from !== '0200') {
     setSave((s) => ({ calls: [{ who: label, time: s.clock, kind: 'in' }, ...s.calls] }));
