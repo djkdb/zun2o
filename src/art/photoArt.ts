@@ -29,7 +29,15 @@ export type ArtSlot =
   | 'room02-door'
   | 'room02'
   | 'black-empty'
-  | 'tower';
+  | 'tower'
+  | 'booth-reflect'
+  | 'pip-self'
+  | 'ending-poweroff'
+  | 'ending-shift'
+  | 'ending-release'
+  | 'avatar-dohyun'
+  | 'avatar-mom'
+  | 'avatar-self';
 
 const FILES = import.meta.glob('../assets/art/*.{jpg,jpeg,png,webp,avif}', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 

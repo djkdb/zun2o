@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useGame } from '../hooks/useGame';
 import { newGame, replayFinale, sfx } from '../engine/director';
 import type { EndingId } from '../engine/types';
+import { art } from '../art/photoArt';
 
 interface EndingDef {
   n: number;
@@ -75,6 +76,8 @@ export function EndingScreen({ id }: { id: EndingId }) {
   const done = shown >= def.scene.length;
   return (
     <div className={`ending ending-${id}`}>
+      {/* the last photograph of the night, behind the words */}
+      {art(`ending-${id}`) && <img className="ending-photo" src={art(`ending-${id}`)} alt="" />}
       <div className="ending-scene">
         {def.scene.slice(0, shown).map((l, i) =>
           l.who ? (

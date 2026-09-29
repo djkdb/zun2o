@@ -32,10 +32,10 @@ function Defs({ id, flashX = 50, flashY = 50, r = 60 }: { id: string; flashX?: n
 }
 
 /** A photographic slot image, if one was provided (see photoArt.ts). */
-function ArtImage({ slot, w, h, style, align = 'xMidYMid' }: { slot: ArtSlot; w: number; h: number; style?: React.CSSProperties; align?: string }) {
+function ArtImage({ slot, w, h, x = 0, y = 0, style, align = 'xMidYMid' }: { slot: ArtSlot; w: number; h: number; x?: number; y?: number; style?: React.CSSProperties; align?: string }) {
   const url = art(slot);
   if (!url) return null;
-  return <image href={url} x="0" y="0" width={w} height={h} preserveAspectRatio={`${align} slice`} className="art-photo" style={style} />;
+  return <image href={url} x={x} y={y} width={w} height={h} preserveAspectRatio={`${align} slice`} className="art-photo" style={style} />;
 }
 
 function Stamp({ text, x = 16, y = 30 }: { text: string; x?: number; y?: number }) {
@@ -416,11 +416,13 @@ export const BoothPhoto = memo(function BoothPhoto({ behind = false, fill = fals
           </>
         )}
         {/* stared at long enough: in the window glass, whoever is holding the camera */}
-        {reflection && !behind && (
+        {reflection && !behind && (art('booth-reflect') ? (
+          <ArtImage slot="booth-reflect" w={640} h={420} />
+        ) : (
           <g transform="translate(118 118) scale(0.16)" opacity="0.2">
             <GhostCurtain distort={false} />
           </g>
-        )}
+        ))}
         {/* the 3rd-floor window frame (not in 도현's street photo) */}
         {!behind && (
           <>
@@ -533,9 +535,15 @@ export const VideoFeed = memo(function VideoFeed({ close = 0, pip = 0 }: { close
             <rect x="272" y="96" width="96" height="140" rx="10" />
           </clipPath>
           <g clipPath={`url(#${id}-pip)`}>
-            <g transform={`translate(${346 - pip * 8} ${80 + pip * 26}) scale(${0.18 + pip * 0.06})`} opacity={0.5 + pip * 0.5}>
-              <GhostCurtain distort={false} />
-            </g>
+            {art('pip-self') ? (
+              <g opacity={0.6 + pip * 0.4}>
+                <ArtImage slot="pip-self" x={272} y={96} w={96} h={140} />
+              </g>
+            ) : (
+              <g transform={`translate(${346 - pip * 8} ${80 + pip * 26}) scale(${0.18 + pip * 0.06})`} opacity={0.5 + pip * 0.5}>
+                <GhostCurtain distort={false} />
+              </g>
+            )}
           </g>
           <text x="320" y="110" textAnchor="middle" fontFamily="IBM Plex Sans KR, sans-serif" fontSize="9" fill="#9a9">
             카메라 켜짐

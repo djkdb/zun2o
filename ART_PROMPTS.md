@@ -169,3 +169,45 @@ drawers, reading room, beige tiles), closed since 1995, at 1 AM.
 ```
 
 팁: 5·8·11번은 “같은 구도”가 핵심입니다. 따로 다시 뽑을 때는 4·7·(1차 1번) 이미지를 참고로 넣고 “exact same composition, only add …”라고 하세요.
+
+---
+
+## 3차 시트 — 엔딩·디테일·프로필 8장
+
+1차 시트를 참고 이미지로 붙이고 요청하세요 (채원·부스 일관성).
+
+| 칸 | 파일 이름 | 게임 속 위치 |
+|---|---|---|
+| 1 | `ending-poweroff.webp` | 엔딩 1 “전원 끄기” 배경: 다음 날 밤, 선반 위 폰 두 대 |
+| 2 | `ending-shift.webp` | 엔딩 2 “교대” 배경: 새벽, 3층 창문에 당신 |
+| 3 | `ending-release.webp` | 엔딩 3 “색인 종료” 배경: 아침, 빈 선반 |
+| 4 | `booth-reflect.webp` | 3층 창문 자동 백업 사진을 오래 들여다보면 바뀌는 버전 (유리에 비친 얼굴) — **1차 4번과 같은 구도** |
+| 5 | `pip-self.webp` | 02:00 영상통화의 “내 카메라” 작은 화면 |
+| 6 | `avatar-dohyun.webp` | 도현 프로필 사진 |
+| 7 | `avatar-mom.webp` | 엄마 프로필 사진 |
+| 8 | `avatar-self.webp` | 채원 프로필 사진 (나에게) |
+
+```
+Create ONE high-resolution image: a 4×2 contact sheet of 8 separate square photographs, thin black gutters,
+NO numbers or text anywhere. Keep CHAEWON and the phone booth identical to the reference sheet.
+Panels 1–5 look like real old-smartphone photos at night or dawn (flash, sensor noise, crushed blacks);
+panels 6–8 are ordinary, bright, everyday social-media profile photos.
+
+1. Night, inside the same public phone booth: TWO smartphones lying side by side on the metal shelf, one dark,
+   one with its screen lit showing a low-battery icon, rain on the glass, the receiver hanging off the hook.
+2. Blue dawn, seen from the street: the abandoned 3-storey concrete annex; in one third-floor window a faint
+   pale figure stands looking down; in the foreground the phone booth, empty, one phone left on its shelf.
+3. Early morning after rain, soft sunlight: the same phone booth, door open, the shelf completely empty,
+   the receiver back on its hook, puddles, birds on the power line. Peaceful, almost warm.
+4. Exactly the same composition as panel 4 of the reference sheet (view from a third-floor window down to the lit
+   phone booth), but in the dark window glass, top-left, a faint reflection of a pale woman's face with wet black
+   hair, as if she is standing right behind the photographer.
+5. Front-camera video-call frame: a person inside the dark phone booth, face lit from below by the screen and
+   mostly in shadow (not identifiable), and over their shoulder, pressed against the booth glass behind them,
+   a pale face with wet black hair and one bright eye.
+6. A casual profile photo: a young Korean man seen from behind, sitting on a beach at sunset, hoodie, sea and
+   orange sky. Face not visible.
+7. A typical Korean mother's profile photo: a bright close-up of pink royal azaleas in spring sunlight.
+8. CHAEWON's own profile photo in daylight: smiling, bright café, peace sign, natural and happy — the same woman
+   as the reference, before that night.
+```

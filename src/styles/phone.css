@@ -3471,3 +3471,30 @@ body,
   top: 50%;
   transform: translate(-50%, -50%);
 }
+
+/* provided profile photos sit in the same circle as the drawn ones */
+.avatar.pic > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* ending: the last photograph of the night, dim, behind the text */
+.ending-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.32;
+  filter: grayscale(0.4) contrast(1.1);
+  animation: fade-in 3s ease both;
+  pointer-events: none;
+}
+
+.ending-scene,
+.ending-card {
+  position: relative;
+}

@@ -1,5 +1,6 @@
 import type { ThreadId } from '../engine/types';
 import { AppGlyph, APP_META } from './icons';
+import { art } from '../art/photoArt';
 
 // Contact profile pictures, drawn (no photos of real people).
 // 도현: the back-view-at-the-sea photo every guy has. 엄마: flowers, always.
@@ -7,6 +8,9 @@ import { AppGlyph, APP_META } from './icons';
 // except the hair is too long.
 
 function Portrait({ th }: { th: ThreadId }) {
+  // A real profile photo, if one was provided (the unknown number never has one).
+  const photo = th === 'dohyun' || th === 'mom' || th === 'self' ? art(`avatar-${th}`) : undefined;
+  if (photo) return <img src={photo} alt="" draggable={false} />;
   switch (th) {
     case 'dohyun':
       return (
