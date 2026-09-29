@@ -537,7 +537,7 @@ export const VideoFeed = memo(function VideoFeed({ close = 0, pip = 0 }: { close
           <g clipPath={`url(#${id}-pip)`}>
             {art('pip-self') ? (
               <g opacity={0.6 + pip * 0.4}>
-                <ArtImage slot="pip-self" x={272} y={96} w={96} h={140} />
+                <ArtImage slot="pip-self" x={272} y={96} w={96} h={140} align="xMaxYMid" />
               </g>
             ) : (
               <g transform={`translate(${346 - pip * 8} ${80 + pip * 26}) scale(${0.18 + pip * 0.06})`} opacity={0.5 + pip * 0.5}>

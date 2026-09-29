@@ -4,3 +4,5 @@
 현재 들어 있는 12장은 제작자가 ChatGPT 이미지 생성으로 만든 데모 시트(4×3)를 잘라 번호를 지우고 2배 확대한 것입니다.
 
 2차 시트(배경·건물 12장: wallpaper, annex-gate, lobby, stairs, stairs-figure, corridor, reading-empty, reading-figure, room02-door, room02, black-empty, tower)도 같은 방식으로 잘라 2배 확대했습니다. 게임 안에서는 세로 사진 그대로(420×560) 보여 줍니다.
+
+3차 시트(엔딩 배경 3장, 오래 들여다본 부스 사진, 02:00 내 카메라, 도현·엄마·채원 프로필)도 같은 방식으로 넣었습니다. 프로필은 256px 정사각형.
