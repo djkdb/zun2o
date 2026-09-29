@@ -64,12 +64,12 @@ export function BrowserApp() {
 
   const back = () => {
     setNotice(null);
-    if (view.kind === 'page') setView({ kind: view.id === 'news' ? 'home' : 'archive' });
+    if (view.kind === 'page') setView({ kind: view.id.startsWith('news') ? 'home' : 'archive' });
     else if (view.kind === 'archive') setView({ kind: 'home' });
     else openApp(null);
   };
 
-  const url = view.kind === 'home' ? '즐겨찾기' : view.kind === 'archive' || (view.kind === 'page' && view.id !== 'news') ? 'nightarchive.or.kr' : 'haewon-ilbo.kr';
+  const url = view.kind === 'home' ? '즐겨찾기' : view.kind === 'archive' || (view.kind === 'page' && !view.id.startsWith('news')) ? 'nightarchive.or.kr' : 'haewon-ilbo.kr';
 
   return (
     <div className="browser">
@@ -82,6 +82,13 @@ export function BrowserApp() {
             <span>
               <strong>심야 기록보관소</strong>
               <small>nightarchive.or.kr — 해원군청 별관 기록 보존</small>
+            </span>
+          </button>
+          <button type="button" className="bm" onClick={() => openPage('news2')}>
+            <span className="bm-icon news">해</span>
+            <span>
+              <strong>해원일보 — 실종 1년 대학생, 별관 앞 공중전화 부스에서 발견</strong>
+              <small>오늘 06:12 · 이 폰에서 열어 본 기사</small>
             </span>
           </button>
           <button type="button" className="bm" onClick={() => openPage('news')}>

@@ -323,10 +323,20 @@ export const BlackPhoto = memo(function BlackPhoto({ brightness = 0 }: { brightn
 });
 
 /** Taken from the Annex's 3rd-floor window: the phone booth — and you. */
-export const BoothPhoto = memo(function BoothPhoto({ behind = false }: { behind?: boolean }) {
+/**
+ * The phone booth — and you in it. Default: taken from the Annex's 3rd-floor
+ * window. `behind`: 도현's photo from the street, someone standing behind you.
+ * `fill`: cropped to fill a portrait screen (the lock-screen wallpaper).
+ */
+export const BoothPhoto = memo(function BoothPhoto({ behind = false, fill = false }: { behind?: boolean; fill?: boolean }) {
   const id = useSvgId();
   return (
-    <svg viewBox="0 0 640 420" role="img" aria-label="높은 창문에서 내려다본 밤거리. 불 켜진 공중전화 부스 안에 휴대폰을 든 사람이 서 있다.">
+    <svg
+      viewBox="0 0 640 420"
+      preserveAspectRatio={fill ? 'xMidYMid slice' : undefined}
+      role="img"
+      aria-label={behind ? '길 건너에서 찍은 공중전화 부스. 휴대폰을 든 사람 바로 뒤에 누군가 서 있다.' : '높은 창문에서 내려다본 밤거리. 불 켜진 공중전화 부스 안에 휴대폰을 든 사람이 서 있다.'}
+    >
       <Defs id={id} flashX={52} flashY={70} r={70} />
       <g filter={`url(#${id}-n)`}>
         <rect width="640" height="420" fill="#08090b" />
@@ -362,13 +372,61 @@ export const BoothPhoto = memo(function BoothPhoto({ behind = false }: { behind?
         )}
           </>
         )}
-        <rect x="0" y="0" width="640" height="26" fill="#030303" />
-        <rect x="0" y="0" width="30" height="420" fill="#030303" />
-        <rect x="610" y="0" width="30" height="420" fill="#030303" />
-        <rect x="206" y="0" width="16" height="420" fill="#030303" opacity="0.9" />
+        {/* the 3rd-floor window frame (not in 도현's street photo) */}
+        {!behind && (
+          <>
+            <rect x="0" y="0" width="640" height="26" fill="#030303" />
+            <rect x="0" y="0" width="30" height="420" fill="#030303" />
+            <rect x="610" y="0" width="30" height="420" fill="#030303" />
+            <rect x="206" y="0" width="16" height="420" fill="#030303" opacity="0.9" />
+          </>
+        )}
         <rect width="640" height="420" fill={`url(#${id}-flash)`} />
       </g>
-      <Stamp text={behind ? '01:54' : '01:39'} x={40} y={52} />
+      {!fill && <Stamp text={behind ? '01:53' : '01:39'} x={40} y={52} />}
+    </svg>
+  );
+});
+
+/** 00:58, 채원's photo: a phone left on the booth's shelf. The same phone. The same shelf. */
+export const BoothShelfPhoto = memo(function BoothShelfPhoto() {
+  const id = useSvgId();
+  return (
+    <svg viewBox="0 0 640 420" role="img" aria-label="공중전화 부스 안. 금속 선반 위에 화면이 켜진 휴대폰 한 대가 놓여 있다.">
+      <Defs id={id} flashX={48} flashY={58} r={62} />
+      <g filter={`url(#${id}-n)`}>
+        <rect width="640" height="420" fill="#0b0c0e" />
+        {/* booth glass and frame */}
+        <rect x="40" y="0" width="560" height="420" fill="#14161a" />
+        <rect x="40" y="0" width="14" height="420" fill="#2c3036" />
+        <rect x="586" y="0" width="14" height="420" fill="#2c3036" />
+        {/* the payphone, receiver hanging off the hook */}
+        <rect x="380" y="40" width="130" height="190" rx="8" fill="#6d7178" />
+        <rect x="398" y="62" width="94" height="40" fill="#1a1c20" />
+        {[0, 1, 2].map((r) => [0, 1, 2].map((c) => <rect key={`${r}${c}`} x={410 + c * 26} y={118 + r * 24} width="18" height="16" rx="3" fill="#aeb2b8" />))}
+        <path d="M512 120 C560 150 548 260 520 320" stroke="#15171a" strokeWidth="6" fill="none" />
+        <rect x="500" y="318" width="40" height="18" rx="6" fill="#23262b" transform="rotate(20 520 327)" />
+        {/* the shelf */}
+        <polygon points="60,300 600,300 640,350 20,350" fill="#8c9096" />
+        <rect x="20" y="350" width="620" height="12" fill="#55595f" />
+        {/* the phone, screen on */}
+        <g transform="rotate(-8 230 310)">
+          <rect x="170" y="286" width="120" height="30" rx="6" fill="#050506" />
+          <rect x="176" y="289" width="108" height="24" rx="4" fill="#dfe8ff" opacity="0.9" />
+          <text x="230" y="306" textAnchor="middle" fontFamily="IBM Plex Mono, monospace" fontSize="11" fill="#222">
+            12%
+          </text>
+        </g>
+        <ellipse cx="230" cy="300" rx="120" ry="40" fill="#cfe0ff" opacity="0.12" />
+        {/* stickers and scratches on the glass */}
+        <rect x="90" y="60" width="80" height="54" fill="#2a2d33" opacity="0.8" />
+        <text x="130" y="92" textAnchor="middle" fontFamily="IBM Plex Sans KR, sans-serif" fontSize="12" fill="#8a8f96">
+          분실물 신고
+        </text>
+        <path d="M100 200 L180 170 M120 230 L210 190" stroke="#3a3e45" strokeWidth="1.5" opacity="0.6" />
+        <rect width="640" height="420" fill={`url(#${id}-flash)`} />
+      </g>
+      <Stamp text="00:58" />
     </svg>
   );
 });

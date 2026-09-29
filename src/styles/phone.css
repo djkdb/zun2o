@@ -3060,3 +3060,62 @@ svg {
 .call-avatar.pic.hijacked {
   filter: grayscale(1) contrast(1.4) brightness(0.7);
 }
+
+/* ─── the phone restarting by itself ─────────────────────────────────── */
+.reboot {
+  position: absolute;
+  inset: 0;
+  z-index: 120;
+  background: #000;
+  display: grid;
+  place-items: center;
+  animation: reboot-in 3.6s steps(1) both;
+}
+
+.reboot-logo {
+  text-align: center;
+  color: #b33;
+  opacity: 0;
+  animation: reboot-logo 3.6s ease both;
+}
+
+.reboot-logo span {
+  display: block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 26px;
+  letter-spacing: 0.3em;
+}
+
+.reboot-logo small {
+  display: block;
+  margin-top: 10px;
+  font-size: 11px;
+  color: #6b6d73;
+}
+
+@keyframes reboot-logo {
+  0%,
+  30% {
+    opacity: 0;
+  }
+  45%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes reboot-in {
+  0% {
+    background: #111;
+  }
+  3% {
+    background: #000;
+  }
+}
+
+.lock-wall.changed {
+  animation: fade-in 2s ease both;
+}

@@ -11,7 +11,8 @@ export interface PhotoItem {
 }
 
 export const PHOTOS: PhotoItem[] = [
-  { id: 'p01', time: '00:57', caption: '정문. 체인이 끊어져 있다.', album: 'recent' },
+  { id: 'p00', time: '00:58', caption: '제보 진짜였음. 부스 선반에 폰이 있다.', album: 'recent' },
+  { id: 'p01', time: '00:59', caption: '정문. 체인이 끊어져 있다.', album: 'recent' },
   { id: 'p02', time: '01:14', caption: '1층 로비. 안내판.', album: 'recent' },
   { id: 'p03', time: '01:25', caption: '3층으로 가는 계단.', album: 'recent' },
   { id: 'p04', time: '01:32', caption: '3층 복도. 불 켜진 방 하나.', album: 'recent' },
@@ -19,7 +20,7 @@ export const PHOTOS: PhotoItem[] = [
   { id: 'p06', time: '01:45', caption: '벽에 붙어 있던 평면도.', album: 'recent' },
   { id: 'p07', time: '01:59', caption: '(노출 부족)', album: 'recent', portrait: true },
   { id: 'p08', time: '01:39', caption: '(자동 백업) 3층 창문', album: 'recent', extra: true },
-  { id: 'p09', time: '01:54', caption: '(자동 백업) 3층 창문', album: 'recent', extra: true },
+  { id: 'p09', time: '01:53', caption: '(도현이 보낸 사진)', album: 'recent', extra: true },
   { id: 'h01', time: '01:53', caption: '02호실. 벽돌이… 안에서 쌓여 있다.', album: 'hidden' },
   { id: 'h02', time: '01:55', caption: '들어왔다. 어떻게 들어왔는지 모르겠다.', album: 'hidden' },
   { id: 'h03', time: '01:56', caption: '서랍 안에 내 카드가 있었다.', album: 'hidden' },
@@ -76,6 +77,21 @@ export const NOTES: Record<string, NoteItem> = {
 숨김 앨범: 그 방송 주파수 ㅋㅋ (까먹지 말 것)
 채널 계정: 도현이한테 물어보기`,
   },
+  n5: {
+    id: 'n5',
+    title: '주운 폰',
+    date: '오늘 00:58',
+    body: `부스 선반에 진짜 폰 있었음!! (제보자 말대로)
+잠금 화면 이름: 박현우
+배터리 12% — 켜 두는데도 안 떨어짐?? 이상함
+
+잠금 화면에 알림 계속 옴. 저장 안 된 번호.
+"들어오세요."
+"들어오세요."
+
+ㅋㅋ 누가 연출하는 거면 대박. 영상에 넣기
+촬영 끝나면 경찰서에 갖다주기`,
+  },
   n4: {
     id: 'n4',
     title: '(제목 없음)',
@@ -102,8 +118,9 @@ export const MEMO_M1 = {
   date: '9월 27일 01:52',
   duration: 48,
   lines: [
-    { at: 0, who: '', text: '(발소리. 숨소리.)', sfx: 'footsteps' },
-    { at: 5, who: '채원', text: '…지금 3층이고요. 불 켜진 방이… 열람실이에요.' },
+    { at: 0, who: '', text: '(발소리. 숨소리. 주머니 속에서 진동.)', sfx: 'footsteps' },
+    { at: 3, who: '채원', text: '…주운 폰이 또 울려. 또 그 번호야.' },
+    { at: 7, who: '채원', text: '지금 3층이고요. 불 켜진 방이… 열람실이에요.' },
     { at: 13, who: '', text: '(멀리서 서랍 여는 소리)', sfx: 'drawer' },
     { at: 17, who: '채원', text: '거기… 누구 있어요?' },
     { at: 22, who: '', text: '(정적)' },

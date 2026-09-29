@@ -41,6 +41,8 @@ export interface Runtime {
   deep: Attach | null;
   /** The player is zoomed into a photo, editing it, or typing: hold scripted pop-ups. */
   engaged: boolean;
+  /** The phone is restarting by itself. */
+  rebooting: boolean;
   audioReady: boolean;
   debug: boolean;
 }
@@ -67,7 +69,7 @@ export function newSave(keep?: Partial<Save>): Save {
     clock: '23:51',
     battery: 12,
     installed: [],
-    notes: ['n1', 'n2', 'n3'],
+    notes: ['n1', 'n2', 'n3', 'n5'],
     seenPhotos: [],
     calls: [
       { who: '도현', time: '03:10', kind: 'missed', count: 14 },
@@ -136,6 +138,7 @@ const initialRuntime = (debug: boolean): Runtime => ({
   memoPlaying: false,
   deep: null,
   engaged: false,
+  rebooting: false,
   audioReady: false,
   debug,
 });

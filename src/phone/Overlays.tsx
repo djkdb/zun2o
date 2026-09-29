@@ -225,6 +225,20 @@ export function ScareOverlay() {
   );
 }
 
+/** The phone restarting on its own: black, then a boot screen that isn't the phone's. */
+export function RebootOverlay() {
+  const on = useGame((s) => s.rt.rebooting);
+  if (!on) return null;
+  return (
+    <div className="reboot" aria-live="polite">
+      <div className="reboot-logo">
+        <span>야간 색인</span>
+        <small>해원군청 별관 · 방문자 등록 시스템</small>
+      </div>
+    </div>
+  );
+}
+
 export function GlitchOverlay() {
   const until = useGame((s) => s.rt.glitchUntil);
   const reduce = useGame((s) => s.save.reduceFx);

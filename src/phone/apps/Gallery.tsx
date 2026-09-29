@@ -5,11 +5,13 @@ import { addFlag, getState, hasFlag, logInput, setRt } from '../../engine/state'
 import { HIDDEN_ALBUM_CODE, PHOTOS, type PhotoItem } from '../../content/media';
 import { AppHeader } from '../AppHeader';
 import { AnnexPhoto, FloorPlan, ReadingRoomPhoto, Room02Photo } from '../../art/scenes';
-import { BlackPhoto, BoothPhoto, CorridorPhoto, IndexCardPhoto, LobbyPhoto, SelfiePhoto, StairsPhoto } from '../../art/phonePhotos';
+import { BlackPhoto, BoothPhoto, BoothShelfPhoto, CorridorPhoto, IndexCardPhoto, LobbyPhoto, SelfiePhoto, StairsPhoto } from '../../art/phonePhotos';
 
 export function PhotoView({ id, brightness = 0 }: { id: string; brightness?: number }) {
   const flags = useGame((s) => s.save.flags);
   switch (id) {
+    case 'p00':
+      return <BoothShelfPhoto />;
     case 'p01':
       return <AnnexPhoto level={3} />;
     case 'p02':

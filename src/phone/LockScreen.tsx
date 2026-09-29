@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useGame } from '../hooks/useGame';
-import { WallpaperPhoto } from '../art/phonePhotos';
+import { BoothPhoto, WallpaperPhoto } from '../art/phonePhotos';
 import { emit, sfx, vibrate } from '../engine/director';
 import { logInput, setSave } from '../engine/state';
 import { THREAD_META } from '../content/threads';
@@ -13,6 +13,7 @@ export function LockScreen() {
   const clock = useGame((s) => s.save.clock);
   const threads = useGame((s) => s.save.threads);
   const fails = useGame((s) => s.save.passcodeFails);
+  const wallpaper = useGame((s) => s.save.wallpaper ?? 'annex');
   const [pad, setPad] = useState(false);
   const [code, setCode] = useState('');
   const [shake, setShake] = useState(0);
@@ -59,9 +60,7 @@ export function LockScreen() {
 
   return (
     <div className="lock">
-      <div className="lock-wall">
-        <WallpaperPhoto />
-      </div>
+      <div className={`lock-wall${wallpaper === 'booth' ? ' changed' : ''}`}>{wallpaper === 'booth' ? <BoothPhoto fill /> : <WallpaperPhoto />}</div>
       {!pad ? (
         <div className="lock-main" onClick={() => setPad(true)}>
           <div className="lock-date">9월 27일 토요일</div>

@@ -9,7 +9,7 @@ import { HomeScreen } from './HomeScreen';
 import { ColdOpen } from './ColdOpen';
 import { Finale } from './Finale';
 import { EndingScreen } from './Ending';
-import { BannerView, CallScreen, ChapterCard, DialogView, GlitchOverlay, HintChip, IncomingCall, ScareOverlay } from './Overlays';
+import { BannerView, CallScreen, ChapterCard, DialogView, GlitchOverlay, HintChip, IncomingCall, RebootOverlay, ScareOverlay } from './Overlays';
 import { MessagesApp } from './apps/Messages';
 import { GalleryApp } from './apps/Gallery';
 import { NotesApp } from './apps/Notes';
@@ -119,6 +119,7 @@ export function PhoneShell() {
       <DialogView />
       <GlitchOverlay />
       <ScareOverlay />
+      <RebootOverlay />
     </div>
   );
 }

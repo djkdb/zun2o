@@ -34,12 +34,12 @@ export const CALLS: Record<string, CallScript> = {
     label: '도현',
     duration: 0,
     lines: [
-      { at: 700, who: 'caller', text: '여보세요? 아직 그 폰 켜져 있어요?', voice: 'male' },
-      { at: 3600, who: 'caller', text: '끄라니까요. 이제 삼 분도 안 남았어요. 제발—', voice: 'male' },
-      { at: 7200, who: 'sfx', text: '(잡음)' },
-      { at: 8400, who: 'other', text: '끄지 마세요.', voice: 'entity' },
-      { at: 10600, who: 'other', text: '도현 씨 목소리, 비슷했죠?', voice: 'entity' },
-      { at: 13200, who: 'sfx', text: '(통화 종료)' },
+      { at: 700, who: 'caller', text: '(숨소리) …들려요? 저 02호실 안이에요.', voice: 'male' },
+      { at: 4000, who: 'caller', text: '서랍이 끝이 없어요. 채원이 목소리가 계속 저 안쪽에서—', voice: 'male' },
+      { at: 7800, who: 'sfx', text: '(서랍 수백 개가 한꺼번에 열리는 소리)' },
+      { at: 9400, who: 'other', text: '끄지 마세요.', voice: 'entity' },
+      { at: 11600, who: 'other', text: '도현 씨 목소리, 비슷했죠? 도현 씨는 이제 대기 중이에요.', voice: 'entity' },
+      { at: 15200, who: 'sfx', text: '(통화 종료)' },
     ],
   },
   radio: {

@@ -64,6 +64,9 @@ function buildRecall(): string[] {
   if (typed) lines.push(`“${typed}”라고 보냈죠. 다 적어 뒀어요.`);
   if (s.flags.includes('named-her')) lines.push('그 이름을 저한테 보냈죠. 한동안 대답을 못 했어요. 그건 인정할게요.');
   if (new Date().getHours() === 2) lines.push('그리고… 지금은 진짜로 새벽 두 시네요.');
+  lines.push('#0025 박현우. #0026 윤채원. 그리고 #0027, 당신.');
+  lines.push('다들 그 부스에서 폰을 주웠어요. 주운 사람은 들어오게 돼 있어요.');
+  lines.push('도현 씨는 지금 02호실 안에 있어요. 당신이 남지 않으면, 도현 씨가 남아요.');
   lines.push('이제 누군가는 근무를 서야 합니다.');
   return lines;
 }
@@ -273,7 +276,7 @@ export function Finale() {
           {step === 'choice' && (
             <div className="final-choices">
               <label className="power-slider">
-                <span style={{ opacity: 1 - slide }}>밀어서 전원 끄기 ›</span>
+                <span style={{ opacity: 1 - slide }}>밀어서 전원 끄기 — 도망친다 ›</span>
                 <input
                   type="range"
                   min={0}
@@ -292,7 +295,7 @@ export function Finale() {
                   setStep('sign');
                 }}
               >
-                내가 남는다 — 채원을 보내 준다
+                내가 남는다 — 채원과 도현을 보내 준다
               </button>
               <button type="button" disabled={!foundKey} onClick={() => setStep('key')}>
                 {foundKey ? '연장 열쇠를 입력한다' : '연장 열쇠를 입력한다 (열쇠를 모른다)'}

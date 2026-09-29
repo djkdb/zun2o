@@ -156,7 +156,9 @@ export function showBanner(app: AppId, title: string, body: string, thread?: Thr
 
 export function vibrate(pattern: number[]): void {
   try {
-    if (!getState().save.reduceFx) navigator.vibrate?.(pattern);
+    // Browsers refuse (and log) vibration before the first tap on the page.
+    const active = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation?.hasBeenActive ?? true;
+    if (!getState().save.reduceFx && active) navigator.vibrate?.(pattern);
   } catch {
     /* unsupported */
   }
@@ -325,6 +327,19 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
     case 'memo':
       setSave((s) => ({ memos: s.memos.includes(a.id) ? s.memos : [...s.memos, a.id] }));
       return;
+    case 'reboot':
+      // The screen dies, a boot logo that isn't the phone's, then the lock screen — with a new wallpaper.
+      await whenFree(myEpoch);
+      setRt({ rebooting: true, app: null, thread: null, banner: null, dialog: null });
+      loop('heartbeat', false);
+      sfx('glitch');
+      vibrate([200]);
+      await sleepReal(3600);
+      if (myEpoch !== epoch) return;
+      setSave({ unlocked: false, wallpaper: a.wallpaper });
+      setRt({ rebooting: false });
+      sfx('unlock');
+      return;
     case 'draft': {
       // Someone types into the reply box… and deletes it.
       const text = fill(a.text);
@@ -475,6 +490,9 @@ function pickReply(th: ThreadId, text: string): string {
           [/haewon|열쇠|0200-?/i, '그 단어, 여기 쓰지 마요.'],
           [/1340|라디오|방송/, '그 방송은 듣지 마요. 숫자를 세다 보면 이름이 나와요.'],
           [/서미령|미령/, '…'],
+          [/박현우|현우/, '#0025. 성실한 분이었어요. 오늘 아침에 퇴근했어요.'],
+          [/도현/, '도현 씨도 곧 와요. 다들 결국 와요.'],
+          [/부스|폰.*주/, '주웠잖아요. 주운 사람은 들어오게 돼 있어요.'],
         ]
       : [
           [/누구|정체/, '나 윤채원이야. 이 폰 주인. 제발 장난 아니야'],
@@ -485,6 +503,9 @@ function pickReply(th: ThreadId, text: string): string {
           [/서미령|미령/, '그 이름… 서랍 카드에 있었어. 첫 번째 근무자. 그 여자가 그 이름만 나오면 멈춰'],
           [/haewon|열쇠/i, '그거야. 그걸로 색인을 끝낼 수 있어. 두 시에 써'],
           [/1340|라디오|방송/, '그 숫자 방송… 순서가 있어. 001 003 007'],
+          [/박현우|현우/, '그 사람 폰 여기 서랍에 있어. 화면에 계속 내 이름이 떠'],
+          [/도현/, '도현이? 오지 말라고 해. 여기 오면 안 돼'],
+          [/엄마/, '엄마한테 전화한 거 나 아니야. 나 여기서 폰 없어'],
         ];
   for (const [re, line] of rules) if (re.test(text)) return line;
   // Otherwise: whatever the story is waiting for, from whoever would say it.

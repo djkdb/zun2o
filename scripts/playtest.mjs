@@ -196,6 +196,18 @@ await tapText('채원 씨예요?');
 await page.waitForFunction(() => window.__game.getState().save.threads.self.some((m) => m.text.includes('메모에')), null, { timeout: 40000 });
 mark('채원 asked for help');
 await snap('chaewon-inside');
+// the phone restarts by itself and comes back locked — with you as the wallpaper
+await waitFor('.reboot', 90000);
+mark('phone rebooted itself');
+await wait(900);
+await snap('reboot');
+await waitFor('.lock', 20000);
+await wait(1200);
+await snap('lock-new-wallpaper');
+check('after the reboot the wallpaper is the booth photo', (await page.locator('.lock-wall.changed').count()) === 1);
+await tap('.lock-main');
+for (const d of '0113') await page.locator('.keypad .key', { hasText: new RegExp(`^${d}$`) }).first().click();
+await wait(800);
 
 // ── archive puzzle ──────────────────────────────────────────────────────
 await openApp('인터넷');

@@ -104,6 +104,8 @@ export type Action =
   | { t: 'unsend'; th: ThreadId; match: string }
   | { t: 'dialog'; title: string; body: string }
   | { t: 'draft'; th: ThreadId; text: string }
+  /** The phone restarts by itself and comes back locked, with a new wallpaper. */
+  | { t: 'reboot'; wallpaper: 'annex' | 'booth' }
   | { t: 'hush'; ms: number }
   | { t: 'photo'; id: string }
   | { t: 'memo'; id: string }
@@ -184,6 +186,8 @@ export interface Save {
   memos: string[];
   /** What the player typed/dialed — for the memo that recorded them. */
   inputs: string[];
+  /** Lock-screen wallpaper; someone changes it during the night. */
+  wallpaper?: 'annex' | 'booth';
   /** A story call that is ringing or in progress (re-rings after a reload). */
   pendingCall?: string | null;
   /** Objectives already nudged by a character. */
