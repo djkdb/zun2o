@@ -23,7 +23,8 @@ slightly green color cast, amateur framing, realistic photograph, no text, no wa
 | `selfie-far` | 3:4 세로 | 3장 숨김 앨범 4번째: 채원 셀카, 뒤 멀리 무언가 |
 | `selfie-close` | 3:4 세로 | 3장 숨김 앨범 5번째: 같은 셀카, 그것이 바로 옆에 |
 | `booth` | 3:2 가로 | 3장 자동 백업: 3층 창문에서 내려다본 공중전화 부스 안의 "당신" |
-| `booth-behind` | 3:2 가로 | 4장 자동 백업: 같은 구도, 부스 뒤에 누가 서 있음 |
+| `booth-behind` | 3:2 가로 | 4장 도현이 보낸 사진: 길 건너에서 찍은 부스, 당신 뒤에 누가 서 있음 |
+| `booth-shelf` | 3:2 가로 | 1장 사진 앱 첫 사진(00:58): 부스 선반 위에 놓인 화면 켜진 폰 |
 | `video-chaewon` | 9:16 세로 | 02:00 영상통화: 채원 얼굴 |
 | `video-behind` | 9:16 세로 | 02:00 영상통화: 같은 화면, 채원 어깨 뒤에 그것 (서서히 겹쳐짐) |
 | `scare-hang` | 9:16 세로 | 점프스케어 1 (검은 사진) |
@@ -62,8 +63,16 @@ dirty glass, telephoto zoom blur.
 
 ### booth-behind
 ```
-Exact same composition as the previous image, but now directly behind the phone booth stands a tall thin woman in
-dark clothes with long black hair covering her face, head tilted, pale hands, standing much too close.
+Photo taken from across a dark empty street at eye level: a lone lit public phone booth, a person inside holding a
+glowing smartphone, and directly behind them, pressed against the booth glass, a tall thin woman in a faded 1990s
+office cardigan with long wet black hair covering her face, head tilted, pale hands. Shaky handheld, grainy.
+```
+
+### booth-shelf
+```
+Close-up inside an old Korean public phone booth at night: a smartphone lying on the metal shelf, screen on, showing
+a lock screen with "12%" battery, payphone receiver hanging off its hook, scratched glass, a faded "분실물" sticker.
+Harsh flash.
 ```
 
 ### video-chaewon

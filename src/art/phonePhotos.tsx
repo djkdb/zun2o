@@ -398,6 +398,10 @@ export const BoothShelfPhoto = memo(function BoothShelfPhoto() {
         <rect width="640" height="420" fill="#0b0c0e" />
         {/* booth glass and frame */}
         <rect x="40" y="0" width="560" height="420" fill="#14161a" />
+        {art('booth-shelf') ? (
+          <ArtImage slot="booth-shelf" w={640} h={420} />
+        ) : (
+          <>
         <rect x="40" y="0" width="14" height="420" fill="#2c3036" />
         <rect x="586" y="0" width="14" height="420" fill="#2c3036" />
         {/* the payphone, receiver hanging off the hook */}
@@ -424,6 +428,8 @@ export const BoothShelfPhoto = memo(function BoothShelfPhoto() {
           분실물 신고
         </text>
         <path d="M100 200 L180 170 M120 230 L210 190" stroke="#3a3e45" strokeWidth="1.5" opacity="0.6" />
+          </>
+        )}
         <rect width="640" height="420" fill={`url(#${id}-flash)`} />
       </g>
       <Stamp text="00:58" />

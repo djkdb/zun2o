@@ -10,6 +10,7 @@ export type ArtSlot =
   | 'selfie-far'
   | 'selfie-close'
   | 'booth'
+  | 'booth-shelf'
   | 'booth-behind'
   | 'video-chaewon'
   | 'video-behind'
