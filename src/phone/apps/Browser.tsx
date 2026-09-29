@@ -9,11 +9,11 @@ import { SlotPhoto } from '../../art/phonePhotos';
 import { AnnexPhoto, FloorPlan, ReadingRoomPhoto, Room02Photo, TowerPhoto } from '../../art/scenes';
 
 const PHOTO = {
-  'reading-room': () => (art('reading-empty') ? <SlotPhoto slot="reading-empty" label="1994년 열람실." /> : <ReadingRoomPhoto level={3} stage={1} />),
-  annex: () => (art('annex-gate') ? <SlotPhoto slot="annex-gate" label="해원군청 별관." /> : <AnnexPhoto level={3} />),
+  'reading-room': () => (art('reading-empty') ? <SlotPhoto slot="reading-empty" w={640} h={420} label="1994년 열람실." /> : <ReadingRoomPhoto level={3} stage={1} />),
+  annex: () => (art('wallpaper') ? <SlotPhoto slot="wallpaper" w={640} h={420} label="해원군청 별관." /> : <AnnexPhoto level={3} />),
   floorplan: () => <FloorPlan level={3} />,
-  tower: () => (art('tower') ? <SlotPhoto slot="tower" label="해원방송 송신탑." /> : <TowerPhoto level={0} />),
-  'room-02': () => (art('room02') ? <SlotPhoto slot="room02" label="02호실." /> : <Room02Photo level={5} />),
+  tower: () => (art('tower') ? <SlotPhoto slot="tower" w={640} h={420} align="xMidYMin" label="해원방송 송신탑." /> : <TowerPhoto level={0} />),
+  'room-02': () => (art('room02') ? <SlotPhoto slot="room02" w={640} h={420} label="02호실." /> : <Room02Photo level={5} />),
 };
 
 type View = { kind: 'home' } | { kind: 'archive' } | { kind: 'page'; id: string };

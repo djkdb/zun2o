@@ -50,14 +50,31 @@ function Stamp({ text, x = 16, y = 30 }: { text: string; x?: number; y?: number 
  * A photograph from an art slot, dressed like every other photo on this phone:
  * sensor noise, flash falloff, 채원's timestamp. Callers check `art(slot)` first.
  */
-export function SlotPhoto({ slot, w = 640, h = 420, stamp, label }: { slot: ArtSlot; w?: number; h?: number; stamp?: string; label: string }) {
+export function SlotPhoto({
+  slot,
+  w = 420,
+  h = 560,
+  stamp,
+  label,
+  fill = false,
+  align,
+}: {
+  slot: ArtSlot;
+  w?: number;
+  h?: number;
+  stamp?: string;
+  label: string;
+  /** Crop to fill the container (the lock-screen wallpaper). */
+  fill?: boolean;
+  align?: string;
+}) {
   const id = useSvgId();
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio={w < h ? 'xMidYMid slice' : undefined} role="img" aria-label={label}>
+    <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio={fill ? 'xMidYMid slice' : undefined} role="img" aria-label={label}>
       <Defs id={id} r={75} />
       <g filter={`url(#${id}-n)`}>
         <rect width={w} height={h} fill="#050505" />
-        <ArtImage slot={slot} w={w} h={h} />
+        <ArtImage slot={slot} w={w} h={h} align={align} />
         <rect width={w} height={h} fill={`url(#${id}-flash)`} opacity="0.6" />
       </g>
       {stamp && <Stamp text={stamp} />}
@@ -68,7 +85,7 @@ export function SlotPhoto({ slot, w = 640, h = 420, stamp, label }: { slot: ArtS
 /** Lock-screen wallpaper: the Annex at night, with the channel's REC overlay. */
 export const WallpaperPhoto = memo(function WallpaperPhoto() {
   const id = useSvgId();
-  if (art('wallpaper')) return <SlotPhoto slot="wallpaper" w={390} h={844} label="밤의 해원군청 별관." />;
+  if (art('wallpaper')) return <SlotPhoto slot="wallpaper" w={390} h={844} fill label="밤의 해원군청 별관." />;
   return (
     <svg viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <Defs id={id} flashX={50} flashY={52} r={95} />
