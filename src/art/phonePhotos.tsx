@@ -32,10 +32,10 @@ function Defs({ id, flashX = 50, flashY = 50, r = 60 }: { id: string; flashX?: n
 }
 
 /** A photographic slot image, if one was provided (see photoArt.ts). */
-function ArtImage({ slot, w, h, style }: { slot: ArtSlot; w: number; h: number; style?: React.CSSProperties }) {
+function ArtImage({ slot, w, h, style, align = 'xMidYMid' }: { slot: ArtSlot; w: number; h: number; style?: React.CSSProperties; align?: string }) {
   const url = art(slot);
   if (!url) return null;
-  return <image href={url} x="0" y="0" width={w} height={h} preserveAspectRatio="xMidYMid slice" className="art-photo" style={style} />;
+  return <image href={url} x="0" y="0" width={w} height={h} preserveAspectRatio={`${align} slice`} className="art-photo" style={style} />;
 }
 
 function Stamp({ text, x = 16, y = 30 }: { text: string; x?: number; y?: number }) {
@@ -468,7 +468,8 @@ export const VideoFeed = memo(function VideoFeed({ close = 0, pip = 0 }: { close
           <ChaewonFigure id={id} />
         </g>
         <ArtImage slot="video-chaewon" w={390} h={844} />
-        {her > 0 && <ArtImage slot="video-behind" w={390} h={844} style={{ opacity: Math.min(1, her * 1.4) }} />}
+        {/* she comes in over the right shoulder: keep that side of the frame */}
+        {her > 0 && <ArtImage slot="video-behind" w={390} h={844} align="xMaxYMid" style={{ opacity: Math.min(1, her * 1.4) }} />}
         <rect width="390" height="844" fill={`url(#${id}-flash)`} />
       </g>
       {pip === 0 ? (

@@ -3329,3 +3329,137 @@ body,
 .shell.in-app .screen {
   margin-bottom: var(--homebar-h);
 }
+
+/* ─── photographic scares (art slots) ─────────────────────────────────
+   A square photo on a tall screen: fit it, then enlarge ~1.5× so about two
+   thirds of its width shows — the whole face, filling the screen. It appears
+   at once, jerks (dropped frames), and pushes in slowly. */
+.scare.scare-lunge .ghost.ghost-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
+  transform-origin: 50% 48%;
+  animation:
+    lunge-photo 1.3s steps(12, end) both,
+    jitter 0.07s steps(2) infinite;
+}
+
+@keyframes lunge-photo {
+  0% {
+    transform: scale(2);
+    opacity: 0;
+  }
+  5% {
+    transform: scale(1.5);
+    opacity: 1;
+  }
+  22% {
+    transform: scale(1.56) translate(1%, -1%);
+  }
+  85% {
+    transform: scale(1.68);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.72);
+    opacity: 0;
+  }
+}
+
+/* upside down, from the top */
+.scare.scare-lunge.look-hang .ghost.ghost-photo {
+  animation:
+    lunge-photo-hang 1.3s steps(11, end) both,
+    jitter 0.07s steps(2) infinite;
+}
+
+@keyframes lunge-photo-hang {
+  0% {
+    transform: translateY(-55%) scale(1.5);
+    opacity: 1;
+  }
+  12% {
+    transform: translateY(0) scale(1.5);
+  }
+  85% {
+    transform: scale(1.66);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+/* half a face from the edge; keep the eye and the jaw in frame */
+.scare.scare-lunge.look-profile .ghost.ghost-photo {
+  transform-origin: 42% 50%;
+  animation:
+    lunge-photo-side 1.3s steps(10, end) both,
+    jitter 0.07s steps(2) infinite;
+}
+
+@keyframes lunge-photo-side {
+  0% {
+    transform: translateX(40%) scale(1.5);
+    opacity: 0;
+  }
+  8% {
+    transform: translateX(0) scale(1.52);
+    opacity: 1;
+  }
+  85% {
+    transform: scale(1.66);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+/* 02:00: out of your own self-view window */
+.scare.scare-lunge.from-pip .ghost.ghost-photo {
+  transform-origin: 82% 16%;
+  animation:
+    lunge-photo-pip 1.3s steps(12, end) both,
+    jitter 0.07s steps(2) infinite;
+}
+
+@keyframes lunge-photo-pip {
+  0% {
+    transform: scale(0.14);
+    opacity: 1;
+  }
+  16% {
+    transform: scale(1.52);
+  }
+  85% {
+    transform: scale(1.66);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.72);
+    opacity: 0;
+  }
+}
+
+/* a dark photo needs a little more presence to read as a reflection */
+.scare-reflect .ghost.ghost-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.32;
+  filter: grayscale(1) contrast(1.3) blur(1px);
+}
+
+/* no hard photo edges in the dark: the frame fades out */
+.scare .ghost.ghost-photo {
+  -webkit-mask-image: radial-gradient(ellipse 58% 52% at 50% 50%, #000 62%, transparent 100%);
+  mask-image: radial-gradient(ellipse 58% 52% at 50% 50%, #000 62%, transparent 100%);
+}
