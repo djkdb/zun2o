@@ -1,4 +1,4 @@
-import { memo, useId } from 'react';
+import { memo, useId, useState } from 'react';
 import { art } from './photoArt';
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -227,6 +227,17 @@ export const GhostSvg = memo(function GhostSvg({ className, distort, look = 'fac
 /** The scare image: a provided photograph for that look if there is one, else the drawing. */
 export function GhostVisual({ look, className }: { look: GhostLook; className?: string }) {
   const url = art(look === 'curtain' ? 'reflect' : `scare-${look}`);
-  if (url) return <img className={`${className ?? ''} ghost-photo`} src={url} alt="" draggable={false} />;
+  // A tall (phone-shaped) photo fills the screen as is; a square one is enlarged to fill it.
+  const [tall, setTall] = useState(false);
+  if (url)
+    return (
+      <img
+        className={`${className ?? ''} ghost-photo${tall ? ' tall' : ''}`}
+        src={url}
+        alt=""
+        draggable={false}
+        onLoad={(e) => setTall(e.currentTarget.naturalHeight / e.currentTarget.naturalWidth > 1.3)}
+      />
+    );
   return <GhostSvg className={className} look={look} distort />;
 }

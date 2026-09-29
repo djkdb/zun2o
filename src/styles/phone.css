@@ -3341,6 +3341,8 @@ body,
   height: 100%;
   max-width: none;
   object-fit: contain;
+  /* square photos: fit, then enlarge 1.5× to fill the tall screen */
+  --b: 1.5;
   transform-origin: 50% 48%;
   animation:
     lunge-photo 1.3s steps(12, end) both,
@@ -3349,22 +3351,22 @@ body,
 
 @keyframes lunge-photo {
   0% {
-    transform: scale(2);
+    transform: scale(calc(var(--b) * 1.333));
     opacity: 0;
   }
   5% {
-    transform: scale(1.5);
+    transform: scale(calc(var(--b) * 1.0));
     opacity: 1;
   }
   22% {
-    transform: scale(1.56) translate(1%, -1%);
+    transform: scale(calc(var(--b) * 1.04)) translate(1%, -1%);
   }
   85% {
-    transform: scale(1.68);
+    transform: scale(calc(var(--b) * 1.12));
     opacity: 1;
   }
   100% {
-    transform: scale(1.72);
+    transform: scale(calc(var(--b) * 1.147));
     opacity: 0;
   }
 }
@@ -3378,18 +3380,18 @@ body,
 
 @keyframes lunge-photo-hang {
   0% {
-    transform: translateY(-55%) scale(1.5);
+    transform: translateY(-55%) scale(calc(var(--b) * 1.0));
     opacity: 1;
   }
   12% {
-    transform: translateY(0) scale(1.5);
+    transform: translateY(0) scale(calc(var(--b) * 1.0));
   }
   85% {
-    transform: scale(1.66);
+    transform: scale(calc(var(--b) * 1.107));
     opacity: 1;
   }
   100% {
-    transform: scale(1.7);
+    transform: scale(calc(var(--b) * 1.133));
     opacity: 0;
   }
 }
@@ -3404,19 +3406,19 @@ body,
 
 @keyframes lunge-photo-side {
   0% {
-    transform: translateX(40%) scale(1.5);
+    transform: translateX(40%) scale(calc(var(--b) * 1.0));
     opacity: 0;
   }
   8% {
-    transform: translateX(0) scale(1.52);
+    transform: translateX(0) scale(calc(var(--b) * 1.013));
     opacity: 1;
   }
   85% {
-    transform: scale(1.66);
+    transform: scale(calc(var(--b) * 1.107));
     opacity: 1;
   }
   100% {
-    transform: scale(1.7);
+    transform: scale(calc(var(--b) * 1.133));
     opacity: 0;
   }
 }
@@ -3435,16 +3437,22 @@ body,
     opacity: 1;
   }
   16% {
-    transform: scale(1.52);
+    transform: scale(calc(var(--b) * 1.013));
   }
   85% {
-    transform: scale(1.66);
+    transform: scale(calc(var(--b) * 1.107));
     opacity: 1;
   }
   100% {
-    transform: scale(1.72);
+    transform: scale(calc(var(--b) * 1.147));
     opacity: 0;
   }
+}
+
+/* tall, phone-shaped photos already fill the screen */
+.scare.scare-lunge .ghost.ghost-photo.tall {
+  --b: 1;
+  object-fit: cover;
 }
 
 /* a dark photo needs a little more presence to read as a reflection */
