@@ -3,6 +3,7 @@ import { BEATS } from '../content/script';
 import { addFlag, appendMessage, fill, flush, getState, hasFlag, loadCheckpoint, logInput, newSave, saveCheckpoint, setRt, setSave, wipeSave } from './state';
 import { THREAD_META } from '../content/threads';
 import { CALLS } from '../content/calls';
+import { replyFor } from '../content/replies';
 
 // ─────────────────────────────────────────────────────────────────────────
 // The director runs the story. emit(event) finds beats listening for it and
@@ -221,7 +222,7 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
       addFlag(a.f);
       return;
     case 'objective':
-      setSave({ objective: { text: a.text, hint: a.hint, since: Date.now(), nudge: a.nudge } });
+      setSave({ objective: { text: a.text, hint: a.hint, since: Date.now(), nudge: a.nudge, app: a.app } });
       setRt({ hintOpen: false });
       return;
     case 'chapter':
@@ -312,12 +313,19 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
       setRt({ dialog: { title: a.title, body: fill(a.body) } });
       sfx('error');
       return;
-    case 'hush':
-      // The silence right before something happens.
-      setMix(0, 0, 0.05, 420);
-      await sleepReal(a.ms);
+    case 'hush': {
+      // The silence right before something happens: the room goes muffled,
+      // then almost nothing, then someone breathes in right next to you.
+      const [am, dr] = CHAPTER_MIX[getState().save.chapter] ?? CHAPTER_MIX[0];
+      setMix(am * 0.5, dr * 0.4, 0.25, 160);
+      await sleepReal(a.ms * 0.45);
+      setMix(0.004, 0, 0.12, 120);
+      await sleepReal(a.ms * 0.2);
+      sfx('inhale');
+      await sleepReal(a.ms * 0.35);
       applyChapterMix(0.4);
       return;
+    }
     case 'calllog':
       setSave((s) => ({ calls: [a.entry, ...s.calls] }));
       return;
@@ -384,6 +392,10 @@ export function choose(optionId: string, input?: string): void {
 
 export function openApp(app: AppId | null): void {
   const wasInApp = getState().rt.app !== null;
+  if (app && app !== getState().rt.app) {
+    sfx('open');
+    setSave((s) => ({ opens: { ...(s.opens ?? {}), [app]: (s.opens?.[app] ?? 0) + 1 } }));
+  }
   setRt({ app, thread: null });
   if (app) emit(`app:${app}`);
   else if (wasInApp) maybeReflect();
@@ -464,58 +476,32 @@ export function sendText(th: ThreadId, raw: string): void {
     return;
   }
   if (th === 'unknown' && now < silentUntil) return;
-  if (now - lastReply < 5000 || getState().rt.typing[th]) return;
+  if (now - lastReply < 4000 || getState().rt.typing[th]) return;
   lastReply = now;
-  const reply = pickReply(th, text);
+  const nudge = s.objective?.nudge && s.objective.nudge.th === th ? s.objective.nudge.text : null;
+  const reply = replyFor(th, text, { name: s.playerName, flags: s.flags, counts: s.talk ?? {}, nudge });
+  if (reply.rule) {
+    const key = `${th}:${reply.rule}`;
+    setSave((x) => ({ talk: { ...(x.talk ?? {}), [key]: (x.talk?.[key] ?? 0) + 1 } }));
+  }
   const myEpoch = epoch;
+  const from = th === 'self' ? ('me' as const) : undefined;
   void (async () => {
-    await sleep(900 + Math.random() * 900);
-    if (myEpoch !== epoch) return;
-    await perform({ t: 'msg', th, text: reply, typing: 1200 + reply.length * 40, ...(th === 'self' ? { from: 'me' as const } : {}) }, myEpoch);
+    // Sometimes it answers at once; sometimes it makes you wait.
+    await sleep(Math.random() < 0.3 ? 3500 + Math.random() * 3000 : 900 + Math.random() * 900);
+    for (const line of reply.lines) {
+      if (myEpoch !== epoch) return;
+      if (line === '…') {
+        // Typing… then nothing. Then the real answer.
+        setRt((r) => ({ typing: { ...r.typing, [th]: true } }));
+        await sleepReal(2200);
+        setRt((r) => ({ typing: { ...r.typing, [th]: false } }));
+        await sleepReal(1800);
+        continue;
+      }
+      await perform({ t: 'msg', th, text: line, typing: 900 + line.length * 45, ...(from ? { from } : {}) }, myEpoch);
+    }
   })();
-}
-
-function pickReply(th: ThreadId, text: string): string {
-  const s = getState().save;
-  const rules: [RegExp, string][] =
-    th === 'unknown'
-      ? [
-          [/누구|정체|뭐야|who/i, '기록하는 사람이요. 채원 씨 다음 사람을 기다리고 있어요.'],
-          [/경찰|신고|112/, '경찰은 이미 왔다 갔어요. 3층엔 아무도 없었죠.'],
-          [/살려|도와|제발/, '여기선 아무도 못 도와줘요, {name}.'],
-          [/채원/, '채원 씨는 근무 대기 중이에요. 조용히 해 줘요.'],
-          [/끄|꺼|전원/, '끄지 마세요.'],
-          [/무서|싫어|그만/, '괜찮아요. 처음엔 다 그래요.'],
-          [/몇 ?시|시간/, '이 폰은 {clock}. 당신 쪽은 {real}.'],
-          [/haewon|열쇠|0200-?/i, '그 단어, 여기 쓰지 마요.'],
-          [/1340|라디오|방송/, '그 방송은 듣지 마요. 숫자를 세다 보면 이름이 나와요.'],
-          [/서미령|미령/, '…'],
-          [/박현우|현우/, '#0025. 성실한 분이었어요. 오늘 아침에 퇴근했어요.'],
-          [/도현/, '도현 씨도 곧 와요. 다들 결국 와요.'],
-          [/부스|폰.*주/, '주웠잖아요. 주운 사람은 들어오게 돼 있어요.'],
-        ]
-      : [
-          [/누구|정체/, '나 윤채원이야. 이 폰 주인. 제발 장난 아니야'],
-          [/어디|위치/, '3층. 02호실. 근데 문이 없어. 서랍만 있어'],
-          [/경찰|신고|112/, '신고해도 여기 못 와. 도현이도 왔었는데 날 못 봤대'],
-          [/괜찮|다쳤/, '안 괜찮아. 추워. 누가 계속 내 이름을 적어'],
-          [/그 여자|귀신|누가/, '보지 마. 사진으로 보면 더 가까이 와'],
-          [/서미령|미령/, '그 이름… 서랍 카드에 있었어. 첫 번째 근무자. 그 여자가 그 이름만 나오면 멈춰'],
-          [/haewon|열쇠/i, '그거야. 그걸로 색인을 끝낼 수 있어. 두 시에 써'],
-          [/1340|라디오|방송/, '그 숫자 방송… 순서가 있어. 001 003 007'],
-          [/박현우|현우/, '그 사람 폰 여기 서랍에 있어. 화면에 계속 내 이름이 떠'],
-          [/도현/, '도현이? 오지 말라고 해. 여기 오면 안 돼'],
-          [/엄마/, '엄마한테 전화한 거 나 아니야. 나 여기서 폰 없어'],
-        ];
-  for (const [re, line] of rules) if (re.test(text)) return line;
-  // Otherwise: whatever the story is waiting for, from whoever would say it.
-  const nudge = s.objective?.nudge;
-  if (nudge && nudge.th === th) return nudge.text;
-  const pool =
-    th === 'unknown'
-      ? ['대답은 나중에 해도 돼요.', '천천히 해요. 두 시까지는 시간 있어요.', '{name}, 지금 그게 중요한 게 아니에요.', '…다 적어 두고 있어요.']
-      : ['빨리. 시간 없어', '나 보여? 거기서 나 보여?', '그 여자가 듣고 있어. 짧게 보내'];
-  return pool[Math.floor(Math.random() * pool.length)];
 }
 
 export function openThread(th: ThreadId | null): void {
@@ -530,6 +516,7 @@ export function answerCall(): void {
   const id = getState().rt.incoming;
   if (!id) return;
   loop('ring', false);
+  sfx('connect');
   setRt({ incoming: null, activeCall: id });
   emit(`call:${id}:accept`);
 }
@@ -614,6 +601,9 @@ export function reachEnding(id: EndingId): void {
 
 export function newGame(): void {
   epoch++;
+  teased.clear();
+  (Object.keys(anomalyCount) as Anomaly[]).forEach((k) => delete anomalyCount[k]);
+  lastAnomaly = Date.now();
   timers.forEach((t) => clearTimeout(t));
   timers.clear();
   loop('ring', false);
@@ -659,9 +649,119 @@ export function replayFinale(): boolean {
 const night = (hm: string) => (toMinutes(hm) + 720) % 1440;
 const CLOCK_CAP: Record<number, string> = { 0: '23:59', 1: '00:30', 2: '01:11', 3: '01:49' };
 
+/** Anything on screen the player is paying attention to right now. */
+function playerBusy(): boolean {
+  const r = getState().rt;
+  return (
+    r.memoPlaying ||
+    r.activeCall !== null ||
+    r.incoming !== null ||
+    r.dialog !== null ||
+    r.engaged ||
+    r.scare !== null ||
+    r.chapterCard !== null ||
+    r.rebooting ||
+    r.finale ||
+    Object.values(r.typing).some(Boolean)
+  );
+}
+
+// ── quiet dread ─────────────────────────────────────────────────────────
+// Between the big moments, small things go wrong: the clock blinks to 02:00,
+// the screen dims on its own, a notification that leads to nothing, someone
+// typing who never sends. Sparse (never while the player is busy), denser
+// every chapter, and each kind only a few times a night.
+
+type Anomaly = 'clock' | 'typing' | 'buzz' | 'dim' | 'phantom' | 'stamp';
+const ANOMALY_GAP: Record<number, number> = { 1: 150000, 2: 110000, 3: 75000, 4: 40000 };
+const ANOMALY_POOL: Record<number, Anomaly[]> = {
+  1: ['clock', 'typing', 'buzz'],
+  2: ['clock', 'typing', 'buzz', 'dim', 'phantom'],
+  3: ['clock', 'typing', 'dim', 'phantom', 'stamp', 'buzz'],
+  4: ['clock', 'dim', 'phantom', 'typing'],
+};
+const anomalyCount: Partial<Record<Anomaly, number>> = {};
+let lastAnomaly = Date.now();
+
+function flashRt(patch: Partial<ReturnType<typeof getState>['rt']>, reset: Partial<ReturnType<typeof getState>['rt']>, ms: number): void {
+  setRt(patch);
+  const t = setTimeout(() => {
+    timers.delete(t);
+    setRt(reset);
+  }, ms);
+  timers.add(t);
+}
+
+function runAnomaly(kind: Anomaly): void {
+  anomalyCount[kind] = (anomalyCount[kind] ?? 0) + 1;
+  lastAnomaly = Date.now();
+  switch (kind) {
+    case 'clock':
+      // For a blink, the status bar says what time it really is here.
+      flashRt({ clockGlitch: '02:00' }, { clockGlitch: null }, 380);
+      return;
+    case 'typing':
+      // Someone starts typing to you… and stops.
+      flashRt({ typing: { ...getState().rt.typing, unknown: true } }, { typing: { ...getState().rt.typing, unknown: false } }, 2600);
+      if (isViewing('unknown')) sfx('type');
+      return;
+    case 'buzz':
+      sfx('buzz');
+      return;
+    case 'dim':
+      // Auto-brightness, probably.
+      flashRt({ dip: true }, { dip: false }, 1100);
+      return;
+    case 'phantom':
+      // A notification that leads nowhere: open the thread and nothing new is there.
+      if (getState().rt.app === 'messages' && getState().rt.thread === 'unknown') return;
+      showBanner('messages', THREAD_META.unknown.name, '…', 'unknown');
+      return;
+    case 'stamp': {
+      // Something you already read now says it was sent at 02:00.
+      const th = getState().save.threads.unknown;
+      const i = th.findIndex((m, k) => k > 1 && m.from === 'them' && m.time !== '02:00');
+      if (i < 0) return;
+      setSave((s) => ({ threads: { ...s.threads, unknown: s.threads.unknown.map((m, k) => (k === i ? { ...m, time: '02:00' } : m)) } }));
+      return;
+    }
+  }
+}
+
+function maybeAnomaly(): void {
+  const s = getState().save;
+  const gap = ANOMALY_GAP[s.chapter];
+  if (!gap || !s.unlocked || playerBusy() || getState().save.reduceFx) return;
+  if (Date.now() - lastAnomaly < gap || Math.random() > 0.35) return;
+  const pool = (ANOMALY_POOL[s.chapter] ?? []).filter((k) => (anomalyCount[k] ?? 0) < 3);
+  if (pool.length) runAnomaly(pool[Math.floor(Math.random() * pool.length)]);
+}
+
+/** Debug: fire one small anomaly now. */
+export function debugAnomaly(kind: Anomaly): void {
+  runAnomaly(kind);
+}
+
+/**
+ * The player sat in a chat without typing: someone starts typing back, and
+ * doesn't send anything. Once per thread per chapter.
+ */
+const teased = new Set<string>();
+export function teaseTyping(th: ThreadId): void {
+  const s = getState().save;
+  const key = `${th}-${s.chapter}`;
+  if (teased.has(key) || playerBusy() || s.choice?.thread === th) return;
+  if (th === 'self' && !s.flags.includes('selfie-scare')) return;
+  teased.add(key);
+  flashRt({ typing: { ...getState().rt.typing, [th]: true } }, { typing: { ...getState().rt.typing, [th]: false } }, 2400);
+  sfx('type');
+}
+
 /**
  * One slow tick: the clock creeps forward (never past the chapter's next
- * scripted time), the battery drains, and a character nudges a stuck player.
+ * scripted time), the battery drains, a character nudges a stuck player
+ * (hint tier 1 — tiers 2–4 are the app pulse and the hint chip), and now and
+ * then something small goes wrong.
  */
 export function startLifeTicker(): () => void {
   let n = 0;
@@ -675,13 +775,17 @@ export function startLifeTicker(): () => void {
     }
     if (s.unlocked && n % 36 === 0 && s.battery > 7 && s.chapter < 4) setSave({ battery: s.battery - 1 });
     const o = s.objective;
-    if (o?.nudge && !s.nudged.includes(o.text) && Date.now() - o.since > 80000 && !rt.activeCall && !rt.incoming) {
+    if (o?.nudge && !s.nudged.includes(o.text) && Date.now() - o.since > HINT_TIER_MS[0] && !playerBusy()) {
       setSave({ nudged: [...s.nudged, o.text] });
       void perform({ t: 'msg', th: o.nudge.th, text: o.nudge.text, from: o.nudge.from, typing: 1500 }, epoch);
     }
+    maybeAnomaly();
   }, 5000);
   return () => clearInterval(iv);
 }
+
+/** Hint tiers, in ms stuck on one objective: 1 a character texts, 2 the app glows, 3 the hint chip (objective + app), 4 the full hint (on request). */
+export const HINT_TIER_MS = [75000, 130000, 180000] as const;
 
 /** Player left the app and came back after a while: the phone locked itself. */
 export function onReturn(awayMs: number): void {

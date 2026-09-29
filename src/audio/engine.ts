@@ -15,6 +15,8 @@ class AudioEngine {
   private ambience: GainNode | null = null;
   private ambienceFilter: BiquadFilterNode | null = null;
   private drone: GainNode | null = null;
+  /** A dying fluorescent tube somewhere in the building: follows the drone. */
+  private buzz: GainNode | null = null;
   private noise: AudioBuffer | null = null;
   private sources: AudioScheduledSourceNode[] = [];
   /** Everything "in the building" goes through a synthesized room reverb. */
@@ -114,7 +116,30 @@ class AudioEngine {
     o2.start();
     lfo.start();
     this.drone = drone;
-    this.sources = [src, hum, o1, o2, lfo];
+
+    // Fluorescent buzz: 120 Hz rasp through a narrow band, flickering.
+    const buzz = ctx.createGain();
+    buzz.gain.value = 0;
+    const tube = ctx.createOscillator();
+    tube.type = 'sawtooth';
+    tube.frequency.value = 120;
+    const tubeBp = ctx.createBiquadFilter();
+    tubeBp.type = 'bandpass';
+    tubeBp.frequency.value = 2400;
+    tubeBp.Q.value = 3;
+    const flick = ctx.createGain();
+    flick.gain.value = 0.6;
+    const flickLfo = ctx.createOscillator();
+    flickLfo.type = 'square';
+    flickLfo.frequency.value = 0.23;
+    const flickDepth = ctx.createGain();
+    flickDepth.gain.value = 0.4;
+    flickLfo.connect(flickDepth).connect(flick.gain);
+    tube.connect(tubeBp).connect(flick).connect(buzz).connect(master);
+    tube.start();
+    flickLfo.start();
+    this.buzz = buzz;
+    this.sources = [src, hum, o1, o2, lfo, tube, flickLfo];
 
     // Reverb: an impulse response made of decaying stereo noise — a long,
     // empty concrete corridor. Dry + wet so near sounds stay near.
@@ -169,7 +194,7 @@ class AudioEngine {
     if (!this.enabled || !this.ctx || !this.space || this.ctx.state !== 'running') return;
     const lvl = this.ambientLevel;
     const pool: SoundId[] = ['drip', 'creak'];
-    if (lvl >= 2) pool.push('stepsAbove', 'drip');
+    if (lvl >= 2) pool.push('stepsAbove', 'drip', 'buzz');
     if (lvl >= 3) pool.push('knock', 'drawer', 'breath');
     if (lvl >= 4) pool.push('knock', 'breath', 'whisper', 'stepsAbove');
     const id = pool[Math.floor(Math.random() * pool.length)];
@@ -213,6 +238,7 @@ class AudioEngine {
     this.ambience.gain.setTargetAtTime(ambience, t, tc);
     this.drone.gain.setTargetAtTime(drone, t, tc);
     this.ambienceFilter.frequency.setTargetAtTime(brightness, t, tc);
+    this.buzz?.gain.setTargetAtTime(drone * 0.05, t, tc);
   }
 
   suspend(): void {
@@ -391,9 +417,64 @@ function noiseBurst(ctx: Ctx, out: AudioNode, engine: AudioEngine, peak: number,
   n.stop(at + dur + 0.05);
 }
 
-const DRY = new Set<SoundId>(['click', 'hover', 'key', 'type', 'ding', 'error', 'unlock', 'send', 'hangup', 'transition']);
+const DRY = new Set<SoundId>(['click', 'hover', 'key', 'type', 'ding', 'error', 'unlock', 'send', 'hangup', 'transition', 'open', 'zoom', 'connect', 'tape', 'vault', 'inhale']);
 
 const SOUNDS: Record<SoundId, (ctx: Ctx, out: GainNode, engine: AudioEngine) => void> = {
+  open(ctx, out, engine) {
+    // App opening: a soft tap and a breath of air.
+    tone(ctx, out, 'sine', 520, 0.025, 0.004, 0.06);
+    noiseBurst(ctx, out, engine, 0.03, 0.12, 'highpass', 3000);
+  },
+  zoom(ctx, out) {
+    // A lens focusing.
+    const t = ctx.currentTime;
+    tone(ctx, out, 'triangle', 1800, 0.02, 0.002, 0.03, t);
+    tone(ctx, out, 'triangle', 2400, 0.015, 0.002, 0.03, t + 0.05);
+  },
+  connect(ctx, out) {
+    // Call connected.
+    const t = ctx.currentTime;
+    tone(ctx, out, 'sine', 740, 0.05, 0.005, 0.09, t);
+    tone(ctx, out, 'sine', 990, 0.05, 0.005, 0.12, t + 0.12);
+  },
+  tape(ctx, out, engine) {
+    // Recorder start: mechanical click, then hiss.
+    const t = ctx.currentTime;
+    noiseBurst(ctx, out, engine, 0.2, 0.03, 'bandpass', 1800, t);
+    noiseBurst(ctx, out, engine, 0.03, 0.6, 'highpass', 5000, t + 0.05);
+  },
+  vault(ctx, out, engine) {
+    // Hidden album: a heavy latch.
+    const t = ctx.currentTime;
+    tone(ctx, out, 'sine', 90, 0.3, 0.005, 0.35, t, 50);
+    noiseBurst(ctx, out, engine, 0.12, 0.08, 'bandpass', 1200, t + 0.02);
+  },
+  inhale(ctx, out, engine) {
+    // Right before it happens: someone very close breathes in.
+    const n = engine.noiseSource();
+    if (!n) return;
+    const t = ctx.currentTime;
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.setValueAtTime(700, t);
+    bp.frequency.linearRampToValueAtTime(1400, t + 0.5);
+    bp.Q.value = 1.2;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.12, t + 0.45);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.6);
+    n.connect(bp).connect(g).connect(out);
+    n.start(t);
+    n.stop(t + 0.65);
+  },
+  buzz(ctx, out, engine) {
+    // A fluorescent tube stutters.
+    const t = ctx.currentTime;
+    for (let i = 0; i < 4; i++) {
+      tone(ctx, out, 'sawtooth', 120, 0.05, 0.003, 0.05, t + i * 0.09 + Math.random() * 0.03);
+    }
+    noiseBurst(ctx, out, engine, 0.04, 0.3, 'bandpass', 3000, t);
+  },
   send(ctx, out, engine) {
     const n = engine.noiseSource();
     if (!n) return;

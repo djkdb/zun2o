@@ -15,6 +15,11 @@ export function App() {
         <p>휴대폰에서 “홈 화면에 추가”로 설치하면 앱처럼 전체 화면으로 즐길 수 있습니다. 이어폰 권장.</p>
       </aside>
       {debug && <DebugPanel />}
+      <div className="rotate-note" role="status">
+        휴대폰을 세로로 들어 주세요.
+        <br />
+        이 폰은 가로로 켜지지 않습니다.
+      </div>
     </div>
   );
 }

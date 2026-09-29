@@ -328,7 +328,7 @@ export const BlackPhoto = memo(function BlackPhoto({ brightness = 0 }: { brightn
  * window. `behind`: 도현's photo from the street, someone standing behind you.
  * `fill`: cropped to fill a portrait screen (the lock-screen wallpaper).
  */
-export const BoothPhoto = memo(function BoothPhoto({ behind = false, fill = false }: { behind?: boolean; fill?: boolean }) {
+export const BoothPhoto = memo(function BoothPhoto({ behind = false, fill = false, reflection = false }: { behind?: boolean; fill?: boolean; reflection?: boolean }) {
   const id = useSvgId();
   return (
     <svg
@@ -371,6 +371,12 @@ export const BoothPhoto = memo(function BoothPhoto({ behind = false, fill = fals
           </g>
         )}
           </>
+        )}
+        {/* stared at long enough: in the window glass, whoever is holding the camera */}
+        {reflection && !behind && (
+          <g transform="translate(118 118) scale(0.16)" opacity="0.2">
+            <GhostCurtain distort={false} />
+          </g>
         )}
         {/* the 3rd-floor window frame (not in 도현's street photo) */}
         {!behind && (

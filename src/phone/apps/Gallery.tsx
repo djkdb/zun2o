@@ -7,7 +7,10 @@ import { AppHeader } from '../AppHeader';
 import { AnnexPhoto, FloorPlan, ReadingRoomPhoto, Room02Photo } from '../../art/scenes';
 import { BlackPhoto, BoothPhoto, BoothShelfPhoto, CorridorPhoto, IndexCardPhoto, LobbyPhoto, SelfiePhoto, StairsPhoto } from '../../art/phonePhotos';
 
-export function PhotoView({ id, brightness = 0 }: { id: string; brightness?: number }) {
+/** Photos that change if you stare at them zoomed in. */
+const DWELL_PHOTOS = ['p03', 'p05', 'p08'];
+
+export function PhotoView({ id, brightness = 0, changed = false }: { id: string; brightness?: number; changed?: boolean }) {
   const flags = useGame((s) => s.save.flags);
   switch (id) {
     case 'p00':
@@ -18,17 +21,17 @@ export function PhotoView({ id, brightness = 0 }: { id: string; brightness?: num
       return <LobbyPhoto />;
     case 'p03':
       // Recognition: after the selfie, there is someone at the top of the stairs.
-      return <StairsPhoto figure={flags.includes('selfie-scare')} />;
+      return <StairsPhoto figure={changed || flags.includes('selfie-scare')} />;
     case 'p04':
       return <CorridorPhoto />;
     case 'p05':
-      return <ReadingRoomPhoto level={3} stage={flags.includes('selfie-scare') ? 3 : flags.includes('reveal-scare') ? 2 : 1} />;
+      return <ReadingRoomPhoto level={3} stage={Math.min(4, (flags.includes('selfie-scare') ? 3 : flags.includes('reveal-scare') ? 2 : 1) + (changed ? 1 : 0)) as 1 | 2 | 3 | 4} />;
     case 'p06':
       return <FloorPlan level={3} />;
     case 'p07':
       return <BlackPhoto brightness={brightness} />;
     case 'p08':
-      return <BoothPhoto />;
+      return <BoothPhoto reflection={changed} />;
     case 'p09':
       return <BoothPhoto behind />;
     case 'h01':
@@ -77,6 +80,19 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
   // Leaving the editor puts the room tone back.
   useEffect(() => () => applyChapterMix(1), []);
 
+  // Stay zoomed in long enough and the photo changes — slightly. Once per photo,
+  // no sound cue, nothing announces it: "was that there before?"
+  const [dwelt, setDwelt] = useState<string | null>(null);
+  useEffect(() => {
+    if (!zoom || !DWELL_PHOTOS.includes(photo.id) || hasFlag(`dwell-${photo.id}`)) return;
+    const t = setTimeout(() => {
+      addFlag(`dwell-${photo.id}`);
+      addFlag('dwelt');
+      setDwelt(photo.id);
+    }, 3500);
+    return () => clearTimeout(t);
+  }, [zoom, photo.id]);
+
   // While the player is looking closely, scripted pop-ups hold off.
   useEffect(() => {
     setRt({ engaged: zoom !== null || edit });
@@ -123,7 +139,7 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
     }
     const r = e.currentTarget.getBoundingClientRect();
     setZoom({ x: ((e.clientX - r.left) / r.width) * 100, y: ((e.clientY - r.top) / r.height) * 100 });
-    sfx('click');
+    sfx('zoom');
     emit(`photo:${photo.id}:zoom`);
   };
 
@@ -146,8 +162,8 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
         onPointerUp={onUp}
         onPointerCancel={() => (press.current = null)}
       >
-        <div className="viewer-zoom" style={zoom ? { transform: 'scale(2.5)', transformOrigin: `${zoom.x}% ${zoom.y}%` } : undefined}>
-          <PhotoView id={photo.id} brightness={brightness} />
+        <div key={photo.id} className="viewer-zoom" style={zoom ? { transform: 'scale(2.5)', transformOrigin: `${zoom.x}% ${zoom.y}%` } : undefined}>
+          <PhotoView id={photo.id} brightness={brightness} changed={dwelt === photo.id || hasFlag(`dwell-${photo.id}`)} />
         </div>
       </div>
       <p className="viewer-caption">
@@ -193,7 +209,7 @@ function HiddenLock({ onOpen, onBack }: { onOpen: () => void; onBack: () => void
     if (next.length < 4) return;
     setTimeout(() => {
       if (next === HIDDEN_ALBUM_CODE) {
-        sfx('unlock');
+        sfx('vault');
         addFlag('album-code');
         emit('album:unlock');
         onOpen();

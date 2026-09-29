@@ -43,6 +43,10 @@ export interface Runtime {
   engaged: boolean;
   /** The phone is restarting by itself. */
   rebooting: boolean;
+  /** For a split second the status-bar clock reads something else. */
+  clockGlitch: string | null;
+  /** The screen dips in brightness on its own. */
+  dip: boolean;
   audioReady: boolean;
   debug: boolean;
 }
@@ -139,6 +143,8 @@ const initialRuntime = (debug: boolean): Runtime => ({
   deep: null,
   engaged: false,
   rebooting: false,
+  clockGlitch: null,
+  dip: false,
   audioReady: false,
   debug,
 });
@@ -203,6 +209,9 @@ const CHECKPOINT_KEY = 'phone0200:checkpoint';
 /** Saved right before 02:00 so the finale can be replayed for other endings. */
 export function saveCheckpoint(): void {
   writeItem(CHECKPOINT_KEY, JSON.stringify(state.save));
+}
+export function clearCheckpoint(): void {
+  removeItem(CHECKPOINT_KEY);
 }
 export function loadCheckpoint(): Save | null {
   const t = readItem(CHECKPOINT_KEY);

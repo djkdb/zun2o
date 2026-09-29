@@ -55,14 +55,27 @@ function buildRecall(): string[] {
     `사진 ${s.seenPhotos.length}장을 보았습니다.`,
     s.flags.includes('read-mom') ? '채원 씨 어머니의 메시지도 읽었죠.' : '채원 씨 어머니의 메시지는 끝내 읽지 않았죠.',
   ];
-  if (s.choices.c1 === 'silent') lines.push('처음부터 대답하지 않았죠. 그래도 전부 읽었잖아요.');
-  if (s.choices.c3 === 'chaewon') lines.push('채원 씨 이름을 먼저 불러 줬죠. 그 애가 울었어요.');
-  if (s.flags.includes('refused-name')) lines.push('이름은 끝내 알려 주지 않았죠. 괜찮아요. 카드에 직접 쓰게 될 테니까.');
-  if (s.flags.includes('heard-radio')) lines.push('1340에 전화도 걸었죠. 제 목소리, 들었잖아요.');
-  // Something the player actually typed tonight, quoted back.
-  const typed = [...s.inputs].reverse().map((e) => /보낸 메시지 "(.+)"$/.exec(e)?.[1]).find(Boolean);
-  if (typed) lines.push(`“${typed}”라고 보냈죠. 다 적어 뒀어요.`);
-  if (s.flags.includes('named-her')) lines.push('그 이름을 저한테 보냈죠. 한동안 대답을 못 했어요. 그건 인정할게요.');
+  // What you did tonight, the most telling first. Never more than four:
+  // it should feel like being known, not like a stat screen.
+  const typed = [...s.inputs].reverse().map((e) => /(?:모르는 번호|나에게)에게 보낸 메시지 "(.+)"$/.exec(e)?.[1]).find(Boolean);
+  const toMom = s.inputs.some((e) => /^엄마.*에게 보낸 메시지/.test(e));
+  const personal: [boolean, string][] = [
+    [s.flags.includes('named-her'), '그 이름을 저한테 보냈죠. 한동안 대답을 못 했어요. 그건 인정할게요.'],
+    [!!typed, `“${typed}”라고 보냈죠. 다 적어 뒀어요.`],
+    [toMom, '채원 씨 어머니께 답장하려고 했죠. 전송은 안 됐어요. 제가 막았으니까.'],
+    [s.choices.c3 === 'chaewon', '채원 씨 이름을 먼저 불러 줬죠. 그 애가 울었어요.'],
+    [s.flags.includes('dwelt'), '사진을 한참 들여다봤죠. 사진 속에서도 당신을 보고 있었어요.'],
+    [s.flags.includes('zoomed-booth'), '부스 안의 당신을 확대해서 봤죠. 저도 거기서 봤어요.'],
+    [s.flags.includes('hung-once') || s.flags.includes('declined-once'), '도현 씨 전화를 끊었죠. 그래도 그 사람은 왔어요.'],
+    [s.choices.c1 === 'silent', '처음부터 대답하지 않았죠. 그래도 전부 읽었잖아요.'],
+    [s.flags.includes('refused-name'), '이름은 끝내 알려 주지 않았죠. 괜찮아요. 카드에 직접 쓰게 될 테니까.'],
+    [s.flags.includes('heard-radio'), '1340에 전화도 걸었죠. 제 목소리, 들었잖아요.'],
+    [s.flags.includes('read-hyunwoo'), '박현우 씨 기사도 읽었죠. 그러니까 알잖아요, 이게 어떻게 끝나는지.'],
+  ];
+  personal
+    .filter(([on]) => on)
+    .slice(0, 4)
+    .forEach(([, line]) => lines.push(line));
   if (new Date().getHours() === 2) lines.push('그리고… 지금은 진짜로 새벽 두 시네요.');
   lines.push('#0025 박현우. #0026 윤채원. 그리고 #0027, 당신.');
   lines.push('다들 그 부스에서 폰을 주웠어요. 주운 사람은 들어오게 돼 있어요.');

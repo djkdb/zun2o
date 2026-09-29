@@ -47,7 +47,7 @@ export const BEATS: Beat[] = [
       { t: 'time', hm: '23:52' },
       { t: 'chapter', n: 1, title: '채원의 폰' },
       {
-        t: 'objective',
+        t: 'objective', app: 'messages',
         text: '채원에게 무슨 일이 있었는지 알아내자',
         hint: '메시지 앱을 열어 보세요. 모르는 번호가 하나 있습니다.',
         nudge: { th: 'dohyun', text: '혹시 폰 열었어요? 모르는 번호로 온 메시지 있으면… 절대 답하지 마요' },
@@ -109,7 +109,7 @@ export const BEATS: Beat[] = [
       { t: 'msg', th: 'unknown', text: '이거요.', typing: 900, attach: { kind: 'photo', id: 'p07' } },
       { t: 'flag', f: 'asked-photo' },
       {
-        t: 'objective',
+        t: 'objective', app: 'gallery',
         text: '채원이 마지막으로 찍은 사진을 확인하자',
         hint: '사진 앱 → 최근 항목의 맨 마지막 사진(01:59).',
         nudge: { th: 'unknown', text: '사진 앱. 맨 마지막 거요.' },
@@ -124,7 +124,7 @@ export const BEATS: Beat[] = [
       { t: 'wait', ms: 1500 },
       { t: 'msg', th: 'unknown', text: '…그 사진은 보지 마요.', typing: 1300 },
       {
-        t: 'objective',
+        t: 'objective', app: 'gallery',
         text: '마지막 사진에 뭔가 찍혀 있다',
         hint: '사진을 연 채로 아래의 [편집]을 누르고, 밝기를 끝까지 올려 보세요.',
         nudge: { th: 'unknown', text: '편집 버튼, 누르지 마요.' },
@@ -144,7 +144,7 @@ export const BEATS: Beat[] = [
       { t: 'calllog', entry: { who: '0200', time: '23:53', kind: 'out', duration: '38:12' } },
       { t: 'wait', ms: 1600 },
       { t: 'msg', th: 'unknown', text: '봤죠?', typing: 500 },
-      { t: 'objective', text: '…시간이 40분 가까이 사라졌다', hint: '곧 도현에게서 전화가 옵니다. 받으세요. 전화가 끊겼거나 놓쳤다면 전화 앱 → 최근 기록에서 도현을 눌러 다시 걸 수 있어요.' },
+      { t: 'objective', app: 'phone', text: '…시간이 40분 가까이 사라졌다', hint: '곧 도현에게서 전화가 옵니다. 받으세요. 전화가 끊겼거나 놓쳤다면 전화 앱 → 최근 기록에서 도현을 눌러 다시 걸 수 있어요.' },
       { t: 'wait', ms: 3500 },
       { t: 'call', id: 'dohyun1' },
     ],
@@ -209,7 +209,7 @@ export const BEATS: Beat[] = [
       { t: 'msg', th: 'dohyun', text: '채원이 마지막 녹음이에요. 꼭 끝까지 들어요.', typing: 1600, attach: { kind: 'memo', id: 'm1' } },
       { t: 'msg', th: 'dohyun', text: '그리고 저 지금 별관으로 가요. 20분이면 가요. 거기 계세요.', typing: 1800 },
       {
-        t: 'objective',
+        t: 'objective', app: 'memos',
         text: '채원의 마지막 녹음을 듣자',
         hint: '녹음 앱 → “새 녹음 17”. 소리를 켜고, 이어폰이 있다면 끼세요.',
         nudge: { th: 'dohyun', text: '녹음 들어 봤어요? 녹음 앱이요. 끝까지요' },
@@ -235,7 +235,7 @@ export const BEATS: Beat[] = [
         ],
       },
       {
-        t: 'objective',
+        t: 'objective', app: 'messages',
         text: '모르는 번호가 이름을 묻는다',
         hint: '메시지 앱 → 모르는 번호. 알려 줄지 말지는 당신 선택입니다. (이름은 이 기기에만 저장됩니다)',
         nudge: { th: 'unknown', text: '대답해요.' },
@@ -270,7 +270,7 @@ export const BEATS: Beat[] = [
       { t: 'chapter', n: 3, title: '02호실' },
       { t: 'time', hm: '01:12' },
       {
-        t: 'objective',
+        t: 'objective', app: 'notes',
         text: '사진 앱의 숨김 앨범을 열자',
         hint: '메모 앱 “비번들 (보지 마)”에 힌트가 있습니다. 그 방송의 주파수는 메모 “괴담 정리”나 브라우저의 기록 001에 나와요.',
         nudge: { th: 'unknown', text: '숫자를 읽던 그 방송. 주파수요.' },
@@ -288,7 +288,7 @@ export const BEATS: Beat[] = [
     requires: ['ch3'],
     actions: [
       { t: 'flag', f: 'album-open' },
-      { t: 'objective', text: '숨김 앨범을 끝까지 넘겨 보자', hint: '사진을 연 뒤 옆으로 넘기세요. 마지막 사진까지.', nudge: { th: 'unknown', text: '끝까지 넘겨요.' } },
+      { t: 'objective', app: 'gallery', text: '숨김 앨범을 끝까지 넘겨 보자', hint: '사진을 연 뒤 옆으로 넘기세요. 마지막 사진까지.', nudge: { th: 'unknown', text: '끝까지 넘겨요.' } },
     ],
   },
   {
@@ -301,7 +301,7 @@ export const BEATS: Beat[] = [
       { t: 'wait', ms: 3500 },
       { t: 'notify', app: 'gallery', title: '사진', body: '숨김 앨범 동기화 완료 (5/5)' },
       { t: 'msg', th: 'unknown', text: '비밀번호는 벌써 알고 있었네요. 이제 사진도 다 왔어요.', typing: 1800, attach: { kind: 'album' } },
-      { t: 'objective', text: '숨김 앨범을 끝까지 넘겨 보자', hint: '사진 앱 → 숨김. 사진을 연 뒤 옆으로 넘기세요. 마지막 사진까지.', nudge: { th: 'unknown', text: '끝까지 넘겨요.' } },
+      { t: 'objective', app: 'gallery', text: '숨김 앨범을 끝까지 넘겨 보자', hint: '사진 앱 → 숨김. 사진을 연 뒤 옆으로 넘기세요. 마지막 사진까지.', nudge: { th: 'unknown', text: '끝까지 넘겨요.' } },
     ],
   },
   {
@@ -328,7 +328,7 @@ export const BEATS: Beat[] = [
       { t: 'calllog', entry: { who: '엄마', time: '01:37', kind: 'out', duration: '0:41' } },
       { t: 'wait', ms: 2600 },
       { t: 'msg', th: 'self', from: 'me', text: '여기 너무 추워' },
-      { t: 'objective', text: '누군가 이 폰으로 “나에게” 메시지를 보냈다', hint: '메시지 앱 → 나에게.', nudge: { th: 'self', from: 'me', text: '대답해 제발' } },
+      { t: 'objective', app: 'messages', text: '누군가 이 폰으로 “나에게” 메시지를 보냈다', hint: '메시지 앱 → 나에게.', nudge: { th: 'self', from: 'me', text: '대답해 제발' } },
       { t: 'wait', ms: 22000 },
       { t: 'msg', th: 'mom', text: '채원아 방금 전화 너였니?', typing: 1200 },
       { t: 'msg', th: 'mom', text: '아무 말도 안 하고 숨소리만 들리더라', typing: 1600 },
@@ -369,7 +369,7 @@ export const BEATS: Beat[] = [
       { t: 'draft', th: 'self', text: '그 여자 지금 내 뒤에' },
       { t: 'time', hm: '01:44' },
       {
-        t: 'objective',
+        t: 'objective', app: 'browser',
         text: '브라우저의 “심야 기록보관소”에서 기록 013을 찾자',
         hint: '메모 “괴담 정리”의 숫자 순서: 기록 001 → 003 → 007을 다른 기록을 섞지 않고 차례로 여세요.',
         nudge: { th: 'self', from: 'me', text: '001 003 007. 순서대로. 중간에 다른 거 열면 안 돼' },
@@ -381,7 +381,7 @@ export const BEATS: Beat[] = [
       { t: 'msg', th: 'unknown', text: '잘 나왔네요.', typing: 1600, attach: { kind: 'photo', id: 'p08' } },
       { t: 'msg', th: 'unknown', text: '두 번 눌러서 확대해 봐요. 부스 안이요.', typing: 1500 },
       { t: 'wait', ms: 6000 },
-      { t: 'msg', th: 'dohyun', text: '별관 앞 도착했어요. 부스 쪽으로 갈게요.', typing: 1400 },
+      { t: 'msg', th: 'dohyun', text: '택시가 안 잡혀서 늦었어요. 별관 앞 도착. 부스 쪽으로 갈게요.', typing: 1400 },
       { t: 'wait', ms: 7000 },
       { t: 'sound', id: 'knock' },
       { t: 'wait', ms: 1800 },
@@ -427,7 +427,7 @@ export const BEATS: Beat[] = [
       { t: 'msg', th: 'unknown', text: '그건 쓰면 안 돼요.', typing: 1200 },
       { t: 'msg', th: 'unknown', text: '열쇠를 쓰면 색인이 끝나요. 아무도 기록되지 않아요. 아무도 기억되지 않아요.', typing: 2600 },
       {
-        t: 'objective',
+        t: 'objective', app: 'index',
         text: '02:00이 오기 전에 준비하자',
         hint: '02:00에 선택의 순간이 옵니다. 열쇠(HAEWON-0200)와 첫 근무자의 이름(브라우저 기록 003)을 기억해 두세요. 새로 생긴 사진과 녹음도 확인해 보세요.',
       },
@@ -503,6 +503,7 @@ export const BEATS: Beat[] = [
     id: 'zoom-p08',
     on: 'photo:p08:zoom',
     actions: [
+      { t: 'flag', f: 'zoomed-booth' },
       { t: 'wait', ms: 1400 },
       { t: 'msg', th: 'unknown', text: '맞아요. 당신이에요. 3층 창문에서 찍었어요.', typing: 1600 },
     ],
@@ -519,4 +520,5 @@ export const BEATS: Beat[] = [
   },
   { id: 'radio', on: 'dial:1340', actions: [{ t: 'flag', f: 'heard-radio' }] },
   { id: 'read-mom', on: 'thread:mom', actions: [{ t: 'flag', f: 'read-mom' }] },
+  { id: 'read-hyunwoo', on: 'browser:news2', actions: [{ t: 'flag', f: 'read-hyunwoo' }] },
 ];

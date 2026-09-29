@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useGame } from '../../hooks/useGame';
-import { choose, openApp, openAttach, openThread, sendText } from '../../engine/director';
+import { choose, openApp, openAttach, openThread, sendText, teaseTyping } from '../../engine/director';
 import { THREAD_META, THREAD_ORDER } from '../../content/threads';
 import type { Attach, ThreadId } from '../../engine/types';
 import { MEMO_TITLES } from '../../content/media';
@@ -117,6 +117,13 @@ function Chat({ th }: { th: ThreadId }) {
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: 'end', behavior: 'smooth' });
   }, [msgs.length, typing, choice]);
+
+  // Sit in the chat without writing and someone starts typing back… then stops.
+  useEffect(() => {
+    if (th !== 'unknown' && th !== 'self') return;
+    const t = setTimeout(() => teaseTyping(th), 20000);
+    return () => clearTimeout(t);
+  }, [th, msgs.length]);
 
   const submitName = (e: FormEvent) => {
     e.preventDefault();

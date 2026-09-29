@@ -815,15 +815,6 @@ svg {
   font-weight: 600;
 }
 
-.chat-input-disabled {
-  padding: 12px;
-  text-align: center;
-  font-size: 12px;
-  color: #55575d;
-  background: var(--panel);
-  border-top: 1px solid var(--line);
-}
-
 @keyframes slide-in {
   from {
     opacity: 0;
@@ -3118,4 +3109,223 @@ svg {
 
 .lock-wall.changed {
   animation: fade-in 2s ease both;
+}
+
+/* ─── final polish: feels like a phone ───────────────────────────────── */
+
+/* apps open like apps: a short, quiet scale-up; home settles back */
+.app-frame,
+.home-frame {
+  position: absolute;
+  inset: 0;
+}
+
+.app-frame > *,
+.home-frame > * {
+  position: absolute;
+  inset: 0;
+}
+
+.app-frame {
+  animation: app-in 0.24s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.home-frame {
+  animation: home-in 0.26s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes app-in {
+  from {
+    opacity: 0.4;
+    transform: scale(0.94);
+  }
+}
+
+@keyframes home-in {
+  from {
+    opacity: 0.6;
+    transform: scale(1.04);
+  }
+}
+
+/* touch feedback: dim on press, icons sink a little */
+button:active:not(:disabled) {
+  filter: brightness(0.82);
+}
+
+.app-icon:active:not(:disabled) .app-tile {
+  transform: scale(0.9);
+}
+
+.app-tile {
+  transition: transform 0.12s ease;
+}
+
+.thread-row:active,
+.bm:active,
+.call-list button:active,
+.memo-list button:active {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* scrolling stays inside the phone, with momentum */
+.screen * {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* every clock-like number lines up */
+.sb-time,
+.lock-clock,
+.bubble-time,
+.thread-time,
+.memo-time,
+.call-list time,
+.finale-clock,
+.call-top small,
+.widget-events {
+  font-variant-numeric: tabular-nums;
+}
+
+/* comfortable touch targets for the back button */
+.back {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* quiet dread: the screen dims on its own for a moment */
+.shell {
+  transition: filter 0.5s ease;
+}
+
+.shell.dip {
+  filter: brightness(0.45);
+}
+
+/* for a blink the clock says 02:00 */
+.sb-time.glitched {
+  color: #ff8a80;
+}
+
+.sb-sos {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+}
+
+/* hint tier 2: the app to look in breathes, faintly */
+.app-icon.hint-glow .app-tile {
+  animation: hint-glow 2.8s ease-in-out infinite;
+}
+
+@keyframes hint-glow {
+  50% {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.18), 0 0 18px rgba(255, 255, 255, 0.12);
+  }
+}
+
+/* the app you open most is not quite where you left it */
+.app-icon.habit .app-tile {
+  transform: translate(2px, -3px) rotate(0.8deg);
+}
+
+.hint-app {
+  color: #c9cacf;
+}
+
+.hint-more {
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #2a2b30;
+  font-size: 13px;
+}
+
+/* photos: focus pulls in, dark photos let your eyes adjust, and the frame is never quite still */
+.viewer-zoom svg {
+  animation:
+    focus-pull 0.55s ease-out both,
+    dark-adapt 2.4s ease-out both,
+    breathe-zoom 14s ease-in-out 0.6s infinite alternate;
+}
+
+@keyframes focus-pull {
+  from {
+    filter: blur(3px);
+  }
+}
+
+@keyframes dark-adapt {
+  from {
+    opacity: 0.55;
+  }
+}
+
+@keyframes breathe-zoom {
+  to {
+    transform: scale(1.025);
+  }
+}
+
+/* on a phone turned sideways: ask to turn it back */
+.rotate-note {
+  display: none;
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  .rotate-note {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: #000;
+    color: #c9cacf;
+    text-align: center;
+    font-size: 15px;
+  }
+}
+
+/* keyboard-aware height (set from visualViewport in main.tsx) */
+html,
+body,
+#root {
+  height: var(--app-h, 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-frame,
+  .home-frame,
+  .viewer-zoom svg,
+  .app-icon.hint-glow .app-tile {
+    animation: none !important;
+  }
+  .shell {
+    transition: none;
+  }
+}
+
+.reduce-fx .app-frame,
+.reduce-fx .home-frame,
+.reduce-fx .viewer-zoom svg {
+  animation: none !important;
+}
+
+.dbg input,
+.dbg select {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 6px;
+  border: 1px solid #333;
+  border-radius: 4px;
+  background: #111;
+  color: #ddd;
+  font-size: 11px;
+}
+
+.dbg {
+  max-height: 65vh;
+  overflow-y: auto;
 }

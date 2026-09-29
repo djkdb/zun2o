@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useGame, useTicker } from '../hooks/useGame';
-import { answerCall, declineCall, endCall, emit, openApp, openThread, sfx } from '../engine/director';
+import { answerCall, declineCall, endCall, emit, HINT_TIER_MS, openApp, openThread, sfx } from '../engine/director';
 import { setRt } from '../engine/state';
 import { CALLS } from '../content/calls';
 import { GhostVisual } from '../art/Ghost';
@@ -242,9 +242,14 @@ export function RebootOverlay() {
 export function GlitchOverlay() {
   const until = useGame((s) => s.rt.glitchUntil);
   const reduce = useGame((s) => s.save.reduceFx);
-  const now = useTicker(200);
-  if (reduce || now > until) return null;
-  return <div className="glitch" aria-hidden="true" />;
+  const [expired, setExpired] = useState(0);
+  // One timer per glitch instead of a render loop running all game long.
+  useEffect(() => {
+    const t = setTimeout(() => setExpired(until), Math.max(0, until - Date.now()));
+    return () => clearTimeout(t);
+  }, [until]);
+  if (reduce || expired >= until || until === 0) return null;
+  return <div key={until} className="glitch" aria-hidden="true" />;
 }
 
 export function DialogView() {
@@ -270,10 +275,13 @@ export function HintChip() {
   const finale = useGame((s) => s.rt.finale);
   const busy = useGame((s) => s.rt.activeCall !== null || s.rt.incoming !== null || s.rt.app === 'memos');
   const now = useTicker(5000);
+  const [full, setFull] = useState<string | null>(null);
   // No permanent game UI: the hint only surfaces after a real stall.
+  // Tier 3 names the goal and where to look; tier 4 (the full hint) only when asked.
   if (!obj || finale || busy) return null;
-  const stuck = now - obj.since > 100000;
+  const stuck = now - obj.since > HINT_TIER_MS[2];
   if (!stuck && !open) return null;
+  const showFull = full === obj.text;
   return (
     <>
       <button type="button" className="hint-chip stuck" onClick={() => setRt({ hintOpen: !open })} aria-expanded={open}>
@@ -283,7 +291,14 @@ export function HintChip() {
         <div className="hint-sheet" role="dialog" aria-label="목표">
           <small>지금 할 일</small>
           <strong>{obj.text}</strong>
-          <p>{obj.hint}</p>
+          {obj.app && !showFull && <p className="hint-app">살펴볼 곳: {APP_META[obj.app].name}</p>}
+          {showFull ? (
+            <p>{obj.hint}</p>
+          ) : (
+            <button type="button" className="hint-more" onClick={() => setFull(obj.text)}>
+              더 자세히 알려 줘요
+            </button>
+          )}
         </div>
       )}
     </>

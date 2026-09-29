@@ -121,6 +121,7 @@ function Player({ memo }: { memo: Memo }) {
             setT(0);
             fired.current.clear();
           }
+          if (!playing) sfx('tape');
           setPlaying((p) => !p);
           stopSpeech();
         }}

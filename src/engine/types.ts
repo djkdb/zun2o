@@ -35,7 +35,14 @@ export type SoundId =
   | 'creak'
   | 'drip'
   | 'breath'
-  | 'stepsAbove';
+  | 'stepsAbove'
+  | 'open'
+  | 'zoom'
+  | 'connect'
+  | 'tape'
+  | 'vault'
+  | 'inhale'
+  | 'buzz';
 
 export interface ChatMsg {
   id: string;
@@ -87,7 +94,7 @@ export type Action =
   | { t: 'choice'; th: ThreadId; id: string; options: ChoiceOption[] }
   | { t: 'notify'; app: AppId; title: string; body: string; open?: { thread?: ThreadId } }
   | { t: 'flag'; f: string }
-  | { t: 'objective'; text: string; hint: string; nudge?: Nudge }
+  | { t: 'objective'; text: string; hint: string; nudge?: Nudge; app?: AppId }
   | { t: 'chapter'; n: number; title: string }
   | { t: 'time'; hm: string; lost?: boolean }
   | { t: 'battery'; v: number }
@@ -165,7 +172,12 @@ export interface Save {
   unread: Record<ThreadId, number>;
   choice: PendingChoice | null;
   choices: Record<string, string>;
-  objective: { text: string; hint: string; since: number; nudge?: Nudge } | null;
+  /** `app`: where to look — surfaced gently as the second hint tier. */
+  objective: { text: string; hint: string; since: number; nudge?: Nudge; app?: AppId } | null;
+  /** Free-text conversation memory: how often each reply rule fired. */
+  talk?: Record<string, number>;
+  /** How often each app was opened — the phone notices habits. */
+  opens?: Record<string, number>;
   clock: string; // game clock HH:MM
   battery: number;
   installed: AppId[];

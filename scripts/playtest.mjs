@@ -91,8 +91,14 @@ await snap('unknown-asks-photo');
 check('chat always has a reply box', (await page.locator('.composer input').count()) === 1);
 await page.fill('.composer input', '당신 누구야?');
 await page.press('.composer input', 'Enter');
-await page.waitForFunction(() => window.__game.getState().save.threads.unknown.some((m) => m.text.includes('기록하는 사람이요')), null, { timeout: 15000 });
+await page.waitForFunction(() => window.__game.getState().save.threads.unknown.some((m) => m.text.includes('정말 몰라요')), null, { timeout: 25000 });
 check('free-text message gets an in-character reply', true);
+// asked again, the answer changes: the conversation remembers
+await wait(4500);
+await page.fill('.composer input', '누구냐고');
+await page.press('.composer input', 'Enter');
+await page.waitForFunction(() => window.__game.getState().save.threads.unknown.some((m) => m.text.includes('기록하는 사람이요')), null, { timeout: 25000 });
+check('asking twice gets a different answer', true);
 await snap('free-text-reply');
 // the shared photo card opens that exact photo
 await page.locator('.attach-photo').last().click();
@@ -311,6 +317,11 @@ await page.evaluate((x) => window.__game.setSpeed(x), SPEED);
 // ── 02:00 ──────────────────────────────────────────────────────────────
 await waitFor('.finale', 90000);
 mark('02:00 — finale');
+// closing the app at 02:00 does not get you out of it
+await wait(1200);
+await page.reload();
+await waitFor('.finale', 15000);
+check('reload during 02:00 resumes the finale', true);
 await wait(2600);
 await snap('finale-flood');
 await wait(3500);

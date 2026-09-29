@@ -12,7 +12,9 @@ import { audio } from './audio/engine';
 import { setEntityLayer, setSpeechEnabled } from './audio/speech';
 
 const params = new URLSearchParams(window.location.search);
-const debug = params.get('debug') === '1' || params.get('debug') === 'true';
+// `?debug=1` opens the debug panel. A release build can strip it entirely
+// with VITE_DISABLE_DEBUG=1.
+const debug = !import.meta.env.VITE_DISABLE_DEBUG && (params.get('debug') === '1' || params.get('debug') === 'true');
 initState(debug);
 
 connectAudio(
@@ -60,6 +62,18 @@ document.addEventListener('visibilitychange', () => {
 });
 startLifeTicker();
 window.addEventListener('pagehide', flush);
+
+// Keyboard-aware layout: on iOS the keyboard shrinks the *visual* viewport
+// only, which would hide the chat box. Size the app to what is visible.
+const vv = window.visualViewport;
+if (vv) {
+  const fit = () => {
+    document.documentElement.style.setProperty('--app-h', `${Math.round(vv.height)}px`);
+    if (vv.offsetTop > 0) window.scrollTo(0, 0);
+  };
+  vv.addEventListener('resize', fit);
+  fit();
+}
 
 if (debug) {
   const speed = Number(params.get('speed'));
