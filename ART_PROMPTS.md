@@ -112,3 +112,60 @@ black background, harsh flash, heavy grain and motion blur, as if she just leane
 Very dark, vertical, a faint figure of a woman with long black hair covering her face standing behind the viewer,
 seen as a reflection in a black phone screen, low contrast, mostly black.
 ```
+
+---
+
+## 2차 시트 — 배경·건물 사진 12장 (한 장으로 뽑기)
+
+첫 시트(귀신·채원·부스)와 **같은 대화에서** 첫 시트를 참고 이미지로 붙이고 요청하면 톤이 맞습니다.
+
+| 칸 | 파일 이름 | 게임 속 위치 |
+|---|---|---|
+| 1 | `wallpaper.webp` | 잠금 화면 배경 (9:16) |
+| 2 | `annex-gate.webp` | 사진 00:59 정문 · 브라우저 기사 사진 |
+| 3 | `lobby.webp` | 사진 01:14 로비 |
+| 4 | `stairs.webp` | 사진 01:25 계단 |
+| 5 | `stairs-figure.webp` | 같은 계단 — 셀카 이후/오래 들여다보면 위에 누가 서 있음 |
+| 6 | `corridor.webp` | 사진 01:32 3층 복도 |
+| 7 | `reading-empty.webp` | 사진 01:40 열람실 · 브라우저 기록 003 |
+| 8 | `reading-figure.webp` | 같은 열람실 — 나중에 보면 책상 사이에 형체 |
+| 9 | `room02-door.webp` | 숨김 앨범 1번: 벽돌로 막힌 02호실 |
+| 10 | `room02.webp` | 숨김 앨범 2번: 02호실 안 · 브라우저 기록 013 |
+| 11 | `black-empty.webp` | 1장 검은 사진을 밝게 할 때 (귀신 없는 버전) — **1차 시트 1번과 같은 구도** |
+| 12 | `tower.webp` | 브라우저 기록 001 해원방송 송신탑 |
+
+```
+Create ONE high-resolution image: a 4×3 contact sheet of 12 separate photographs for the same found-phone horror
+game as the reference sheet. Thin black gutters, a small white number (1–12) in the top-left corner of each panel,
+no other text anywhere (no signs, no letters on walls). Each panel a square frame.
+All must look like REAL photos taken on an old smartphone at night: harsh on-camera flash falling off into
+darkness, heavy sensor noise, slight motion blur, crushed blacks, faint green cast, amateur framing.
+Photorealistic, empty, abandoned, quietly wrong. No people unless stated. No blood.
+Setting: an abandoned 1990s Korean county-office annex (3-storey concrete building, rows of wooden index-card
+drawers, reading room, beige tiles), closed since 1995, at 1 AM.
+
+1. Vertical phone wallpaper: the annex's 3-storey concrete facade at night from across a broken chain-link gate,
+   all windows dark except ONE dim yellow window on the third floor.
+2. The annex's front gate close up: a rusted chain hanging cut, padlock on the ground, flashlight beam on the door.
+3. Ground-floor lobby: dusty floor, papers scattered, a wall directory board (blank, no readable text), dead
+   ceiling lights, doors on both sides.
+4. A narrow concrete staircase going up into total darkness, handrail, flash lighting only the first steps.
+5. The exact same staircase, same angle — but at the very top, at the edge of the flash, a tall thin figure with
+   long black hair covering its face stands still, barely visible.
+6. Third-floor corridor in one-point perspective, doors on both sides, at the far end one door open with warm
+   yellow light spilling out onto the floor.
+7. Old reading room: long wooden tables, green desk lamps, a woman's coat left on a chair, a wall clock stopped at
+   2:00, wooden index-card cabinets along the walls, nobody there.
+8. The exact same reading room, same angle — between two tables, half in shadow, a tall thin woman in a faded
+   beige 1990s cardigan with wet black hair over her face, standing, facing the camera.
+9. End of a corridor: a doorway filled with red bricks laid from the inside, mortar squeezed out toward the camera,
+   a small metal plate on the frame showing only "02".
+10. Inside a windowless room that seems too large: endless rows of wooden index-card drawers from floor to ceiling
+    receding into darkness, one drawer pulled open, a single bare bulb.
+11. Dark records room seen from floor level: an empty wooden chair and desk, filing drawers behind, ceiling above
+    the camera empty — very underexposed, as if the photo will be brightened later. (Same room and angle as
+    panel 1 of the reference sheet, without the woman.)
+12. An old AM radio transmission tower on a hill at night, red warning light on top, fog, power lines.
+```
+
+팁: 5·8·11번은 “같은 구도”가 핵심입니다. 따로 다시 뽑을 때는 4·7·(1차 1번) 이미지를 참고로 넣고 “exact same composition, only add …”라고 하세요.

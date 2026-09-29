@@ -46,9 +46,29 @@ function Stamp({ text, x = 16, y = 30 }: { text: string; x?: number; y?: number 
   );
 }
 
+/**
+ * A photograph from an art slot, dressed like every other photo on this phone:
+ * sensor noise, flash falloff, 채원's timestamp. Callers check `art(slot)` first.
+ */
+export function SlotPhoto({ slot, w = 640, h = 420, stamp, label }: { slot: ArtSlot; w?: number; h?: number; stamp?: string; label: string }) {
+  const id = useSvgId();
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio={w < h ? 'xMidYMid slice' : undefined} role="img" aria-label={label}>
+      <Defs id={id} r={75} />
+      <g filter={`url(#${id}-n)`}>
+        <rect width={w} height={h} fill="#050505" />
+        <ArtImage slot={slot} w={w} h={h} />
+        <rect width={w} height={h} fill={`url(#${id}-flash)`} opacity="0.6" />
+      </g>
+      {stamp && <Stamp text={stamp} />}
+    </svg>
+  );
+}
+
 /** Lock-screen wallpaper: the Annex at night, with the channel's REC overlay. */
 export const WallpaperPhoto = memo(function WallpaperPhoto() {
   const id = useSvgId();
+  if (art('wallpaper')) return <SlotPhoto slot="wallpaper" w={390} h={844} label="밤의 해원군청 별관." />;
   return (
     <svg viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <Defs id={id} flashX={50} flashY={52} r={95} />
@@ -298,13 +318,19 @@ export const BlackPhoto = memo(function BlackPhoto({ brightness = 0 }: { brightn
     <svg viewBox="0 0 420 560" role="img" aria-label="거의 완전히 검은 사진.">
       <rect width="420" height="560" fill="#030303" />
       <g opacity={Math.min(1, Math.max(0, (b - 0.2) * 1.4))} style={{ filter: `brightness(${0.3 + b * 1.3}) contrast(${1 + b})` }}>
-        <rect width="420" height="560" fill="#15130f" />
-        {Array.from({ length: 8 }).map((_, r) =>
-          Array.from({ length: 6 }).map((__, c) => <rect key={`${r}${c}`} x={10 + c * 70} y={10 + r * 46} width="62" height="38" fill="#2a241c" />),
+        {art('black-empty') ? (
+          <ArtImage slot="black-empty" w={420} h={560} />
+        ) : (
+          <>
+            <rect width="420" height="560" fill="#15130f" />
+            {Array.from({ length: 8 }).map((_, r) =>
+              Array.from({ length: 6 }).map((__, c) => <rect key={`${r}${c}`} x={10 + c * 70} y={10 + r * 46} width="62" height="38" fill="#2a241c" />),
+            )}
+            {/* an empty chair, a desk… nothing else. Until there is. */}
+            <rect x="150" y="400" width="120" height="14" fill="#1d1812" />
+            <rect x="186" y="330" width="48" height="70" rx="4" fill="#120f0b" />
+          </>
         )}
-        {/* an empty chair, a desk… nothing else. Until there is. */}
-        <rect x="150" y="400" width="120" height="14" fill="#1d1812" />
-        <rect x="186" y="330" width="48" height="70" rx="4" fill="#120f0b" />
       </g>
       {/* she was on the ceiling, right above the lens — outside the brightness boost, so she stays grey */}
       {b >= 0.92 &&

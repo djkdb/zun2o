@@ -17,7 +17,19 @@ export type ArtSlot =
   | 'scare-hang'
   | 'scare-profile'
   | 'scare-face'
-  | 'reflect';
+  | 'reflect'
+  | 'wallpaper'
+  | 'annex-gate'
+  | 'lobby'
+  | 'stairs'
+  | 'stairs-figure'
+  | 'corridor'
+  | 'reading-empty'
+  | 'reading-figure'
+  | 'room02-door'
+  | 'room02'
+  | 'black-empty'
+  | 'tower';
 
 const FILES = import.meta.glob('../assets/art/*.{jpg,jpeg,png,webp,avif}', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 

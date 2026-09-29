@@ -5,7 +5,8 @@ import { addFlag, getState, hasFlag, logInput, setRt } from '../../engine/state'
 import { HIDDEN_ALBUM_CODE, PHOTOS, type PhotoItem } from '../../content/media';
 import { AppHeader } from '../AppHeader';
 import { AnnexPhoto, FloorPlan, ReadingRoomPhoto, Room02Photo } from '../../art/scenes';
-import { BlackPhoto, BoothPhoto, BoothShelfPhoto, CorridorPhoto, IndexCardPhoto, LobbyPhoto, SelfiePhoto, StairsPhoto } from '../../art/phonePhotos';
+import { art } from '../../art/photoArt';
+import { BlackPhoto, BoothPhoto, BoothShelfPhoto, SlotPhoto, CorridorPhoto, IndexCardPhoto, LobbyPhoto, SelfiePhoto, StairsPhoto } from '../../art/phonePhotos';
 
 /** Photos that change if you stare at them zoomed in. */
 const DWELL_PHOTOS = ['p03', 'p05', 'p08'];
@@ -16,16 +17,24 @@ export function PhotoView({ id, brightness = 0, changed = false }: { id: string;
     case 'p00':
       return <BoothShelfPhoto />;
     case 'p01':
-      return <AnnexPhoto level={3} />;
+      return art('annex-gate') ? <SlotPhoto slot="annex-gate" stamp="00:59" label="별관 정문. 체인이 끊어져 있다." /> : <AnnexPhoto level={3} />;
     case 'p02':
-      return <LobbyPhoto />;
+      return art('lobby') ? <SlotPhoto slot="lobby" stamp="01:14" label="1층 로비." /> : <LobbyPhoto />;
     case 'p03':
       // Recognition: after the selfie, there is someone at the top of the stairs.
+      if (art('stairs')) {
+        const fig = (changed || flags.includes('selfie-scare')) && art('stairs-figure');
+        return <SlotPhoto slot={fig ? 'stairs-figure' : 'stairs'} stamp="01:25" label="3층으로 가는 계단." />;
+      }
       return <StairsPhoto figure={changed || flags.includes('selfie-scare')} />;
     case 'p04':
-      return <CorridorPhoto />;
-    case 'p05':
+      return art('corridor') ? <SlotPhoto slot="corridor" stamp="01:32" label="3층 복도. 불 켜진 방 하나." /> : <CorridorPhoto />;
+    case 'p05': {
+      // The figure in the reading room: absent at first, then there, closer each time.
+      const stage = Math.min(4, (flags.includes('selfie-scare') ? 3 : flags.includes('reveal-scare') ? 2 : 1) + (changed ? 1 : 0));
+      if (art('reading-empty')) return <SlotPhoto slot={stage >= 3 && art('reading-figure') ? 'reading-figure' : 'reading-empty'} stamp="01:40" label="열람실." />;
       return <ReadingRoomPhoto level={3} stage={Math.min(4, (flags.includes('selfie-scare') ? 3 : flags.includes('reveal-scare') ? 2 : 1) + (changed ? 1 : 0)) as 1 | 2 | 3 | 4} />;
+    }
     case 'p06':
       return <FloorPlan level={3} />;
     case 'p07':
@@ -35,9 +44,9 @@ export function PhotoView({ id, brightness = 0, changed = false }: { id: string;
     case 'p09':
       return <BoothPhoto behind />;
     case 'h01':
-      return <CorridorPhoto door />;
+      return art('room02-door') ? <SlotPhoto slot="room02-door" stamp="01:53" label="02호실 문. 벽돌이 안쪽에서 쌓여 있다." /> : <CorridorPhoto door />;
     case 'h02':
-      return <Room02Photo level={5} />;
+      return art('room02') ? <SlotPhoto slot="room02" stamp="01:55" label="02호실 안. 끝없는 색인 서랍." /> : <Room02Photo level={5} />;
     case 'h03':
       return <IndexCardPhoto lines={['방문자 #0026  윤채원', '도착  01:13', '열람  사진 7장 · 녹음 1개', '상태  근무 대기']} />;
     case 'h04':
