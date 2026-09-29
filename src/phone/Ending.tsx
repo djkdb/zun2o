@@ -54,7 +54,10 @@ const ENDINGS: Record<EndingId, EndingDef> = {
 
 export function EndingScreen({ id }: { id: EndingId }) {
   const def = ENDINGS[id];
-  const name = useGame((s) => s.save.playerName) ?? '(이름 없음)';
+  const playerName = useGame((s) => s.save.playerName);
+  const name = playerName ?? '(이름 없음)';
+  // In dialogue, someone who never gave a name is just their number.
+  const spoken = playerName ?? '#0027';
   const endings = useGame((s) => s.save.endings);
   const [shown, setShown] = useState(0);
 
@@ -77,7 +80,7 @@ export function EndingScreen({ id }: { id: EndingId }) {
           l.who ? (
             <div key={i} className={`ending-bubble ${l.side}`}>
               <small>{l.who}</small>
-              <span>{l.text}</span>
+              <span>{l.text.replaceAll('{name}', spoken)}</span>
             </div>
           ) : (
             <p key={i} className="ending-line">

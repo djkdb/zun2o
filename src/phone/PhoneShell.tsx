@@ -138,7 +138,7 @@ export function PhoneShell() {
 
   const darkBar = !unlocked || app === null || app === 'index';
   return (
-    <div className={`shell chapter-${chapter}${idle ? ' idle' : ''}${dip ? ' dip' : ''}`}>
+    <div className={`shell chapter-${chapter}${idle ? ' idle' : ''}${dip ? ' dip' : ''}${unlocked && app ? ' in-app' : ''}`}>
       <StatusBar dark={darkBar} />
       <div className="screen" {...edge}>
         {!unlocked ? (

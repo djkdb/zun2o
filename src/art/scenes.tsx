@@ -325,74 +325,7 @@ function TowerInner(_: SceneProps) {
   );
 }
 
-// ─── Cassette (Record 006) ───────────────────────────────────────────────
-
-function CassetteInner({ level }: SceneProps) {
-  const id = useSvgId();
-  return (
-    <svg viewBox="0 0 640 420" role="img" aria-label="책상 위의 마이크로카세트. 손글씨로 6번 테이프라고 적혀 있다.">
-      <FilmDefs id={id} />
-      <g filter={`url(#${id}-grain)`}>
-        <rect width="640" height="420" fill="#4a3d2c" />
-        {Array.from({ length: 10 }).map((_, i) => (
-          <path key={i} d={`M0 ${30 + i * 42} C200 ${20 + i * 42} 420 ${46 + i * 42} 640 ${28 + i * 42}`} stroke="#3e3224" strokeWidth="3" fill="none" />
-        ))}
-        <g transform="translate(320 210) rotate(-6)">
-          <rect x="-170" y="-104" width="340" height="208" rx="14" fill="#1d1d1f" />
-          <rect x="-150" y="-86" width="300" height="104" rx="4" fill="#e3dccb" />
-          <text x="-132" y="-48" fontFamily="'Nanum Pen Script', cursive" fontSize="34" fill="#23304f">
-            6번 테이프 — 3/13
-          </text>
-          <text x="-132" y="-14" fontFamily="'Nanum Pen Script', cursive" fontSize="26" fill="#23304f">
-            {level >= 3 ? '재고 조사 — 2시 이후 재생 금지' : '재고 조사, 서랍 2–3'}
-          </text>
-          <rect x="-90" y="34" width="180" height="46" rx="23" fill="#0d0d0e" />
-          <circle cx="-56" cy="57" r="16" fill="#6b5a44" />
-          <circle cx="56" cy="57" r="16" fill="#6b5a44" />
-          <circle cx="-56" cy="57" r="6" fill="#0d0d0e" />
-          <circle cx="56" cy="57" r="6" fill="#0d0d0e" />
-        </g>
-        <rect width="640" height="420" fill={`url(#${id}-vig)`} />
-      </g>
-    </svg>
-  );
-}
-
-// ─── Reading room notice (Record 008) ────────────────────────────────────
-
-function NoticeInner({ level }: SceneProps) {
-  const id = useSvgId();
-  const lines = ['열 람 실', '', '이용 18:00 — 01:59', '', '서랍은 색인에 돌려놓으십시오.', '정숙해 주십시오.', level >= 2 ? '시계가 멈추면 머물지 마십시오.' : '감사합니다.'];
-  return (
-    <svg viewBox="0 0 640 420" role="img" aria-label="열람실 이용 시간이 타자로 적힌 안내문이 벽에 붙어 있다.">
-      <FilmDefs id={id} />
-      <g filter={`url(#${id}-grain)`}>
-        <rect width="640" height="420" fill="#5c5446" />
-        <g transform="translate(320 210) rotate(1.5)">
-          <rect x="-160" y="-180" width="320" height="360" fill="#e9e3d2" />
-          <circle cx="0" cy="-166" r="6" fill="#8a2a1e" />
-          {lines.map((l, i) => (
-            <text
-              key={i}
-              x="0"
-              y={-110 + i * 34}
-              textAnchor="middle"
-              fontFamily="IBM Plex Mono, IBM Plex Sans KR, monospace"
-              fontSize={i === 0 ? 24 : 15}
-              fontWeight={i === 0 ? 600 : 400}
-              fill="#211f1b"
-            >
-              {l}
-            </text>
-          ))}
-        </g>
-        <rect width="640" height="420" fill={`url(#${id}-vig)`} />
-      </g>
-    </svg>
-  );
-}
-
-// ─── Room 02 (secret D) ──────────────────────────────────────────────────
+// ─── Room 02 (the index room) ───────────────────────────────────────────
 
 function Room02Inner(_: SceneProps) {
   const id = useSvgId();
@@ -426,6 +359,4 @@ export const ReadingRoomPhoto = memo(ReadingRoomInner);
 export const AnnexPhoto = memo(AnnexInner);
 export const FloorPlan = memo(FloorPlanInner);
 export const TowerPhoto = memo(TowerInner);
-export const CassettePhoto = memo(CassetteInner);
-export const NoticePhoto = memo(NoticeInner);
 export const Room02Photo = memo(Room02Inner);

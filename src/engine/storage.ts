@@ -58,6 +58,3 @@ export function removeItem(key: string, kind: 'local' | 'session' = 'local'): vo
   }
 }
 
-export function storageAvailable(): boolean {
-  return getStore('local') !== null;
-}

@@ -262,6 +262,8 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
     case 'sound':
       if (a.id === 'heartbeat') loop('heartbeat', true);
       else sfx(a.id);
+      // Playing silently? The phone's own sound recognition tells you what it heard.
+      if (a.caption && !getState().save.sound) showBanner('settings', '소리 인식', a.caption);
       return;
     case 'install':
       setSave((s) => ({ installed: s.installed.includes(a.app) ? s.installed : [...s.installed, a.app] }));
@@ -429,13 +431,6 @@ export function openAttach(a: Attach): void {
   sfx('click');
   setRt({ deep: a, app: a.kind === 'memo' ? 'memos' : a.kind === 'archive' ? 'browser' : 'gallery', thread: null });
   emit(`app:${a.kind === 'memo' ? 'memos' : a.kind === 'archive' ? 'browser' : 'gallery'}`);
-}
-
-/** Consumed by the app that was opened from an attachment. */
-export function takeDeep(): Attach | null {
-  const d = getState().rt.deep;
-  if (d) setRt({ deep: null });
-  return d;
 }
 
 let lastReply = 0;
@@ -692,6 +687,16 @@ function flashRt(patch: Partial<ReturnType<typeof getState>['rt']>, reset: Parti
   timers.add(t);
 }
 
+/** A typing indicator that appears and goes away, without clobbering other threads'. */
+function flashTyping(th: ThreadId, ms: number): void {
+  setRt((r) => ({ typing: { ...r.typing, [th]: true } }));
+  const t = setTimeout(() => {
+    timers.delete(t);
+    setRt((r) => ({ typing: { ...r.typing, [th]: false } }));
+  }, ms);
+  timers.add(t);
+}
+
 function runAnomaly(kind: Anomaly): void {
   anomalyCount[kind] = (anomalyCount[kind] ?? 0) + 1;
   lastAnomaly = Date.now();
@@ -702,7 +707,7 @@ function runAnomaly(kind: Anomaly): void {
       return;
     case 'typing':
       // Someone starts typing to you… and stops.
-      flashRt({ typing: { ...getState().rt.typing, unknown: true } }, { typing: { ...getState().rt.typing, unknown: false } }, 2600);
+      flashTyping('unknown', 2600);
       if (isViewing('unknown')) sfx('type');
       return;
     case 'buzz':
@@ -731,9 +736,10 @@ function runAnomaly(kind: Anomaly): void {
 function maybeAnomaly(): void {
   const s = getState().save;
   const gap = ANOMALY_GAP[s.chapter];
-  if (!gap || !s.unlocked || playerBusy() || getState().save.reduceFx) return;
+  if (!gap || !s.unlocked || playerBusy()) return;
   if (Date.now() - lastAnomaly < gap || Math.random() > 0.35) return;
-  const pool = (ANOMALY_POOL[s.chapter] ?? []).filter((k) => (anomalyCount[k] ?? 0) < 3);
+  // Reduced effects keeps the unease but drops the brightness flicker.
+  const pool = (ANOMALY_POOL[s.chapter] ?? []).filter((k) => (anomalyCount[k] ?? 0) < 3 && !(s.reduceFx && k === 'dim'));
   if (pool.length) runAnomaly(pool[Math.floor(Math.random() * pool.length)]);
 }
 
@@ -753,7 +759,7 @@ export function teaseTyping(th: ThreadId): void {
   if (teased.has(key) || playerBusy() || s.choice?.thread === th) return;
   if (th === 'self' && !s.flags.includes('selfie-scare')) return;
   teased.add(key);
-  flashRt({ typing: { ...getState().rt.typing, [th]: true } }, { typing: { ...getState().rt.typing, [th]: false } }, 2400);
+  flashTyping(th, 2400);
   sfx('type');
 }
 

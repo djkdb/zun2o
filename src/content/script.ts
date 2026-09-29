@@ -383,7 +383,7 @@ export const BEATS: Beat[] = [
       { t: 'wait', ms: 6000 },
       { t: 'msg', th: 'dohyun', text: '택시가 안 잡혀서 늦었어요. 별관 앞 도착. 부스 쪽으로 갈게요.', typing: 1400 },
       { t: 'wait', ms: 7000 },
-      { t: 'sound', id: 'knock' },
+      { t: 'sound', id: 'knock', caption: '유리를 두드리는 소리가 감지되었습니다.' },
       { t: 'wait', ms: 1800 },
       { t: 'msg', th: 'unknown', text: '방금 그거, 부스 유리 두드린 거예요. 도현 씨 아니에요.', typing: 1600 },
       { t: 'wait', ms: 6000 },
@@ -513,7 +513,7 @@ export const BEATS: Beat[] = [
     on: 'photo:p09:zoom',
     actions: [
       { t: 'wait', ms: 900 },
-      { t: 'sound', id: 'whisper' },
+      { t: 'sound', id: 'whisper', caption: '가까이에서 속삭이는 소리가 감지되었습니다.' },
       { t: 'vibrate', ms: [80, 60, 80] },
       { t: 'msg', th: 'unknown', text: '가까이 볼수록, 더 가까이 가요.', typing: 900 },
     ],

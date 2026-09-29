@@ -6,7 +6,7 @@ import '@fontsource/ibm-plex-sans-kr/600.css';
 import '@fontsource/ibm-plex-mono/400.css';
 import './styles/phone.css';
 import { App } from './App';
-import { flush, getState, initState } from './engine/state';
+import { flush, getState, initState, setRt, setSave } from './engine/state';
 import { applyChapterMix, connectAudio, emit, onReturn, resume, setSpeed, startLifeTicker } from './engine/director';
 import { audio } from './audio/engine';
 import { setEntityLayer, setSpeechEnabled } from './audio/speech';
@@ -78,7 +78,7 @@ if (vv) {
 if (debug) {
   const speed = Number(params.get('speed'));
   if (speed > 0) setSpeed(speed);
-  (window as unknown as { __game: unknown }).__game = { emit, getState, setSpeed };
+  (window as unknown as { __game: unknown }).__game = { emit, getState, setSpeed, setSave, setRt };
 }
 
 resume();

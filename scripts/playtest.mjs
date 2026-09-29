@@ -382,6 +382,19 @@ await tap('.lock-main');
 for (const d of '0113') await page.locator('.keypad .key', { hasText: new RegExp(`^${d}$`) }).first().click();
 await waitFor('.chapter-card');
 await wait(3300);
+// 0) hint tiers: the app glows first, then the chip (goal + where), the full hint only on request
+await page.evaluate(() => window.__game.setSave((s) => ({ objective: { ...s.objective, since: Date.now() - 140000 } })));
+await page.waitForSelector('.app-icon.hint-glow', { timeout: 8000 });
+check('hint tier 2: the related app glows', (await page.locator('.app-icon.hint-glow', { hasText: '메시지' }).count()) === 1);
+await page.evaluate(() => window.__game.setSave((s) => ({ objective: { ...s.objective, since: Date.now() - 200000 } })));
+await page.waitForSelector('.hint-chip', { timeout: 8000 });
+await tap('.hint-chip');
+const sheet = await page.textContent('.hint-sheet');
+check('hint tier 3: goal and where to look, not the answer', sheet.includes('살펴볼 곳') && !sheet.includes('모르는 번호가 하나'));
+await tap('.hint-more');
+check('hint tier 4: full hint on request', (await page.textContent('.hint-sheet')).includes('모르는 번호가 하나'));
+await snap('hint-tiers');
+await tap('.hint-chip');
 // 1) solving the archive puzzle from the notes in chapter 1 must not skip to chapter 4
 await openApp('인터넷');
 await tapText('심야 기록보관소');

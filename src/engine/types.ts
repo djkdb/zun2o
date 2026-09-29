@@ -101,7 +101,8 @@ export type Action =
   | { t: 'call'; id: string }
   | { t: 'scare'; kind: ScareKind; look?: 'face' | 'hang' | 'profile' | 'curtain' }
   | { t: 'glitch'; ms: number }
-  | { t: 'sound'; id: SoundId }
+  /** `caption`: shown as a "소리 인식" notice when the player has sound off. */
+  | { t: 'sound'; id: SoundId; caption?: string }
   | { t: 'install'; app: AppId }
   | { t: 'note'; id: string }
   | { t: 'shuffle' }
