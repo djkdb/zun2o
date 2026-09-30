@@ -1856,6 +1856,11 @@ svg {
   transform: none !important;
 }
 
+/* reduced effects: the face is there, but blurred and dimmed */
+.scare-reduced .ghost {
+  filter: blur(6px) brightness(0.5) grayscale(0.5) !important;
+}
+
 @keyframes soft {
   0%,
   100% {
@@ -4218,4 +4223,50 @@ body,
 
 .reduce-fx .video-call.unstable > .video-clip {
   animation: none;
+}
+
+/* 02:00: re-reading a record you already opened */
+.reread {
+  margin-top: 14px;
+}
+
+.reread-page {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-left: 2px solid #3a4a3a;
+  background: rgba(40, 60, 40, 0.25);
+  font-size: 13px;
+  line-height: 1.55;
+  color: #b9c4b0;
+}
+
+.reread-page strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #d0d8c6;
+}
+
+.reread-page p {
+  margin: 0 0 6px;
+}
+
+.lock-pad-clues {
+  margin: -6px 24px 14px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.lock-pad-clues p {
+  margin: 0;
+}
+
+/* small helper text that people actually need to read: more contrast */
+.lock-hint,
+.coldopen-actions p,
+.viewer-zoomhint,
+.settings-note,
+.ending-card small {
+  color: #a9abb2 !important;
 }

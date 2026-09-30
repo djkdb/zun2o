@@ -106,3 +106,13 @@ describe('voice files', () => {
     expect(voiceKey('들려?', 'female')).not.toBe(voiceKey('들려?', 'entity'));
   });
 });
+
+describe('names in sentences', () => {
+  it('uses 예요 after a vowel and 이에요 after a final consonant', async () => {
+    const { copula } = await import('../content/korean');
+    expect('준호' + copula('준호')).toBe('준호예요');
+    expect('지훈' + copula('지훈')).toBe('지훈이에요');
+    expect('#0027' + copula('#0027')).toBe('#0027이에요');
+  });
+});
+

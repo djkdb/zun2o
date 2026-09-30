@@ -1,6 +1,6 @@
 import type { Action, AppId, Attach, Beat, EndingId, SoundId, ThreadId } from './types';
 import { BEATS } from '../content/script';
-import { addFlag, appendMessage, fill, flush, getState, hasFlag, loadCheckpoint, logInput, newSave, saveCheckpoint, setRt, setSave, wipeSave } from './state';
+import { addFlag, appendMessage, clearCheckpoint, fill, flush, getState, hasFlag, loadCheckpoint, logInput, newSave, saveCheckpoint, setRt, setSave, wipeSave } from './state';
 import { THREAD_META } from '../content/threads';
 import { CALLS } from '../content/calls';
 import { replyFor } from '../content/replies';
@@ -313,11 +313,17 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
       }));
       sfx('glitch');
       return;
-    case 'dialog':
+    case 'dialog': {
       await whenFree(myEpoch);
-      setRt({ dialog: { title: a.title, body: fill(a.body) } });
+      const dialog = { title: a.title, body: fill(a.body) };
+      setRt({ dialog });
       sfx('error');
+      // Like a real system alert, it dismisses itself — it shouldn't block the last minutes.
+      setTimeout(() => {
+        if (getState().rt.dialog === dialog) setRt({ dialog: null });
+      }, 6000);
       return;
+    }
     case 'hush': {
       await whenFree(myEpoch);
       if (a.still) {
@@ -454,7 +460,7 @@ export function sendText(th: ThreadId, raw: string): void {
   const text = raw.replace(/\s+/g, ' ').trim().slice(0, 80);
   if (!text) return;
   const time = getState().save.clock;
-  logInput(`${THREAD_META[th].name}에게 보낸 메시지 "${text}"`);
+  logInput(`${th === 'self' ? '나에게' : `${THREAD_META[th].name}에게`} 보낸 메시지 "${text}"`);
   if (th === 'dohyun' || th === 'mom') {
     appendMessage(th, { from: 'me', text, time, failed: true });
     sfx('error');
@@ -547,7 +553,7 @@ function ring(id: string): void {
   const t = setTimeout(() => {
     timers.delete(t);
     if (getState().rt.incoming === id) missCall();
-  }, 15000);
+  }, 20000);
   timers.add(t);
 }
 
@@ -616,6 +622,7 @@ export function newGame(): void {
   loop('heartbeat', false);
   const s = getState().save;
   wipeSave();
+  clearCheckpoint();
   setSave(newSave({ endings: s.endings, sound: s.sound, reduceFx: s.reduceFx, startedAtReal: Date.now() }));
   flush();
   setRt({
@@ -802,7 +809,7 @@ export function startLifeTicker(): () => void {
 }
 
 /** Hint tiers, in ms stuck on one objective: 1 a character texts, 2 the app glows, 3 the hint chip (objective + app), 4 the full hint (on request). */
-export const HINT_TIER_MS = [75000, 130000, 180000] as const;
+export const HINT_TIER_MS = [60000, 95000, 130000] as const;
 
 /** Player left the app and came back after a while: the phone locked itself. */
 export function onReturn(awayMs: number): void {

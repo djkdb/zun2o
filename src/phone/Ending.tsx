@@ -3,6 +3,7 @@ import { useGame } from '../hooks/useGame';
 import { newGame, replayFinale, sfx } from '../engine/director';
 import type { EndingId } from '../engine/types';
 import { art } from '../art/photoArt';
+import { copula } from '../content/korean';
 
 interface EndingDef {
   n: number;
@@ -19,8 +20,8 @@ const ENDINGS: Record<EndingId, EndingDef> = {
     scene: [
       { text: '폰은 다시 켜지지 않았다.' },
       { text: '02:00. 해원고등학교 도서관 3층, 제2서고.' },
-      { text: '방문자 #0028 박도현 — 근무 중' },
-      { text: '다음 날 밤, 같은 공중전화 부스. 선반 위에 휴대폰이 두 대 놓여 있다.' },
+      { text: '방문자 #0027 — 도주. 방문자 #0028 박도현 — 근무 중' },
+      { text: '다음 날 밤, 같은 공중전화 부스. 선반 위에 휴대폰이 두 대 놓여 있다. 채원의 폰, 그리고 도현의 폰.' },
       { text: '그중 하나의 화면이 켜진다. 배터리 12%.' },
       { who: '발신자 정보 없음', text: '들어오세요.', side: 'left' },
     ],
@@ -28,14 +29,14 @@ const ENDINGS: Record<EndingId, EndingDef> = {
   shift: {
     n: 2,
     title: '교대',
-    line: '누군가는 근무를 서야 한다. 오늘부터는 당신이다.',
+    line: '누군가는 색인을 맡아야 한다. 오늘부터는 당신이다.',
     scene: [
       { who: '나에게', text: '…나왔어. 해가 떠', side: 'right' },
       { who: '도현', text: '채원이랑 같이 부스 안에서 깼어요. 둘 다 무사해요', side: 'left' },
       { who: '도현', text: '근데 당신은 어디 있어요? 이 폰만 선반에 있어요', side: 'left' },
-      { text: '방문자 #0027 {name} — 근무 중' },
+      { text: '색인 담당 — {name}. 서미령의 이름은 지워졌다.' },
       { text: '1년 뒤. 해원고 정문 앞 공중전화 부스.' },
-      { who: '발신자 정보 없음', text: '들어오세요. 저는 {name}이에요. 오래 기다렸어요.', side: 'left' },
+      { who: '발신자 정보 없음', text: '들어오세요. 저는 {name}{이에요}. 오래 기다렸어요.', side: 'left' },
     ],
   },
   release: {
@@ -83,7 +84,7 @@ export function EndingScreen({ id }: { id: EndingId }) {
           l.who ? (
             <div key={i} className={`ending-bubble ${l.side}`}>
               <small>{l.who}</small>
-              <span>{l.text.replaceAll('{name}', spoken)}</span>
+              <span>{l.text.replaceAll('{name}{이에요}', spoken + copula(spoken)).replaceAll('{name}', spoken)}</span>
             </div>
           ) : (
             <p key={i} className="ending-line">
@@ -95,7 +96,7 @@ export function EndingScreen({ id }: { id: EndingId }) {
       {done && (
         <div className="ending-card">
           <small>
-            ENDING {def.n} / 3 · 발견 {endings.length} / 3
+            엔딩 {def.n} · 결말 3개 중 {endings.length}개 발견
           </small>
           <h2>{def.title}</h2>
           <p>{def.line}</p>

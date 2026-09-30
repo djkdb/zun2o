@@ -63,24 +63,37 @@ const UNKNOWN: Rule[] = [
 ];
 
 const SELF: Rule[] = [
+  // Names first: "서미령이 누구예요?" is about 서미령, not "who are you".
+  { id: 'miryeong', re: /서미령|미령/, say: () => [['그 이름… 서랍 카드에 있었어. 첫 번째 근무자. 그 여자가 그 이름만 나오면 멈춰']] },
+  { id: 'hyunwoo', re: /박현우|현우/, say: () => [['그 사람 폰 여기 서랍에 있어. 화면에 계속 내 이름이 떠']] },
+  { id: 'met', re: /처음 만난|기념일|비번|비밀번호|0113/, say: () => [['1월 13일. 도현이랑 처음 만난 날이야. 그래서 폰 비번도 0113이고, 들어간 것도 1시 13분이었어']] },
+  { id: 'dohyun', re: /도현/, say: () => [['도현이? 오지 말라고 해. 여기 오면 안 돼']] },
+  { id: 'mom', re: /엄마/, say: () => [['엄마한테 전화한 거 나 아니야. 나 여기서 폰 없어'], ['…엄마한테 미안하다고 해 줘']] },
+  {
+    id: 'key',
+    re: /haewon|열쇠/i,
+    say: (c) => (c.flags.includes('found-key') ? [['그거야. 그걸로 색인을 끝낼 수 있어. 두 시에 써']] : [['열쇠? 몰라… 기록보관소 어딘가에 있을 거야']]),
+  },
   { id: 'who', re: /누구|정체/, say: () => [['나 윤채원이야. 이 폰 주인. 제발 장난 아니야']] },
   { id: 'where', re: /어디|위치/, say: () => [['도서관 3층. 제2서고. 근데 문이 없어. 서랍만 있어']] },
   { id: 'police', re: /경찰|신고|112/, say: () => [['신고해도 여기 못 와. 도현이도 왔었는데 날 못 봤대']] },
   { id: 'ok', re: /괜찮|다쳤|살아/, say: () => [['안 괜찮아. 추워. 누가 계속 내 이름을 적어']] },
   { id: 'her', re: /그 여자|귀신|누가/, say: () => [['보지 마. 사진으로 보면 더 가까이 와']] },
-  { id: 'miryeong', re: /서미령|미령/, say: () => [['그 이름… 서랍 카드에 있었어. 첫 번째 근무자. 그 여자가 그 이름만 나오면 멈춰']] },
-  { id: 'key', re: /haewon|열쇠/i, say: () => [['그거야. 그걸로 색인을 끝낼 수 있어. 두 시에 써']] },
   { id: 'radio', re: /1340|라디오|방송/, say: () => [['그 숫자 방송… 순서가 있어. 001 003 007']] },
-  { id: 'hyunwoo', re: /박현우|현우/, say: () => [['그 사람 폰 여기 서랍에 있어. 화면에 계속 내 이름이 떠']] },
-  { id: 'dohyun', re: /도현/, say: () => [['도현이? 오지 말라고 해. 여기 오면 안 돼']] },
-  { id: 'mom', re: /엄마/, say: () => [['엄마한테 전화한 거 나 아니야. 나 여기서 폰 없어'], ['…엄마한테 미안하다고 해 줘']] },
   { id: 'laugh', re: /ㅋㅋ|ㅎㅎ/, say: () => [['웃지 마. 나도 처음엔 웃었어']] },
   { id: 'how', re: /어떻게|방법|뭘 해|뭐 해/, say: (c) => [[c.nudge ?? '013. 기록보관소. 순서대로 열어']] },
 ];
 
 const FALLBACK: Record<'unknown' | 'self', string[]> = {
   unknown: ['대답은 나중에 해도 돼요.', '천천히 해요. 두 시까지는 시간 있어요.', '지금 그게 중요한 게 아니에요.', '…다 적어 두고 있어요.'],
-  self: ['빨리. 시간 없어', '나 보여? 거기서 나 보여?', '그 여자가 듣고 있어. 짧게 보내'],
+  self: [
+    '빨리. 시간 없어',
+    '나 보여? 거기서 나 보여?',
+    '그 여자가 듣고 있어. 짧게 보내',
+    '무슨 말인지 모르겠어. 서랍 소리 때문에 글자가 잘 안 보여',
+    '제발… 나 좀 꺼내 줘',
+    '그런 거 말고. 지금 중요한 거',
+  ],
 };
 
 /** Pure: decide what to say back. `roll` (0..1) picks the fallback line. */
@@ -92,7 +105,8 @@ export function replyFor(th: ThreadId, text: string, ctx: ReplyContext, roll = M
     const n = ctx.counts[`${th}:${r.id}`] ?? 0;
     return { rule: r.id, lines: stages[Math.min(n, stages.length - 1)] };
   }
-  if (ctx.nudge) return { rule: null, lines: [ctx.nudge] };
+  // Sometimes the story's own nudge, but not every time: a person doesn't repeat one line forever.
+  if (ctx.nudge && roll < 0.4) return { rule: null, lines: [ctx.nudge] };
   const pool = th === 'unknown' ? FALLBACK.unknown : FALLBACK.self;
   return { rule: null, lines: [pool[Math.floor(roll * pool.length) % pool.length]] };
 }

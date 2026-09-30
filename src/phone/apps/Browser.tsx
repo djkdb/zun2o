@@ -95,7 +95,7 @@ export function BrowserApp() {
             <span className="bm-icon news">해</span>
             <span>
               <strong>해원일보 — 실종 1년 대학생, 폐교 앞 공중전화 부스에서 발견</strong>
-              <small>오늘 06:12 · 이 폰에서 열어 본 기사</small>
+              <small>9월 27일 06:12 · 이 폰에서 열어 본 기사</small>
             </span>
           </button>
           <button type="button" className="bm" onClick={() => openPage('news')}>

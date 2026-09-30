@@ -222,7 +222,7 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
         if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
       }}
     >
-      <AppHeader title={photo.time} subtitle={photo.album === 'hidden' ? '숨김' : '9월 27일'} onBack={onClose} backLabel="앨범" />
+      <AppHeader title={photo.time} subtitle={photo.album === 'hidden' ? '숨김' : (photo.date ?? '9월 27일')} onBack={onClose} backLabel="앨범" />
       <div
         className={`viewer-img${photo.portrait ? ' portrait' : ''}${zoom ? ' zoomed' : ''}`}
         onPointerDown={onDown}

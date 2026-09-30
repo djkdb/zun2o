@@ -3,7 +3,7 @@ import { useGame } from '../hooks/useGame';
 import { BoothPhoto, WallpaperPhoto } from '../art/phonePhotos';
 import { emit, sfx, vibrate } from '../engine/director';
 import { logInput, setSave } from '../engine/state';
-import { THREAD_META, lastSent } from '../content/threads';
+import { THREAD_META, lastSent, today } from '../content/threads';
 import { Avatar } from './Avatar';
 import type { ThreadId } from '../engine/types';
 
@@ -39,6 +39,8 @@ export function LockScreen() {
   }, [threads]);
 
   const press = (d: string) => {
+    // four digits in: ignore extra taps until they've been checked
+    if (code.length >= 4) return;
     sfx('key');
     const next = (code + d).slice(0, 4);
     setCode(next);
@@ -67,7 +69,9 @@ export function LockScreen() {
       <div className={`lock-wall${wallpaper === 'booth' ? ' changed' : ''}`}>{wallpaper === 'booth' ? <BoothPhoto fill /> : <WallpaperPhoto />}</div>
       {!pad ? (
         <div className="lock-main" onClick={() => setPad(true)}>
-          <div className="lock-date">9월 27일 토요일</div>
+          <div className="lock-date">
+            9월 {today(clock).d}일 {today(clock).weekday}
+          </div>
           <div className="lock-clock">{clock}</div>
           <div className="lock-notes">
             {notifications.map((n, i) => (
@@ -107,6 +111,11 @@ export function LockScreen() {
       ) : (
         <div className="lock-pad" key={shake}>
           <p className="lock-pad-title">암호 입력</p>
+          {/* the clue stays in view while typing: her riddle, once it's been left, and the camera notice */}
+          <div className="lock-pad-clues">
+            {threads.unknown.some((m) => m.text.includes('채원 씨가 들어온 시각')) && <p>“채원 씨가 들어온 시각을 누르세요.”</p>}
+            <p>카메라 · 01:13에 시작한 영상을 저장하지 못했습니다.</p>
+          </div>
           <div className={`lock-dots${shake ? ' shake' : ''}`}>
             {[0, 1, 2, 3].map((i) => (
               <span key={i} className={i < code.length ? 'on' : ''} />
@@ -129,7 +138,7 @@ export function LockScreen() {
               ),
             )}
           </div>
-          <button type="button" className="lock-cancel" onClick={() => setPad(false)}>
+          <button type="button" className="lock-cancel" onClick={() => (setPad(false), setCode(''))}>
             취소
           </button>
           {fails > 0 && <p className="lock-fails">암호가 틀렸습니다 ({fails}회)</p>}

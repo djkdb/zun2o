@@ -69,14 +69,16 @@ export const BEATS: Beat[] = [
         nudge: { th: 'dohyun', text: '혹시 폰 열었어요? 발신자 정보 없음으로 온 메시지 있으면… 절대 답하지 마요' },
       },
       { t: 'wait', ms: 1800 },
-      // The minute 채원 walked in was also her real passcode (the day she met 도현). (One message: nothing can land between.)
-      { t: 'msg', th: 'unknown', text: '들어왔네요. 0113… 채원 씨 폰 비밀번호도 원래 이거였어요. 신기하죠?', typing: 1800 },
+      // 채원 walked in at 01:13 on purpose: her passcode, the day she met 도현 (her script note says so). (One message: nothing can land between.)
+      { t: 'msg', th: 'unknown', text: '들어왔네요. 0113… 채원 씨는 일부러 딱 그 시각에 들어왔어요. 도현 씨랑 처음 만난 날이라고.', typing: 1800 },
     ],
   },
   {
     id: 'unknown-1',
     on: 'thread:unknown',
     requires: ['unlocked'],
+    // Went straight to the photo and brightened it? Then this first exchange is already past.
+    forbids: ['reveal-scare'],
     actions: [
       { t: 'wait', ms: 1000 },
       { t: 'msg', th: 'unknown', text: '그 폰, 주운 거죠?', typing: 2200 },
@@ -121,6 +123,7 @@ export const BEATS: Beat[] = [
   {
     id: 'c1-done',
     on: 'c1:done',
+    forbids: ['reveal-scare'],
     actions: [
       { t: 'msg', th: 'unknown', text: '채원 씨 마지막 사진, 봤어요?', typing: 2000 },
       { t: 'msg', th: 'unknown', text: '이거요.', typing: 900, attach: { kind: 'photo', id: 'p07' } },
@@ -164,7 +167,7 @@ export const BEATS: Beat[] = [
       { t: 'calllog', entry: { who: '0200', time: '23:53', kind: 'out', duration: '38:12' } },
       { t: 'wait', ms: 1600 },
       { t: 'msg', th: 'unknown', text: '봤죠?', typing: 500 },
-      { t: 'objective', app: 'phone', text: '…시간이 40분 가까이 사라졌다', hint: '곧 도현에게서 전화가 옵니다. 받으세요. 전화가 끊겼거나 놓쳤다면 전화 앱 → 최근 기록에서 도현을 눌러 다시 걸 수 있어요.' },
+      { t: 'objective', app: 'phone', text: '…시간이 30분 넘게 사라졌다', hint: '곧 도현에게서 전화가 옵니다. 받으세요. 전화가 끊겼거나 놓쳤다면 전화 앱 → 최근 기록에서 도현을 눌러 다시 걸 수 있어요.' },
       { t: 'wait', ms: 3500 },
       { t: 'call', id: 'dohyun1' },
     ],
@@ -414,7 +417,7 @@ export const BEATS: Beat[] = [
     actions: [
       { t: 'flag', f: 'self-contact' },
       { t: 'msg', th: 'self', from: 'me', text: '제발 도와줘. 여기 문이 없어. 서랍만 있어', typing: 2200 },
-      { t: 'msg', th: 'self', from: 'me', text: '그 여자가 두 시에 교대한대. 내가 남아야 한대', typing: 2400 },
+      { t: 'msg', th: 'self', from: 'me', text: '그 여자가 두 시에 교대한대. 다음 사람이 등록되면 나는 나갈 수 있대', typing: 2400 },
       { t: 'msg', th: 'self', from: 'me', text: '나도 그 부스에서 폰 주웠어. 박현우라는 사람 폰', typing: 2200 },
       { t: 'msg', th: 'self', from: 'me', text: '그 폰 지금 여기 서랍 안에 있어. 아직 켜져 있어. 12%', typing: 2400 },
       { t: 'msg', th: 'self', from: 'me', text: '네가 들고 있는 거 내 폰이지? 그럼 다음은 너야', typing: 2000 },
@@ -483,8 +486,8 @@ export const BEATS: Beat[] = [
       { t: 'msg', th: 'unknown', text: '열쇠를 쓰면 색인이 끝나요. 아무도 기록되지 않아요. 아무도 기억되지 않아요.', typing: 2600 },
       {
         t: 'objective', app: 'index',
-        text: '02:00이 오기 전에 준비하자',
-        hint: '02:00에 선택의 순간이 옵니다. 열쇠(HAEWON-0200)와 첫 근무자의 이름(브라우저 기록 003)을 기억해 두세요. 새로 생긴 사진과 녹음도 확인해 보세요.',
+        text: '02:00에 연장 열쇠와 첫 근무자의 이름이 필요하다',
+        hint: '02:00에 선택의 순간이 옵니다. 열쇠(HAEWON-0200, 기록 013)와 첫 근무자의 이름(기록 003)을 기억해 두세요. 02:00 화면에서도 읽은 기록을 다시 볼 수 있어요. 새로 생긴 녹음 18도 들어 보세요.',
       },
       { t: 'sound', id: 'heartbeat' },
       // One thing every in-game minute, until 02:00.
@@ -494,10 +497,11 @@ export const BEATS: Beat[] = [
       { t: 'memo', id: 'm2' },
       { t: 'notify', app: 'memos', title: '녹음', body: '새 녹음 18이 저장되었습니다.' },
       { t: 'msg', th: 'unknown', text: '녹음 하나 더 있어요. 이번엔 채원 씨 거 아니에요.', typing: 1800, attach: { kind: 'memo', id: 'm2' } },
-      { t: 'wait', ms: 11000 },
+      // time to actually listen to recording 18 before the last minutes pile up
+      { t: 'wait', ms: 20000 },
       { t: 'time', hm: '01:52' },
       { t: 'msg', th: 'unknown', text: '이 폰 시계는 {clock}이지만, 당신 쪽은 {real}이죠?', typing: 2000 },
-      { t: 'wait', ms: 10000 },
+      { t: 'wait', ms: 12000 },
       { t: 'time', hm: '01:53' },
       { t: 'msg', th: 'dohyun', text: '부스 보여요. 당신도 보여요. 거기 계속 계세요', typing: 1200 },
       { t: 'wait', ms: 4000 },
@@ -507,13 +511,13 @@ export const BEATS: Beat[] = [
       { t: 'time', hm: '01:54' },
       { t: 'msg', th: 'dohyun', text: '뒤돌아보지 마요.', typing: 500 },
       { t: 'msg', th: 'unknown', text: '돌아봐도 돼요.', typing: 900 },
-      { t: 'wait', ms: 8000 },
+      { t: 'wait', ms: 10000 },
       { t: 'time', hm: '01:55' },
       { t: 'battery', v: 4 },
       { t: 'dialog', title: '배터리 부족', body: '배터리가 4% 남았습니다. 저전력 모드를 켤 수 없습니다: 야간 색인이 사용 중.' },
       { t: 'msg', th: 'dohyun', text: '3층 창문에 채원이 있어요. 손 흔들어요', typing: 1200 },
       { t: 'msg', th: 'dohyun', text: '들어갈게요. 당신은 거기 있어요', typing: 1400 },
-      { t: 'wait', ms: 7000 },
+      { t: 'wait', ms: 9000 },
       { t: 'time', hm: '01:56' },
       { t: 'flag', f: 'dohyun-in' },
       { t: 'msg', th: 'dohyun', text: '제2서고 문이 열려 있어요. 벽돌이 없어요', typing: 1300 },
@@ -554,6 +558,13 @@ export const BEATS: Beat[] = [
     ],
   },
   { id: 'power-ch4', on: 'power:try', requires: ['ch4'], repeat: true, actions: [{ t: 'msg', th: 'unknown', text: '아직이에요.', typing: 700 }] },
+  {
+    id: 'power-early',
+    on: 'power:try',
+    requires: ['unlocked'],
+    forbids: ['ch4'],
+    actions: [{ t: 'wait', ms: 1200 }, { t: 'msg', th: 'unknown', text: '도현 씨가 끄라고 했죠? 안 꺼져요. 이 폰은 두 시까지 제 거예요.', typing: 1600 }],
+  },
   {
     id: 'zoom-p08',
     on: 'photo:p08:zoom',

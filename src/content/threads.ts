@@ -20,18 +20,18 @@ export const THREAD_ORDER: ThreadId[] = ['unknown', 'dohyun', 'mom', 'self'];
 
 /** 9월 27일 — the night the phone is found. Everything that arrives during play belongs to it. */
 const TONIGHT = 9 * 31 + 27;
+const WEEKDAY: Record<number, string> = { 26: '금', 27: '토', 28: '일' };
 
 /**
- * When a thread's last message was sent, in minutes on one timeline. Messages
- * only carry HH:MM: history has day labels (a time earlier than the one before
- * it means the night rolled past midnight); anything sent during play is
+ * The day (9 * 31 + d) and minute of every message in a thread, on one timeline.
+ * Messages only carry HH:MM: history has day labels (a time earlier than the one
+ * before it means the night rolled past midnight); anything sent during play is
  * tonight — evening times on the 27th, after-midnight times on the 28th.
  */
-export function lastSent(msgs: ChatMsg[]): number {
+export function timeline(msgs: ChatMsg[]): { day: number; at: number }[] {
   let day = 0;
   let prev = -1;
-  let at = -1;
-  for (const m of msgs) {
+  return msgs.map((m) => {
     const [h, min] = m.time.split(':').map(Number);
     const hm = h * 60 + min;
     const d = m.day && /(\d+)월 (\d+)일/.exec(m.day);
@@ -39,9 +39,25 @@ export function lastSent(msgs: ChatMsg[]): number {
     else if (d) day = Number(d[1]) * 31 + Number(d[2]);
     else if (hm < prev) day += 1;
     prev = hm;
-    at = day * 1440 + hm;
-  }
-  return at;
+    return { day, at: day * 1440 + hm };
+  });
+}
+
+/** When a thread's last message was sent, in minutes on one timeline. */
+export function lastSent(msgs: ChatMsg[]): number {
+  return timeline(msgs).at(-1)?.at ?? -1;
+}
+
+/** '9월 28일 (일)' for a timeline day. */
+export function dayLabel(day: number): string {
+  const d = day - 9 * 31;
+  return `9월 ${d}일 (${WEEKDAY[d] ?? ''})`;
+}
+
+/** The phone's date tonight: the 27th until midnight, the 28th after. */
+export function today(clock: string): { d: number; weekday: string } {
+  const d = Number(clock.split(':')[0]) >= 12 ? 27 : 28;
+  return { d, weekday: `${WEEKDAY[d]}요일` };
 }
 
 let n = 0;

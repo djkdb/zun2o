@@ -10,6 +10,8 @@ export interface PhotoItem {
   extra?: boolean;
   /** A video clip rather than a photo. */
   video?: boolean;
+  /** Taken tonight, after midnight (default: 9월 27일, the night 채원 went in). */
+  date?: string;
 }
 
 export const PHOTOS: PhotoItem[] = [
@@ -17,13 +19,13 @@ export const PHOTOS: PhotoItem[] = [
   { id: 'p01', time: '00:59', caption: '정문. 체인이 끊어져 있다.', album: 'recent' },
   { id: 'p02', time: '01:14', caption: '1층 현관. 층별 안내판.', album: 'recent' },
   { id: 'p03', time: '01:25', caption: '3층으로 가는 계단.', album: 'recent' },
+  { id: 'v01', time: '01:25', caption: '(복구된 동영상 · 01:13부터 찍던 영상 중 10초)', album: 'recent', portrait: true, extra: true, video: true },
   { id: 'p04', time: '01:32', caption: '3층 복도. 불 켜진 방 하나.', album: 'recent' },
   { id: 'p05', time: '01:40', caption: '열람실. 아무도 없어야 한다.', album: 'recent' },
   { id: 'p06', time: '01:45', caption: '벽에 붙어 있던 평면도.', album: 'recent' },
   { id: 'p07', time: '01:59', caption: '(노출 부족)', album: 'recent', portrait: true },
-  { id: 'p08', time: '01:39', caption: '(자동 백업) 3층 창문', album: 'recent', extra: true },
-  { id: 'p09', time: '01:53', caption: '(도현이 보낸 사진)', album: 'recent', extra: true },
-  { id: 'v01', time: '01:25', caption: '(복구된 동영상 · 01:13 녹화 중 0:10)', album: 'recent', portrait: true, extra: true, video: true },
+  { id: 'p08', time: '01:39', caption: '(자동 백업) 3층 창문', album: 'recent', extra: true, date: '9월 28일' },
+  { id: 'p09', time: '01:53', caption: '(도현이 보낸 사진)', album: 'recent', extra: true, date: '9월 28일' },
   { id: 'h01', time: '01:53', caption: '제2서고. 벽돌이… 안에서 쌓여 있다.', album: 'hidden' },
   { id: 'h02', time: '01:55', caption: '들어왔다. 어떻게 들어왔는지 모르겠다.', album: 'hidden' },
   { id: 'h03', time: '01:56', caption: '서랍 안에 내 카드가 있었다.', album: 'hidden' },
@@ -46,7 +48,7 @@ export const NOTES: Record<string, NoteItem> = {
     title: '영상 대본 — 새벽 2시에 가면 안 되는 곳',
     date: '9월 26일',
     body: `오프닝: 정문 앞에서 "안녕하세요 밤채널입니다"
-01:13 입장 (시각 화면에 박기!! 비번도 이걸로)
+01:13 입장 (도현이랑 처음 만난 날 = 폰 비번 ㅎㅎ 시각 화면에 박기!!)
 - 1층 현관 → 계단 → 3층 도서관
 - 불 켜진 방 있으면 대박
 - 제2서고 앞에서 2시까지 대기 → 엔딩
@@ -83,7 +85,7 @@ export const NOTES: Record<string, NoteItem> = {
   n5: {
     id: 'n5',
     title: '주운 폰',
-    date: '오늘 00:58',
+    date: '9월 27일 00:58',
     body: `부스 선반에 진짜 폰 있었음!! (제보자 말대로)
 잠금 화면 이름: 박현우
 배터리 12% — 켜 두는데도 안 떨어짐?? 이상함

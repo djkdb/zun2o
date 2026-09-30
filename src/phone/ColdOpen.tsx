@@ -5,7 +5,7 @@ import { applyChapterMix, emit } from '../engine/director';
 import { setRt, setSave } from '../engine/state';
 import { art } from '../art/photoArt';
 
-const LINES = ['9월 27일 토요일, 밤 11시 51분.', '폐교된 해원고등학교 정문 앞.', '공중전화 부스 선반 위에 휴대폰 한 대가 놓여 있다.', '화면이 켜진다. 배터리 12%.'];
+const LINES = ['9월 27일 토요일, 밤 11시 51분.', '폐교된 해원고등학교 정문 앞. 비가 내린다.', '공중전화 부스 선반 위에 휴대폰 한 대가 놓여 있다.', '화면이 켜진다. 배터리 12%.'];
 
 export function ColdOpen() {
   const [n, setN] = useState(0);

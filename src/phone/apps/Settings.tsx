@@ -3,6 +3,7 @@ import { useGame } from '../../hooks/useGame';
 import { emit, newGame, openApp } from '../../engine/director';
 import { hasFlag, setRt, setSave } from '../../engine/state';
 import { AppHeader } from '../AppHeader';
+import { PHOTOS } from '../../content/media';
 import { audio } from '../../audio/engine';
 import { setSpeechEnabled } from '../../audio/speech';
 
@@ -36,7 +37,9 @@ export function SettingsApp() {
         </div>
         <div className="row">
           <span>저장 공간</span>
-          <span>사진 12 · 녹음 2 · 알 수 없음 {hasFlag('ch4') ? '1.2GB' : '0'}</span>
+          <span>
+            사진 {PHOTOS.filter((p) => !p.extra || save.photos.includes(p.id)).length} · 녹음 {1 + save.memos.length + (save.flags.includes('call1-done') ? 1 : 0)} · 알 수 없음 {hasFlag('ch4') ? '1.2GB' : '0'}
+          </span>
         </div>
         <button type="button" className="row danger" onClick={powerOff}>
           전원 끄기
@@ -59,9 +62,14 @@ export function SettingsApp() {
           />
         </label>
         <label className="row">
-          <span>효과 줄이기 (번쩍임·진동·흔들림)</span>
+          <span>효과 줄이기 (번쩍임·진동·흔들림, 무서운 장면 흐리게)</span>
           <input type="checkbox" checked={save.reduceFx} onChange={(e) => setSave({ reduceFx: e.target.checked })} />
         </label>
+        {save.objective && (
+          <button type="button" className="row" onClick={() => setRt({ hintOpen: true })}>
+            지금 할 일 보기
+          </button>
+        )}
         <div className="row">
           <span>본 엔딩</span>
           <span>{save.endings.length ? save.endings.map((e) => ENDING_NAMES[e]).join(', ') : '없음'} ({save.endings.length}/3)</span>

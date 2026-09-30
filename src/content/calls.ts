@@ -33,7 +33,7 @@ export const CALLS: Record<string, CallScript> = {
     },
     after: [
       { at: 500, who: 'caller', text: '…학교 앞 부스에서 주운 거죠? 거기서 당장 떠나세요.', voice: 'male' },
-      { at: 4600, who: 'caller', text: '채원이 녹음 앱 켜 놓고 들어갔어요. 마지막 녹음이 그 폰에 있을 거예요.', voice: 'male' },
+      { at: 4600, who: 'caller', text: '채원이 녹음 앱 켜 놓고 들어갔어요. 마지막 녹음이 클라우드에 올라와 있어요. 보내 드릴게요.', voice: 'male' },
       { at: 9800, who: 'caller', text: '경찰은 장난이래요. 근데 그 녹음 들어 보면… 알 거예요.', voice: 'male' },
       { at: 14200, who: 'sfx', text: '(지지직—)' },
       { at: 15400, who: 'caller', text: '두 시 전에는 그 폰 꺼요. 꼭이요. 두 시 전에—', voice: 'male' },
@@ -86,4 +86,4 @@ export const CALLS: Record<string, CallScript> = {
 };
 
 /** 02:00, 채원's video call (Finale): what she says, in order. */
-export const VIDEO_CALL_LINES = ['…들려?', '여기 너무 어두워. 서랍 소리가 멈추질 않아', '잠깐. 네 카메라… 네 뒤에—'] as const;
+export const VIDEO_CALL_LINES = ['…들려?', '여기 너무 어두워. 서랍 소리가 멈추질 않아', '잠깐. 네 카메라… 네 뒤에도—'] as const;

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useGame } from '../../hooks/useGame';
 import { choose, openApp, openAttach, openThread, sendText, teaseTyping } from '../../engine/director';
-import { THREAD_META, THREAD_ORDER, lastSent } from '../../content/threads';
+import { THREAD_META, THREAD_ORDER, dayLabel, lastSent, timeline } from '../../content/threads';
 import type { Attach, ThreadId } from '../../engine/types';
 import { MEMO_TITLES } from '../../content/media';
 import { PhotoView } from './Gallery';
@@ -134,12 +134,9 @@ function Chat({ th }: { th: ThreadId }) {
     setName('');
   };
 
-  const dayHeaders: (string | null)[] = [];
-  let prevDay: string | undefined;
-  for (const m of msgs) {
-    dayHeaders.push(m.day && m.day !== prevDay ? m.day : null);
-    if (m.day) prevDay = m.day;
-  }
+  // A date line wherever the day changes — including past midnight tonight.
+  const days = timeline(msgs).map((t) => t.day);
+  const dayHeaders = days.map((d, i) => (i === 0 || d !== days[i - 1] ? dayLabel(d) : null));
   return (
     <div className="chat">
       <AppHeader
@@ -190,7 +187,7 @@ function Chat({ th }: { th: ThreadId }) {
             value={name}
             maxLength={12}
             onChange={(e) => setName(e.target.value)}
-            placeholder="이름 (이 기기에만 저장됩니다)"
+            placeholder="이름 (이 기기에만 저장 · 게임 화면에 나옵니다)"
             aria-label="이름"
           />
           <button type="submit" disabled={!name.trim()}>

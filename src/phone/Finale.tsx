@@ -6,7 +6,7 @@ import { HomeScreen } from './HomeScreen';
 import { VideoFeed } from '../art/phonePhotos';
 import { GhostVisual } from '../art/Ghost';
 import { speak } from '../audio/speech';
-import { CONTINUATION_KEY, FIRST_KEEPER } from '../content/archive';
+import { ARCHIVE, CONTINUATION_KEY, FIRST_KEEPER } from '../content/archive';
 import { CallIcon } from './CallIcon';
 import { VIDEO_CALL_LINES } from '../content/calls';
 import { setSave } from '../engine/state';
@@ -54,13 +54,13 @@ function buildRecall(): string[] {
   const lines = [
     '야간 색인 — 02:00:00',
     `방문자 #0027  ${s.playerName ?? '(이름을 알려 주지 않음)'}`,
-    `이 폰을 집은 지 ${Math.max(1, Math.round((Date.now() - s.startedAtReal) / 60000))}분.`,
+    `이 폰을 집은 지 (당신 시계로) ${Math.max(1, Math.round((Date.now() - s.startedAtReal) / 60000))}분.`,
     `사진 ${s.seenPhotos.length}장을 보았습니다.`,
     s.flags.includes('read-mom') ? '채원 씨 어머니의 메시지도 읽었죠.' : '채원 씨 어머니의 메시지는 끝내 읽지 않았죠.',
   ];
   // What you did tonight, the most telling first. Never more than four:
   // it should feel like being known, not like a stat screen.
-  const typed = [...s.inputs].reverse().map((e) => /(?:발신자 정보 없음|발신자 표시제한|모르는 번호|나에게)에게 보낸 메시지 "(.+)"$/.exec(e)?.[1]).find(Boolean);
+  const typed = [...s.inputs].reverse().map((e) => /(?:(?:발신자 정보 없음|발신자 표시제한|모르는 번호)에게|나에게(?:에게)?) 보낸 메시지 "(.+)"$/.exec(e)?.[1]).find(Boolean);
   const toMom = s.inputs.some((e) => /^엄마.*에게 보낸 메시지/.test(e));
   const personal: [boolean, string][] = [
     [s.flags.includes('named-her'), '그 이름을 저한테 보냈죠. 한동안 대답을 못 했어요. 그건 인정할게요.'],
@@ -200,20 +200,27 @@ export function Finale() {
 
   const submitKey = (e: FormEvent) => {
     e.preventDefault();
+    if (!input.trim()) return;
     const k = input.toUpperCase().replace(/\s/g, '').replace('해원', 'HAEWON').replace(/^HAEWON(\d)/, 'HAEWON-$1');
     if (k === CONTINUATION_KEY) {
       sfx('unlock');
       setInput('');
       setErr('');
+      // wrong keys don't count against the name
+      setTries(0);
       setStep('name');
     } else {
       sfx('error');
-      setErr('열쇠가 맞지 않습니다.');
+      const n = tries + 1;
+      setTries(n);
+      setErr(n >= 2 ? '열쇠가 맞지 않습니다. 기록 013에 적혀 있던 그 열쇠예요.' : '열쇠가 맞지 않습니다.');
     }
   };
 
   const submitName = (e: FormEvent) => {
     e.preventDefault();
+    // An empty box is not a wrong name.
+    if (!input.trim()) return;
     if (input.replace(/\s/g, '') === FIRST_KEEPER) {
       sfx('ending');
       reachEnding('release');
@@ -394,11 +401,15 @@ export function Finale() {
               <input id="fk" autoFocus value={input} onChange={(e) => setInput(e.target.value)} autoComplete="off" autoCapitalize="characters" />
               <button type="submit">입력</button>
               {err && <p className="final-err">{err}</p>}
+              {foundKey && <Reread id="r013" />}
+              <button type="button" className="final-back" onClick={() => (setStep('choice'), setErr(''), setTries(0), setInput(''))}>
+                …다른 선택
+              </button>
             </form>
           )}
           {step === 'sign' && (
             <form className="final-form" onSubmit={sign}>
-              <label htmlFor="fs">근무자 카드에 이름을 적으십시오</label>
+              <label htmlFor="fs">색인 담당자 카드에 이름을 적으십시오</label>
               <input id="fs" autoFocus value={input} maxLength={12} onChange={(e) => setInput(e.target.value)} autoComplete="off" />
               <button type="submit" disabled={!input.trim()}>
                 서명한다
@@ -414,6 +425,12 @@ export function Finale() {
               <input id="fn" autoFocus value={input} onChange={(e) => setInput(e.target.value)} autoComplete="off" />
               <button type="submit">입력</button>
               {err && <p className="final-err">{err}</p>}
+              {save.flags.includes('read-miryeong') && <Reread id="r003" />}
+              {tries === 0 && (
+                <button type="button" className="final-back" onClick={() => (setStep('choice'), setErr(''), setInput(''))}>
+                  …다른 선택
+                </button>
+              )}
             </form>
           )}
         </div>
@@ -437,3 +454,26 @@ function VideoIcon() {
     </svg>
   );
 }
+
+/** At 02:00 you can't open the browser any more — but what you already read, you can read again. */
+function Reread({ id }: { id: 'r013' | 'r003' }) {
+  const [open, setOpen] = useState(false);
+  const page = ARCHIVE[id];
+  if (!page) return null;
+  return (
+    <div className="reread">
+      <button type="button" className="final-back" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
+        {open ? '닫기' : `${page.title.split(' — ')[0]} 다시 보기`}
+      </button>
+      {open && (
+        <div className="reread-page">
+          <strong>{page.title}</strong>
+          {page.lines.map((l) => (
+            <p key={l}>{l}</p>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+

@@ -138,7 +138,8 @@ function VoiceBars({ who }: { who: CallLine['who'] | null }) {
 
 function ActiveCall({ id }: { id: string }) {
   const sound = useGame((s) => s.save.sound);
-  const [lines, setLines] = useState<CallLine[]>([]);
+  // Each caption keeps the speaker it had when it was said (도현's lines stay 도현's after she takes over).
+  const [lines, setLines] = useState<(CallLine & { label: string | null })[]>([]);
   const [choice, setChoice] = useState(false);
   const [phase, setPhase] = useState<'main' | 'after'>('main');
   const [elapsed, setElapsed] = useState(0);
@@ -159,7 +160,7 @@ function ActiveCall({ id }: { id: string }) {
     script.forEach((l) =>
       timers.current.push(
         setTimeout(() => {
-          setLines((x) => [...x.slice(-2), l]);
+          setLines((x) => [...x.slice(-2), { ...l, label: l.who === 'caller' ? call.label : l.who === 'other' ? '???' : null }]);
           if (l.who === 'sfx') sfx(l.text.includes('종료') ? 'hangup' : 'static');
           else if (sound && l.voice) speak(l.text, l.voice);
           // The bars move for about as long as the line takes to say.
@@ -223,7 +224,6 @@ function ActiveCall({ id }: { id: string }) {
     stopSpeech();
     endCall(call.id, phase === 'after' || !call.choice);
   };
-  const who = (l: CallLine) => (l.who === 'caller' ? (hijacked ? '???' : call.label) : l.who === 'other' ? '???' : null);
   const status = elapsed < 1 ? '연결 중…' : noisy ? '연결 상태 불안정' : `${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, '0')}`;
   return (
     <div className={`callscreen${hijacked ? ' hijacked' : ''}`} role="dialog" aria-label="통화 중">
@@ -240,7 +240,7 @@ function ActiveCall({ id }: { id: string }) {
       <div className="call-subs" aria-live="polite">
         {lines.map((l, i) => (
           <p key={`${l.at}-${i}`} className={`sub ${l.who}${i === lines.length - 1 ? ' now' : ' past'}`}>
-            {who(l) && <span className="sub-who">{who(l)}</span>}
+            {l.label && <span className="sub-who">{l.label}</span>}
             <span className="sub-text">{l.text}</span>
           </p>
         ))}
