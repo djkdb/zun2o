@@ -50,6 +50,10 @@ export function BrowserApp() {
     }
     setView({ kind: 'page', id });
     emit(`browser:${id}`);
+    // Reached the last record of the sequence, but not in broadcast order: say so, without saying the order.
+    if (!indexed && id === ARCHIVE_SEQUENCE[ARCHIVE_SEQUENCE.length - 1] && seq.join(',') !== ARCHIVE_SEQUENCE.join(',') && getState().save.flags.includes('self-contact')) {
+      setTimeout(() => setNotice('열람 순서가 방송 순서와 다릅니다. 기록 013은 색인되지 않았습니다.'), 900);
+    }
     if (!indexed && seq.join(',') === ARCHIVE_SEQUENCE.join(',')) {
       // Too early: record 013 is being written about *you*, and you aren't there yet.
       if (!getState().save.flags.includes('self-contact')) {

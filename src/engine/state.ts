@@ -76,8 +76,8 @@ export function newSave(keep?: Partial<Save>): Save {
     notes: ['n1', 'n2', 'n3', 'n5'],
     seenPhotos: [],
     calls: [
-      { who: '도현', time: '03:10', kind: 'missed', count: 14 },
       { who: '엄마', time: '23:12', kind: 'missed', count: 6 },
+      { who: '도현', time: '03:10', kind: 'missed', count: 14 },
       { who: '0200', time: '02:00', kind: 'in' },
     ],
     playerName: null,

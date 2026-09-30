@@ -147,6 +147,13 @@ export function MemosApp() {
   const [open, setOpen] = useState<Memo | null>(deepMemo);
   const memos = useGame((s) => s.save.memos);
   const synced = useGame((s) => s.save.flags.includes('call1-done'));
+  // Tapping the damaged file does something: a burst of static, and a detail that doesn't add up.
+  const [broken, setBroken] = useState(false);
+  useEffect(() => {
+    if (!broken) return;
+    const t = setTimeout(() => setBroken(false), 2600);
+    return () => clearTimeout(t);
+  }, [broken]);
   useEffect(() => {
     if (getState().rt.deep) setRt({ deep: null });
   }, []);
@@ -180,9 +187,18 @@ export function MemosApp() {
               </div>
             )}
           </li>
-          <li className="memo-old">
-            <strong>새 녹음 16</strong>
-            <span>9월 25일 · 0:12 · 손상된 파일</span>
+          <li>
+            <button
+              type="button"
+              className="memo-old"
+              onClick={() => {
+                sfx('static');
+                setBroken(true);
+              }}
+            >
+              <strong>새 녹음 16</strong>
+              <span>{broken ? '파일이 손상되어 재생할 수 없습니다. · 마지막 재생: 오늘 02:00' : '9월 25일 · 0:12 · 손상된 파일'}</span>
+            </button>
           </li>
         </ul>
       )}
