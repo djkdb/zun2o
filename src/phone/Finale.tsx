@@ -9,6 +9,7 @@ import { speak } from '../audio/speech';
 import { CONTINUATION_KEY, FIRST_KEEPER } from '../content/archive';
 import { CallIcon } from './CallIcon';
 import { setSave } from '../engine/state';
+import { art } from '../art/photoArt';
 
 // ─────────────────────────────────────────────────────────────────────────
 // 02:00. The clock stops, the phone floods, the home screen empties, 채원
@@ -99,6 +100,9 @@ export function Finale() {
   const [pip, setPip] = useState(0);
   const [slide, setSlide] = useState(0);
   const [blackout, setBlackout] = useState(false);
+  // The video call: the line breaks up as she gets close, and it won't hang up.
+  const [unstable, setUnstable] = useState(false);
+  const [noHangup, setNoHangup] = useState(false);
 
   // Scripted timeline up to the ringing video call.
   useEffect(() => {
@@ -148,6 +152,7 @@ export function Finale() {
       setTimeout(() => {
         say('잠깐. 네 카메라… 네 뒤에—');
         sfx('whisper');
+        setUnstable(true);
       }, 6500),
       setTimeout(() => {
         setScare(true);
@@ -163,6 +168,7 @@ export function Finale() {
       clearInterval(iv);
       clearInterval(pipIv);
       ts.forEach(clearTimeout);
+      setUnstable(false);
     };
   }, [step]);
 
@@ -259,8 +265,14 @@ export function Finale() {
       )}
       {step === 'ring' && (
         <div className="incoming video">
+          <div className="call-backdrop video-ring" aria-hidden="true">
+            {art('avatar-self') && <img src={art('avatar-self')} alt="" draggable={false} />}
+          </div>
           <div className="incoming-top">
-            <small>영상 통화</small>
+            <span className="call-avatar pic">{art('avatar-self') ? <img src={art('avatar-self')} alt="" draggable={false} /> : null}</span>
+            <small className="video-kind">
+              <VideoIcon /> 영상 통화
+            </small>
             <h2>채원</h2>
             <p className="finale-auto">자동으로 연결됩니다…</p>
           </div>
@@ -275,10 +287,59 @@ export function Finale() {
         </div>
       )}
       {step === 'video' && (
-        <div className="video-call">
+        <div className={`video-call${unstable ? ' unstable' : ''}`}>
           <VideoFeed close={Math.min(close, 0.3)} pip={pip} />
-          <div className="video-label">채원 · 영상 통화</div>
-          <p className="video-sub">{sub}</p>
+          <div className="video-top">
+            <strong>채원</strong>
+            <span className="video-status">
+              <span className={`video-signal s${close < 0.3 ? 3 : close < 0.62 ? 2 : 1}`} aria-hidden="true">
+                <i />
+                <i />
+                <i />
+              </span>
+              {unstable ? '연결 상태 불안정' : `0:${String(Math.floor(close * 9.5)).padStart(2, '0')}`}
+            </span>
+          </div>
+          {sub && (
+            <p className="video-sub" aria-live="polite">
+              <span className="sub-who">채원</span>
+              <span>{sub}</span>
+            </p>
+          )}
+          {noHangup && <p className="video-toast">통화를 종료할 수 없습니다</p>}
+          <div className="video-controls">
+            <button type="button" className="call-ctl" disabled>
+              <span className="call-ctl-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor" />
+                  <path d="M16 8.5a5 5 0 010 7" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+                </svg>
+              </span>
+              스피커
+            </button>
+            <button
+              type="button"
+              className="hangup"
+              aria-label="통화 종료"
+              onClick={() => {
+                // She does not let you go.
+                sfx('key');
+                vibrate([40]);
+                setNoHangup(true);
+                setTimeout(() => setNoHangup(false), 1600);
+              }}
+            >
+              <CallIcon down />
+            </button>
+            <button type="button" className="call-ctl" disabled>
+              <span className="call-ctl-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M4 8h10a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1zM15 11l5-3v8l-5-3z" fill="currentColor" />
+                </svg>
+              </span>
+              카메라 전환
+            </button>
+          </div>
         </div>
       )}
       {(step === 'recall' || step === 'choice' || step === 'key' || step === 'name' || step === 'sign') && (
@@ -354,5 +415,13 @@ export function Finale() {
         </div>
       )}
     </div>
+  );
+}
+
+function VideoIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" style={{ verticalAlign: '-2px' }}>
+      <path d="M4 7h10a1 1 0 011 1v8a1 1 0 01-1 1H4a1 1 0 01-1-1V8a1 1 0 011-1zM16 10.5l5-3v9l-5-3z" fill="currentColor" />
+    </svg>
   );
 }

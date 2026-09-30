@@ -1945,22 +1945,11 @@ svg {
   background: #000;
 }
 
-.video-call svg {
+.video-call > svg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-}
-
-.video-label {
-  position: absolute;
-  top: 56px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: 13px;
-  color: #ddd;
-  text-shadow: 0 1px 3px #000;
 }
 
 .video-sub {
@@ -3766,4 +3755,192 @@ body,
 .reduce-fx .voice-bars.talking i {
   animation: none;
   height: 10px;
+}
+
+/* ─── video call: top info, signal, captions, controls ──────────────── */
+.call-backdrop.video-ring {
+  background: linear-gradient(180deg, #230a0a, #050303);
+}
+
+.incoming.video {
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.incoming.video .call-avatar.pic img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.video-call::before,
+.video-call::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.video-call::before {
+  top: 0;
+  height: 150px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.7), transparent);
+}
+
+.video-call::after {
+  bottom: 0;
+  height: 260px;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.85), transparent);
+}
+
+.video-top {
+  position: absolute;
+  top: 48px;
+  left: 20px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-shadow: 0 1px 4px #000;
+}
+
+.video-top strong {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.video-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #d6d7db;
+  font-variant-numeric: tabular-nums;
+}
+
+.video-call.unstable .video-status {
+  color: #e8b45a;
+}
+
+.video-signal {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 11px;
+}
+
+.video-signal i {
+  width: 3px;
+  border-radius: 1px;
+  background: currentColor;
+  opacity: 0.3;
+}
+
+.video-signal i:nth-child(1) {
+  height: 4px;
+}
+
+.video-signal i:nth-child(2) {
+  height: 7px;
+}
+
+.video-signal i:nth-child(3) {
+  height: 11px;
+}
+
+.video-signal.s1 i:nth-child(1),
+.video-signal.s2 i:nth-child(-n + 2),
+.video-signal.s3 i {
+  opacity: 1;
+}
+
+/* the picture breaks up for a moment when she says it */
+.video-call.unstable > svg {
+  animation: video-drop 1.8s steps(1) both;
+}
+
+@keyframes video-drop {
+  0% {
+    filter: contrast(1.3) brightness(0.8) saturate(0.4);
+  }
+  12% {
+    filter: blur(2px) brightness(0.6);
+  }
+  30% {
+    filter: none;
+  }
+  55% {
+    filter: blur(1.5px) contrast(1.2) brightness(0.7);
+  }
+  70%,
+  100% {
+    filter: saturate(0.7);
+  }
+}
+
+.video-call .video-sub {
+  position: absolute;
+  z-index: 2;
+  bottom: calc(150px + env(safe-area-inset-bottom));
+  left: 20px;
+  right: 20px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 18px;
+  line-height: 1.45;
+  text-align: center;
+  text-shadow: 0 2px 8px #000;
+  animation: slide-in 0.3s ease both;
+}
+
+.video-toast {
+  position: absolute;
+  z-index: 3;
+  top: 42%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(20, 20, 22, 0.85);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.video-controls {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  bottom: calc(40px + env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 34px;
+}
+
+.video-controls .hangup {
+  flex: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .video-call.unstable > svg {
+    animation: none;
+  }
+}
+
+.reduce-fx .video-call.unstable > svg {
+  animation: none;
 }
