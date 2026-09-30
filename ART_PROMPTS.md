@@ -215,17 +215,16 @@ panels 6–8 are ordinary, bright, everyday social-media profile photos.
 
 ## 발신자 표시제한 프로필 사진 (`avatar-unknown`)
 
-`src/assets/art/avatar-unknown.webp` (정사각형, 256px 이상)로 넣으면 대화 목록·잠금화면 알림·통화 화면에 쓰입니다.
-없으면 지금의 그림(머리카락이 너무 긴 기본 실루엣)이 나옵니다.
+`src/assets/art/avatar-unknown.webp` (정사각형, 256px). 대화 목록·잠금화면 알림·통화 화면에 쓰입니다.
+현재 들어 있는 것은 아래 프롬프트로 제작자가 생성한 이미지를 머리·어깨 중심으로 잘라 256px로 줄인 것입니다.
+(“실제 사진 / 저화질 / 여성” 같은 표현을 쓰면 생성이 거부될 수 있어, 가상의 유령 캐릭터·영화 스틸로 표현했습니다.)
 
 ```
-A square contact profile picture that at first glance looks like the default grey "no photo" avatar of a phone:
-a flat, soft grey circle-and-shoulders silhouette on a slightly lighter grey background, centred, simple.
-But it is a real photograph, not an icon: an extremely dark, low-resolution, heavily JPEG-compressed photo of a
-woman standing very still in a pitch-black archive room, shot straight on from chest up. Her long wet black hair
-hangs completely over her face, down past her shoulders, darker than the grey silhouette shape around it.
-She wears a pale grey 1990s office cardigan. Colour almost fully desaturated, cold grey-green tint,
-faint sensor noise, one tiny pinpoint of reflected light where an eye would be behind the hair.
-No text, no watermark, no frame, no UI. It must still read as "a grey default avatar" at 48 px,
-and only become disturbing when looked at closely.
+Square profile icon for a horror game character. Cinematic still from a Korean horror film:
+a fictional ghost of a 1990s night-shift archivist, seen from the chest up, facing the camera,
+her long straight black hair falling over her whole face. Pale grey office cardigan.
+She stands in a dark archive room with rows of old wooden index drawers softly out of focus behind her.
+Almost monochrome, cold grey-green grading, soft film grain, gentle vignette.
+Composition is simple and centred on a grey background glow, so at small size it reads like
+a plain grey default contact avatar. No text, no logo, no frame.
 ```
