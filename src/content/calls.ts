@@ -70,3 +70,6 @@ export const CALLS: Record<string, CallScript> = {
     ],
   },
 };
+
+/** 02:00, 채원's video call (Finale): what she says, in order. */
+export const VIDEO_CALL_LINES = ['…들려?', '여기 너무 어두워. 서랍 소리가 멈추질 않아', '잠깐. 네 카메라… 네 뒤에—'] as const;

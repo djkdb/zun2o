@@ -8,6 +8,7 @@ import { GhostVisual } from '../art/Ghost';
 import { speak } from '../audio/speech';
 import { CONTINUATION_KEY, FIRST_KEEPER } from '../content/archive';
 import { CallIcon } from './CallIcon';
+import { VIDEO_CALL_LINES } from '../content/calls';
 import { setSave } from '../engine/state';
 import { art } from '../art/photoArt';
 
@@ -147,10 +148,10 @@ export function Finale() {
     const pipStart = performance.now() + 6500;
     const pipIv = setInterval(() => setPip(Math.max(0, Math.min(1, (performance.now() - pipStart) / 2600))), 80);
     const ts = [
-      setTimeout(() => say('…들려?'), 600),
-      setTimeout(() => say('여기 너무 어두워. 서랍 소리가 멈추질 않아'), 2800),
+      setTimeout(() => say(VIDEO_CALL_LINES[0]), 600),
+      setTimeout(() => say(VIDEO_CALL_LINES[1]), 2800),
       setTimeout(() => {
-        say('잠깐. 네 카메라… 네 뒤에—');
+        say(VIDEO_CALL_LINES[2]);
         sfx('whisper');
         setUnstable(true);
       }, 6500),

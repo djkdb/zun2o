@@ -14,7 +14,8 @@
     "qa": "node scripts/playtest.mjs",
     "deploy:cf": "npm run build && npx wrangler deploy",
     "icons": "node scripts/icons.mjs",
-    "qa:layout": "node scripts/layout.mjs"
+    "qa:layout": "node scripts/layout.mjs",
+    "voices": "node --experimental-strip-types --no-warnings scripts/voices.mjs"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.3.0",
