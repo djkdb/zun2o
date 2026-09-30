@@ -228,3 +228,50 @@ Almost monochrome, cold grey-green grading, soft film grain, gentle vignette.
 Composition is simple and centred on a grey background glow, so at small size it reads like
 a plain grey default contact avatar. No text, no logo, no frame.
 ```
+
+---
+
+## 4차 시트 — 학교로 바뀐 배경 9장 (폐교된 해원고등학교)
+
+무대가 군청 별관에서 **폐교된 해원고등학교 도서관**으로 바뀌어, 학교 느낌이 필요한 9장만 다시 뽑습니다.
+`room02`(카드 목록 서랍)·`black-empty`(귀신 사진과 같은 구도)·`tower`(방송 송신탑)는 그대로 씁니다.
+
+| 칸 | 파일 이름 | 게임 속 위치 |
+|---|---|---|
+| 1 | `wallpaper` | 잠금화면 배경 · 첫 화면: 밤의 폐교 전경 |
+| 2 | `annex-gate` | 사진 00:59: 학교 정문 |
+| 3 | `lobby` | 사진 01:14: 1층 현관 |
+| 4 | `stairs` | 사진 01:25: 계단 |
+| 5 | `stairs-figure` | 4번과 같은 구도 + 계단 위의 형체 |
+| 6 | `corridor` | 사진 01:32: 3층 복도 |
+| 7 | `reading-empty` | 사진 01:40: 도서관 열람실 |
+| 8 | `reading-figure` | 7번과 같은 구도 + 책상 사이의 형체 |
+| 9 | `room02-door` | 숨김 앨범 1번: 벽돌로 막힌 제2서고 문 |
+
+```
+Create ONE high-resolution image: a 3×3 contact sheet of 9 separate portrait (3:4) photographs for the same
+found-phone horror game as the reference sheet. Thin black gutters, NO numbers, NO text overlays except signs
+that are physically in the scene. Every panel looks like a real photo taken on an old smartphone at night in an
+abandoned Korean high school that closed in 1995: harsh phone flash or a single flashlight, crushed blacks,
+sensor noise, slight motion blur, desaturated cold green-grey tones, dust in the air. No people unless stated.
+
+1. Night, from outside the rusty school fence: an abandoned 3-storey concrete Korean high school building,
+   rows of dark classroom windows, one window on the third floor faintly lit yellow, an empty dirt sports field
+   in front, a flagpole without a flag, weeds.
+2. The school's main gate at night: two rusty iron sliding gates, the heavy chain cut and hanging, a padlock on
+   the ground, a weathered stone plaque on the gate pillar that reads "해원고등학교".
+3. The ground-floor entrance hall: rows of wooden shoe lockers with small doors hanging open, a faded floor
+   directory board on the wall with Korean text "3층 도서관", dead leaves and loose papers on a terrazzo floor.
+4. A narrow school stairwell seen from the bottom, green-painted lower walls, a metal handrail, a small sign
+   "3층" on the landing, the top of the stairs disappearing into complete darkness.
+5. EXACTLY the same photo as panel 4 — same angle, same light, same framing — but at the very top of the
+   stairs, barely visible in the dark, a pale woman with long black hair covering her face stands still.
+6. The third-floor corridor: long row of classroom doors with small hanging room signs, windows on one side
+   showing the night, peeling paint, at the far end one door with warm yellow light leaking out.
+7. The school library reading room: long wooden reading tables with chairs pushed in, tall bookshelves,
+   a desk lamp that is on, an old wall clock stopped at 2:00, dust sheets over a few shelves.
+8. EXACTLY the same photo as panel 7 — same angle, same light — but between two tables in the back, a dark
+   figure of a woman stands with her head tilted, half hidden by shadow, very easy to miss.
+9. At the end of the corridor, a door with a small plate "제2서고" whose doorway has been bricked up
+   from the inside, mortar oozing between uneven red bricks, a few library cards on the floor in front of it.
+```
