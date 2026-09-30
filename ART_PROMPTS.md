@@ -275,3 +275,30 @@ sensor noise, slight motion blur, desaturated cold green-grey tones, dust in the
 9. At the end of the corridor, a door with a small plate "제2서고" whose doorway has been bricked up
    from the inside, mortar oozing between uneven red bricks, a few library cards on the floor in front of it.
 ```
+
+## 시트 5 — 아직 코드로 그리는 두 장 (방문자 카드 · 평면도)
+
+지금 사진 대신 SVG로 그리고 있는 건 이 두 장뿐이다. 글자는 AI가 틀리게 쓰기 쉬우므로 **글자 없는 이미지**를 받고, 이름·시각·방 이름은 게임이 그 위에 타자기 글씨로 얹는다(이름이 플레이어마다 바뀌기 때문에도 그래야 한다).
+
+| # | 슬롯 | 쓰이는 곳 |
+|---|---|---|
+| 1 | `index-card` | 숨김 앨범 3번 “서랍 안에 내 카드가 있었다.” (01:56) |
+| 2 | `floorplan` | 최근 항목 p06 “벽에 붙어 있던 평면도.”, 기록 005 |
+
+```
+Create ONE high-resolution image: a 1×2 sheet of 2 separate portrait (3:4) photographs for the same found-phone
+horror game as the reference sheets. Thin black gutters, NO numbers, NO letters, NO writing anywhere.
+Both look like real photos taken on an old smartphone at night with harsh flash: crushed blacks, sensor noise,
+cold desaturated green-grey tones, dust in the air.
+
+1. Extreme close-up inside a dark archive room: a long wooden library card-catalogue drawer pulled open,
+   packed with old yellowed index cards; ONE card stands up higher than the others, facing the camera,
+   filling the middle of the frame. The card is COMPLETELY BLANK: faint pre-printed horizontal ruled lines,
+   one thin red line near the top, a round punch hole at the bottom, slightly curled and water-stained edges.
+   Flash hot-spot on the card, everything around falls off into black. No text on the card.
+2. A faded evacuation floor plan in a cheap plastic frame, screwed to a peeling green school corridor wall,
+   photographed slightly from below with flash glare on the plastic. The plan shows a simple top-down
+   outline of one floor: a long corridor with six rectangular rooms around it, one room in the upper middle
+   cross-hatched in red, a small red dot for "you are here", a green running-man exit pictogram in a corner.
+   The plan has NO readable text, only empty label boxes. Dust, a dead moth inside the frame.
+```
