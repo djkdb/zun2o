@@ -226,12 +226,12 @@ function FloorPlanInner({ level }: SceneProps) {
   const ink = '#2c3a57';
   const doorOpen = level >= 3;
   const rooms: { id: string; x: number; y: number; w: number; h: number; label: string }[] = [
-    { id: '01', x: 40, y: 40, w: 180, h: 150, label: '01호실 — 서고' },
+    { id: '01', x: 40, y: 40, w: 180, h: 150, label: '제1서고' },
     { id: '02', x: 220, y: 40, w: 150, h: 150, label: '제2서고 — 색인' },
-    { id: '03', x: 370, y: 40, w: 230, h: 150, label: '03호실 — 열람실' },
-    { id: '04', x: 40, y: 250, w: 170, h: 130, label: '04호실 — 야간 근무실' },
-    { id: '05', x: 210, y: 250, w: 190, h: 130, label: '05호실 — 마이크로필름' },
-    { id: '06', x: 400, y: 250, w: 200, h: 130, label: '06호실 — 창고' },
+    { id: '03', x: 370, y: 40, w: 230, h: 150, label: '열람실' },
+    { id: '04', x: 40, y: 250, w: 170, h: 130, label: '사서실 (야간)' },
+    { id: '05', x: 210, y: 250, w: 190, h: 130, label: '대출실' },
+    { id: '06', x: 400, y: 250, w: 200, h: 130, label: '자료 보관실' },
   ];
   return (
     <svg viewBox="0 0 640 420" role="img" aria-label="3층 평면도. 복도를 둘러싼 방 여섯 개. 색인 서고인 제2서고는 빗금이 쳐져 있고 봉인이라고 적혀 있다.">
