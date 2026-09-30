@@ -11,6 +11,7 @@ import { CallIcon } from './CallIcon';
 import { VIDEO_CALL_LINES } from '../content/calls';
 import { setSave } from '../engine/state';
 import { art } from '../art/photoArt';
+import { VIDEO } from '../art/videos';
 
 // ─────────────────────────────────────────────────────────────────────────
 // 02:00. The clock stops, the phone floods, the home screen empties, 채원
@@ -105,6 +106,8 @@ export function Finale() {
   // The video call: the line breaks up as she gets close, and it won't hang up.
   const [unstable, setUnstable] = useState(false);
   const [noHangup, setNoHangup] = useState(false);
+  // 채원's side of the call is a real clip; if it can't play, the drawn feed takes over.
+  const [clipOk, setClipOk] = useState(true);
 
   // Scripted timeline up to the ringing video call.
   useEffect(() => {
@@ -290,7 +293,14 @@ export function Finale() {
       )}
       {step === 'video' && (
         <div className={`video-call${unstable ? ' unstable' : ''}`}>
-          <VideoFeed close={Math.min(close, 0.3)} pip={pip} />
+          {clipOk && (
+            <video className="video-clip" autoPlay muted playsInline preload="auto">
+              <source src={VIDEO.videocall} type="video/mp4" />
+              {/* the last source failing means nothing could play: fall back to the drawn feed */}
+              <source src={VIDEO.videocallWebm} type="video/webm" onError={() => setClipOk(false)} />
+            </video>
+          )}
+          <VideoFeed close={Math.min(close, 0.3)} pip={pip} clip={clipOk} />
           <div className="video-top">
             <strong>채원</strong>
             <span className="video-status">

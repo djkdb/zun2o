@@ -238,6 +238,38 @@ export const BEATS: Beat[] = [
       },
     ],
   },
+  // The camera recording that "failed to save": ten seconds of it come back. Found by looking at the
+  // stairs photo it was taken with — or, at the latest, handed over when the hidden album is.
+  {
+    id: 'v01-stairs',
+    on: 'photo:p03',
+    requires: ['reveal-scare'],
+    forbids: ['v01-given'],
+    actions: [
+      { t: 'flag', f: 'v01-given' },
+      { t: 'wait', ms: 2200 },
+      { t: 'photo', id: 'v01' },
+      { t: 'notify', app: 'gallery', title: '사진', body: '손상된 동영상 1개를 복구했습니다.' },
+      { t: 'msg', th: 'unknown', text: '그 계단, 영상도 있어요. 끝까지 봐요.', typing: 1400, attach: { kind: 'photo', id: 'v01' } },
+    ],
+  },
+  {
+    id: 'v01-late',
+    on: 'c2:done',
+    forbids: ['v01-given'],
+    actions: [
+      { t: 'flag', f: 'v01-given' },
+      // after the chapter card and the hidden-album messages
+      { t: 'wait', ms: 14000 },
+      { t: 'photo', id: 'v01' },
+      { t: 'msg', th: 'unknown', text: '채원 씨 영상, 전부 날아간 건 아니에요.', typing: 1600, attach: { kind: 'photo', id: 'v01' } },
+    ],
+  },
+  {
+    id: 'v01-end',
+    on: 'video:v01:end',
+    actions: [{ t: 'wait', ms: 1400 }, { t: 'msg', th: 'unknown', text: '계단 위에요. 채원 씨는 그날 끝까지 올라갔어요.', typing: 1800 }],
+  },
   {
     id: 'memo-end',
     on: 'memo:m1:end',

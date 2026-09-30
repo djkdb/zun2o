@@ -3,6 +3,7 @@ import { useGame } from '../../hooks/useGame';
 import { applyChapterMix, emit, markPhoto, mix, openApp, sfx, vibrate } from '../../engine/director';
 import { addFlag, getState, hasFlag, logInput, setRt } from '../../engine/state';
 import { HIDDEN_ALBUM_CODE, PHOTOS, type PhotoItem } from '../../content/media';
+import { VIDEO } from '../../art/videos';
 import { AppHeader } from '../AppHeader';
 import { AnnexPhoto, FloorPlan, ReadingRoomPhoto, Room02Photo } from '../../art/scenes';
 import { art } from '../../art/photoArt';
@@ -11,9 +12,64 @@ import { BlackPhoto, BoothPhoto, BoothShelfPhoto, REVEAL_AT, SlotPhoto, Corridor
 /** Photos that change if you stare at them zoomed in. */
 const DWELL_PHOTOS = ['p03', 'p05', 'p08'];
 
+/** The recovered clip, as a still: thumbnail and chat card. */
+function VideoStill() {
+  return (
+    <span className="video-still">
+      <img src={VIDEO.recoveredPoster} alt="복구된 동영상. 어두운 계단." draggable={false} />
+      <span className="video-still-play" aria-hidden="true">
+        ▶
+      </span>
+      <span className="video-still-len">0:10</span>
+    </span>
+  );
+}
+
+/** Plays the recovered clip in the viewer. Sound only if the game's sound is on. */
+function RecoveredVideo() {
+  const sound = useGame((s) => s.save.sound);
+  const ref = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const [ended, setEnded] = useState(false);
+  const play = () => {
+    const v = ref.current;
+    if (!v) return;
+    v.currentTime = 0;
+    v.muted = !sound;
+    setEnded(false);
+    void v.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
+  };
+  return (
+    <div className="recovered">
+      <video
+        ref={ref}
+        poster={VIDEO.recoveredPoster}
+        playsInline
+        preload="auto"
+        onEnded={() => {
+          setPlaying(false);
+          setEnded(true);
+          emit('video:v01:end');
+        }}
+      >
+        <source src={VIDEO.recovered} type="video/mp4" />
+        <source src={VIDEO.recoveredWebm} type="video/webm" />
+      </video>
+      {!playing && (
+        <button type="button" className="recovered-play" onClick={play} aria-label={ended ? '다시 재생' : '재생'}>
+          {ended ? '↻' : '▶'}
+        </button>
+      )}
+      <span className="recovered-tag">REC 01:25 · 복구됨</span>
+    </div>
+  );
+}
+
 export function PhotoView({ id, brightness = 0, changed = false }: { id: string; brightness?: number; changed?: boolean }) {
   const flags = useGame((s) => s.save.flags);
   switch (id) {
+    case 'v01':
+      return <VideoStill />;
     case 'p00':
       return <BoothShelfPhoto />;
     case 'p01':
@@ -120,6 +176,8 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
   };
 
   const onDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    // A video has its own controls: no double-tap zoom.
+    if (photo.video) return;
     press.current = { x: e.clientX, y: e.clientY, ox: zoom?.x ?? 50, oy: zoom?.y ?? 50, moved: false };
   };
   const onMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -172,13 +230,17 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
         onPointerUp={onUp}
         onPointerCancel={() => (press.current = null)}
       >
-        <div key={photo.id} className="viewer-zoom" style={zoom ? { transform: 'scale(2.5)', transformOrigin: `${zoom.x}% ${zoom.y}%` } : undefined}>
-          <PhotoView id={photo.id} brightness={brightness} changed={dwelt === photo.id || hasFlag(`dwell-${photo.id}`)} />
-        </div>
+        {photo.video ? (
+          <RecoveredVideo key={photo.id} />
+        ) : (
+          <div key={photo.id} className="viewer-zoom" style={zoom ? { transform: 'scale(2.5)', transformOrigin: `${zoom.x}% ${zoom.y}%` } : undefined}>
+            <PhotoView id={photo.id} brightness={brightness} changed={dwelt === photo.id || hasFlag(`dwell-${photo.id}`)} />
+          </div>
+        )}
       </div>
       <p className="viewer-caption">
         {photo.caption || ' '}
-        {!edit && <small className="viewer-zoomhint">{zoom ? '두 번 탭: 원래대로' : '두 번 탭: 확대'}</small>}
+        {!edit && !photo.video && <small className="viewer-zoomhint">{zoom ? '두 번 탭: 원래대로' : '두 번 탭: 확대'}</small>}
       </p>
       {edit && photo.id === 'p07' ? (
         <div className="editor">

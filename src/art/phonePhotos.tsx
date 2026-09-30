@@ -502,7 +502,8 @@ export const BoothShelfPhoto = memo(function BoothShelfPhoto() {
  * Video call at 02:00: 채원's face lit by her phone. `close` 0..1 — past
  * 0.35 something rises behind her shoulder and keeps coming.
  */
-export const VideoFeed = memo(function VideoFeed({ close = 0, pip = 0 }: { close?: number; pip?: number }) {
+/** `clip`: a real video plays underneath — draw only the overlay (your camera, top right). */
+export const VideoFeed = memo(function VideoFeed({ close = 0, pip = 0, clip = false }: { close?: number; pip?: number; clip?: boolean }) {
   const id = useSvgId();
   const her = Math.max(0, (close - 0.35) / 0.65);
   const photo = !!art('video-chaewon');
@@ -510,25 +511,27 @@ export const VideoFeed = memo(function VideoFeed({ close = 0, pip = 0 }: { close
     <svg viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <Defs id={id} flashX={50} flashY={62} />
       <ChaewonDefs id={id} blur={`${1 + her * 1.5} 0.5`} />
-      <g filter={photo ? undefined : `url(#${id}-n)`}>
-        <rect width="390" height="844" fill="#060504" />
-        {Array.from({ length: 14 }).map((_, r) =>
-          Array.from({ length: 6 }).map((__, c) => <rect key={`${r}${c}`} x={6 + c * 64} y={20 + r * 58} width="56" height="48" fill="#141009" />),
-        )}
-        {her > 0 && (
-          <g transform={`translate(${300 - her * 60} ${300 + her * 30}) scale(${0.3 + her * 0.55})`} opacity={Math.min(1, her * 1.6)}>
-            <GhostCurtain distort={false} />
+      {!clip && (
+        <g filter={photo ? undefined : `url(#${id}-n)`}>
+          <rect width="390" height="844" fill="#060504" />
+          {Array.from({ length: 14 }).map((_, r) =>
+            Array.from({ length: 6 }).map((__, c) => <rect key={`${r}${c}`} x={6 + c * 64} y={20 + r * 58} width="56" height="48" fill="#141009" />),
+          )}
+          {her > 0 && (
+            <g transform={`translate(${300 - her * 60} ${300 + her * 30}) scale(${0.3 + her * 0.55})`} opacity={Math.min(1, her * 1.6)}>
+              <GhostCurtain distort={false} />
+            </g>
+          )}
+          <g transform="translate(-40 200) scale(1.12)">
+            <ChaewonFigure id={id} />
           </g>
-        )}
-        <g transform="translate(-40 200) scale(1.12)">
-          <ChaewonFigure id={id} />
+          <ArtImage slot="video-chaewon" w={390} h={844} align="xMaxYMid" />
+          {/* she comes in over the right shoulder: keep that side of the frame */}
+          {her > 0 && <ArtImage slot="video-behind" w={390} h={844} align="xMaxYMid" style={{ opacity: Math.min(1, her * 1.4) }} />}
+          {/* a real photo has its own light; the drawn flash falloff would ring it in an oval */}
+          {!photo && <rect width="390" height="844" fill={`url(#${id}-flash)`} />}
         </g>
-        <ArtImage slot="video-chaewon" w={390} h={844} align="xMaxYMid" />
-        {/* she comes in over the right shoulder: keep that side of the frame */}
-        {her > 0 && <ArtImage slot="video-behind" w={390} h={844} align="xMaxYMid" style={{ opacity: Math.min(1, her * 1.4) }} />}
-        {/* a real photo has its own light; the drawn flash falloff would ring it in an oval */}
-        {!photo && <rect width="390" height="844" fill={`url(#${id}-flash)`} />}
-      </g>
+      )}
       {pip === 0 ? (
         <>
           <rect x="272" y="96" width="96" height="140" rx="10" fill="#111" stroke="#333" />
