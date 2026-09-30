@@ -234,9 +234,9 @@ export function Finale() {
     vibrate([200]);
     setTimeout(() => setBlackout(false), 1600);
     if (n >= 2) {
-      setErr('그건 그녀의 이름이 아닙니다. 당신의 이름이 기록됩니다.');
+      setErr('처음 갇힌 사람의 이름이 아닙니다. 당신의 이름이 기록됩니다.');
       setTimeout(() => reachEnding('shift'), 2600);
-    } else setErr('그건 그녀의 이름이 아닙니다. 한 번 더.');
+    } else setErr('처음 갇힌 사람의 이름이 아닙니다. 한 번 더.');
   };
 
   const powerOff = () => {

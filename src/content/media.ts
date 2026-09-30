@@ -104,7 +104,7 @@ export const NOTES: Record<string, NoteItem> = {
     date: '오늘',
     body: `방문자 #0027
 이름: {name}
-도착: {start}
+들어옴: {start} (폰을 주운 시각)
 열람: 사진 {photos}장, 녹음 {memos}개
 
 02:00까지 얼마 남지 않았습니다.`,

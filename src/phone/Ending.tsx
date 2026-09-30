@@ -16,7 +16,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
   poweroff: {
     n: 1,
     title: '전원 끄기',
-    line: '당신은 도망쳤다. 02:00, 출입 기록에는 가장 가까이 있던 사람의 이름이 남았다.',
+    line: '당신은 도망쳤다. 02:00, 출입 기록에는 안에 남아 있던 도현의 이름이 남았다.',
     scene: [
       { text: '폰은 다시 켜지지 않았다.' },
       { text: '02:00. 해원고등학교 도서관 3층, 제2서고.' },
@@ -34,7 +34,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
       { who: '나에게', text: '…나왔어. 해가 떠', side: 'right' },
       { who: '도현', text: '채원이랑 같이 부스 안에서 깼어요. 둘 다 무사해요', side: 'left' },
       { who: '도현', text: '근데 당신은 어디 있어요? 이 폰만 선반에 있어요', side: 'left' },
-      { text: '출입 기록 맨 윗줄 — {name}. 서미령의 이름은 지워졌다.' },
+      { text: '이름을 적는 사람 — {name}. 서미령의 이름은 지워졌다.' },
       { text: '1년 뒤. 해원고 정문 앞 공중전화 부스.' },
       { who: '발신자 정보 없음', text: '들어오세요. 저는 {name}{이에요}. 오래 기다렸어요.', side: 'left' },
     ],
@@ -47,7 +47,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
       { who: '도현', text: '채원이랑 나왔어요!!! 둘 다 살아 있어요', side: 'left' },
       { who: '도현', text: '서랍이 전부 비어 있었어요. 카드가 한 장도 없었어요', side: 'left' },
       { who: '엄마', text: '누구신지 몰라도, 정말 고맙습니다', side: 'left' },
-      { who: '발신자 정보 없음', text: '서미령이에요. 31년 만에 나가요. 고마워요.', side: 'left' },
+      { who: '발신자 정보 없음', text: '서미령이에요. 막으려 한 건 제가 아니라 기록이었어요. 31년 만에 나가요. 고마워요.', side: 'left' },
       { text: '(대화 상대를 찾을 수 없습니다)' },
       { text: '다음 날 아침, 비가 그쳤다. 공중전화 부스의 선반은 비어 있다.' },
     ],

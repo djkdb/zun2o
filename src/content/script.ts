@@ -98,8 +98,8 @@ export const BEATS: Beat[] = [
     id: 'c1-who',
     on: 'choice:c1:who',
     actions: [
-      { t: 'msg', th: 'unknown', text: '밤마다 여기 찾아온 사람 이름을 적어 두는 사람이에요.', typing: 2000 },
-      { t: 'msg', th: 'unknown', text: '채원 씨 이름도 제가 적었어요. 이제는 채원 씨가 적을 차례고요.', typing: 2400 },
+      { t: 'msg', th: 'unknown', text: '새벽 두 시에 여기 있는 사람 이름을 적어 두는 사람이에요.', typing: 2000 },
+      { t: 'msg', th: 'unknown', text: '채원 씨 이름도 제가 적었어요. 오늘 밤엔 당신 이름을 적을 거고요.', typing: 2400 },
       { t: 'emit', ev: 'c1:done' },
     ],
   },
