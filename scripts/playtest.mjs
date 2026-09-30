@@ -411,7 +411,7 @@ check('hint tier 3: goal and where to look, not the answer', sheet.includes('살
 await tap('.hint-more');
 check('hint tier 4: full hint on request', (await page.textContent('.hint-sheet')).includes('“발신자 정보 없음” 대화가 하나'));
 await snap('hint-tiers');
-await tap('.hint-chip');
+await tap('.hint-close');
 // 1) solving the archive puzzle from the notes in chapter 1 must not skip to chapter 4
 await openApp('인터넷');
 await tapText('심야 기록보관소');

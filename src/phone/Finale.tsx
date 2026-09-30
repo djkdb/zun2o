@@ -368,6 +368,7 @@ export function Finale() {
           ))}
           {step === 'choice' && (
             <div className="final-choices">
+              <p className="final-choices-title">하나를 고르십시오</p>
               <label className="power-slider">
                 <span style={{ opacity: 1 - slide }}>밀어서 전원 끄기 — 도망친다 ›</span>
                 <input
@@ -388,10 +389,12 @@ export function Finale() {
                   setStep('sign');
                 }}
               >
-                내가 남는다 — 채원과 도현을 보내 준다
+                <b>내가 남는다</b>
+                <small>색인을 맡는다. 채원과 도현은 보내 준다.</small>
               </button>
               <button type="button" disabled={!foundKey} onClick={() => setStep('key')}>
-                {foundKey ? '연장 열쇠를 입력한다' : '연장 열쇠를 입력한다 (열쇠를 모른다)'}
+                <b>연장 열쇠를 입력한다</b>
+                <small>{foundKey ? '열쇠와 첫 근무자의 이름으로 색인을 끝낸다.' : '열쇠를 모른다.'}</small>
               </button>
             </div>
           )}

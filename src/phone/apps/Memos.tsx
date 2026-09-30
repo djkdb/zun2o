@@ -167,23 +167,34 @@ export function MemosApp() {
           {memos.includes('m2') && (
             <li>
               <button type="button" className="new" onClick={() => setOpen(buildM2())}>
-                <strong>새 녹음 18</strong>
-                <span>오늘 · 방금 저장됨</span>
+                <MemoIcon kind="play" />
+                <span className="memo-row-text">
+                  <strong>새 녹음 18</strong>
+                  <span>오늘 01:51 · 방금 저장됨</span>
+                </span>
+                <MiniWave seed={18} />
               </button>
             </li>
           )}
           <li>
             {synced ? (
               <button type="button" onClick={() => setOpen(MEMO_M1)}>
-                <strong>{MEMO_M1.title}</strong>
-                <span>
-                  {MEMO_M1.date} · {fmt(MEMO_M1.duration)}
+                <MemoIcon kind="play" />
+                <span className="memo-row-text">
+                  <strong>{MEMO_M1.title}</strong>
+                  <span>
+                    {MEMO_M1.date} · {fmt(MEMO_M1.duration)}
+                  </span>
                 </span>
+                <MiniWave seed={17} />
               </button>
             ) : (
               <div className="memo-old syncing">
-                <strong>{MEMO_M1.title}</strong>
-                <span>클라우드에서 불러오는 중… (신호 약함)</span>
+                <MemoIcon kind="sync" />
+                <span className="memo-row-text">
+                  <strong>{MEMO_M1.title}</strong>
+                  <span>클라우드에서 불러오는 중… (신호 약함)</span>
+                </span>
               </div>
             )}
           </li>
@@ -196,8 +207,11 @@ export function MemosApp() {
                 setBroken(true);
               }}
             >
-              <strong>새 녹음 16</strong>
-              <span>{broken ? '파일이 손상되어 재생할 수 없습니다. · 마지막 재생: 오늘 02:00' : '9월 25일 · 0:12 · 손상된 파일'}</span>
+              <MemoIcon kind="broken" />
+              <span className="memo-row-text">
+                <strong>새 녹음 16</strong>
+                <span>{broken ? '파일이 손상되어 재생할 수 없습니다. · 마지막 재생: 오늘 02:00' : '9월 25일 · 0:12 · 손상된 파일'}</span>
+              </span>
             </button>
           </li>
         </ul>
@@ -205,3 +219,23 @@ export function MemosApp() {
     </div>
   );
 }
+
+function MemoIcon({ kind }: { kind: 'play' | 'sync' | 'broken' }) {
+  return (
+    <span className={`memo-icon ${kind}`} aria-hidden="true">
+      {kind === 'play' ? '▶' : kind === 'sync' ? '' : '!'}
+    </span>
+  );
+}
+
+/** A little waveform per recording, the same every time. */
+function MiniWave({ seed }: { seed: number }) {
+  return (
+    <span className="memo-mini" aria-hidden="true">
+      {Array.from({ length: 14 }, (_, i) => (
+        <i key={i} style={{ height: `${25 + Math.abs(Math.sin(i * 1.9 + seed) * Math.cos(i * 0.7 + seed)) * 75}%` }} />
+      ))}
+    </span>
+  );
+}
+

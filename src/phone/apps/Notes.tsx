@@ -17,16 +17,23 @@ export function NotesApp() {
       <div className="notes-app">
         <AppHeader title="메모" onBack={() => setOpen(null)} backLabel="목록" />
         <article className="note-body">
+          <small className="note-date">{note.date}</small>
           <h2>{note.title}</h2>
-          <small>{note.date}</small>
-          <pre>{fill(note.body)}</pre>
+          <NoteText text={fill(note.body)} />
         </article>
       </div>
     );
   }
   return (
     <div className="notes-app">
-      <AppHeader title="메모" onBack={() => openApp(null)} backLabel="홈" />
+      <AppHeader title="" onBack={() => openApp(null)} backLabel="홈" />
+      <div className="note-top">
+        <h1>메모</h1>
+        <p>메모 {ids.length}개</p>
+        <div className="note-search" aria-hidden="true">
+          <span>⌕</span> 검색
+        </div>
+      </div>
       <ul className="note-list">
         {[...ids].reverse().map((id) => {
           const n = NOTES[id];
@@ -40,9 +47,12 @@ export function NotesApp() {
                   emit(`note:${id}`);
                 }}
               >
-                <strong>{n.title}</strong>
+                <strong>
+                  {n.title}
+                  {id === 'n4' && <i className="note-dot" aria-label="새 메모" />}
+                </strong>
                 <span>
-                  {n.date} · {fill(n.body).split('\n')[0].slice(0, 26)}…
+                  <em>{n.date}</em> {fill(n.body).split('\n')[0].slice(0, 30)}
                 </span>
               </button>
             </li>
@@ -52,3 +62,19 @@ export function NotesApp() {
     </div>
   );
 }
+
+/** A note's body the way a notes app shows it: bullets, arrows indented, blank lines as space. */
+function NoteText({ text }: { text: string }) {
+  return (
+    <div className="note-text">
+      {text.split('\n').map((line, i) => {
+        const t = line.trim();
+        if (!t) return <div key={i} className="note-gap" />;
+        if (t.startsWith('- ')) return <p key={i} className="note-bullet">{t.slice(2)}</p>;
+        if (t.startsWith('→')) return <p key={i} className="note-arrow">{t.slice(1).trim()}</p>;
+        return <p key={i}>{line}</p>;
+      })}
+    </div>
+  );
+}
+

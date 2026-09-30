@@ -3,6 +3,8 @@ import { useGame } from '../../hooks/useGame';
 import { callBack, emit, openApp, sfx, startOutgoing } from '../../engine/director';
 import { logInput, setRt } from '../../engine/state';
 import { AppHeader } from '../AppHeader';
+import { Avatar } from '../Avatar';
+import type { ThreadId } from '../../engine/types';
 import { CallIcon } from '../CallIcon';
 
 // Fake dialer: nothing here ever places a real call.
@@ -46,15 +48,21 @@ export function PhoneApp() {
         <ul className="call-list">
           {calls.map((c, i) => (
             <li key={i}>
-              <button type="button" onClick={() => (c.who === '도현' || c.who === '엄마' ? callContact(c.who) : undefined)}>
-                <span className={c.kind === 'missed' ? 'missed' : undefined}>
-                  {c.who}
-                  {c.count ? ` (${c.count})` : ''}
+              <button type="button" className="call-row" onClick={() => (c.who === '도현' || c.who === '엄마' ? callContact(c.who) : undefined)}>
+                <CallerPic who={c.who} />
+                <span className="call-row-text">
+                  <strong className={c.kind === 'missed' ? 'missed' : undefined}>
+                    {c.who}
+                    {c.count ? ` (${c.count})` : ''}
+                  </strong>
+                  <small>
+                    <i className={`call-kind-icon ${c.kind}`} aria-hidden="true">
+                      {c.kind === 'out' ? '↗' : '↙'}
+                    </i>
+                    {CONTACT[c.who] ? '휴대전화' : '알 수 없음'} · {c.kind === 'missed' ? '부재중' : c.kind === 'out' ? '발신' : '수신'}
+                    {c.duration ? ` ${c.duration}` : ''}
+                  </small>
                 </span>
-                <small>
-                  {c.kind === 'missed' ? '부재중' : c.kind === 'out' ? '발신' : '수신'}
-                  {c.duration ? ` · ${c.duration}` : ''}
-                </small>
                 <time>{c.time}</time>
               </button>
             </li>
@@ -100,3 +108,20 @@ export function PhoneApp() {
     </div>
   );
 }
+
+const CONTACT: Record<string, ThreadId> = { 도현: 'dohyun', 엄마: 'mom', '발신자 정보 없음': 'unknown' };
+
+function CallerPic({ who }: { who: string }) {
+  const th = CONTACT[who];
+  if (th) return <Avatar th={th} size={40} />;
+  return (
+    <span className="avatar pic call-pic-default" style={{ width: 40, height: 40 }} aria-hidden="true">
+      <svg viewBox="0 0 40 40">
+        <rect width="40" height="40" fill="#5a5c63" />
+        <circle cx="20" cy="15" r="7" fill="#c9cacf" />
+        <path d="M6 40c0-9 6-13 14-13s14 4 14 13z" fill="#c9cacf" />
+      </svg>
+    </span>
+  );
+}
+

@@ -374,12 +374,21 @@ export function HintChip() {
   const showFull = full === obj.text;
   return (
     <>
-      <button type="button" className="hint-chip stuck" onClick={() => setRt({ hintOpen: !open })} aria-expanded={open}>
-        {open ? '닫기' : '? 막혔나요'}
-      </button>
+      {!open && (
+        <button type="button" className="hint-chip stuck" onClick={() => setRt({ hintOpen: true })} aria-expanded={false}>
+          ? 막혔나요
+        </button>
+      )}
+      {open && <button type="button" className="hint-scrim" aria-label="힌트 닫기" onClick={() => setRt({ hintOpen: false })} />}
       {open && (
         <div className="hint-sheet" role="dialog" aria-label="목표">
-          <small>지금 할 일</small>
+          <span className="hint-grab" aria-hidden="true" />
+          <div className="hint-head">
+            <small>지금 할 일</small>
+            <button type="button" className="hint-close" onClick={() => setRt({ hintOpen: false })}>
+              닫기
+            </button>
+          </div>
           <strong>{obj.text}</strong>
           {obj.app && !showFull && <p className="hint-app">살펴볼 곳: {APP_META[obj.app].name}</p>}
           {showFull ? (

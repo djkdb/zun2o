@@ -479,10 +479,11 @@ export const BEATS: Beat[] = [
       { t: 'battery', v: 6 },
       { t: 'shuffle' },
       { t: 'install', app: 'index' },
-      { t: 'notify', app: 'index', title: '야간 색인', body: '설치가 완료되었습니다.' },
+      { t: 'notify', app: 'index', title: '야간 색인', body: '설치 완료 · 제2서고 근무자 명단' },
       { t: 'wait', ms: 2200 },
       { t: 'msg', th: 'unknown', text: '{name}, 열쇠를 찾았네요.', typing: 1400 },
       { t: 'msg', th: 'unknown', text: '그건 쓰면 안 돼요.', typing: 1200 },
+      { t: 'msg', th: 'unknown', text: '새로 생긴 앱, 열어 봐요. 그게 야간 색인이에요. 서고에 남은 사람들의 이름 목록.', typing: 2200 },
       { t: 'msg', th: 'unknown', text: '열쇠를 쓰면 색인이 끝나요. 아무도 기록되지 않아요. 아무도 기억되지 않아요.', typing: 2600 },
       {
         t: 'objective', app: 'index',

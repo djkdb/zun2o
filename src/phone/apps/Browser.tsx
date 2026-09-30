@@ -85,21 +85,21 @@ export function BrowserApp() {
         <div className="bookmarks">
           <p className="bm-label">즐겨찾기</p>
           <button type="button" className="bm" onClick={() => setView({ kind: 'archive' })}>
-            <span className="bm-icon archive">夜</span>
+            <span className="bm-icon bm-icon-archive">夜</span>
             <span>
               <strong>심야 기록보관소</strong>
               <small>nightarchive.or.kr — 폐교 해원고등학교 기록 보존</small>
             </span>
           </button>
           <button type="button" className="bm" onClick={() => openPage('news2')}>
-            <span className="bm-icon news">해</span>
+            <span className="bm-icon bm-icon-news">해</span>
             <span>
               <strong>해원일보 — 실종 1년 대학생, 폐교 앞 공중전화 부스에서 발견</strong>
               <small>9월 27일 06:12 · 이 폰에서 열어 본 기사</small>
             </span>
           </button>
           <button type="button" className="bm" onClick={() => openPage('news')}>
-            <span className="bm-icon news">해</span>
+            <span className="bm-icon bm-icon-news">해</span>
             <span>
               <strong>해원일보 — 폐건물 촬영 나선 유튜버 실종</strong>
               <small>9월 27일 18:30 · 방문 기록 없음</small>
