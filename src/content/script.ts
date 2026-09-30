@@ -136,8 +136,10 @@ export const BEATS: Beat[] = [
     on: 'photo:p07:reveal',
     actions: [
       { t: 'flag', f: 'reveal-scare' },
-      // She is in the photo now. Let the player look at her for a second, in silence.
-      { t: 'hush', ms: 1200, still: true },
+      // Fully bright, and the room is empty. Nothing changes, no warning.
+      { t: 'wait', ms: 1200 },
+      // Behind the scare, the photo changes: when it fades, she was there all along.
+      { t: 'flag', f: 'p07-revealed' },
       { t: 'scare', kind: 'lunge', look: 'hang' },
       { t: 'wait', ms: 1700 },
       { t: 'glitch', ms: 1000 },

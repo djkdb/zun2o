@@ -38,7 +38,7 @@ export function PhotoView({ id, brightness = 0, changed = false }: { id: string;
     case 'p06':
       return <FloorPlan level={3} />;
     case 'p07':
-      return <BlackPhoto brightness={brightness} />;
+      return <BlackPhoto brightness={brightness} revealed={flags.includes('p07-revealed')} />;
     case 'p08':
       return <BoothPhoto reflection={changed} />;
     case 'p09':

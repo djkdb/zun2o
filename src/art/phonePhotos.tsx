@@ -332,7 +332,12 @@ export const REVEAL_AT = 0.97;
  * The last photo, 01:59. Almost black. The gallery editor's brightness
  * slider (0..1) slowly reveals who took it.
  */
-export const BlackPhoto = memo(function BlackPhoto({ brightness = 0 }: { brightness?: number }) {
+/**
+ * `revealed`: she only appears in the photo *after* the scare. Brightened all
+ * the way, the room is empty — then she's in your face — then she was in the
+ * photo all along.
+ */
+export const BlackPhoto = memo(function BlackPhoto({ brightness = 0, revealed = false }: { brightness?: number; revealed?: boolean }) {
   const b = Math.max(0, Math.min(1, brightness));
   return (
     <svg viewBox="0 0 420 560" role="img" aria-label="거의 완전히 검은 사진.">
@@ -353,7 +358,7 @@ export const BlackPhoto = memo(function BlackPhoto({ brightness = 0 }: { brightn
         )}
       </g>
       {/* she was on the ceiling, right above the lens — outside the brightness boost, so she stays grey */}
-      {b >= REVEAL_AT &&
+      {b >= REVEAL_AT && revealed &&
         (art('black-reveal') ? (
           <ArtImage slot="black-reveal" w={420} h={560} />
         ) : (

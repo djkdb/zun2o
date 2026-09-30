@@ -85,12 +85,14 @@ describe('director timing', () => {
     expect(seen).toBe(true);
   });
 
-  it('the dark photo: she appears, a silent second, then the scare', async () => {
+  it('the dark photo: empty room for a second, the scare, and only then is she in the photo', async () => {
     emit('photo:p07:reveal');
     await vi.advanceTimersByTimeAsync(1000);
     expect(getState().rt.scare).toBeNull();
+    expect(getState().save.flags).not.toContain('p07-revealed');
     await vi.advanceTimersByTimeAsync(400);
     expect(getState().rt.scare?.kind).toBe('lunge');
+    expect(getState().save.flags).toContain('p07-revealed');
   });
 
   it('messages to 도현 never leave the phone', () => {

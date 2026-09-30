@@ -117,7 +117,13 @@ function loadSave(): Save {
   try {
     const parsed: unknown = JSON.parse(text);
     // Merge over defaults so an older save missing a field still works.
-    return isSave(parsed) ? { ...newSave(), ...parsed } : newSave();
+    if (!isSave(parsed)) return newSave();
+    const save = { ...newSave(), ...parsed };
+    // Saves from before the photo changed only after the scare: she's already been seen.
+    if (save.flags.includes('reveal-scare') && !save.flags.includes('p07-revealed') && !save.running.some((r) => r.beat === 'reveal')) {
+      save.flags = [...save.flags, 'p07-revealed'];
+    }
+    return save;
   } catch {
     return newSave();
   }
