@@ -3,7 +3,8 @@ import { BEATS } from '../content/script';
 import { CALLS } from '../content/calls';
 import { MEMO_TITLES, PHOTOS } from '../content/media';
 import { ARCHIVE } from '../content/archive';
-import type { AppId } from './types';
+import { INITIAL_THREADS, lastSent } from '../content/threads';
+import type { AppId, ChatMsg } from './types';
 
 // Regression guards for the story data: everything a beat points at exists,
 // time only moves forward inside a beat, and every call can be recovered.
@@ -77,5 +78,20 @@ describe('story data', () => {
     expect(PHOTOS[0].id).toBe('p00');
     expect(ARCHIVE.news2.lines.join(' ')).toContain('교대했다');
     expect(BEATS.some((b) => b.actions.some((a) => a.t === 'reboot'))).toBe(true);
+  });
+
+  it('the message list puts the newest conversation first, across midnight', () => {
+    const order = (t: typeof INITIAL_THREADS) => (Object.keys(t) as (keyof typeof t)[]).sort((a, b) => lastSent(t[b]) - lastSent(t[a]));
+    // At the start: 도현 23:49, 엄마 23:10, the 02:00 message (early 9/27), 나에게 (9/26).
+    expect(order(INITIAL_THREADS)).toEqual(['dohyun', 'mom', 'unknown', 'self']);
+    const live = (time: string): ChatMsg => ({ id: `m${time}`, from: 'them', text: '', time });
+    // 23:53 tonight beats 23:49; 00:10 after midnight beats both.
+    const tonight = { ...INITIAL_THREADS, unknown: [...INITIAL_THREADS.unknown, live('23:53')] };
+    expect(order(tonight)[0]).toBe('unknown');
+    const later = { ...tonight, mom: [...INITIAL_THREADS.mom, live('00:10')] };
+    expect(order(later)[0]).toBe('mom');
+    // 나에게's history ends on the 26th, but a message there at 01:38 tonight is still the newest.
+    const self = { ...later, self: [...INITIAL_THREADS.self, live('01:38')] };
+    expect(order(self)[0]).toBe('self');
   });
 });

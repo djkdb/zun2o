@@ -6,7 +6,7 @@ const ctx = (over: Partial<ReplyContext> = {}): ReplyContext => ({ name: null, f
 describe('free-text replies', () => {
   it('"who are you" escalates over repeated asks', () => {
     expect(replyFor('unknown', '너 누구야?', ctx()).lines).toEqual(['…', '정말 몰라요?']);
-    expect(replyFor('unknown', '누구냐고', ctx({ counts: { 'unknown:who': 1 } })).lines[0]).toContain('기록하는 사람');
+    expect(replyFor('unknown', '누구냐고', ctx({ counts: { 'unknown:who': 1 } })).lines[0]).toContain('이름을 적는 사람');
     expect(replyFor('unknown', '누구', ctx({ counts: { 'unknown:who': 5 } })).lines[0]).toContain('세 번째');
   });
 

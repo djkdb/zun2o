@@ -78,7 +78,7 @@ await wait(3200);
 await snap('home');
 
 // ── CH1: the unknown number ─────────────────────────────────────────────
-await openThread('모르는 번호');
+await openThread('발신자 표시제한');
 await snap('unknown-thread');
 await waitFor('.choices', 20000);
 mark('first choice offered');
@@ -97,7 +97,7 @@ check('free-text message gets an in-character reply', true);
 await wait(4500);
 await page.fill('.composer input', '누구냐고');
 await page.press('.composer input', 'Enter');
-await page.waitForFunction(() => window.__game.getState().save.threads.unknown.some((m) => m.text.includes('기록하는 사람이요')), null, { timeout: 25000 });
+await page.waitForFunction(() => window.__game.getState().save.threads.unknown.some((m) => m.text.includes('이름을 적는 사람이요')), null, { timeout: 25000 });
 check('asking twice gets a different answer', true);
 await snap('free-text-reply');
 // the shared photo card opens that exact photo
@@ -163,7 +163,7 @@ await snap('memo-scream');
 await page.waitForFunction(() => window.__game.getState().save.flags.includes('memo-done'), null, { timeout: 15000 });
 mark('memo finished');
 
-await openThread('모르는 번호');
+await openThread('발신자 표시제한');
 await waitFor('.choices', 30000);
 await snap('asks-name');
 await tapText('이름을 알려 준다');
@@ -396,9 +396,9 @@ await page.evaluate(() => window.__game.setSave((s) => ({ objective: { ...s.obje
 await page.waitForSelector('.hint-chip', { timeout: 8000 });
 await tap('.hint-chip');
 const sheet = await page.textContent('.hint-sheet');
-check('hint tier 3: goal and where to look, not the answer', sheet.includes('살펴볼 곳') && !sheet.includes('모르는 번호가 하나'));
+check('hint tier 3: goal and where to look, not the answer', sheet.includes('살펴볼 곳') && !sheet.includes('발신자 표시제한 대화가 하나'));
 await tap('.hint-more');
-check('hint tier 4: full hint on request', (await page.textContent('.hint-sheet')).includes('모르는 번호가 하나'));
+check('hint tier 4: full hint on request', (await page.textContent('.hint-sheet')).includes('발신자 표시제한 대화가 하나'));
 await snap('hint-tiers');
 await tap('.hint-chip');
 // 1) solving the archive puzzle from the notes in chapter 1 must not skip to chapter 4

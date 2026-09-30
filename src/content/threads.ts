@@ -13,10 +13,36 @@ export const THREAD_META: Record<ThreadId, ThreadMeta> = {
   dohyun: { id: 'dohyun', name: '도현', avatar: '도', color: '#3d6fd6' },
   mom: { id: 'mom', name: '엄마 ❤️', avatar: '엄', color: '#d65b8a' },
   self: { id: 'self', name: '나에게', avatar: '나', color: '#5b8a5b' },
-  unknown: { id: 'unknown', name: '모르는 번호', avatar: '?', color: '#2a2a2a' },
+  unknown: { id: 'unknown', name: '발신자 표시제한', avatar: '?', color: '#2a2a2a' },
 };
 
 export const THREAD_ORDER: ThreadId[] = ['unknown', 'dohyun', 'mom', 'self'];
+
+/** 9월 27일 — the night the phone is found. Everything that arrives during play belongs to it. */
+const TONIGHT = 9 * 31 + 27;
+
+/**
+ * When a thread's last message was sent, in minutes on one timeline. Messages
+ * only carry HH:MM: history has day labels (a time earlier than the one before
+ * it means the night rolled past midnight); anything sent during play is
+ * tonight — evening times on the 27th, after-midnight times on the 28th.
+ */
+export function lastSent(msgs: ChatMsg[]): number {
+  let day = 0;
+  let prev = -1;
+  let at = -1;
+  for (const m of msgs) {
+    const [h, min] = m.time.split(':').map(Number);
+    const hm = h * 60 + min;
+    const d = m.day && /(\d+)월 (\d+)일/.exec(m.day);
+    if (!m.id.startsWith('h')) day = hm >= 12 * 60 ? TONIGHT : TONIGHT + 1;
+    else if (d) day = Number(d[1]) * 31 + Number(d[2]);
+    else if (hm < prev) day += 1;
+    prev = hm;
+    at = day * 1440 + hm;
+  }
+  return at;
+}
 
 let n = 0;
 const m = (from: ChatMsg['from'], time: string, text: string, day?: string): ChatMsg => ({ id: `h${n++}`, from, time, text, day });
@@ -32,7 +58,7 @@ export const INITIAL_THREADS: Record<ThreadId, ChatMsg[]> = {
     m('me', '20:33', '작년에 거기서 실종된 대학생 폰이래 ㄷㄷ 그거 줍는 게 오프닝'),
     m('them', '20:35', '그걸 왜 주워… 나 안에는 안 들어간다. 입구까지만'),
     m('me', '00:58', '헐 부스에 진짜 폰 있음 ㅋㅋㅋ 배터리 12%'),
-    m('me', '00:59', '잠금 화면에 모르는 번호로 계속 알림 옴. "들어오세요"래 ㅋㅋ 연출 미쳤다'),
+    m('me', '00:59', '잠금 화면에 발신자 표시제한으로 계속 알림 옴. "들어오세요"래 ㅋㅋ 연출 미쳤다'),
     m('them', '01:00', '야 그거 내려놔. 기분 나빠'),
     m('me', '01:13', '들어간다. 1시간 안에 나올게'),
     m('them', '01:20', '괜찮아?'),

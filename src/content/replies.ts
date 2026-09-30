@@ -1,7 +1,7 @@
 import type { ThreadId } from '../engine/types';
 
 // ─────────────────────────────────────────────────────────────────────────
-// What 모르는 번호 and 채원 say back when the player types freely. Local,
+// What 발신자 표시제한 and 채원 say back when the player types freely. Local,
 // scripted, no server. A rule can answer differently the 2nd and 3rd time
 // it is hit, so a conversation has a memory; a line of `…` is a pause the
 // sender types, stops, and only then says the next thing.
@@ -34,7 +34,7 @@ const UNKNOWN: Rule[] = [
   {
     id: 'who',
     re: /누구|정체|뭐야|who/i,
-    say: () => [['…', '정말 몰라요?'], ['기록하는 사람이요. 채원 씨 다음 사람을 기다리고 있어요.'], ['세 번째예요. 대답은 안 바뀌어요.']],
+    say: () => [['…', '정말 몰라요?'], ['찾아온 사람 이름을 적는 사람이요. 채원 씨 다음 사람을 기다리고 있었어요. 당신이요.'], ['세 번째예요. 대답은 안 바뀌어요.']],
   },
   {
     id: 'chaewon',

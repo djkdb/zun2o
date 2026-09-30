@@ -171,7 +171,7 @@ function ActiveCall({ id }: { id: string }) {
     <div className="callscreen" role="dialog" aria-label="통화 중">
       <div className="call-top">
         <CallAvatar from={hijacked ? '0200' : call.from} label={call.label} hijacked={hijacked} />
-        <h2 className={hijacked ? 'hijacked' : undefined}>{hijacked ? '모르는 번호' : call.label}</h2>
+        <h2 className={hijacked ? 'hijacked' : undefined}>{hijacked ? '발신자 표시제한' : call.label}</h2>
         <small>
           {Math.floor(elapsed / 60)}:{String(elapsed % 60).padStart(2, '0')}
         </small>

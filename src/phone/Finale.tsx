@@ -22,9 +22,9 @@ const FLOOD = [
   ['도현', '채원아'],
   ['엄마', '우리 딸 어디 있니'],
   ['도현', '채원아 제발'],
-  ['모르는 번호', '{name}, 시간 됐어요'],
+  ['발신자 표시제한', '{name}, 시간 됐어요'],
   ['나에게', '살려줘'],
-  ['모르는 번호', '근무 교대 시간입니다'],
+  ['발신자 표시제한', '근무 교대 시간입니다'],
 ];
 
 function useTyped(lines: string[], active: boolean, speed = 38): string[] {
@@ -57,7 +57,7 @@ function buildRecall(): string[] {
   ];
   // What you did tonight, the most telling first. Never more than four:
   // it should feel like being known, not like a stat screen.
-  const typed = [...s.inputs].reverse().map((e) => /(?:모르는 번호|나에게)에게 보낸 메시지 "(.+)"$/.exec(e)?.[1]).find(Boolean);
+  const typed = [...s.inputs].reverse().map((e) => /(?:발신자 표시제한|모르는 번호|나에게)에게 보낸 메시지 "(.+)"$/.exec(e)?.[1]).find(Boolean);
   const toMom = s.inputs.some((e) => /^엄마.*에게 보낸 메시지/.test(e));
   const personal: [boolean, string][] = [
     [s.flags.includes('named-her'), '그 이름을 저한테 보냈죠. 한동안 대답을 못 했어요. 그건 인정할게요.'],

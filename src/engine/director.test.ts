@@ -70,7 +70,7 @@ describe('director timing', () => {
     expect(getState().save.talk?.['unknown:who']).toBe(1);
     await vi.advanceTimersByTimeAsync(5000);
     sendText('unknown', '누구냐니까');
-    await until(() => getState().save.threads.unknown.some((m) => m.text.includes('기록하는 사람이요')), 30000);
+    await until(() => getState().save.threads.unknown.some((m) => m.text.includes('이름을 적는 사람이요')), 30000);
   });
 
   it('silent players are told about story sounds (소리 인식)', async () => {

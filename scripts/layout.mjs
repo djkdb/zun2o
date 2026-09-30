@@ -82,7 +82,7 @@ for (const [w, h] of SIZES) {
   await audit(page, `${tag}-home`);
   // chat with a photo card
   await page.locator('.app-icon', { hasText: '메시지' }).click();
-  await page.locator('.thread-row', { hasText: '모르는 번호' }).click();
+  await page.locator('.thread-row', { hasText: '발신자 표시제한' }).click();
   await page.waitForTimeout(9000);
   await audit(page, `${tag}-chat`);
   // keyboard up: the reply box must stay on screen

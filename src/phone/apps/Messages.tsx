@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useGame } from '../../hooks/useGame';
 import { choose, openApp, openAttach, openThread, sendText, teaseTyping } from '../../engine/director';
-import { THREAD_META, THREAD_ORDER } from '../../content/threads';
+import { THREAD_META, THREAD_ORDER, lastSent } from '../../content/threads';
 import type { Attach, ThreadId } from '../../engine/types';
 import { MEMO_TITLES } from '../../content/media';
 import { PhotoView } from './Gallery';
@@ -14,7 +14,8 @@ function ThreadList() {
   const unread = useGame((s) => s.save.unread);
   const typing = useGame((s) => s.rt.typing);
   const choice = useGame((s) => s.save.choice);
-  const order = [...THREAD_ORDER].sort((a, b) => (unread[b] > 0 ? 1 : 0) - (unread[a] > 0 ? 1 : 0));
+  // Newest conversation on top, like a real phone.
+  const order = [...THREAD_ORDER].sort((a, b) => lastSent(threads[b]) - lastSent(threads[a]));
   return (
     <div className="messages">
       <AppHeader title="메시지" onBack={() => openApp(null)} backLabel="홈" />

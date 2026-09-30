@@ -22,7 +22,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
       { text: '방문자 #0027 박도현 — 근무 대기' },
       { text: '다음 날 밤, 같은 공중전화 부스. 선반 위에 휴대폰이 두 대 놓여 있다.' },
       { text: '그중 하나의 화면이 켜진다. 배터리 12%.' },
-      { who: '모르는 번호', text: '들어오세요.', side: 'left' },
+      { who: '발신자 표시제한', text: '들어오세요.', side: 'left' },
     ],
   },
   shift: {
@@ -35,7 +35,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
       { who: '도현', text: '근데 당신은 어디 있어요? 이 폰만 선반에 있어요', side: 'left' },
       { text: '방문자 #0027 {name} — 근무 중' },
       { text: '1년 뒤. 해원군청 별관 앞 공중전화 부스.' },
-      { who: '모르는 번호', text: '들어오세요. 저는 {name}이에요. 오래 기다렸어요.', side: 'left' },
+      { who: '발신자 표시제한', text: '들어오세요. 저는 {name}이에요. 오래 기다렸어요.', side: 'left' },
     ],
   },
   release: {
@@ -46,7 +46,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
       { who: '도현', text: '채원이랑 나왔어요!!! 둘 다 살아 있어요', side: 'left' },
       { who: '도현', text: '서랍이 전부 비어 있었어요. 카드가 한 장도 없었어요', side: 'left' },
       { who: '엄마', text: '누구신지 몰라도, 정말 고맙습니다', side: 'left' },
-      { who: '모르는 번호', text: '서미령이에요. 31년 만에 퇴근해요. 고마워요.', side: 'left' },
+      { who: '발신자 표시제한', text: '서미령이에요. 31년 만에 퇴근해요. 고마워요.', side: 'left' },
       { text: '(대화 상대를 찾을 수 없습니다)' },
       { text: '다음 날 밤, 공중전화 부스의 선반은 비어 있다.' },
     ],

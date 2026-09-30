@@ -49,8 +49,8 @@ export const BEATS: Beat[] = [
       {
         t: 'objective', app: 'messages',
         text: '채원에게 무슨 일이 있었는지 알아내자',
-        hint: '메시지 앱을 열어 보세요. 모르는 번호가 하나 있습니다.',
-        nudge: { th: 'dohyun', text: '혹시 폰 열었어요? 모르는 번호로 온 메시지 있으면… 절대 답하지 마요' },
+        hint: '메시지 앱을 열어 보세요. 발신자 표시제한 대화가 하나 있습니다.',
+        nudge: { th: 'dohyun', text: '혹시 폰 열었어요? 발신자 표시제한으로 온 메시지 있으면… 절대 답하지 마요' },
       },
       { t: 'wait', ms: 1800 },
       { t: 'msg', th: 'unknown', text: '잠금 풀었네요.', typing: 1400 },
@@ -79,8 +79,8 @@ export const BEATS: Beat[] = [
     id: 'c1-who',
     on: 'choice:c1:who',
     actions: [
-      { t: 'msg', th: 'unknown', text: '기록하는 사람이에요.', typing: 1800 },
-      { t: 'msg', th: 'unknown', text: '채원 씨는 지금 근무 대기 중이에요.', typing: 2200 },
+      { t: 'msg', th: 'unknown', text: '밤마다 여기 찾아온 사람 이름을 적어 두는 사람이에요.', typing: 2000 },
+      { t: 'msg', th: 'unknown', text: '채원 씨 이름도 제가 적었어요. 이제는 채원 씨가 적을 차례고요.', typing: 2400 },
       { t: 'emit', ev: 'c1:done' },
     ],
   },
@@ -239,8 +239,8 @@ export const BEATS: Beat[] = [
       },
       {
         t: 'objective', app: 'messages',
-        text: '모르는 번호가 이름을 묻는다',
-        hint: '메시지 앱 → 모르는 번호. 알려 줄지 말지는 당신 선택입니다. (이름은 이 기기에만 저장됩니다)',
+        text: '발신자 표시제한이 이름을 묻는다',
+        hint: '메시지 앱 → 발신자 표시제한. 알려 줄지 말지는 당신 선택입니다. (이름은 이 기기에만 저장됩니다)',
         nudge: { th: 'unknown', text: '대답해요.' },
       },
     ],
