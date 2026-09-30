@@ -13,7 +13,7 @@ export interface PhotoItem {
 export const PHOTOS: PhotoItem[] = [
   { id: 'p00', time: '00:58', caption: '제보 진짜였음. 부스 선반에 폰이 있다.', album: 'recent' },
   { id: 'p01', time: '00:59', caption: '정문. 체인이 끊어져 있다.', album: 'recent' },
-  { id: 'p02', time: '01:14', caption: '1층 로비. 안내판.', album: 'recent' },
+  { id: 'p02', time: '01:14', caption: '1층 현관. 층별 안내판.', album: 'recent' },
   { id: 'p03', time: '01:25', caption: '3층으로 가는 계단.', album: 'recent' },
   { id: 'p04', time: '01:32', caption: '3층 복도. 불 켜진 방 하나.', album: 'recent' },
   { id: 'p05', time: '01:40', caption: '열람실. 아무도 없어야 한다.', album: 'recent' },
@@ -21,7 +21,7 @@ export const PHOTOS: PhotoItem[] = [
   { id: 'p07', time: '01:59', caption: '(노출 부족)', album: 'recent', portrait: true },
   { id: 'p08', time: '01:39', caption: '(자동 백업) 3층 창문', album: 'recent', extra: true },
   { id: 'p09', time: '01:53', caption: '(도현이 보낸 사진)', album: 'recent', extra: true },
-  { id: 'h01', time: '01:53', caption: '02호실. 벽돌이… 안에서 쌓여 있다.', album: 'hidden' },
+  { id: 'h01', time: '01:53', caption: '제2서고. 벽돌이… 안에서 쌓여 있다.', album: 'hidden' },
   { id: 'h02', time: '01:55', caption: '들어왔다. 어떻게 들어왔는지 모르겠다.', album: 'hidden' },
   { id: 'h03', time: '01:56', caption: '서랍 안에 내 카드가 있었다.', album: 'hidden' },
   { id: 'h04', time: '01:58', caption: '', album: 'hidden', portrait: true },
@@ -44,9 +44,9 @@ export const NOTES: Record<string, NoteItem> = {
     date: '9월 26일',
     body: `오프닝: 정문 앞에서 "안녕하세요 밤채널입니다"
 01:13 입장 (시각 화면에 박기!! 비번도 이걸로)
-- 1층 로비 → 계단 → 3층
+- 1층 현관 → 계단 → 3층 도서관
 - 불 켜진 방 있으면 대박
-- 02호실 앞에서 2시까지 대기 → 엔딩
+- 제2서고 앞에서 2시까지 대기 → 엔딩
 
 ※ 도현이 입구에서 대기. 무서우면 전화하기`,
   },
@@ -54,7 +54,7 @@ export const NOTES: Record<string, NoteItem> = {
     id: 'n2',
     title: '괴담 정리',
     date: '9월 26일',
-    body: `1994년 3월 14일. 야간 기록사 서미령(41) 근무 중 실종.
+    body: `1994년 3월 14일. 해원고등학교 도서관 야간 사서 서미령(41) 근무 중 실종.
 열람실 시계는 02:00에 멈춰 있었음. 외투는 의자에.
 
 같은 주, 해원방송 AM 1340에서 매일 새벽 2시에 61초 무음.
@@ -66,7 +66,7 @@ export const NOTES: Record<string, NoteItem> = {
 → 그 주파수 숫자로 전화를 걸면 지금도 그 목소리가
    받는다는 얘기도 있음 ㅋㅋ 무서워서 안 해봄
 
-1995년 별관 폐쇄. 02호실(색인실)은 봉인.
+1995년 폐교. 도서관 제2서고(색인 서고)는 봉인.
 "새벽 2시에 거기 있으면 그 여자가 근무를 넘긴다"`,
   },
   n3: {

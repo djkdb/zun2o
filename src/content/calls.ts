@@ -32,7 +32,7 @@ export const CALLS: Record<string, CallScript> = {
       ],
     },
     after: [
-      { at: 500, who: 'caller', text: '…별관 앞에서 주운 거죠? 거기서 당장 떠나세요.', voice: 'male' },
+      { at: 500, who: 'caller', text: '…학교 앞 부스에서 주운 거죠? 거기서 당장 떠나세요.', voice: 'male' },
       { at: 4600, who: 'caller', text: '채원이 녹음 앱 켜 놓고 들어갔어요. 마지막 녹음이 그 폰에 있을 거예요.', voice: 'male' },
       { at: 9800, who: 'caller', text: '경찰은 장난이래요. 근데 그 녹음 들어 보면… 알 거예요.', voice: 'male' },
       { at: 14200, who: 'sfx', text: '(지지직—)' },
@@ -48,7 +48,7 @@ export const CALLS: Record<string, CallScript> = {
     label: '도현',
     duration: 0,
     lines: [
-      { at: 700, who: 'caller', text: '(숨소리) …들려요? 저 02호실 안이에요.', voice: 'male' },
+      { at: 700, who: 'caller', text: '(숨소리) …들려요? 저 제2서고 안이에요.', voice: 'male' },
       { at: 4000, who: 'caller', text: '서랍이 끝이 없어요. 채원이 목소리가 계속 저 안쪽에서—', voice: 'male' },
       { at: 7800, who: 'sfx', text: '(서랍 수백 개가 한꺼번에 열리는 소리)' },
       { at: 9400, who: 'other', text: '끄지 마세요.', voice: 'entity' },

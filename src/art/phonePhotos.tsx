@@ -82,7 +82,7 @@ export function SlotPhoto({
 /** Lock-screen wallpaper: the Annex at night, with the channel's REC overlay. */
 export const WallpaperPhoto = memo(function WallpaperPhoto() {
   const id = useSvgId();
-  if (art('wallpaper')) return <SlotPhoto slot="wallpaper" w={390} h={844} fill label="밤의 해원군청 별관." />;
+  if (art('wallpaper')) return <SlotPhoto slot="wallpaper" w={390} h={844} fill label="밤의 해원고등학교." />;
   return (
     <svg viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <Defs id={id} flashX={50} flashY={52} r={95} />
@@ -103,7 +103,7 @@ export const WallpaperPhoto = memo(function WallpaperPhoto() {
         <rect width="390" height="844" fill={`url(#${id}-flash)`} />
       </g>
       <text x="24" y="820" fontFamily="IBM Plex Mono, monospace" fontSize="12" fill="#fff" opacity="0.45">
-        밤채널 · 해원군청 별관
+        밤채널 · 해원고 폐교
       </text>
     </svg>
   );
@@ -112,13 +112,13 @@ export const WallpaperPhoto = memo(function WallpaperPhoto() {
 export const LobbyPhoto = memo(function LobbyPhoto() {
   const id = useSvgId();
   return (
-    <svg viewBox="0 0 640 420" role="img" aria-label="어두운 로비. 벽에 층별 안내판, 바닥에 떨어진 서류들.">
+    <svg viewBox="0 0 640 420" role="img" aria-label="어두운 현관. 벽에 층별 안내판, 바닥에 떨어진 종이들.">
       <Defs id={id} />
       <g filter={`url(#${id}-n)`}>
         <rect width="640" height="420" fill="#2a2a27" />
         <polygon points="0,300 640,300 640,420 0,420" fill="#1b1a17" />
         <rect x="230" y="70" width="180" height="150" fill="#3b3a33" stroke="#1d1c18" strokeWidth="6" />
-        {['3층  열람실 · 색인실', '2층  토지대장', '1층  민원실'].map((t, i) => (
+        {['3층  도서관 · 제2서고', '2층  교무실', '1층  행정실'].map((t, i) => (
           <text key={t} x="248" y={112 + i * 36} fontFamily="IBM Plex Sans KR, sans-serif" fontSize="17" fill="#bcb8a8">
             {t}
           </text>
@@ -172,7 +172,7 @@ export const StairsPhoto = memo(function StairsPhoto({ figure = false }: { figur
 export const CorridorPhoto = memo(function CorridorPhoto({ door = false }: { door?: boolean }) {
   const id = useSvgId();
   return (
-    <svg viewBox="0 0 640 420" role="img" aria-label={door ? '복도 끝, 벽돌로 반쯤 막힌 문. 문패에 02호실.' : '3층 복도. 끝의 방 하나에서만 노란 불빛이 새어 나온다.'}>
+    <svg viewBox="0 0 640 420" role="img" aria-label={door ? '복도 끝, 벽돌로 반쯤 막힌 문. 문패에 제2서고.' : '3층 복도. 끝의 방 하나에서만 노란 불빛이 새어 나온다.'}>
       <Defs id={id} />
       <g filter={`url(#${id}-n)`}>
         <rect width="640" height="420" fill="#161614" />
@@ -191,9 +191,9 @@ export const CorridorPhoto = memo(function CorridorPhoto({ door = false }: { doo
                 <rect key={`${r}${c}`} x={284 + c * 25 + (r % 2) * 10} y={200 + r * 12} width="22" height="10" fill="#5a3e30" opacity="0.85" />
               )),
             )}
-            <rect x="300" y="170" width="40" height="16" fill="#cfc9b4" />
+            <rect x="294" y="170" width="52" height="16" fill="#cfc9b4" />
             <text x="320" y="182" textAnchor="middle" fontFamily="IBM Plex Sans KR, sans-serif" fontSize="10" fill="#222">
-              02호실
+              제2서고
             </text>
           </g>
         ) : (

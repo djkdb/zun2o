@@ -130,8 +130,8 @@ seen as a reflection in a black phone screen, low contrast, mostly black.
 | 6 | `corridor.webp` | 사진 01:32 3층 복도 |
 | 7 | `reading-empty.webp` | 사진 01:40 열람실 · 브라우저 기록 003 |
 | 8 | `reading-figure.webp` | 같은 열람실 — 나중에 보면 책상 사이에 형체 |
-| 9 | `room02-door.webp` | 숨김 앨범 1번: 벽돌로 막힌 02호실 |
-| 10 | `room02.webp` | 숨김 앨범 2번: 02호실 안 · 브라우저 기록 013 |
+| 9 | `room02-door.webp` | 숨김 앨범 1번: 벽돌로 막힌 제2서고 (도서관 서고) |
+| 10 | `room02.webp` | 숨김 앨범 2번: 제2서고 안 · 브라우저 기록 013 |
 | 11 | `black-empty.webp` | 1장 검은 사진을 밝게 할 때 (귀신 없는 버전) — **1차 시트 1번과 같은 구도** |
 | 12 | `tower.webp` | 브라우저 기록 001 해원방송 송신탑 |
 

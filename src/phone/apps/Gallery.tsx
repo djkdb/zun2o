@@ -17,9 +17,9 @@ export function PhotoView({ id, brightness = 0, changed = false }: { id: string;
     case 'p00':
       return <BoothShelfPhoto />;
     case 'p01':
-      return art('annex-gate') ? <SlotPhoto slot="annex-gate" stamp="00:59" label="별관 정문. 체인이 끊어져 있다." /> : <AnnexPhoto level={3} />;
+      return art('annex-gate') ? <SlotPhoto slot="annex-gate" stamp="00:59" label="학교 정문. 체인이 끊어져 있다." /> : <AnnexPhoto level={3} />;
     case 'p02':
-      return art('lobby') ? <SlotPhoto slot="lobby" stamp="01:14" label="1층 로비." /> : <LobbyPhoto />;
+      return art('lobby') ? <SlotPhoto slot="lobby" stamp="01:14" label="1층 현관." /> : <LobbyPhoto />;
     case 'p03':
       // Recognition: after the selfie, there is someone at the top of the stairs.
       if (art('stairs')) {
@@ -44,9 +44,9 @@ export function PhotoView({ id, brightness = 0, changed = false }: { id: string;
     case 'p09':
       return <BoothPhoto behind />;
     case 'h01':
-      return art('room02-door') ? <SlotPhoto slot="room02-door" stamp="01:53" label="02호실 문. 벽돌이 안쪽에서 쌓여 있다." /> : <CorridorPhoto door />;
+      return art('room02-door') ? <SlotPhoto slot="room02-door" stamp="01:53" label="제2서고 문. 벽돌이 안쪽에서 쌓여 있다." /> : <CorridorPhoto door />;
     case 'h02':
-      return art('room02') ? <SlotPhoto slot="room02" stamp="01:55" label="02호실 안. 끝없는 색인 서랍." /> : <Room02Photo level={5} />;
+      return art('room02') ? <SlotPhoto slot="room02" stamp="01:55" label="제2서고 안. 끝없는 색인 서랍." /> : <Room02Photo level={5} />;
     case 'h03':
       return <IndexCardPhoto lines={['방문자 #0026  윤채원', '도착  01:13', '열람  사진 7장 · 녹음 1개', '상태  근무 대기']} />;
     case 'h04':

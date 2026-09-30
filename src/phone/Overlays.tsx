@@ -323,7 +323,7 @@ export function RebootOverlay() {
     <div className="reboot" aria-live="polite">
       <div className="reboot-logo">
         <span>야간 색인</span>
-        <small>해원군청 별관 · 방문자 등록 시스템</small>
+        <small>해원고 도서관 · 방문자 등록 시스템</small>
       </div>
     </div>
   );

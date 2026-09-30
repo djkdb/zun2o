@@ -99,7 +99,7 @@ describe('story data', () => {
 describe('voice files', () => {
   it('say only the words: stage directions and pause marks are not read out', async () => {
     const { spokenText, voiceKey } = await import('../audio/voiceKey');
-    expect(spokenText('(숨소리) …들려요? 저 02호실 안이에요.')).toBe('들려요? 저 02호실 안이에요.');
+    expect(spokenText('(숨소리) …들려요? 저 제2서고 안이에요.')).toBe('들려요? 저 제2서고 안이에요.');
     expect(spokenText('(비명)')).toBe('');
     // The same words give the same file, whatever the punctuation around them.
     expect(voiceKey('…들려?', 'female')).toBe(voiceKey('들려?', 'female'));

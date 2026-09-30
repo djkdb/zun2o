@@ -21,7 +21,7 @@ describe('free-text replies', () => {
   });
 
   it('채원 answers as herself', () => {
-    expect(replyFor('self', '어디야', ctx()).lines[0]).toContain('02호실');
+    expect(replyFor('self', '어디야', ctx()).lines[0]).toContain('제2서고');
     expect(replyFor('self', '뭘 해야 돼?', ctx({ nudge: '001 003 007' })).lines[0]).toBe('001 003 007');
   });
 

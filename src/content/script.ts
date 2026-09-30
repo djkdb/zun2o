@@ -9,7 +9,7 @@ import type { Beat } from '../engine/types';
 //   0 잠금        23:51  unlock the phone
 //   1 채원의 폰    23:52  the unknown number talks to you → the black photo
 //   2 목소리      00:47  도현 calls → the last voice memo → "what's your name?"
-//   3 02호실      01:12  hidden album → the selfie → 채원 texts from inside
+//   3 제2서고     01:12  hidden album → the selfie → 채원 texts from inside
 //   4 두 시 전    01:50  the key, a new app, the phone stops obeying
 //   5 02:00             finale (phone/Finale.tsx) and three endings
 // ─────────────────────────────────────────────────────────────────────────
@@ -229,7 +229,7 @@ export const BEATS: Beat[] = [
       { t: 'chapter', n: 2, title: '목소리' },
       { t: 'time', hm: '00:47' },
       { t: 'msg', th: 'dohyun', text: '채원이 마지막 녹음이에요. 꼭 끝까지 들어요.', typing: 1600, attach: { kind: 'memo', id: 'm1' } },
-      { t: 'msg', th: 'dohyun', text: '그리고 저 지금 별관으로 가요. 20분이면 가요. 거기 계세요.', typing: 1800 },
+      { t: 'msg', th: 'dohyun', text: '그리고 저 지금 학교로 가요. 20분이면 가요. 거기 계세요.', typing: 1800 },
       {
         t: 'objective', app: 'memos',
         text: '채원의 마지막 녹음을 듣자',
@@ -289,7 +289,7 @@ export const BEATS: Beat[] = [
     on: 'c2:done',
     actions: [
       { t: 'flag', f: 'ch3' },
-      { t: 'chapter', n: 3, title: '02호실' },
+      { t: 'chapter', n: 3, title: '제2서고' },
       { t: 'time', hm: '01:12' },
       {
         t: 'objective', app: 'notes',
@@ -303,7 +303,7 @@ export const BEATS: Beat[] = [
     ],
   },
 
-  // ── 3. 02호실 ──────────────────────────────────────────────────────────
+  // ── 3. 제2서고 ─────────────────────────────────────────────────────────
   {
     id: 'album-open',
     on: 'album:unlock',
@@ -404,7 +404,7 @@ export const BEATS: Beat[] = [
       { t: 'msg', th: 'unknown', text: '잘 나왔네요.', typing: 1600, attach: { kind: 'photo', id: 'p08' } },
       { t: 'msg', th: 'unknown', text: '두 번 눌러서 확대해 봐요. 부스 안이요.', typing: 1500 },
       { t: 'wait', ms: 6000 },
-      { t: 'msg', th: 'dohyun', text: '택시가 안 잡혀서 늦었어요. 별관 앞 도착. 부스 쪽으로 갈게요.', typing: 1400 },
+      { t: 'msg', th: 'dohyun', text: '택시가 안 잡혀서 늦었어요. 학교 앞 도착. 부스 쪽으로 갈게요.', typing: 1400 },
       { t: 'wait', ms: 7000 },
       { t: 'sound', id: 'knock', caption: '유리를 두드리는 소리가 감지되었습니다.' },
       { t: 'wait', ms: 1800 },
@@ -484,7 +484,7 @@ export const BEATS: Beat[] = [
       { t: 'wait', ms: 7000 },
       { t: 'time', hm: '01:56' },
       { t: 'flag', f: 'dohyun-in' },
-      { t: 'msg', th: 'dohyun', text: '02호실 문이 열려 있어요. 벽돌이 없어요', typing: 1300 },
+      { t: 'msg', th: 'dohyun', text: '제2서고 문이 열려 있어요. 벽돌이 없어요', typing: 1300 },
       { t: 'msg', th: 'self', from: 'me', text: '도현이 들어왔어. 오지 말라고 해. 제발', typing: 1500 },
       { t: 'wait', ms: 3000 },
       { t: 'msg', th: 'dohyun', text: '서랍에 내 이름이 있어요', typing: 1800 },

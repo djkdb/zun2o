@@ -10,10 +10,10 @@ import { AnnexPhoto, FloorPlan, ReadingRoomPhoto, Room02Photo, TowerPhoto } from
 
 const PHOTO = {
   'reading-room': () => (art('reading-empty') ? <SlotPhoto slot="reading-empty" w={640} h={420} label="1994년 열람실." /> : <ReadingRoomPhoto level={3} stage={1} />),
-  annex: () => (art('wallpaper') ? <SlotPhoto slot="wallpaper" w={640} h={420} label="해원군청 별관." /> : <AnnexPhoto level={3} />),
+  annex: () => (art('wallpaper') ? <SlotPhoto slot="wallpaper" w={640} h={420} label="해원고등학교." /> : <AnnexPhoto level={3} />),
   floorplan: () => <FloorPlan level={3} />,
   tower: () => (art('tower') ? <SlotPhoto slot="tower" w={640} h={420} align="xMidYMin" label="해원방송 송신탑." /> : <TowerPhoto level={0} />),
-  'room-02': () => (art('room02') ? <SlotPhoto slot="room02" w={640} h={420} label="02호실." /> : <Room02Photo level={5} />),
+  'room-02': () => (art('room02') ? <SlotPhoto slot="room02" w={640} h={420} label="제2서고." /> : <Room02Photo level={5} />),
 };
 
 type View = { kind: 'home' } | { kind: 'archive' } | { kind: 'page'; id: string };
@@ -88,13 +88,13 @@ export function BrowserApp() {
             <span className="bm-icon archive">夜</span>
             <span>
               <strong>심야 기록보관소</strong>
-              <small>nightarchive.or.kr — 해원군청 별관 기록 보존</small>
+              <small>nightarchive.or.kr — 폐교 해원고등학교 기록 보존</small>
             </span>
           </button>
           <button type="button" className="bm" onClick={() => openPage('news2')}>
             <span className="bm-icon news">해</span>
             <span>
-              <strong>해원일보 — 실종 1년 대학생, 별관 앞 공중전화 부스에서 발견</strong>
+              <strong>해원일보 — 실종 1년 대학생, 폐교 앞 공중전화 부스에서 발견</strong>
               <small>오늘 06:12 · 이 폰에서 열어 본 기사</small>
             </span>
           </button>
@@ -110,7 +110,7 @@ export function BrowserApp() {
       {view.kind === 'archive' && (
         <div className="archive">
           <h2>심야 기록보관소</h2>
-          <p className="archive-sub">1995년 폐쇄된 해원군청 별관 기록 · 자원봉사자 운영 · 최종 수정 2004.11.02</p>
+          <p className="archive-sub">1995년 폐교된 해원고등학교 기록 · 자원봉사자 운영 · 최종 수정 2004.11.02</p>
           <ul>
             {[...ARCHIVE_LIST, ...(indexed ? ['r013'] : [])].map((id) => (
               <li key={id}>

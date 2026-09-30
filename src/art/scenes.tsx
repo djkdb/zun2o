@@ -174,7 +174,7 @@ function AnnexInner({ level, effect }: SceneProps) {
   const id = useSvgId();
   const litWindow = level >= 3 || effect === 'face';
   return (
-    <svg viewBox="0 0 640 420" role="img" aria-label="해 질 녘의 3층짜리 콘크리트 관공서 건물 사진. 어두운 창문이 줄지어 있다.">
+    <svg viewBox="0 0 640 420" role="img" aria-label="해 질 녘의 3층짜리 콘크리트 학교 건물 사진. 어두운 창문이 줄지어 있다.">
       <FilmDefs id={id} />
       <g filter={`url(#${id}-grain)`}>
         <rect width="640" height="420" fill="#2b2d2e" />
@@ -200,7 +200,7 @@ function AnnexInner({ level, effect }: SceneProps) {
         <rect x="290" y="300" width="60" height="56" fill="#131414" />
         <rect x="280" y="292" width="80" height="8" fill="#4d4a43" />
         <text x="320" y="286" textAnchor="middle" fontFamily="IBM Plex Mono, IBM Plex Sans KR, monospace" fontSize="9" fill="#bdb6a4" letterSpacing="2">
-          해원군청 별관
+          해원고등학교
         </text>
         {/* ground, fence, trees */}
         <rect y="356" width="640" height="64" fill="#232424" />
@@ -227,14 +227,14 @@ function FloorPlanInner({ level }: SceneProps) {
   const doorOpen = level >= 3;
   const rooms: { id: string; x: number; y: number; w: number; h: number; label: string }[] = [
     { id: '01', x: 40, y: 40, w: 180, h: 150, label: '01호실 — 서고' },
-    { id: '02', x: 220, y: 40, w: 150, h: 150, label: '02호실 — 색인실' },
+    { id: '02', x: 220, y: 40, w: 150, h: 150, label: '제2서고 — 색인' },
     { id: '03', x: 370, y: 40, w: 230, h: 150, label: '03호실 — 열람실' },
     { id: '04', x: 40, y: 250, w: 170, h: 130, label: '04호실 — 야간 근무실' },
     { id: '05', x: 210, y: 250, w: 190, h: 130, label: '05호실 — 마이크로필름' },
     { id: '06', x: 400, y: 250, w: 200, h: 130, label: '06호실 — 창고' },
   ];
   return (
-    <svg viewBox="0 0 640 420" role="img" aria-label="3층 평면도. 복도를 둘러싼 방 여섯 개. 색인실인 02호실은 빗금이 쳐져 있고 봉인이라고 적혀 있다.">
+    <svg viewBox="0 0 640 420" role="img" aria-label="3층 평면도. 복도를 둘러싼 방 여섯 개. 색인 서고인 제2서고는 빗금이 쳐져 있고 봉인이라고 적혀 있다.">
       <defs>
         <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
           <line x1="0" y1="0" x2="0" y2="8" stroke={ink} strokeWidth="1" opacity="0.55" />
@@ -278,7 +278,7 @@ function FloorPlanInner({ level }: SceneProps) {
         복도
       </text>
       <text x="600" y="408" textAnchor="end" fontFamily="IBM Plex Mono, IBM Plex Sans KR, monospace" fontSize="9" fill={ink}>
-        해원군청 별관 · 3층 · 1:200
+        해원고 도서관 · 3층 · 1:200
       </text>
     </svg>
   );
