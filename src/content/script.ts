@@ -22,7 +22,7 @@ export const BEATS: Beat[] = [
     actions: [
       { t: 'time', hm: '23:51' },
       { t: 'battery', v: 12 },
-      { t: 'objective', text: '폰의 잠금을 풀자', hint: '잠금 화면 알림을 읽어 보세요. 도현이 비밀번호 규칙을 알려 주고, 카메라 알림에 촬영을 시작한 시각이 나와 있어요.' },
+      { t: 'objective', text: '폰의 잠금을 풀자', hint: '잠금 화면 알림을 읽어 보세요. 도현이 비밀번호를 보냈어요.' },
     ],
   },
   {
@@ -35,7 +35,7 @@ export const BEATS: Beat[] = [
     id: 'lock-fail3',
     on: 'lock:fail3',
     forbids: ['unlocked'],
-    actions: [{ t: 'msg', th: 'dohyun', text: '1시 13분이요. 영상 켜고 들어갔어요.' }],
+    actions: [{ t: 'msg', th: 'dohyun', text: '0113이요. 1월 13일, 채원이랑 처음 만난 날이에요.' }],
   },
 
   // ── 1. 채원의 폰 ───────────────────────────────────────────────────────
@@ -53,7 +53,8 @@ export const BEATS: Beat[] = [
         nudge: { th: 'dohyun', text: '혹시 폰 열었어요? 발신자 표시제한으로 온 메시지 있으면… 절대 답하지 마요' },
       },
       { t: 'wait', ms: 1800 },
-      { t: 'msg', th: 'unknown', text: '잠금 풀었네요.', typing: 1400 },
+      // The code was an anniversary. It is also the minute 채원 walked in. (One message: nothing can land between.)
+      { t: 'msg', th: 'unknown', text: '잠금 풀었네요. 0113… 채원 씨가 여기 들어온 시각이랑 같죠.', typing: 1800 },
     ],
   },
   {

@@ -73,7 +73,7 @@ export const NOTES: Record<string, NoteItem> = {
     id: 'n3',
     title: '비번들 (보지 마)',
     date: '9월 26일',
-    body: `폰: 촬영 들어간 시각
+    body: `폰: 도현이랑 처음 만난 날 ㅎㅎ
 숨김 앨범: 그 방송 주파수 ㅋㅋ (까먹지 말 것)
 채널 계정: 도현이한테 물어보기`,
   },
