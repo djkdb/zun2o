@@ -2,7 +2,7 @@
 // once, at authoring time. The game only plays the files it ships with; it
 // never calls Fish Audio itself, and the key never goes into the repo.
 //
-//   FISH_API_KEY=… FISH_VOICE_MALE=<voice id> [FISH_VOICE_FEMALE=…] [FISH_VOICE_ENTITY=…] npm run voices
+//   FISH_API_KEY=… npm run voices      (FISH_VOICE_MALE / _FEMALE / _ENTITY override the voices below)
 //
 // Options (env): FISH_MODEL (default s1), FORCE=1 to remake existing files,
 // DRY=1 to only list what would be made.
@@ -14,7 +14,14 @@ import { spokenText, voiceKey } from '../src/audio/voiceKey.ts';
 const OUT = 'src/assets/voice';
 const KEY = process.env.FISH_API_KEY;
 const MODEL = process.env.FISH_MODEL ?? 's1';
-const VOICES = { male: process.env.FISH_VOICE_MALE, female: process.env.FISH_VOICE_FEMALE, entity: process.env.FISH_VOICE_ENTITY };
+// Defaults picked by the author on fish.audio (voice ids are not secrets; the API key is):
+//   male   = 도현  → 릴서 (20대 남성)          female = 채원 → 하은 Haeun (친근한 대화체)
+//   entity = 서미령 → Yuna (또렷하고 차분한 안내 목소리)
+const VOICES = {
+  male: process.env.FISH_VOICE_MALE ?? '3c98ea364b634081a8e505def04edd9a',
+  female: process.env.FISH_VOICE_FEMALE ?? '8f3cc2e594cf4a96a5049cb538f1b6d6',
+  entity: process.env.FISH_VOICE_ENTITY ?? '3d31499f0e13438bbce8dcce7b7c4298',
+};
 
 // Every line the game speaks, with its voice (keep in step with speak() calls).
 const lines = [];
