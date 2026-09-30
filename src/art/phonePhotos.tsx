@@ -512,10 +512,11 @@ export const VideoFeed = memo(function VideoFeed({ close = 0, pip = 0 }: { close
         <g transform="translate(-40 200) scale(1.12)">
           <ChaewonFigure id={id} />
         </g>
-        <ArtImage slot="video-chaewon" w={390} h={844} />
+        <ArtImage slot="video-chaewon" w={390} h={844} align="xMaxYMid" />
         {/* she comes in over the right shoulder: keep that side of the frame */}
         {her > 0 && <ArtImage slot="video-behind" w={390} h={844} align="xMaxYMid" style={{ opacity: Math.min(1, her * 1.4) }} />}
-        <rect width="390" height="844" fill={`url(#${id}-flash)`} />
+        {/* a real photo has its own light; the drawn flash falloff would ring it in an oval */}
+        {!art('video-chaewon') && <rect width="390" height="844" fill={`url(#${id}-flash)`} />}
       </g>
       {pip === 0 ? (
         <>
