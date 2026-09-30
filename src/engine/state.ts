@@ -123,6 +123,9 @@ function loadSave(): Save {
     if (save.flags.includes('reveal-scare') && !save.flags.includes('p07-revealed') && !save.running.some((r) => r.beat === 'reveal')) {
       save.flags = [...save.flags, 'p07-revealed'];
     }
+    if (save.flags.includes('selfie-scare') && !save.flags.includes('h05-revealed') && !save.running.some((r) => r.beat === 'selfie')) {
+      save.flags = [...save.flags, 'h05-revealed'];
+    }
     return save;
   } catch {
     return newSave();

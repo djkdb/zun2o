@@ -12,7 +12,7 @@ const JUMPS: [string, () => void][] = [
   ['CH1', () => (setSave({ started: true, unlocked: true }), emit('start'), emit('unlock'))],
   ['CH2', () => (setSave({ started: true, unlocked: true }), ['unlocked', 'reveal-scare', 'p07-revealed'].forEach(addFlag), emit('call1:done'))],
   ['CH3', () => (setSave({ started: true, unlocked: true, playerName: getState().save.playerName ?? '테스터' }), ['unlocked', 'reveal-scare', 'p07-revealed', 'call1-done', 'memo-done', 'gave-name'].forEach(addFlag), emit('c2:done'))],
-  ['CH4', () => (setSave({ started: true, unlocked: true }), ['unlocked', 'reveal-scare', 'p07-revealed', 'call1-done', 'memo-done', 'ch3', 'album-code', 'album-open', 'selfie-scare', 'self-contact', 'read-miryeong', 'found-key'].forEach(addFlag), emit('ch4'))],
+  ['CH4', () => (setSave({ started: true, unlocked: true }), ['unlocked', 'reveal-scare', 'p07-revealed', 'call1-done', 'memo-done', 'ch3', 'album-code', 'album-open', 'selfie-scare', 'h05-revealed', 'self-contact', 'read-miryeong', 'found-key'].forEach(addFlag), emit('ch4'))],
   ['02:00', () => (setSave({ started: true, unlocked: true, chapter: 4 }), addFlag('found-key'), saveCheckpoint(), addFlag('finale'), setRt({ finale: true }))],
 ];
 

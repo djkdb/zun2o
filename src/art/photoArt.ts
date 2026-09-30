@@ -9,6 +9,7 @@ export type ArtSlot =
   | 'black-reveal'
   | 'selfie-far'
   | 'selfie-close'
+  | 'selfie-alone'
   | 'booth'
   | 'booth-shelf'
   | 'booth-behind'

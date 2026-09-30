@@ -188,10 +188,16 @@ for (let i = 0; i < 4; i++) {
   await page.getByLabel('다음 사진').click();
   await wait(900);
 }
+const selfieSrc = () => page.locator('.viewer image.art-photo').first().getAttribute('href').catch(() => '');
+const selfieBefore = await selfieSrc();
 await waitFor('.scare-lunge', 6000);
 mark('SCARE 2 — the selfie');
 await wait(250);
 await snap('scare-selfie');
+await page.waitForSelector('.scare-lunge', { state: 'detached', timeout: 8000 }).catch(() => {});
+await snap('selfie-after');
+const selfieAfter = await selfieSrc();
+check('selfie: just 채원 before the scare, her at the cheek after', /selfie-alone/.test(selfieBefore ?? '') && /selfie-close/.test(selfieAfter ?? ''), `${selfieBefore} → ${selfieAfter}`);
 await page.waitForFunction(() => window.__game.getState().save.threads.self.some((m) => m.text.includes('추워')), null, { timeout: 30000 });
 await wait(600);
 await snap('self-message-banner');

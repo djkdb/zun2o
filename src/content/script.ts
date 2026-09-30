@@ -323,7 +323,8 @@ export const BEATS: Beat[] = [
     requires: ['ch3'],
     actions: [
       { t: 'flag', f: 'selfie-scare' },
-      { t: 'hush', ms: 700 },
+      // Only 채원 in the photo, and nothing warns. Behind the scare the photo changes.
+      { t: 'flag', f: 'h05-revealed' },
       { t: 'scare', kind: 'lunge', look: 'profile' },
       { t: 'wait', ms: 1800 },
       { t: 'glitch', ms: 700 },

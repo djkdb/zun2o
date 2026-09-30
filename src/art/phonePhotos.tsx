@@ -283,8 +283,9 @@ function ChaewonFigure({ id }: { id: string }) {
   );
 }
 
-/** 채원's selfie in the index room. `stage` 1: something behind her; 2: right behind her shoulder. */
-export const SelfiePhoto = memo(function SelfiePhoto({ stage }: { stage: 1 | 2 }) {
+/** 채원's selfie in the index room. `stage` 0: just her; 1: something behind her; 2: right behind her shoulder. */
+export const SelfiePhoto = memo(function SelfiePhoto({ stage }: { stage: 0 | 1 | 2 }) {
+  const slot = stage === 0 ? 'selfie-alone' : stage === 1 ? 'selfie-far' : 'selfie-close';
   const id = useSvgId();
   return (
     <svg viewBox="0 0 420 560" role="img" aria-label="겁에 질린 젊은 여성의 셀카. 손전등 불빛. 뒤쪽 어둠 속에 무언가가 있다.">
@@ -296,8 +297,8 @@ export const SelfiePhoto = memo(function SelfiePhoto({ stage }: { stage: 1 | 2 }
           Array.from({ length: 6 }).map((__, c) => <rect key={`${r}${c}`} x={10 + c * 70} y={10 + r * 46} width="62" height="38" fill="#1c1813" />),
         )}
         {/* her behind 채원 */}
-        {art(stage === 1 ? 'selfie-far' : 'selfie-close') ? (
-          <ArtImage slot={stage === 1 ? 'selfie-far' : 'selfie-close'} w={420} h={560} />
+        {art(slot) ? (
+          <ArtImage slot={slot} w={420} h={560} />
         ) : (
           <>
         {/* stage 1: far back, between the shelves. stage 2: her cheek against 채원's hair */}

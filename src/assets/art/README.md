@@ -6,3 +6,5 @@
 2차 시트(배경·건물 12장: wallpaper, annex-gate, lobby, stairs, stairs-figure, corridor, reading-empty, reading-figure, room02-door, room02, black-empty, tower)도 같은 방식으로 잘라 2배 확대했습니다. 게임 안에서는 세로 사진 그대로(420×560) 보여 줍니다.
 
 3차 시트(엔딩 배경 3장, 오래 들여다본 부스 사진, 02:00 내 카메라, 도현·엄마·채원 프로필)도 같은 방식으로 넣었습니다. 프로필은 256px 정사각형.
+
+`selfie-alone`은 따로 생성한 것이 아니라 `selfie-far`의 오른쪽(채원 얼굴 부분)만 잘라 420×560으로 맞춘 것입니다. 숨김 앨범 마지막 사진이 점프스케어 전까지 이 사진으로 보이고, 스케어가 끝나면 `selfie-close`로 바뀝니다.

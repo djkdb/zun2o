@@ -95,6 +95,16 @@ describe('director timing', () => {
     expect(getState().save.flags).toContain('p07-revealed');
   });
 
+  it('the selfie: just 채원 until the scare, and she is at her cheek once it fades', async () => {
+    setSave({ flags: ['ch3'] });
+    expect(getState().save.flags).not.toContain('h05-revealed');
+    emit('photo:h05:dwell');
+    await vi.advanceTimersByTimeAsync(300);
+    expect(getState().rt.scare?.kind).toBe('lunge');
+    expect(getState().rt.scare?.look).toBe('profile');
+    expect(getState().save.flags).toContain('h05-revealed');
+  });
+
   it('messages to 도현 never leave the phone', () => {
     sendText('dohyun', '어디세요');
     const last = getState().save.threads.dohyun.at(-1)!;
