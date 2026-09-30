@@ -38,7 +38,8 @@ export type ArtSlot =
   | 'ending-release'
   | 'avatar-dohyun'
   | 'avatar-mom'
-  | 'avatar-self';
+  | 'avatar-self'
+  | 'avatar-unknown';
 
 const FILES = import.meta.glob('../assets/art/*.{jpg,jpeg,png,webp,avif}', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 

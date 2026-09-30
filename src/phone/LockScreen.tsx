@@ -3,7 +3,7 @@ import { useGame } from '../hooks/useGame';
 import { BoothPhoto, WallpaperPhoto } from '../art/phonePhotos';
 import { emit, sfx, vibrate } from '../engine/director';
 import { logInput, setSave } from '../engine/state';
-import { THREAD_META } from '../content/threads';
+import { THREAD_META, lastSent } from '../content/threads';
 import { Avatar } from './Avatar';
 import type { ThreadId } from '../engine/types';
 
@@ -25,13 +25,16 @@ export function LockScreen() {
   }, []);
 
   const notifications = useMemo(() => {
-    const out: { th: ThreadId; text: string; time: string }[] = [];
+    const out: { th: ThreadId; text: string; time: string; at: number }[] = [];
     (['unknown', 'dohyun'] as ThreadId[]).forEach((th) => {
-      threads[th].slice(-2).forEach((m) => {
-        if (m.from === 'them' && m.day !== '9월 26일 (금)') out.push({ th, text: m.text, time: m.time });
+      const all = threads[th];
+      all.forEach((m, i) => {
+        if (i < all.length - 2) return;
+        if (m.from === 'them' && m.day !== '9월 26일 (금)') out.push({ th, text: m.text, time: m.time, at: lastSent(all.slice(0, i + 1)) });
       });
     });
-    return out.slice(-4).reverse();
+    // Newest on top, like a real lock screen.
+    return out.sort((a, b) => b.at - a.at).slice(0, 4);
   }, [threads]);
 
   const press = (d: string) => {

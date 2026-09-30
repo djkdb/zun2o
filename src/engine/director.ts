@@ -290,6 +290,9 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
       emit(a.ev);
       return;
     case 'finale':
+      // Never cut 도현's last call (or anything else on screen) short: 02:00 waits for it.
+      await whenFree(myEpoch);
+      if (myEpoch !== epoch) return;
       saveCheckpoint();
       addFlag('finale');
       loop('heartbeat', false);
@@ -316,6 +319,7 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
       sfx('error');
       return;
     case 'hush': {
+      await whenFree(myEpoch);
       if (a.still) {
         // You're looking at her. Everything stops. Nothing warns you.
         setMix(0.003, 0, 0.08, 120);

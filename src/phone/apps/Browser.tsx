@@ -57,6 +57,7 @@ export function BrowserApp() {
         return;
       }
       addFlag('r013-indexed');
+      setSave({ objective: { text: '목록에 새로 생긴 기록 013을 열어 보자', hint: '인터넷 → 심야 기록보관소 → 맨 아래 기록 013.', since: Date.now() } });
       setTimeout(() => {
         sfx('unlock');
         setNotice('기록 013이 색인에 추가되었습니다.');

@@ -22,10 +22,11 @@ function Defs({ id, flashX = 50, flashY = 50, r = 60 }: { id: string; flashX?: n
       <filter id={`${id}-mb`} x="-20%" y="-20%" width="140%" height="140%">
         <feGaussianBlur stdDeviation="4 0.8" />
       </filter>
+      {/* only the corners fall off; no bright centre (on a phone that read as a grey oval) */}
       <radialGradient id={`${id}-flash`} cx={`${flashX}%`} cy={`${flashY}%`} r={`${r}%`}>
-        <stop offset="0%" stopColor="#fff" stopOpacity="0.35" />
-        <stop offset="45%" stopColor="#fff" stopOpacity="0.06" />
-        <stop offset="100%" stopColor="#000" stopOpacity="0.85" />
+        <stop offset="0%" stopColor="#000" stopOpacity="0" />
+        <stop offset="65%" stopColor="#000" stopOpacity="0.08" />
+        <stop offset="100%" stopColor="#000" stopOpacity="0.55" />
       </radialGradient>
     </defs>
   );
@@ -295,7 +296,7 @@ export const SelfiePhoto = memo(function SelfiePhoto({ stage }: { stage: 0 | 1 |
         )}
         {/* her behind 채원 */}
         {photo ? (
-          <ArtImage slot={slot} w={420} h={560} />
+          <ArtImage slot={slot} w={420} h={560} align={stage === 2 ? 'xMaxYMid' : undefined} />
         ) : (
           <>
         {/* stage 1: far back, between the shelves. stage 2: her cheek against 채원's hair */}
@@ -340,7 +341,7 @@ export const BlackPhoto = memo(function BlackPhoto({ brightness = 0, revealed = 
   return (
     <svg viewBox="0 0 420 560" role="img" aria-label="거의 완전히 검은 사진.">
       <rect width="420" height="560" fill="#030303" />
-      <g opacity={Math.min(1, Math.max(0, (b - 0.2) * 1.4))} style={{ filter: `brightness(${0.3 + b * 1.3}) contrast(${1 + b})` }}>
+      <g opacity={Math.min(1, Math.max(0, (b - 0.2) * 1.4))} style={{ filter: `brightness(${0.25 + b * 0.75}) contrast(${1.6 - b * 0.6})` }}>
         {art('black-empty') ? (
           <ArtImage slot="black-empty" w={420} h={560} />
         ) : (

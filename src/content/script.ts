@@ -122,7 +122,7 @@ export const BEATS: Beat[] = [
     requires: ['unlocked'],
     actions: [
       { t: 'wait', ms: 1500 },
-      { t: 'msg', th: 'unknown', text: '…그 사진은 보지 마요.', typing: 1300 },
+      { t: 'msg', th: 'unknown', text: '…너무 밝게 보지는 마요.', typing: 1300 },
       {
         t: 'objective', app: 'gallery',
         text: '마지막 사진에 뭔가 찍혀 있다',
@@ -178,6 +178,8 @@ export const BEATS: Beat[] = [
     ],
   },
   { id: 'call1-end', on: 'call:dohyun1:end', actions: [{ t: 'emit', ev: 'call1:done' }] },
+  // Missing the call also counts as a decline for the flow above; remember it was only missed.
+  { id: 'call1-missed', on: 'call:dohyun1:missed', actions: [{ t: 'flag', f: 'missed-dohyun' }] },
   // Hung up (or the line dropped) before he finished: he calls back once, then texts.
   {
     id: 'call1-hangup',

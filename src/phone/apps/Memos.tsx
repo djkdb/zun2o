@@ -103,16 +103,18 @@ function Player({ memo }: { memo: Memo }) {
         <span>{fmt(t)}</span>
         <span>{fmt(MEMO_M1.duration)}</span>
       </div>
-      <p className="subtitle" aria-live="polite">
-        {current ? (
-          <>
-            {current.who && <b>{current.who}: </b>}
-            {current.text}
-          </>
-        ) : (
-          ' '
-        )}
-      </p>
+      {/* the line being heard, and the two before it fading above: nothing is missed */}
+      <div className="memo-transcript" aria-live="polite">
+        {MEMO_M1.lines
+          .filter((l) => t >= l.at)
+          .slice(-3)
+          .map((l, i, shown) => (
+            <p key={l.at} className={`subtitle${i === shown.length - 1 ? '' : ' past'}`}>
+              {l.who && <b>{l.who}: </b>}
+              {l.text}
+            </p>
+          ))}
+      </div>
       <button
         type="button"
         className="memo-play"

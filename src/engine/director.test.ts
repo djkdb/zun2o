@@ -56,6 +56,23 @@ describe('director timing', () => {
     expect(first).toBe('야간 색인');
   });
 
+  it("02:00 waits for 도현's last call to finish, however late it was answered", async () => {
+    setSave({ flags: ['found-key', 'self-contact'] });
+    setSpeed(40);
+    emit('ch4');
+    await until(() => {
+      if (getState().rt.dialog) setRt({ dialog: null });
+      return getState().rt.incoming === 'dohyun2';
+    });
+    // Answered, and the call is still going long after the script's own wait.
+    setRt({ incoming: null, activeCall: 'dohyun2' });
+    await vi.advanceTimersByTimeAsync(60000);
+    expect(getState().rt.finale).toBeFalsy();
+    expect(getState().rt.activeCall).toBe('dohyun2');
+    setRt({ activeCall: null });
+    await until(() => getState().rt.finale === true, 120000);
+  });
+
   it('one decline of 도현 triggers exactly one reaction', async () => {
     setSpeed(20);
     emit('call:dohyun1:decline');

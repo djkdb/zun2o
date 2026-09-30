@@ -8,8 +8,8 @@ import { art } from '../art/photoArt';
 // except the hair is too long.
 
 function Portrait({ th }: { th: ThreadId }) {
-  // A real profile photo, if one was provided (the unknown number never has one).
-  const photo = th === 'dohyun' || th === 'mom' || th === 'self' ? art(`avatar-${th}`) : undefined;
+  // A real profile photo, if one was provided (src/assets/art/avatar-<thread>).
+  const photo = art(`avatar-${th}`);
   if (photo) return <img src={photo} alt="" draggable={false} />;
   switch (th) {
     case 'dohyun':
