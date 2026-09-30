@@ -80,7 +80,7 @@ export const INITIAL_THREADS: Record<ThreadId, ChatMsg[]> = {
     m('them', '01:20', '괜찮아?'),
     m('me', '01:31', '3층에 불 켜진 방 있어. 전기 끊긴 건물인데'),
     m('them', '01:31', '야 그냥 나와'),
-    m('me', '01:44', '복도 끝에서 서랍 여는 소리 들림'),
+    m('me', '01:44', '열람실에 누가 있었어. 뛰쳐나왔는데 복도 끝에서 서랍 여는 소리'),
     m('me', '01:52', '도현아 여기 누가 있어'),
     m('me', '01:52', '사람인지 모르겠어'),
     m('me', '01:58', '시계가 멈췄어'),
@@ -90,7 +90,9 @@ export const INITIAL_THREADS: Record<ThreadId, ChatMsg[]> = {
     m('them', '02:10', '나 들어간다'),
     m('them', '02:41', '3층에 아무도 없어'),
     m('them', '02:42', '제2서고 문은 벽돌로 막혀 있어. 너 어디야'),
-    m('them', '09:12', '경찰 불렀어', D27),
+    m('them', '02:55', '경찰 불렀어'),
+    m('them', '09:12', '경찰은 네가 장난치는 거래. 영상 올리려고 숨어 있는 거 아니냐고', D27),
+    m('them', '23:46', '채원이 폰 위치가 방금 다시 떴어요. 정문 앞 부스. 낮에 경찰이랑 갔을 땐 선반에 아무것도 없었어요'),
     m('them', '23:48', '이 폰 가지고 계신 분, 제발 연락 주세요'),
     m('them', '23:49', '채원이 폰 맞죠? 제발 받아 주세요'),
   ],
@@ -111,4 +113,4 @@ export const INITIAL_THREADS: Record<ThreadId, ChatMsg[]> = {
   unknown: [m('them', '02:00', '방문해 주셔서 감사합니다.', D27)],
 };
 
-export const INITIAL_UNREAD: Record<ThreadId, number> = { dohyun: 8, mom: 4, self: 0, unknown: 1 };
+export const INITIAL_UNREAD: Record<ThreadId, number> = { dohyun: 10, mom: 4, self: 0, unknown: 1 };

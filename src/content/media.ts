@@ -73,7 +73,11 @@ export const NOTES: Record<string, NoteItem> = {
 
 1995년 폐교. 도서관 제2서고는 봉인.
 "새벽 2시에 학교 안에 있으면 도서관에 갇힌다.
- 다음 사람이 들어와야 나올 수 있다"`,
+ 다음 사람이 들어와야 나올 수 있다"
+
+"부스 폰을 들고 있으면 안에 있는 걸로 친다.
+ 끄면 나온 걸로 친다" ← 제보 메일 끝에 있던 말.
+도현이한테 보여 줬더니 가지 말래 ㅋㅋ`,
   },
   n3: {
     id: 'n3',
@@ -121,7 +125,7 @@ export interface MemoLine {
 export const MEMO_M1 = {
   id: 'm1',
   title: '새 녹음 17',
-  date: '9월 27일 01:52',
+  date: '9월 27일 01:41',
   duration: 48,
   lines: [
     { at: 0, who: '', text: '(발소리. 숨소리. 주머니 속에서 진동.)', sfx: 'footsteps' },

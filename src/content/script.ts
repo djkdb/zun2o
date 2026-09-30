@@ -70,7 +70,7 @@ export const BEATS: Beat[] = [
       },
       { t: 'wait', ms: 1800 },
       // 채원 walked in at 01:13 on purpose: her passcode, the day she met 도현 (her script note says so). (One message: nothing can land between.)
-      { t: 'msg', th: 'unknown', text: '들어왔네요. 0113… 채원 씨는 일부러 딱 그 시각에 들어왔어요. 도현 씨랑 처음 만난 날이라고.', typing: 1800 },
+      { t: 'msg', th: 'unknown', text: '들어왔네요. 0113. 채원 씨도 딱 그 시각에 들어왔어요.', typing: 1800 },
     ],
   },
   {
@@ -232,7 +232,8 @@ export const BEATS: Beat[] = [
       { t: 'chapter', n: 2, title: '목소리' },
       { t: 'time', hm: '00:47' },
       { t: 'msg', th: 'dohyun', text: '채원이 마지막 녹음이에요. 꼭 끝까지 들어요.', typing: 1600, attach: { kind: 'memo', id: 'm1' } },
-      { t: 'msg', th: 'dohyun', text: '그리고 저 지금 학교로 가요. 20분이면 가요. 거기 계세요.', typing: 1800 },
+      { t: 'msg', th: 'dohyun', text: '그리고 저 지금 학교로 가요. 20분이면 가요.', typing: 1800 },
+      { t: 'msg', th: 'unknown', text: '부스 문, 밀어 봐요. 두 시까지는 안 열려요.', typing: 1600 },
       {
         t: 'objective', app: 'memos',
         text: '채원의 마지막 녹음을 듣자',
@@ -335,6 +336,9 @@ export const BEATS: Beat[] = [
       { t: 'msg', th: 'unknown', text: '채원 씨가 숨겨 둔 사진들이에요. 보고 싶죠?', typing: 1800, attach: { kind: 'album' } },
       // Found the code early? The album has finished syncing now.
       { t: 'emit', ev: 'album:recheck' },
+      { t: 'wait', ms: 26000 },
+      { t: 'msg', th: 'dohyun', text: '택시 기다리는 중이에요. 폰 끄라는 거, 제보 메일 끝에 있던 말이에요. 채원이가 캡처해서 보여 줬었어요', typing: 2400 },
+      { t: 'msg', th: 'dohyun', text: '그때 가지 말라고 더 말렸어야 했는데', typing: 1600 },
     ],
   },
 
@@ -391,6 +395,8 @@ export const BEATS: Beat[] = [
       { t: 'msg', th: 'mom', text: '채원아 방금 전화 너였니?', typing: 1200 },
       { t: 'msg', th: 'mom', text: '아무 말도 안 하고 숨소리만 들리더라', typing: 1600 },
       { t: 'msg', th: 'mom', text: '엄마 너무 무섭다. 제발 한마디만 해 줘', typing: 1800 },
+      { t: 'wait', ms: 4000 },
+      { t: 'msg', th: 'unknown', text: '어머니 목소리, 좋네요. 우리 애도 저렇게 기다렸을 거예요.', typing: 2200 },
     ],
   },
   {
@@ -419,7 +425,8 @@ export const BEATS: Beat[] = [
       { t: 'msg', th: 'self', from: 'me', text: '제발 도와줘. 여기 문이 없어. 서랍만 있어', typing: 2200 },
       { t: 'msg', th: 'self', from: 'me', text: '두 시에 다음 사람 이름이 적히면 나는 나갈 수 있대', typing: 2400 },
       { t: 'msg', th: 'self', from: 'me', text: '나도 그 부스에서 폰 주웠어. 박현우라는 사람 폰', typing: 2200 },
-      { t: 'msg', th: 'self', from: 'me', text: '그 폰 지금 여기 서랍 안에 있어. 아직 켜져 있어. 12%', typing: 2400 },
+      { t: 'msg', th: 'self', from: 'me', text: '내 폰은 두 시 되자마자 손에서 없어졌어. 그 여자가 부스에 갖다 놔. 다음 사람 주우라고. 제보 메일도 그 여자였어', typing: 2800 },
+      { t: 'msg', th: 'self', from: 'me', text: '그 폰 지금 여기 서랍 안에 있어. 12%. 전화도 112도 안 돼. 내 폰 ‘나에게’로만 가', typing: 2400 },
       { t: 'msg', th: 'self', from: 'me', text: '네가 들고 있는 거 내 폰이지? 그럼 다음은 너야', typing: 2000 },
       { t: 'msg', th: 'self', from: 'me', text: '기록보관소 사이트 013번. 그 여자가 무서워하는 게 거기 있어', typing: 2600, attach: { kind: 'archive' } },
       { t: 'msg', th: 'self', from: 'me', text: '라디오 숫자 순서대로 열어야 나와. 메모에 적어 놨어', typing: 2000 },
@@ -432,7 +439,7 @@ export const BEATS: Beat[] = [
         hint: '메모 “괴담 정리”의 숫자 순서: 기록 001 → 003 → 007을 다른 기록을 섞지 않고 차례로 여세요.',
         nudge: { th: 'self', from: 'me', text: '001 003 007. 순서대로. 중간에 다른 거 열면 안 돼' },
       },
-      { t: 'wait', ms: 6000 },
+      { t: 'wait', ms: 15000 },
       { t: 'msg', th: 'unknown', text: '채원 씨랑 얘기하지 마세요.', typing: 1200 },
       { t: 'wait', ms: 7000 },
       { t: 'photo', id: 'p08' },
@@ -483,6 +490,10 @@ export const BEATS: Beat[] = [
       { t: 'wait', ms: 2200 },
       { t: 'msg', th: 'unknown', text: '{name}, 그 코드를 찾았네요.', typing: 1400 },
       { t: 'msg', th: 'unknown', text: '그건 쓰면 안 돼요.', typing: 1200 },
+      { t: 'msg', th: 'unknown', text: '…써요. 두 시에. 제 이름이랑 같이.', typing: 900 },
+      { t: 'wait', ms: 4500 },
+      { t: 'unsend', th: 'unknown', match: '…써요. 두 시에' },
+      { t: 'wait', ms: 1200 },
       { t: 'msg', th: 'unknown', text: '새로 생긴 앱, 열어 봐요. 도서관 출입 기록이에요. 지금 안에 있는 사람들 이름.', typing: 2200 },
       { t: 'msg', th: 'unknown', text: '코드를 쓰면 기록이 전부 지워져요. 아무도 기록되지 않아요. 아무도 기억되지 않아요.', typing: 2600 },
       {
@@ -517,7 +528,7 @@ export const BEATS: Beat[] = [
       { t: 'battery', v: 4 },
       { t: 'dialog', title: '배터리 부족', body: '배터리가 4% 남았습니다. 저전력 모드를 켤 수 없습니다: 야간 출입 기록이 사용 중.' },
       { t: 'msg', th: 'dohyun', text: '3층 창문에 채원이 있어요. 손 흔들어요', typing: 1200 },
-      { t: 'msg', th: 'dohyun', text: '들어갈게요. 당신은 거기 있어요', typing: 1400 },
+      { t: 'msg', th: 'dohyun', text: '그날 저는 입구에서 기다리기만 했어요. 이번엔 들어갈게요', typing: 1400 },
       { t: 'wait', ms: 9000 },
       { t: 'time', hm: '01:56' },
       { t: 'flag', f: 'dohyun-in' },

@@ -390,7 +390,7 @@ export function Finale() {
                 }}
               >
                 <b>내가 남는다</b>
-                <small>내가 안에 남는다. 채원과 도현은 풀려난다.</small>
+                <small>내가 안에 남아 이름을 적는다. 채원과 도현은 풀려난다.</small>
               </button>
               <button type="button" disabled={!foundKey} onClick={() => setStep('key')}>
                 <b>삭제 코드를 입력한다</b>

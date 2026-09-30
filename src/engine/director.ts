@@ -663,6 +663,8 @@ const night = (hm: string) => (toMinutes(hm) + 720) % 1440;
 const CLOCK_CAP: Record<number, string> = { 0: '23:59', 1: '00:30', 2: '01:11', 3: '01:49' };
 
 /** Anything on screen the player is paying attention to right now. */
+let busyAt = 0;
+
 function playerBusy(): boolean {
   const r = getState().rt;
   return (
@@ -799,7 +801,9 @@ export function startLifeTicker(): () => void {
     }
     if (s.unlocked && n % 36 === 0 && s.battery > 7 && s.chapter < 4) setSave({ battery: s.battery - 1 });
     const o = s.objective;
-    if (o?.nudge && !s.nudged.includes(o.text) && Date.now() - o.since > HINT_TIER_MS[0] && !playerBusy()) {
+    // Just finished a memo or a call: give the story a beat to answer before anyone nags.
+    if (playerBusy()) busyAt = Date.now();
+    if (o?.nudge && !s.nudged.includes(o.text) && Date.now() - o.since > HINT_TIER_MS[0] && Date.now() - busyAt > 15000) {
       setSave({ nudged: [...s.nudged, o.text] });
       void perform({ t: 'msg', th: o.nudge.th, text: o.nudge.text, from: o.nudge.from, typing: 1500 }, epoch);
     }

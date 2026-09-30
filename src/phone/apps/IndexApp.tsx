@@ -22,7 +22,7 @@ export function IndexApp() {
     { no: '#0025', name: '박현우', status: '풀려남 09.27 02:00', tone: 'done' },
     { no: '#0026', name: '윤채원', status: '안에 있음', tone: 'on' },
     { no: '#0027', name: name ?? '(이름 없음)', status: `들어옴 ${fill('{start}')} (폰을 주운 시각)`, tone: 'new' },
-    ...(dohyun ? [{ no: '#0028', name: '박도현', status: '들어옴 01:56', tone: 'wait' as const }] : []),
+    ...(dohyun ? [{ no: '#0028', name: '강도현', status: '들어옴 01:56', tone: 'wait' as const }] : []),
   ];
   const left = untilTwo(clock);
   return (
