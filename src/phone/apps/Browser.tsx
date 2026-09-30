@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useGame } from '../../hooks/useGame';
 import { emit, openApp, sfx } from '../../engine/director';
 import { addFlag, getState, setRt, setSave } from '../../engine/state';
-import { ARCHIVE, ARCHIVE_LIST, ARCHIVE_SEQUENCE } from '../../content/archive';
+import { ARCHIVE, ARCHIVE_LIST, ARCHIVE_SEQUENCE, type ArchivePage } from '../../content/archive';
 import { AppHeader } from '../AppHeader';
 import { art } from '../../art/photoArt';
 import { SlotPhoto } from '../../art/phonePhotos';
@@ -102,24 +102,40 @@ export function BrowserApp() {
             <span className="bm-icon news">해</span>
             <span>
               <strong>해원일보 — 폐건물 촬영 나선 유튜버 실종</strong>
-              <small>오늘 · 방문 기록 없음</small>
+              <small>9월 27일 18:30 · 방문 기록 없음</small>
             </span>
           </button>
         </div>
       )}
       {view.kind === 'archive' && (
-        <div className="archive">
-          <h2>심야 기록보관소</h2>
-          <p className="archive-sub">1995년 폐교된 해원고등학교 기록 · 자원봉사자 운영 · 최종 수정 2004.11.02</p>
-          <ul>
-            {[...ARCHIVE_LIST, ...(indexed ? ['r013'] : [])].map((id) => (
-              <li key={id}>
-                <button type="button" className={id === 'r013' ? 'new' : undefined} onClick={() => openPage(id)}>
-                  {ARCHIVE[id].title}
-                </button>
-              </li>
-            ))}
+        <div className="archive arc-site">
+          <header className="arc-head">
+            <span className="arc-logo">夜</span>
+            <div>
+              <h2>심야 기록보관소</h2>
+              <p>1995년 폐교된 해원고등학교 기록 · 자원봉사자 운영</p>
+            </div>
+          </header>
+          <p className="arc-counter">
+            누적 방문자 <b>000413</b> · 지금 보는 사람 <b className="arc-blink">2</b>
+          </p>
+          <ul className="arc-list">
+            {[...ARCHIVE_LIST, ...(indexed ? ['r013'] : [])].map((id) => {
+              const p = ARCHIVE[id];
+              const [no, name] = p.title.replace('기록 ', '').split(' — ');
+              const badge = id === 'r013' ? 'NEW' : p.access === 'restricted' ? '열람 제한' : p.access === 'denied' ? '접근 거부' : null;
+              return (
+                <li key={id}>
+                  <button type="button" className={id === 'r013' ? 'new' : undefined} onClick={() => openPage(id)} aria-label={badge ? `${p.title} (${badge})` : p.title}>
+                    <span className="arc-no">{no}</span>
+                    <span className="arc-name">{name.replace(' (열람 제한)', '').replace('[접근 거부]', '— — —')}</span>
+                    {badge && <span className={`arc-badge${id === 'r013' ? ' new' : ''}`}>{badge}</span>}
+                  </button>
+                </li>
+              );
+            })}
           </ul>
+          <p className="arc-foot">최종 수정 2004.11.02 · 운영자 연락처 없음 · 이 사이트는 더 이상 관리되지 않습니다</p>
         </div>
       )}
       {view.kind === 'page' && view.id === '__early' && (
@@ -135,18 +151,84 @@ export function BrowserApp() {
           <p>이 기록이 참조하는 기록(001, 003)을 먼저 열람한 사람만 볼 수 있습니다.</p>
         </div>
       )}
-      {view.kind === 'page' && ARCHIVE[view.id] && (
-        <article className={`archive-page${ARCHIVE[view.id].access === 'denied' ? ' denied' : ''}`}>
-          <h2>{ARCHIVE[view.id].title}</h2>
-          {ARCHIVE[view.id].photo && <div className="archive-photo">{PHOTO[ARCHIVE[view.id].photo!]()}</div>}
-          {ARCHIVE[view.id].lines.map((l, i) => (
-            <p key={i} className={l.includes('HAEWON-0200') ? 'key-line' : undefined}>
-              {l}
-            </p>
-          ))}
+      {view.kind === 'page' && ARCHIVE[view.id]?.news && <NewsArticle page={ARCHIVE[view.id]} onOpen={openPage} />}
+      {view.kind === 'page' && ARCHIVE[view.id] && !ARCHIVE[view.id].news && (
+        <div className="arc-site arc-page-wrap">
+          <article className={`archive-page arc-doc${ARCHIVE[view.id].access === 'denied' ? ' denied' : ''}`}>
+            <p className="arc-doc-no">{ARCHIVE[view.id].title.split(' — ')[0]}</p>
+            <h2>{ARCHIVE[view.id].title.split(' — ')[1]}</h2>
+            {ARCHIVE[view.id].meta && <p className="arc-doc-meta">{ARCHIVE[view.id].meta}</p>}
+            {ARCHIVE[view.id].access === 'restricted' && <div className="stamp arc-stamp">열람 제한</div>}
+            {ARCHIVE[view.id].photo && <div className="archive-photo arc-scan">{PHOTO[ARCHIVE[view.id].photo!]()}</div>}
+            {ARCHIVE[view.id].lines.map((l, i) => (
+              <p key={i} className={l.includes('HAEWON-0200') ? 'key-line' : undefined}>
+                <Rich text={l} />
+              </p>
+            ))}
+          </article>
           {notice && <div className="archive-notice">{notice}</div>}
-        </article>
+        </div>
       )}
     </div>
   );
 }
+
+/** `**…**` → emphasis, so a skimming reader still catches the point. */
+function Rich({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/\*\*(.+?)\*\*/g).map((part, i) => (i % 2 ? <strong key={i}>{part}</strong> : part))}
+    </>
+  );
+}
+
+/** 해원일보: laid out like a real mobile news page. */
+function NewsArticle({ page, onOpen }: { page: ArchivePage; onOpen: (id: string) => void }) {
+  const n = page.news!;
+  const other = page.id === 'news' ? 'news2' : 'news';
+  const [lead, ...rest] = page.lines;
+  return (
+    <article className="news">
+      <header className="news-mast">
+        <span className="news-logo">해원일보</span>
+        <span className="news-menu" aria-hidden="true">
+          ☰
+        </span>
+      </header>
+      <div className="news-body">
+        <p className="news-section">{n.section}</p>
+        <h1>{page.title.replace('해원일보 — ', '')}</h1>
+        <p className="news-sub">{n.subtitle}</p>
+        <p className="news-by">
+          <b>{n.byline}</b> · {n.time}
+        </p>
+        {page.photo && (
+          <figure className="news-photo">
+            {PHOTO[page.photo]()}
+            <figcaption>{n.caption}</figcaption>
+          </figure>
+        )}
+        <p className="news-lead">
+          <Rich text={lead.replace('[해원일보] ', '')} />
+        </p>
+        {rest.slice(0, 1).map((l) => (
+          <p key={l}>
+            <Rich text={l} />
+          </p>
+        ))}
+        <blockquote className="news-quote">{n.quote}</blockquote>
+        {rest.slice(1).map((l) => (
+          <p key={l}>
+            <Rich text={l} />
+          </p>
+        ))}
+        <p className="news-copy">ⓒ 해원일보 · 무단 전재 및 재배포 금지</p>
+        <button type="button" className="news-related" onClick={() => onOpen(other)}>
+          <small>관련 기사</small>
+          <span>{ARCHIVE[other].title.replace('해원일보 — ', '')}</span>
+        </button>
+      </div>
+    </article>
+  );
+}
+

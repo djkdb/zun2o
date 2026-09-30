@@ -234,7 +234,7 @@ await tapText('심야 기록보관소');
 await wait(400);
 await snap('archive-index');
 for (const r of ['기록 001', '기록 003', '기록 007']) {
-  await page.locator('.archive li button', { hasText: r }).first().click();
+  await page.getByRole('button', { name: r }).first().click();
   await wait(700);
   if (r === '기록 003') await snap('archive-003');
   await tap('.back');
@@ -416,9 +416,9 @@ await tap('.hint-chip');
 await openApp('인터넷');
 await tapText('심야 기록보관소');
 for (const r of ['기록 001', '기록 003', '기록 007']) {
-  await page.locator('.archive li button', { hasText: r }).first().click();
+  await page.getByRole('button', { name: r }).first().click();
   await wait(1400);
-  if (r === '기록 007') check('REGRESSION: early archive order says 013 is "being written"', (await page.textContent('.archive-page')).includes('작성 중'));
+  if (r === '기록 007') check('REGRESSION: early archive order says 013 is "being written"', (await page.textContent('.arc-page-wrap')).includes('작성 중'));
   await tap('.back');
   await wait(300);
 }

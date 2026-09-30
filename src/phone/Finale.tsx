@@ -6,7 +6,7 @@ import { HomeScreen } from './HomeScreen';
 import { VideoFeed } from '../art/phonePhotos';
 import { GhostVisual } from '../art/Ghost';
 import { speak } from '../audio/speech';
-import { ARCHIVE, CONTINUATION_KEY, FIRST_KEEPER } from '../content/archive';
+import { ARCHIVE, CONTINUATION_KEY, FIRST_KEEPER, plain } from '../content/archive';
 import { CallIcon } from './CallIcon';
 import { VIDEO_CALL_LINES } from '../content/calls';
 import { setSave } from '../engine/state';
@@ -469,7 +469,7 @@ function Reread({ id }: { id: 'r013' | 'r003' }) {
         <div className="reread-page">
           <strong>{page.title}</strong>
           {page.lines.map((l) => (
-            <p key={l}>{l}</p>
+            <p key={l}>{plain(l)}</p>
           ))}
         </div>
       )}

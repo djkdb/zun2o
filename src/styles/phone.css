@@ -4270,3 +4270,392 @@ body,
 .ending-card small {
   color: #a9abb2 !important;
 }
+
+/* ─── browser: 해원일보 looks like a news site ───────────────────────── */
+.news {
+  flex: 1;
+  overflow-y: auto;
+  background: #fff;
+  color: #1a1a1a;
+  font-family: 'IBM Plex Sans KR', sans-serif;
+}
+
+.news-mast {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #fff;
+  border-bottom: 3px solid #1f3f7a;
+}
+
+.news-logo {
+  font-family: 'Noto Serif KR', 'Nanum Myeongjo', serif;
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #1f3f7a;
+}
+
+.news-menu {
+  font-size: 18px;
+  color: #555;
+}
+
+.news-body {
+  padding: 16px 18px 28px;
+}
+
+.news-section {
+  display: inline-block;
+  margin: 0 0 8px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: #e8eef9;
+  color: #1f3f7a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.news h1 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  line-height: 1.38;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.news-sub {
+  margin: 0 0 12px;
+  padding-left: 10px;
+  border-left: 3px solid #1f3f7a;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #444;
+}
+
+.news-by {
+  margin: 0 0 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e3e3e3;
+  font-size: 12px;
+  color: #777;
+}
+
+.news-by b {
+  color: #333;
+}
+
+.news-photo {
+  margin: 0 -18px 16px;
+}
+
+.news-photo svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.news-photo figcaption {
+  padding: 6px 18px 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #777;
+}
+
+.news p {
+  margin: 0 0 14px;
+  font-size: 16px;
+  line-height: 1.8;
+  color: #222;
+}
+
+.news strong {
+  font-weight: 700;
+  background: linear-gradient(transparent 62%, #fff0a8 62%);
+}
+
+.news .news-lead {
+  font-weight: 600;
+  color: #111;
+}
+
+.news-quote {
+  margin: 18px 0;
+  padding: 14px 16px;
+  border-left: 4px solid #1f3f7a;
+  background: #f4f6fa;
+  font-family: 'Noto Serif KR', 'Nanum Myeongjo', serif;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #1f3f7a;
+}
+
+.news .news-copy {
+  margin-top: 20px;
+  font-size: 11px;
+  color: #999;
+}
+
+.news-related {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px 14px;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  background: #fafafa;
+  text-align: left;
+  color: #1a1a1a;
+}
+
+.news-related small {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1f3f7a;
+}
+
+.news-related span {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+/* ─── browser: 심야 기록보관소, a personal archive nobody updates since 2004 ─ */
+.arc-site {
+  flex: 1;
+  overflow-y: auto;
+  background: #0d0e0c;
+  color: #c9c4b0;
+  font-family: var(--mono), 'IBM Plex Sans KR', monospace;
+  padding: 16px 14px 28px;
+}
+
+.archive.arc-site {
+  background: #0d0e0c;
+  color: #c9c4b0;
+}
+
+.arc-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed #3d3a30;
+}
+
+.arc-logo {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #6b6450;
+  font-family: serif;
+  font-size: 24px;
+  color: #e8d9a8;
+}
+
+.arc-head h2 {
+  margin: 0;
+  font-size: 19px;
+  letter-spacing: 0.12em;
+  color: #e8d9a8;
+}
+
+.arc-head p {
+  margin: 3px 0 0;
+  font-size: 11px;
+  color: #8a8472;
+}
+
+.arc-counter {
+  margin: 10px 0 14px;
+  font-size: 11px;
+  color: #8a8472;
+}
+
+.arc-counter b {
+  color: #d9c27a;
+  letter-spacing: 0.1em;
+}
+
+.arc-blink {
+  animation: arc-blink 1.4s steps(2) infinite;
+}
+
+@keyframes arc-blink {
+  50% {
+    color: #8a2a1e;
+  }
+}
+
+.arc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #2c2a23;
+}
+
+.arc-list li + li {
+  border-top: 1px solid #2c2a23;
+}
+
+.archive .arc-list li button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 52px;
+  padding: 10px 12px;
+  text-align: left;
+  text-decoration: none;
+  color: #c9c4b0;
+  border: 0;
+}
+
+.archive .arc-list li button:active {
+  background: #1b1c18;
+}
+
+.arc-no {
+  flex: none;
+  width: 34px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #d9c27a;
+}
+
+.arc-name {
+  flex: 1;
+  font-family: 'IBM Plex Sans KR', sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #ddd8c4;
+  text-decoration: underline;
+  text-decoration-color: #4a4638;
+  text-underline-offset: 3px;
+}
+
+.arc-badge {
+  flex: none;
+  padding: 2px 6px;
+  border: 1px solid #7a3328;
+  font-size: 10px;
+  color: #d96a5a;
+  letter-spacing: 0.04em;
+}
+
+.arc-badge.new {
+  border-color: #d9c27a;
+  color: #0d0e0c;
+  background: #d9c27a;
+}
+
+.archive .arc-list li button.new {
+  color: inherit;
+  background: #1f1a10;
+}
+
+.arc-foot {
+  margin: 16px 0 0;
+  font-size: 10px;
+  line-height: 1.6;
+  color: #5e5a4c;
+}
+
+/* a record: a typed, scanned document on the dark page */
+.arc-page-wrap {
+  padding: 14px 12px 28px;
+}
+
+.archive-page.arc-doc {
+  flex: none;
+  overflow: visible;
+  position: relative;
+  padding: 18px 16px 20px;
+  background: #e9e2cf;
+  color: #22201a;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.6);
+  font-family: 'IBM Plex Mono', 'IBM Plex Sans KR', monospace;
+}
+
+.arc-doc-no {
+  margin: 0 0 2px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: #7a6f55;
+}
+
+.archive-page.arc-doc h2 {
+  margin: 0 0 6px;
+  font-family: 'IBM Plex Sans KR', sans-serif;
+  font-size: 19px;
+  line-height: 1.35;
+}
+
+.arc-doc-meta {
+  margin: 0 0 12px !important;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #c9bfa4;
+  font-size: 11px !important;
+  line-height: 1.5 !important;
+  color: #7a6f55;
+}
+
+.archive-page.arc-doc p {
+  font-size: 14.5px;
+  line-height: 1.75;
+}
+
+.archive-page.arc-doc strong {
+  font-weight: 700;
+  background: rgba(138, 42, 30, 0.12);
+  box-shadow: inset 0 -2px 0 rgba(138, 42, 30, 0.45);
+}
+
+.arc-scan {
+  margin: 4px -4px 14px;
+  border: 0;
+  padding: 0;
+  background: none;
+  transform: rotate(-0.6deg);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+}
+
+.arc-scan svg {
+  filter: grayscale(0.6) sepia(0.35) contrast(1.05);
+}
+
+.arc-stamp {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  margin: 0;
+  font-size: 12px;
+  background: rgba(233, 226, 207, 0.85);
+}
+
+.arc-doc .key-line strong {
+  background: none;
+  box-shadow: none;
+  color: #ffd27a;
+}
+
+.arc-page-wrap .archive-notice {
+  margin-top: 14px;
+  border-color: #d9c27a;
+  color: #d9c27a;
+  font-family: 'IBM Plex Sans KR', sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arc-blink {
+    animation: none;
+  }
+}
