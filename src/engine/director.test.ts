@@ -73,6 +73,19 @@ describe('director timing', () => {
     await until(() => getState().rt.finale === true, 120000);
   });
 
+  it('the opening: she calls two seconds after you pick the phone up, and the riddle is left in writing even if you decline', async () => {
+    setSave({ unlocked: false });
+    emit('start');
+    await vi.advanceTimersByTimeAsync(1500);
+    expect(getState().rt.incoming).toBeNull();
+    await vi.advanceTimersByTimeAsync(800);
+    expect(getState().rt.incoming).toBe('door');
+    setRt({ incoming: null });
+    emit('call:door:decline');
+    await until(() => getState().save.threads.unknown.some((m) => m.text.includes('채원 씨가 들어온 시각')), 20000);
+    expect(getState().save.threads.unknown.some((m) => m.text === '받지 그랬어요.')).toBe(true);
+  });
+
   it('one decline of 도현 triggers exactly one reaction', async () => {
     setSpeed(20);
     emit('call:dohyun1:decline');

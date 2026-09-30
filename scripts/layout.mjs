@@ -74,7 +74,12 @@ for (const [w, h] of SIZES) {
   await audit(page, `${tag}-coldopen`);
   await page.click('.coldopen-actions .primary');
   await page.waitForSelector('.lock');
+  // The opening call: audit it, then let it go.
+  await page.waitForSelector('.incoming', { timeout: 10000 });
   await page.waitForTimeout(600);
+  await audit(page, `${tag}-opening-call`);
+  await page.locator('.decline').dispatchEvent('click');
+  await page.waitForTimeout(2500);
   await audit(page, `${tag}-lock`);
   await debugClick(page, /^CH1$/);
   await page.locator('.dbg button', { hasText: '—' }).click();

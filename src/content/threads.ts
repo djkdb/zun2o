@@ -92,8 +92,7 @@ export const INITIAL_THREADS: Record<ThreadId, ChatMsg[]> = {
     m('me', '15:31', '괴담 요약 → 메모 앱에 정리함'),
     m('me', '15:40', '숨김 앨범 비번 바꿈. 힌트는 메모에'),
   ],
-  // She leaves the door open — as a riddle. The answer is on the lock screen (the camera notification).
-  unknown: [m('them', '02:00', '방문해 주셔서 감사합니다.', D27), m('them', '23:50', '문은 열어 뒀어요. 채원 씨가 들어온 시각을 누르세요.')],
+  unknown: [m('them', '02:00', '방문해 주셔서 감사합니다.', D27)],
 };
 
-export const INITIAL_UNREAD: Record<ThreadId, number> = { dohyun: 8, mom: 4, self: 0, unknown: 2 };
+export const INITIAL_UNREAD: Record<ThreadId, number> = { dohyun: 8, mom: 4, self: 0, unknown: 1 };

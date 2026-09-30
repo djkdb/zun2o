@@ -22,8 +22,24 @@ export const BEATS: Beat[] = [
     actions: [
       { t: 'time', hm: '23:51' },
       { t: 'battery', v: 12 },
-      { t: 'objective', text: '폰의 잠금을 풀자', hint: '잠금 화면 알림을 읽어 보세요. 발신자 표시제한이 수수께끼를 냈고, 그 답(채원이 들어간 시각)은 카메라 알림에 있어요. 네 자리로.' },
+      { t: 'objective', text: '폰의 잠금을 풀자', hint: '걸려 온 전화가 수수께끼를 냈어요(문자로도 와 있어요). 답은 채원이 들어간 시각 — 잠금 화면의 카메라 알림을 보세요. 네 자리로.' },
+      { t: 'wait', ms: 2000 },
+      { t: 'call', id: 'door' },
     ],
+  },
+  // However the call went, the riddle is also left in writing.
+  { id: 'door-end', on: 'call:door:end', actions: [{ t: 'emit', ev: 'door:done' }] },
+  { id: 'door-hangup', on: 'call:door:hangup', actions: [{ t: 'emit', ev: 'door:done' }] },
+  {
+    id: 'door-decline',
+    on: 'call:door:decline',
+    actions: [{ t: 'wait', ms: 700 }, { t: 'msg', th: 'unknown', text: '받지 그랬어요.', typing: 600 }, { t: 'emit', ev: 'door:done' }],
+  },
+  {
+    id: 'door-riddle',
+    on: 'door:done',
+    forbids: ['unlocked'],
+    actions: [{ t: 'wait', ms: 900 }, { t: 'msg', th: 'unknown', text: '문은 열어 뒀어요. 채원 씨가 들어온 시각을 누르세요.', typing: 1200 }],
   },
   {
     id: 'lock-idle',

@@ -63,7 +63,14 @@ await tap('.coldopen-actions .primary');
 
 // ── Lock ───────────────────────────────────────────────────────────────
 await waitFor('.lock');
-await wait(800);
+// Two seconds in, she calls: the riddle is spoken, then left in writing.
+await waitFor('.incoming', 10000);
+await snap('opening-call');
+check('the opening call rings on the lock screen', (await page.textContent('.incoming')).includes('발신자 표시제한'));
+await page.locator('.accept').dispatchEvent('click');
+await page.waitForSelector('.callscreen', { state: 'detached', timeout: 30000 });
+await page.waitForFunction(() => window.__game.getState().save.threads.unknown.some((m) => m.text.includes('채원 씨가 들어온 시각')), null, { timeout: 15000 });
+await wait(600);
 await snap('lock');
 check('lock screen shows the passcode riddle and its answer', (await page.textContent('.lock')).includes('채원 씨가 들어온 시각') && (await page.textContent('.lock')).includes('01:13에 시작한'));
 await tap('.lock-main');
@@ -384,6 +391,10 @@ await page.getByText('처음부터 다시 하기').click();
 await waitFor('.coldopen-actions.show', 15000);
 await tap('.coldopen-actions .primary');
 await waitFor('.lock');
+// A returning player: let the opening call go, then unlock straight away.
+await waitFor('.incoming', 10000);
+await page.locator('.decline').dispatchEvent('click');
+await wait(400);
 await tap('.lock-main');
 for (const d of '0113') await page.locator('.keypad .key', { hasText: new RegExp(`^${d}$`) }).first().click();
 await waitFor('.chapter-card');

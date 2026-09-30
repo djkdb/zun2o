@@ -1,6 +1,20 @@
 import type { CallScript } from '../engine/types';
 
 export const CALLS: Record<string, CallScript> = {
+  // Two seconds after you pick the phone up: she calls it, and leaves the door open as a riddle.
+  door: {
+    id: 'door',
+    from: '0200',
+    label: '발신자 표시제한',
+    duration: 0,
+    lines: [
+      { at: 500, who: 'sfx', text: '(숨소리)' },
+      { at: 2200, who: 'other', text: '…들려요?', voice: 'entity' },
+      { at: 4600, who: 'other', text: '문은 열어 뒀어요.', voice: 'entity' },
+      { at: 7000, who: 'other', text: '채원 씨가 들어온 시각. 그게 번호예요.', voice: 'entity' },
+      { at: 10400, who: 'sfx', text: '(통화 종료)' },
+    ],
+  },
   dohyun1: {
     id: 'dohyun1',
     from: 'dohyun',
