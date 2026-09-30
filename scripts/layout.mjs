@@ -27,7 +27,8 @@ async function audit(page, label) {
     for (const el of document.querySelectorAll('.device *')) {
       const cs = getComputedStyle(el);
       if (cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity) === 0) continue;
-      if (el.closest('.scare, .glitch, .dbg, .dbg-fab, svg, .rotate-note, .wave')) continue;
+      // decorative layers, clipped by design (the page itself sideways-scrolling is still checked below)
+      if (el.closest('.scare, .glitch, .dbg, .dbg-fab, svg, .rotate-note, .wave, .coldopen-scene')) continue;
       const r = el.getBoundingClientRect();
       if (r.width === 0 || r.height === 0) continue;
       // Inside a scroll container, being below the fold is fine.
