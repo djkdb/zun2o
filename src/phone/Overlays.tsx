@@ -9,6 +9,7 @@ import type { CallLine } from '../engine/types';
 import { CallIcon } from './CallIcon';
 import { Avatar } from './Avatar';
 import { APP_META, AppGlyph } from './icons';
+import { art } from '../art/photoArt';
 
 export function BannerView() {
   const banner = useGame((s) => s.rt.banner);
@@ -65,9 +66,18 @@ export function BannerView() {
   );
 }
 
-function CallAvatar({ from, label, hijacked = false }: { from: string; label: string; hijacked?: boolean }) {
+function CallAvatar({ from, hijacked = false }: { from: string; hijacked?: boolean }) {
   const th = from === 'dohyun' ? 'dohyun' : from === '0200' ? 'unknown' : null;
-  if (!th) return <span className="call-avatar">{label.slice(0, 1)}</span>;
+  // An unsaved number: the plain default silhouette, not a letter.
+  if (!th)
+    return (
+      <span className="call-avatar">
+        <svg viewBox="0 0 40 40" aria-hidden="true">
+          <circle cx="20" cy="15" r="7" fill="#d9dadd" />
+          <path d="M6 40c0-9 6-13 14-13s14 4 14 13z" fill="#d9dadd" />
+        </svg>
+      </span>
+    );
   return (
     <span className={`call-avatar pic${hijacked ? ' hijacked' : ''}`}>
       <Avatar th={th} size={96} />
@@ -81,8 +91,9 @@ export function IncomingCall() {
   const call = CALLS[id];
   return (
     <div className={`incoming${call.video ? ' video' : ''}`} role="dialog" aria-label="수신 전화">
+      {!call.video && <CallBackdrop from={call.from} />}
       <div className="incoming-top">
-        <CallAvatar from={call.from} label={call.label} />
+        <CallAvatar from={call.from} />
         <small>{call.video ? '영상 통화' : '휴대전화'}</small>
         <h2>{call.label}</h2>
       </div>
@@ -104,6 +115,27 @@ export function CallScreen() {
   return id ? <ActiveCall key={id} id={id} /> : null;
 }
 
+/** The contact's picture, blurred to fill the screen behind the call — like a real phone's contact poster. */
+function CallBackdrop({ from, hijacked = false }: { from: string; hijacked?: boolean }) {
+  const photo = from === 'dohyun' ? art('avatar-dohyun') : undefined;
+  return (
+    <div className={`call-backdrop${hijacked ? ' hijacked' : ''}`} aria-hidden="true">
+      {photo && !hijacked && <img src={photo} alt="" draggable={false} />}
+    </div>
+  );
+}
+
+/** Five bars that move while someone is talking on the line. */
+function VoiceBars({ who }: { who: CallLine['who'] | null }) {
+  return (
+    <span className={`voice-bars${who ? ` talking ${who}` : ''}`} aria-hidden="true">
+      {[0, 1, 2, 3, 4].map((i) => (
+        <i key={i} style={{ animationDelay: `${(i * 0.13) % 0.5}s` }} />
+      ))}
+    </span>
+  );
+}
+
 function ActiveCall({ id }: { id: string }) {
   const sound = useGame((s) => s.save.sound);
   const [lines, setLines] = useState<CallLine[]>([]);
@@ -112,7 +144,12 @@ function ActiveCall({ id }: { id: string }) {
   const [elapsed, setElapsed] = useState(0);
   // The moment the voice on 도현's line stops being 도현.
   const [hijacked, setHijacked] = useState(false);
+  // Who is talking right now (for the voice bars), and whether the line is breaking up.
+  const [talking, setTalking] = useState<CallLine['who'] | null>(null);
+  const [noisy, setNoisy] = useState(false);
+  const [speaker, setSpeaker] = useState(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const quiet = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const call = CALLS[id] ?? null;
 
   useEffect(() => {
@@ -122,11 +159,27 @@ function ActiveCall({ id }: { id: string }) {
     script.forEach((l) =>
       timers.current.push(
         setTimeout(() => {
-          setLines((x) => [...x.slice(-3), l]);
+          setLines((x) => [...x.slice(-2), l]);
           if (l.who === 'sfx') sfx(l.text.includes('종료') ? 'hangup' : 'static');
           else if (sound && l.voice) speak(l.text, l.voice);
+          // The bars move for about as long as the line takes to say.
+          clearTimeout(quiet.current);
+          const noise = l.who === 'sfx' && !l.text.includes('종료');
+          setNoisy(noise);
+          setTalking(l.who === 'sfx' ? null : l.who);
+          quiet.current = setTimeout(
+            () => {
+              setTalking(null);
+              setNoisy(false);
+            },
+            l.who === 'sfx' ? 1600 : Math.min(4200, 600 + l.text.length * 95),
+          );
           // When *she* speaks on the line, her face flickers on the screen.
-          if (l.who === 'other' && call.from === 'dohyun') setHijacked(true);
+          // …and the speaker turns itself on: she wants to be heard in the room.
+          if (l.who === 'other' && call.from === 'dohyun') {
+            setHijacked(true);
+            setSpeaker(true);
+          }
           if (l.who === 'other' && call.from === 'dohyun') {
             setRt({ scare: { kind: 'reflect', nonce: Date.now() } });
             setTimeout(() => setRt({ scare: null }), 320);
@@ -145,7 +198,10 @@ function ActiveCall({ id }: { id: string }) {
         }, last + 1400),
       );
     }
-    return clear;
+    return () => {
+      clear();
+      clearTimeout(quiet.current);
+    };
   }, [call, phase, sound]);
 
   useEffect(() => {
@@ -167,30 +223,64 @@ function ActiveCall({ id }: { id: string }) {
     stopSpeech();
     endCall(call.id, phase === 'after' || !call.choice);
   };
+  const who = (l: CallLine) => (l.who === 'caller' ? (hijacked ? '???' : call.label) : l.who === 'other' ? '???' : null);
+  const status = elapsed < 1 ? '연결 중…' : noisy ? '연결 상태 불안정' : `${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, '0')}`;
   return (
-    <div className="callscreen" role="dialog" aria-label="통화 중">
+    <div className={`callscreen${hijacked ? ' hijacked' : ''}`} role="dialog" aria-label="통화 중">
+      <CallBackdrop from={call.from} hijacked={hijacked} />
       <div className="call-top">
-        <CallAvatar from={hijacked ? '0200' : call.from} label={call.label} hijacked={hijacked} />
+        <small className="call-kind">{hijacked ? '발신자 정보 없음' : call.from === 'dohyun' ? '휴대전화' : '저장되지 않은 번호'}</small>
+        <CallAvatar from={hijacked ? '0200' : call.from} hijacked={hijacked} />
         <h2 className={hijacked ? 'hijacked' : undefined}>{hijacked ? '발신자 표시제한' : call.label}</h2>
-        <small>
-          {Math.floor(elapsed / 60)}:{String(elapsed % 60).padStart(2, '0')}
-        </small>
+        <span className={`call-status${noisy ? ' noisy' : ''}`}>
+          <VoiceBars who={talking} />
+          <time>{status}</time>
+        </span>
       </div>
       <div className="call-subs" aria-live="polite">
         {lines.map((l, i) => (
-          <p key={`${l.at}-${i}`} className={`sub ${l.who}`}>
-            {l.who === 'caller' ? `${call.label}: ` : l.who === 'other' ? '??? : ' : ''}
-            {l.text}
+          <p key={`${l.at}-${i}`} className={`sub ${l.who}${i === lines.length - 1 ? ' now' : ' past'}`}>
+            {who(l) && <span className="sub-who">{who(l)}</span>}
+            <span className="sub-text">{l.text}</span>
           </p>
         ))}
       </div>
-      {choice && call.choice && (
+      {choice && call.choice ? (
         <div className="call-choices">
           {call.choice.options.map((o) => (
             <button key={o.id} type="button" className="choice" onClick={() => pick(o.id)}>
               {o.label}
             </button>
           ))}
+        </div>
+      ) : (
+        <div className="call-controls">
+          <button type="button" className={`call-ctl${speaker ? ' on' : ''}`} aria-pressed={speaker} onClick={() => (sfx('key'), setSpeaker((v) => !v))}>
+            <span className="call-ctl-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor" />
+                <path d="M16 8.5a5 5 0 010 7M18.5 6a8.5 8.5 0 010 12" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+              </svg>
+            </span>
+            스피커
+          </button>
+          <button type="button" className="call-ctl" disabled>
+            <span className="call-ctl-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                {[0, 1, 2].map((r) => [0, 1, 2].map((c) => <circle key={`${r}${c}`} cx={6 + c * 6} cy={5 + r * 6} r="1.7" fill="currentColor" />))}
+                <circle cx="12" cy="23" r="1.7" fill="currentColor" />
+              </svg>
+            </span>
+            키패드
+          </button>
+          <button type="button" className="call-ctl" disabled>
+            <span className="call-ctl-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </span>
+            통화 추가
+          </button>
         </div>
       )}
       <button type="button" className="hangup" onClick={hangUp} aria-label="통화 종료">

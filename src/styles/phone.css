@@ -3506,3 +3506,264 @@ body,
 .ending-card {
   position: relative;
 }
+
+/* ─── call screen: contact poster, live line, captions, controls ─────── */
+.incoming,
+.callscreen {
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.callscreen {
+  padding-top: 64px;
+}
+
+.call-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, #1d2430, #07080a);
+}
+
+.call-backdrop img {
+  position: absolute;
+  inset: -12%;
+  width: 124%;
+  height: 124%;
+  object-fit: cover;
+  filter: blur(34px) saturate(0.8) brightness(0.42);
+  transform: scale(1.05);
+}
+
+.call-backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.35) 45%, rgba(0, 0, 0, 0.85) 100%);
+}
+
+/* when the voice stops being 도현: the colour drains out of the room */
+.call-backdrop.hijacked {
+  background: radial-gradient(ellipse at 50% 20%, #1c0b0b 0%, #050404 70%);
+  transition: background 0.2s;
+}
+
+.call-kind {
+  display: block;
+  margin-bottom: 14px;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: rgba(235, 236, 240, 0.62);
+}
+
+.call-avatar svg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #8e9097;
+}
+
+.call-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 15px;
+  color: #b5b7bd;
+  font-variant-numeric: tabular-nums;
+}
+
+.call-status.noisy time {
+  color: #e8b45a;
+}
+
+.voice-bars {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 14px;
+}
+
+.voice-bars i {
+  width: 3px;
+  height: 3px;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: 0.5;
+  transition: height 0.2s;
+}
+
+.voice-bars.talking i {
+  opacity: 1;
+  animation: voice 0.5s ease-in-out infinite alternate;
+}
+
+.voice-bars.talking.caller {
+  color: #7fd89a;
+}
+
+.voice-bars.talking.other {
+  color: #ff6b61;
+}
+
+@keyframes voice {
+  from {
+    height: 3px;
+  }
+  to {
+    height: 14px;
+  }
+}
+
+/* captions: the line being said now, the one before it fading above */
+.call-subs {
+  flex: 1;
+  min-height: 0;
+  justify-content: flex-end;
+  gap: 12px;
+  margin: 24px 0 18px;
+  padding: 0 4px;
+  overflow: hidden;
+}
+
+.sub {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition:
+    opacity 0.4s,
+    font-size 0.3s;
+}
+
+.sub.past {
+  opacity: 0.38;
+  font-size: 15px;
+}
+
+.sub.now {
+  font-size: 19px;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+
+.sub-who {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.sub.other .sub-who {
+  background: rgba(255, 90, 80, 0.18);
+  color: #ff8a80;
+}
+
+.sub.sfx .sub-text {
+  font-style: italic;
+}
+
+.call-controls {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 26px;
+}
+
+.call-ctl {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  background: none;
+}
+
+.call-ctl-icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+
+.call-ctl-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.call-ctl.on .call-ctl-icon {
+  background: #f2f2f4;
+  color: #111;
+}
+
+.call-ctl:disabled {
+  opacity: 0.4;
+}
+
+.callscreen .call-choices {
+  margin: 0 0 22px;
+}
+
+/* the handset icon is already turned down; don't turn it again */
+.hangup {
+  margin-top: 0;
+  transform: none;
+  box-shadow: 0 6px 24px rgba(255, 59, 48, 0.35);
+}
+
+@media (max-height: 640px) {
+  .callscreen {
+    padding-top: 40px;
+  }
+  .call-avatar {
+    width: 72px;
+    height: 72px;
+  }
+  .call-top h2 {
+    font-size: 28px;
+  }
+  .call-ctl-icon {
+    width: 54px;
+    height: 54px;
+  }
+  .call-controls {
+    margin-bottom: 14px;
+  }
+  .call-kind {
+    margin-bottom: 8px;
+  }
+  .call-subs {
+    margin: 12px 0 12px;
+  }
+  /* no room for the line before: only what is being said now */
+  .sub.past {
+    display: none;
+  }
+  .sub.now {
+    font-size: 17px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voice-bars.talking i {
+    animation: none;
+    height: 10px;
+  }
+}
+
+.reduce-fx .voice-bars.talking i {
+  animation: none;
+  height: 10px;
+}
