@@ -10,3 +10,7 @@
 `selfie-alone`은 따로 생성한 것이 아니라 `selfie-far`의 오른쪽(채원 얼굴 부분)만 잘라 420×560으로 맞춘 것입니다. 숨김 앨범 마지막 사진이 점프스케어 전까지 이 사진으로 보이고, 스케어가 끝나면 `selfie-close`로 바뀝니다.
 
 `avatar-unknown`(발신자 표시제한 프로필)은 제작자가 따로 생성한 1254px 이미지를 머리·어깨 중심으로 잘라 256px로 줄였습니다.
+
+4차 시트(학교 배경 9장: wallpaper, annex-gate, lobby, stairs, stairs-figure, corridor, reading-empty, reading-figure, room02-door)는
+무대가 폐교된 해원고등학교로 바뀌면서 제작자가 새로 생성한 3×3 시트를 잘라 2배 확대했습니다. 오래 보면 바뀌는 짝(stairs ↔ stairs-figure,
+reading-empty ↔ reading-figure)은 두 칸의 어긋남을 계산해 같은 크기·같은 위치로 잘라, 바뀔 때 화면이 튀지 않습니다.

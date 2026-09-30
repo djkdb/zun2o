@@ -25,16 +25,17 @@ export function LockScreen() {
   }, []);
 
   const notifications = useMemo(() => {
-    const out: { th: ThreadId; text: string; time: string; at: number }[] = [];
+    const out: { th: ThreadId; text: string; time: string; at: number; seq: number }[] = [];
     (['unknown', 'dohyun'] as ThreadId[]).forEach((th) => {
       const all = threads[th];
       all.forEach((m, i) => {
         if (i < all.length - 2) return;
-        if (m.from === 'them' && m.day !== '9월 26일 (금)') out.push({ th, text: m.text, time: m.time, at: lastSent(all.slice(0, i + 1)) });
+        if (m.from === 'them' && m.day !== '9월 26일 (금)') out.push({ th, text: m.text, time: m.time, at: lastSent(all.slice(0, i + 1)), seq: i });
       });
     });
     // Newest on top, like a real lock screen.
-    return out.sort((a, b) => b.at - a.at).slice(0, 4);
+    // Same minute: the one that arrived later (later in its thread) goes on top.
+    return out.sort((a, b) => b.at - a.at || b.seq - a.seq).slice(0, 4);
   }, [threads]);
 
   const press = (d: string) => {
