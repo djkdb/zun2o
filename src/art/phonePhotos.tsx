@@ -47,8 +47,9 @@ function Stamp({ text, x = 16, y = 30 }: { text: string; x?: number; y?: number 
 }
 
 /**
- * A photograph from an art slot, dressed like every other photo on this phone:
- * sensor noise, flash falloff, 채원's timestamp. Callers check `art(slot)` first.
+ * A photograph from an art slot, shown as it is plus 채원's timestamp. (The drawn
+ * flash falloff and sensor noise are only for the SVG drawings: on a real photo
+ * they read as a grey oval.) Callers check `art(slot)` first.
  */
 export function SlotPhoto({
   slot,
@@ -68,15 +69,10 @@ export function SlotPhoto({
   fill?: boolean;
   align?: string;
 }) {
-  const id = useSvgId();
   return (
     <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio={fill ? 'xMidYMid slice' : undefined} role="img" aria-label={label}>
-      <Defs id={id} r={75} />
-      <g filter={`url(#${id}-n)`}>
-        <rect width={w} height={h} fill="#050505" />
-        <ArtImage slot={slot} w={w} h={h} align={align} />
-        <rect width={w} height={h} fill={`url(#${id}-flash)`} opacity="0.6" />
-      </g>
+      <rect width={w} height={h} fill="#050505" />
+      <ArtImage slot={slot} w={w} h={h} align={align} />
       {stamp && <Stamp text={stamp} />}
     </svg>
   );
@@ -286,18 +282,19 @@ function ChaewonFigure({ id }: { id: string }) {
 /** 채원's selfie in the index room. `stage` 0: just her; 1: something behind her; 2: right behind her shoulder. */
 export const SelfiePhoto = memo(function SelfiePhoto({ stage }: { stage: 0 | 1 | 2 }) {
   const slot = stage === 0 ? 'selfie-alone' : stage === 1 ? 'selfie-far' : 'selfie-close';
+  const photo = !!art(slot);
   const id = useSvgId();
   return (
     <svg viewBox="0 0 420 560" role="img" aria-label="겁에 질린 젊은 여성의 셀카. 손전등 불빛. 뒤쪽 어둠 속에 무언가가 있다.">
       <Defs id={id} flashX={50} flashY={62} />
       <ChaewonDefs id={id} blur={stage === 2 ? '3 0.8' : '2 0.6'} />
-      <g filter={`url(#${id}-n)`}>
+      <g filter={photo ? undefined : `url(#${id}-n)`}>
         <rect width="420" height="560" fill="#0b0a09" />
         {Array.from({ length: 7 }).map((_, r) =>
           Array.from({ length: 6 }).map((__, c) => <rect key={`${r}${c}`} x={10 + c * 70} y={10 + r * 46} width="62" height="38" fill="#1c1813" />),
         )}
         {/* her behind 채원 */}
-        {art(slot) ? (
+        {photo ? (
           <ArtImage slot={slot} w={420} h={560} />
         ) : (
           <>
@@ -319,7 +316,7 @@ export const SelfiePhoto = memo(function SelfiePhoto({ stage }: { stage: 0 | 1 |
         <ChaewonFigure id={id} />
           </>
         )}
-        <rect width="420" height="560" fill={`url(#${id}-flash)`} />
+        {!photo && <rect width="420" height="560" fill={`url(#${id}-flash)`} />}
       </g>
       <Stamp text="01:58" />
     </svg>
@@ -381,6 +378,8 @@ export const BlackPhoto = memo(function BlackPhoto({ brightness = 0, revealed = 
  * `fill`: cropped to fill a portrait screen (the lock-screen wallpaper).
  */
 export const BoothPhoto = memo(function BoothPhoto({ behind = false, fill = false, reflection = false }: { behind?: boolean; fill?: boolean; reflection?: boolean }) {
+  const slot = behind ? 'booth-behind' : 'booth';
+  const photo = !!art(slot);
   const id = useSvgId();
   return (
     <svg
@@ -390,13 +389,13 @@ export const BoothPhoto = memo(function BoothPhoto({ behind = false, fill = fals
       aria-label={behind ? '길 건너에서 찍은 공중전화 부스. 휴대폰을 든 사람 바로 뒤에 누군가 서 있다.' : '높은 창문에서 내려다본 밤거리. 불 켜진 공중전화 부스 안에 휴대폰을 든 사람이 서 있다.'}
     >
       <Defs id={id} flashX={52} flashY={70} r={70} />
-      <g filter={`url(#${id}-n)`}>
+      <g filter={photo ? undefined : `url(#${id}-n)`}>
         <rect width="640" height="420" fill="#08090b" />
         <polygon points="0,420 640,420 520,150 120,150" fill="#101114" />
         <line x1="120" y1="150" x2="0" y2="420" stroke="#1a1b1f" strokeWidth="3" />
         <line x1="520" y1="150" x2="640" y2="420" stroke="#1a1b1f" strokeWidth="3" />
-        {art(behind ? 'booth-behind' : 'booth') && <ArtImage slot={behind ? 'booth-behind' : 'booth'} w={640} h={420} />}
-        {!art(behind ? 'booth-behind' : 'booth') && (
+        {photo && <ArtImage slot={slot} w={640} h={420} />}
+        {!photo && (
           <>
         {/* the booth, lit from inside */}
         <ellipse cx="330" cy="300" rx="110" ry="90" fill="#dfe6d0" opacity="0.07" />
@@ -441,7 +440,7 @@ export const BoothPhoto = memo(function BoothPhoto({ behind = false, fill = fals
             <rect x="206" y="0" width="16" height="420" fill="#030303" opacity="0.9" />
           </>
         )}
-        <rect width="640" height="420" fill={`url(#${id}-flash)`} />
+        {!photo && <rect width="640" height="420" fill={`url(#${id}-flash)`} />}
       </g>
       {!fill && <Stamp text={behind ? '01:53' : '01:39'} x={40} y={52} />}
     </svg>
@@ -450,15 +449,16 @@ export const BoothPhoto = memo(function BoothPhoto({ behind = false, fill = fals
 
 /** 00:58, 채원's photo: a phone left on the booth's shelf. The same phone. The same shelf. */
 export const BoothShelfPhoto = memo(function BoothShelfPhoto() {
+  const photo = !!art('booth-shelf');
   const id = useSvgId();
   return (
     <svg viewBox="0 0 640 420" role="img" aria-label="공중전화 부스 안. 금속 선반 위에 화면이 켜진 휴대폰 한 대가 놓여 있다.">
       <Defs id={id} flashX={48} flashY={58} r={62} />
-      <g filter={`url(#${id}-n)`}>
+      <g filter={photo ? undefined : `url(#${id}-n)`}>
         <rect width="640" height="420" fill="#0b0c0e" />
         {/* booth glass and frame */}
         <rect x="40" y="0" width="560" height="420" fill="#14161a" />
-        {art('booth-shelf') ? (
+        {photo ? (
           <ArtImage slot="booth-shelf" w={640} h={420} />
         ) : (
           <>
@@ -490,7 +490,7 @@ export const BoothShelfPhoto = memo(function BoothShelfPhoto() {
         <path d="M100 200 L180 170 M120 230 L210 190" stroke="#3a3e45" strokeWidth="1.5" opacity="0.6" />
           </>
         )}
-        <rect width="640" height="420" fill={`url(#${id}-flash)`} />
+        {!photo && <rect width="640" height="420" fill={`url(#${id}-flash)`} />}
       </g>
       <Stamp text="00:58" />
     </svg>
@@ -504,11 +504,12 @@ export const BoothShelfPhoto = memo(function BoothShelfPhoto() {
 export const VideoFeed = memo(function VideoFeed({ close = 0, pip = 0 }: { close?: number; pip?: number }) {
   const id = useSvgId();
   const her = Math.max(0, (close - 0.35) / 0.65);
+  const photo = !!art('video-chaewon');
   return (
     <svg viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <Defs id={id} flashX={50} flashY={62} />
       <ChaewonDefs id={id} blur={`${1 + her * 1.5} 0.5`} />
-      <g filter={`url(#${id}-n)`}>
+      <g filter={photo ? undefined : `url(#${id}-n)`}>
         <rect width="390" height="844" fill="#060504" />
         {Array.from({ length: 14 }).map((_, r) =>
           Array.from({ length: 6 }).map((__, c) => <rect key={`${r}${c}`} x={6 + c * 64} y={20 + r * 58} width="56" height="48" fill="#141009" />),
@@ -525,7 +526,7 @@ export const VideoFeed = memo(function VideoFeed({ close = 0, pip = 0 }: { close
         {/* she comes in over the right shoulder: keep that side of the frame */}
         {her > 0 && <ArtImage slot="video-behind" w={390} h={844} align="xMaxYMid" style={{ opacity: Math.min(1, her * 1.4) }} />}
         {/* a real photo has its own light; the drawn flash falloff would ring it in an oval */}
-        {!art('video-chaewon') && <rect width="390" height="844" fill={`url(#${id}-flash)`} />}
+        {!photo && <rect width="390" height="844" fill={`url(#${id}-flash)`} />}
       </g>
       {pip === 0 ? (
         <>
