@@ -113,7 +113,7 @@ export function DebugPanel() {
         <input value={ev} onChange={(e) => setEv(e.target.value)} placeholder="emit 이벤트" aria-label="이벤트" />
       </form>
       <form className="dbg-row" onSubmit={(e) => (e.preventDefault(), talk && (sendText('unknown', talk), setTalk('')))}>
-        <input value={talk} onChange={(e) => setTalk(e.target.value)} placeholder="발신자 표시제한에게 (키워드 테스트)" aria-label="채팅 테스트" />
+        <input value={talk} onChange={(e) => setTalk(e.target.value)} placeholder="발신자 정보 없음에게 (키워드 테스트)" aria-label="채팅 테스트" />
       </form>
       <div className="dbg-flags">{flags.join(', ')}</div>
     </div>

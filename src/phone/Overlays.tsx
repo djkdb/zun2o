@@ -94,7 +94,7 @@ export function IncomingCall() {
       {!call.video && <CallBackdrop from={call.from} />}
       <div className="incoming-top">
         <CallAvatar from={call.from} />
-        <small>{call.video ? '영상 통화' : call.from === '0200' ? '발신자 정보 없음' : '휴대전화'}</small>
+        <small>{call.video ? '영상 통화' : '휴대전화'}</small>
         <h2>{call.label}</h2>
       </div>
       <div className="incoming-actions">
@@ -229,9 +229,9 @@ function ActiveCall({ id }: { id: string }) {
     <div className={`callscreen${hijacked ? ' hijacked' : ''}`} role="dialog" aria-label="통화 중">
       <CallBackdrop from={call.from} hijacked={hijacked} />
       <div className="call-top">
-        <small className="call-kind">{hijacked || call.from === '0200' ? '발신자 정보 없음' : call.from === 'dohyun' ? '휴대전화' : '저장되지 않은 번호'}</small>
+        <small className="call-kind">{hijacked || call.from === '0200' || call.from === 'dohyun' ? '휴대전화' : '저장되지 않은 번호'}</small>
         <CallAvatar from={hijacked ? '0200' : call.from} hijacked={hijacked} />
-        <h2 className={hijacked ? 'hijacked' : undefined}>{hijacked ? '발신자 표시제한' : call.label}</h2>
+        <h2 className={hijacked ? 'hijacked' : undefined}>{hijacked ? '발신자 정보 없음' : call.label}</h2>
         <span className={`call-status${noisy ? ' noisy' : ''}`}>
           <VoiceBars who={talking} />
           <time>{status}</time>

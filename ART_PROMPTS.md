@@ -213,7 +213,7 @@ panels 6–8 are ordinary, bright, everyday social-media profile photos.
    as the reference, before that night.
 ```
 
-## 발신자 표시제한 프로필 사진 (`avatar-unknown`)
+## 발신자 정보 없음 프로필 사진 (`avatar-unknown`)
 
 `src/assets/art/avatar-unknown.webp` (정사각형, 256px). 대화 목록·잠금화면 알림·통화 화면에 쓰입니다.
 현재 들어 있는 것은 아래 프롬프트로 제작자가 생성한 이미지를 머리·어깨 중심으로 잘라 256px로 줄인 것입니다.

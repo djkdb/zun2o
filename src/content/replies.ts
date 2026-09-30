@@ -1,7 +1,7 @@
 import type { ThreadId } from '../engine/types';
 
 // ─────────────────────────────────────────────────────────────────────────
-// What 발신자 표시제한 and 채원 say back when the player types freely. Local,
+// What 발신자 정보 없음 and 채원 say back when the player types freely. Local,
 // scripted, no server. A rule can answer differently the 2nd and 3rd time
 // it is hit, so a conversation has a memory; a line of `…` is a pause the
 // sender types, stops, and only then says the next thing.

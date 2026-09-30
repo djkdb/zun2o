@@ -144,7 +144,7 @@ function Chat({ th }: { th: ThreadId }) {
     <div className="chat">
       <AppHeader
         title={meta.name}
-        subtitle={th === 'unknown' ? '발신 번호 정보 없음' : th === 'self' ? '나와의 채팅' : undefined}
+        subtitle={th === 'self' ? '나와의 채팅' : undefined}
         onBack={() => openThread(null)}
         backLabel="메시지"
       />

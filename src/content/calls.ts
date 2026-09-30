@@ -5,7 +5,7 @@ export const CALLS: Record<string, CallScript> = {
   door: {
     id: 'door',
     from: '0200',
-    label: '발신자 표시제한',
+    label: '발신자 정보 없음',
     duration: 0,
     lines: [
       { at: 500, who: 'sfx', text: '(숨소리)' },

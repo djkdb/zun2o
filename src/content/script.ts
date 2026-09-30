@@ -65,8 +65,8 @@ export const BEATS: Beat[] = [
       {
         t: 'objective', app: 'messages',
         text: '채원에게 무슨 일이 있었는지 알아내자',
-        hint: '메시지 앱을 열어 보세요. 발신자 표시제한 대화가 하나 있습니다.',
-        nudge: { th: 'dohyun', text: '혹시 폰 열었어요? 발신자 표시제한으로 온 메시지 있으면… 절대 답하지 마요' },
+        hint: '메시지 앱을 열어 보세요. “발신자 정보 없음” 대화가 하나 있습니다.',
+        nudge: { th: 'dohyun', text: '혹시 폰 열었어요? 발신자 정보 없음으로 온 메시지 있으면… 절대 답하지 마요' },
       },
       { t: 'wait', ms: 1800 },
       // The minute 채원 walked in was also her real passcode (the day she met 도현). (One message: nothing can land between.)
@@ -290,8 +290,8 @@ export const BEATS: Beat[] = [
       },
       {
         t: 'objective', app: 'messages',
-        text: '발신자 표시제한이 이름을 묻는다',
-        hint: '메시지 앱 → 발신자 표시제한. 알려 줄지 말지는 당신 선택입니다. (이름은 이 기기에만 저장됩니다)',
+        text: '“발신자 정보 없음”이 이름을 묻는다',
+        hint: '메시지 앱 → 발신자 정보 없음. 알려 줄지 말지는 당신 선택입니다. (이름은 이 기기에만 저장됩니다)',
         nudge: { th: 'unknown', text: '대답해요.' },
       },
     ],

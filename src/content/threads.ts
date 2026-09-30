@@ -13,7 +13,7 @@ export const THREAD_META: Record<ThreadId, ThreadMeta> = {
   dohyun: { id: 'dohyun', name: '도현', avatar: '도', color: '#3d6fd6' },
   mom: { id: 'mom', name: '엄마 ❤️', avatar: '엄', color: '#d65b8a' },
   self: { id: 'self', name: '나에게', avatar: '나', color: '#5b8a5b' },
-  unknown: { id: 'unknown', name: '발신자 표시제한', avatar: '?', color: '#2a2a2a' },
+  unknown: { id: 'unknown', name: '발신자 정보 없음', avatar: '?', color: '#2a2a2a' },
 };
 
 export const THREAD_ORDER: ThreadId[] = ['unknown', 'dohyun', 'mom', 'self'];
@@ -58,7 +58,7 @@ export const INITIAL_THREADS: Record<ThreadId, ChatMsg[]> = {
     m('me', '20:33', '작년에 거기서 실종된 대학생 폰이래 ㄷㄷ 그거 줍는 게 오프닝'),
     m('them', '20:35', '그걸 왜 주워… 나 안에는 안 들어간다. 입구까지만'),
     m('me', '00:58', '헐 부스에 진짜 폰 있음 ㅋㅋㅋ 배터리 12%'),
-    m('me', '00:59', '잠금 화면에 발신자 표시제한으로 계속 알림 옴. "들어오세요"래 ㅋㅋ 연출 미쳤다'),
+    m('me', '00:59', '잠금 화면에 발신자 정보 없음으로 계속 알림 옴. "들어오세요"래 ㅋㅋ 연출 미쳤다'),
     m('them', '01:00', '야 그거 내려놔. 기분 나빠'),
     m('me', '01:13', '들어간다. 1시간 안에 나올게'),
     m('them', '01:20', '괜찮아?'),
