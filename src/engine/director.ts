@@ -316,6 +316,13 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
       sfx('error');
       return;
     case 'hush': {
+      if (a.still) {
+        // You're looking at her. Everything stops. Nothing warns you.
+        setMix(0.003, 0, 0.08, 120);
+        await sleepReal(a.ms);
+        applyChapterMix(0.4);
+        return;
+      }
       // The silence right before something happens: the room goes muffled,
       // then almost nothing, then someone breathes in right next to you.
       const [am, dr] = CHAPTER_MIX[getState().save.chapter] ?? CHAPTER_MIX[0];

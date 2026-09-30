@@ -6,7 +6,7 @@ import { HIDDEN_ALBUM_CODE, PHOTOS, type PhotoItem } from '../../content/media';
 import { AppHeader } from '../AppHeader';
 import { AnnexPhoto, FloorPlan, ReadingRoomPhoto, Room02Photo } from '../../art/scenes';
 import { art } from '../../art/photoArt';
-import { BlackPhoto, BoothPhoto, BoothShelfPhoto, SlotPhoto, CorridorPhoto, IndexCardPhoto, LobbyPhoto, SelfiePhoto, StairsPhoto } from '../../art/phonePhotos';
+import { BlackPhoto, BoothPhoto, BoothShelfPhoto, REVEAL_AT, SlotPhoto, CorridorPhoto, IndexCardPhoto, LobbyPhoto, SelfiePhoto, StairsPhoto } from '../../art/phonePhotos';
 
 /** Photos that change if you stare at them zoomed in. */
 const DWELL_PHOTOS = ['p03', 'p05', 'p08'];
@@ -110,10 +110,10 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
 
   const onBright = (v: number) => {
     setBrightness(v);
-    // The brighter the photo, the louder the room gets.
-    mix(0.16 + v * 0.3, v * 0.45, 0.2, 420 + v * 2600);
+    // The brighter the photo, the louder the room gets — until she's there; then nothing.
+    if (!hasFlag('reveal-scare')) mix(0.16 + v * 0.3, v * 0.45, 0.2, 420 + v * 2600);
     if (v > 0.55 && Math.random() < 0.08) vibrate([20]);
-    if (v >= 0.92 && !hasFlag('reveal-scare')) {
+    if (v >= REVEAL_AT && !hasFlag('reveal-scare')) {
       emit('photo:p07:reveal');
     }
   };

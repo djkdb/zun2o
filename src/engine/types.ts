@@ -114,7 +114,8 @@ export type Action =
   | { t: 'draft'; th: ThreadId; text: string }
   /** The phone restarts by itself and comes back locked, with a new wallpaper. */
   | { t: 'reboot'; wallpaper: 'annex' | 'booth' }
-  | { t: 'hush'; ms: number }
+  /** `still`: no warning breath — just silence, then it happens. */
+  | { t: 'hush'; ms: number; still?: boolean }
   | { t: 'photo'; id: string }
   | { t: 'memo'; id: string }
   | { t: 'calllog'; entry: CallLogEntry }

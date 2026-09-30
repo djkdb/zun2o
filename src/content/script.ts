@@ -136,7 +136,8 @@ export const BEATS: Beat[] = [
     on: 'photo:p07:reveal',
     actions: [
       { t: 'flag', f: 'reveal-scare' },
-      { t: 'hush', ms: 900 },
+      // She is in the photo now. Let the player look at her for a second, in silence.
+      { t: 'hush', ms: 1200, still: true },
       { t: 'scare', kind: 'lunge', look: 'hang' },
       { t: 'wait', ms: 1700 },
       { t: 'glitch', ms: 1000 },

@@ -85,6 +85,14 @@ describe('director timing', () => {
     expect(seen).toBe(true);
   });
 
+  it('the dark photo: she appears, a silent second, then the scare', async () => {
+    emit('photo:p07:reveal');
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(getState().rt.scare).toBeNull();
+    await vi.advanceTimersByTimeAsync(400);
+    expect(getState().rt.scare?.kind).toBe('lunge');
+  });
+
   it('messages to 도현 never leave the phone', () => {
     sendText('dohyun', '어디세요');
     const last = getState().save.threads.dohyun.at(-1)!;

@@ -325,6 +325,9 @@ export const SelfiePhoto = memo(function SelfiePhoto({ stage }: { stage: 1 | 2 }
   );
 });
 
+/** The dark photo turns — and the scare is armed — only at full brightness. */
+export const REVEAL_AT = 0.97;
+
 /**
  * The last photo, 01:59. Almost black. The gallery editor's brightness
  * slider (0..1) slowly reveals who took it.
@@ -350,7 +353,7 @@ export const BlackPhoto = memo(function BlackPhoto({ brightness = 0 }: { brightn
         )}
       </g>
       {/* she was on the ceiling, right above the lens — outside the brightness boost, so she stays grey */}
-      {b >= 0.92 &&
+      {b >= REVEAL_AT &&
         (art('black-reveal') ? (
           <ArtImage slot="black-reveal" w={420} h={560} />
         ) : (
