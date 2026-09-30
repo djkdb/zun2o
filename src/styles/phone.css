@@ -1538,6 +1538,9 @@ svg {
 
 .incoming-actions button,
 .hangup {
+  display: grid;
+  place-items: center;
+  padding: 0;
   width: 74px;
   height: 74px;
   border-radius: 50%;
