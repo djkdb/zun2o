@@ -76,7 +76,7 @@ export const INITIAL_THREADS: Record<ThreadId, ChatMsg[]> = {
     m('them', '02:42', '02호실 문은 벽돌로 막혀 있어. 너 어디야'),
     m('them', '09:12', '경찰 불렀어', D27),
     m('them', '23:48', '이 폰 가지고 계신 분, 제발 연락 주세요'),
-    m('them', '23:49', '잠금 비밀번호 0113이에요. 채원이 폰 맞으면 제발 열어서 확인해 주세요'),
+    m('them', '23:49', '채원이 폰 맞죠? 제발 받아 주세요'),
   ],
   mom: [
     m('them', '19:02', '채원아 저녁은 먹었니', D26),
@@ -92,7 +92,8 @@ export const INITIAL_THREADS: Record<ThreadId, ChatMsg[]> = {
     m('me', '15:31', '괴담 요약 → 메모 앱에 정리함'),
     m('me', '15:40', '숨김 앨범 비번 바꿈. 힌트는 메모에'),
   ],
-  unknown: [m('them', '02:00', '방문해 주셔서 감사합니다.', D27)],
+  // She leaves the door open — as a riddle. The answer is on the lock screen (the camera notification).
+  unknown: [m('them', '02:00', '방문해 주셔서 감사합니다.', D27), m('them', '23:50', '문은 열어 뒀어요. 채원 씨가 들어온 시각을 누르세요.')],
 };
 
-export const INITIAL_UNREAD: Record<ThreadId, number> = { dohyun: 8, mom: 4, self: 0, unknown: 1 };
+export const INITIAL_UNREAD: Record<ThreadId, number> = { dohyun: 8, mom: 4, self: 0, unknown: 2 };

@@ -65,7 +65,7 @@ await tap('.coldopen-actions .primary');
 await waitFor('.lock');
 await wait(800);
 await snap('lock');
-check('lock screen shows the passcode', (await page.textContent('.lock')).includes('잠금 비밀번호 0113'));
+check('lock screen shows the passcode riddle and its answer', (await page.textContent('.lock')).includes('채원 씨가 들어온 시각') && (await page.textContent('.lock')).includes('01:13에 시작한'));
 await tap('.lock-main');
 for (const d of '0000') await page.locator('.keypad .key', { hasText: d }).first().click();
 await wait(500);
