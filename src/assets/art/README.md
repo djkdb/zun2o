@@ -14,3 +14,6 @@
 4차 시트(학교 배경 9장: wallpaper, annex-gate, lobby, stairs, stairs-figure, corridor, reading-empty, reading-figure, room02-door)는
 무대가 폐교된 해원고등학교로 바뀌면서 제작자가 새로 생성한 3×3 시트를 잘라 2배 확대했습니다. 오래 보면 바뀌는 짝(stairs ↔ stairs-figure,
 reading-empty ↔ reading-figure)은 두 칸의 어긋남을 계산해 같은 크기·같은 위치로 잘라, 바뀔 때 화면이 튀지 않습니다.
+
+5차 시트(`index-card`, `floorplan`)는 제작자가 생성한 1×2 시트를 잘라 그대로 썼습니다. 둘 다 **글자 없는 사진**이고,
+방문자 카드의 타자 글씨와 평면도의 방 이름(제2서고·현위치 등)은 `phonePhotos.tsx`가 그 위에 얹습니다.

@@ -29,6 +29,8 @@ export type ArtSlot =
   | 'reading-figure'
   | 'room02-door'
   | 'room02'
+  | 'index-card'
+  | 'floorplan'
   | 'black-empty'
   | 'tower'
   | 'booth-reflect'

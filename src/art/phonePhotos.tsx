@@ -209,8 +209,29 @@ export const CorridorPhoto = memo(function CorridorPhoto({ door = false }: { doo
   );
 });
 
+// Typed onto the blank card in the photo (the photo has no writing, so the name can change).
+const TYPE = { fontFamily: '"Courier New", IBM Plex Mono, IBM Plex Sans KR, monospace', fill: '#2b2622', opacity: 0.82 } as const;
+
 export const IndexCardPhoto = memo(function IndexCardPhoto({ lines }: { lines: string[] }) {
   const id = useSvgId();
+  if (art('index-card'))
+    return (
+      <svg viewBox="0 0 420 560" role="img" aria-label={`서랍 안의 출입 카드 한 장. ${lines[0]}`}>
+        <rect width="420" height="560" fill="#050505" />
+        <ArtImage slot="index-card" w={420} h={560} />
+        <g transform="rotate(-0.6 216 260)">
+          <text x="100" y="215" fontSize="8.5" {...TYPE}>
+            야간 출입 기록 — 방문자 카드
+          </text>
+          {lines.map((l, i) => (
+            <text key={i} x="100" y={244.5 + i * 12.8} fontSize="9" {...TYPE}>
+              {l}
+            </text>
+          ))}
+        </g>
+        <Stamp text="01:56" />
+      </svg>
+    );
   return (
     <svg viewBox="0 0 640 420" role="img" aria-label="서랍 안의 출입 카드 한 장. 채원의 이름이 타자로 쳐져 있다.">
       <Defs id={id} />
@@ -568,3 +589,33 @@ export const VideoFeed = memo(function VideoFeed({ close = 0, pip = 0, clip = fa
     </svg>
   );
 });
+
+/** The floor plan on the corridor wall: a photo with empty label boxes, labelled here. */
+const PLAN_LABELS: [string, number, number, boolean?][] = [
+  ['자료실', 94, 223],
+  ['제2서고', 173, 214, true],
+  ['열람실', 233, 208],
+  ['사서실', 294, 202],
+  ['제1서고', 184, 350],
+];
+
+export function FloorPlanPhoto({ stamp }: { stamp?: string }) {
+  return (
+    <svg viewBox="0 0 420 560" role="img" aria-label="벽에 붙은 도서관 3층 평면도. 복도 위쪽 가운데 방 하나에 빨간 빗금이 쳐져 있고, 제2서고라고 적혀 있다.">
+      <rect width="420" height="560" fill="#050505" />
+      <ArtImage slot="floorplan" w={420} h={560} />
+      {PLAN_LABELS.map(([t, x, y, red]) => (
+        <text key={t} x={x} y={y} transform={`rotate(-5.5 ${x} ${y})`} textAnchor="middle" fontSize="6.8" fontFamily="IBM Plex Sans KR, sans-serif" fontWeight={red ? 700 : 500} fill={red ? '#b3261e' : '#3b3b3b'} opacity="0.85">
+          {t}
+        </text>
+      ))}
+      <text x="294" y="269" transform="rotate(-5.5 294 269)" textAnchor="middle" fontSize="6" fontFamily="IBM Plex Sans KR, sans-serif" fill="#b3261e" opacity="0.85">
+        현위치
+      </text>
+      <text x="210" y="160" transform="rotate(-5.5 210 160)" textAnchor="middle" fontSize="9" fontFamily="IBM Plex Sans KR, sans-serif" fontWeight={700} fill="#333" opacity="0.8">
+        도서관 3층 피난 안내도
+      </text>
+      {stamp && <Stamp text={stamp} />}
+    </svg>
+  );
+}

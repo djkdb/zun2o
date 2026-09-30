@@ -7,7 +7,7 @@ import { VIDEO } from '../../art/videos';
 import { AppHeader } from '../AppHeader';
 import { AnnexPhoto, FloorPlan, ReadingRoomPhoto, Room02Photo } from '../../art/scenes';
 import { art } from '../../art/photoArt';
-import { BlackPhoto, BoothPhoto, BoothShelfPhoto, REVEAL_AT, SlotPhoto, CorridorPhoto, IndexCardPhoto, LobbyPhoto, SelfiePhoto, StairsPhoto } from '../../art/phonePhotos';
+import { BlackPhoto, BoothPhoto, BoothShelfPhoto, REVEAL_AT, SlotPhoto, CorridorPhoto, FloorPlanPhoto, IndexCardPhoto, LobbyPhoto, SelfiePhoto, StairsPhoto } from '../../art/phonePhotos';
 
 /** Photos that change if you stare at them zoomed in. */
 const DWELL_PHOTOS = ['p03', 'p05', 'p08'];
@@ -92,7 +92,7 @@ export function PhotoView({ id, brightness = 0, changed = false }: { id: string;
       return <ReadingRoomPhoto level={3} stage={Math.min(4, (flags.includes('selfie-scare') ? 3 : flags.includes('reveal-scare') ? 2 : 1) + (changed ? 1 : 0)) as 1 | 2 | 3 | 4} />;
     }
     case 'p06':
-      return <FloorPlan level={3} />;
+      return art('floorplan') ? <FloorPlanPhoto stamp="01:45" /> : <FloorPlan level={3} />;
     case 'p07':
       return <BlackPhoto brightness={brightness} revealed={flags.includes('p07-revealed')} />;
     case 'p08':
