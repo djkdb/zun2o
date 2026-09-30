@@ -322,8 +322,8 @@ export function RebootOverlay() {
   return (
     <div className="reboot" aria-live="polite">
       <div className="reboot-logo">
-        <span>야간 색인</span>
-        <small>해원고 도서관 · 방문자 등록 시스템</small>
+        <span>야간 출입 기록</span>
+        <small>해원고 도서관 · 출입 기록 시스템</small>
       </div>
     </div>
   );

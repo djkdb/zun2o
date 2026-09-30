@@ -27,7 +27,7 @@ const FLOOD = [
   ['도현', '채원아 제발'],
   ['발신자 정보 없음', '{name}, 시간 됐어요'],
   ['나에게', '살려줘'],
-  ['발신자 정보 없음', '근무 교대 시간입니다'],
+  ['발신자 정보 없음', '두 시예요. 이름을 적을 시간이에요'],
 ];
 
 function useTyped(lines: string[], active: boolean, speed = 38): string[] {
@@ -52,7 +52,7 @@ function useTyped(lines: string[], active: boolean, speed = 38): string[] {
 function buildRecall(): string[] {
   const s = getState().save;
   const lines = [
-    '야간 색인 — 02:00:00',
+    '야간 출입 기록 — 02:00:00',
     `방문자 #0027  ${s.playerName ?? '(이름을 알려 주지 않음)'}`,
     `이 폰을 집은 지 (당신 시계로) ${Math.max(1, Math.round((Date.now() - s.startedAtReal) / 60000))}분.`,
     `사진 ${s.seenPhotos.length}장을 보았습니다.`,
@@ -84,7 +84,7 @@ function buildRecall(): string[] {
   lines.push('#0025 박현우. #0026 윤채원. 그리고 #0027, 당신.');
   lines.push('다들 그 부스에서 폰을 주웠어요. 주운 사람은 들어오게 돼 있어요.');
   lines.push('도현 씨는 지금 제2서고 안에 있어요. 당신이 남지 않으면, 도현 씨가 남아요.');
-  lines.push('이제 누군가는 근무를 서야 합니다.');
+  lines.push('이제 누군가는 안에 남아야 합니다.');
   return lines;
 }
 
@@ -213,7 +213,7 @@ export function Finale() {
       sfx('error');
       const n = tries + 1;
       setTries(n);
-      setErr(n >= 2 ? '열쇠가 맞지 않습니다. 기록 013에 적혀 있던 그 열쇠예요.' : '열쇠가 맞지 않습니다.');
+      setErr(n >= 2 ? '코드가 맞지 않습니다. 기록 013에 적혀 있던 그 코드예요.' : '코드가 맞지 않습니다.');
     }
   };
 
@@ -234,7 +234,7 @@ export function Finale() {
     vibrate([200]);
     setTimeout(() => setBlackout(false), 1600);
     if (n >= 2) {
-      setErr('그건 그녀의 이름이 아닙니다. 색인이 당신을 등록합니다.');
+      setErr('그건 그녀의 이름이 아닙니다. 당신의 이름이 기록됩니다.');
       setTimeout(() => reachEnding('shift'), 2600);
     } else setErr('그건 그녀의 이름이 아닙니다. 한 번 더.');
   };
@@ -390,17 +390,17 @@ export function Finale() {
                 }}
               >
                 <b>내가 남는다</b>
-                <small>색인을 맡는다. 채원과 도현은 보내 준다.</small>
+                <small>내가 안에 남는다. 채원과 도현은 풀려난다.</small>
               </button>
               <button type="button" disabled={!foundKey} onClick={() => setStep('key')}>
-                <b>연장 열쇠를 입력한다</b>
-                <small>{foundKey ? '열쇠와 첫 근무자의 이름으로 색인을 끝낸다.' : '열쇠를 모른다.'}</small>
+                <b>삭제 코드를 입력한다</b>
+                <small>{foundKey ? '코드와 처음 갇힌 사람의 이름으로 기록을 지운다.' : '코드를 모른다.'}</small>
               </button>
             </div>
           )}
           {step === 'key' && (
             <form className="final-form" onSubmit={submitKey}>
-              <label htmlFor="fk">연장 열쇠</label>
+              <label htmlFor="fk">삭제 코드</label>
               <input id="fk" autoFocus value={input} onChange={(e) => setInput(e.target.value)} autoComplete="off" autoCapitalize="characters" />
               <button type="submit">입력</button>
               {err && <p className="final-err">{err}</p>}
@@ -412,7 +412,7 @@ export function Finale() {
           )}
           {step === 'sign' && (
             <form className="final-form" onSubmit={sign}>
-              <label htmlFor="fs">색인 담당자 카드에 이름을 적으십시오</label>
+              <label htmlFor="fs">출입 기록에 당신의 이름을 적으십시오</label>
               <input id="fs" autoFocus value={input} maxLength={12} onChange={(e) => setInput(e.target.value)} autoComplete="off" />
               <button type="submit" disabled={!input.trim()}>
                 서명한다
@@ -424,7 +424,7 @@ export function Finale() {
           )}
           {step === 'name' && (
             <form className="final-form" onSubmit={submitName}>
-              <label htmlFor="fn">첫 번째 근무자의 이름</label>
+              <label htmlFor="fn">처음 갇힌 사람의 이름</label>
               <input id="fn" autoFocus value={input} onChange={(e) => setInput(e.target.value)} autoComplete="off" />
               <button type="submit">입력</button>
               {err && <p className="final-err">{err}</p>}

@@ -212,7 +212,7 @@ export const CorridorPhoto = memo(function CorridorPhoto({ door = false }: { doo
 export const IndexCardPhoto = memo(function IndexCardPhoto({ lines }: { lines: string[] }) {
   const id = useSvgId();
   return (
-    <svg viewBox="0 0 640 420" role="img" aria-label="서랍 안의 색인 카드 한 장. 채원의 이름이 타자로 쳐져 있다.">
+    <svg viewBox="0 0 640 420" role="img" aria-label="서랍 안의 출입 카드 한 장. 채원의 이름이 타자로 쳐져 있다.">
       <Defs id={id} />
       <g filter={`url(#${id}-n)`}>
         <rect width="640" height="420" fill="#2a2119" />
@@ -223,7 +223,7 @@ export const IndexCardPhoto = memo(function IndexCardPhoto({ lines }: { lines: s
             <line key={i} x1="-220" y1={-50 + i * 32} x2="220" y2={-50 + i * 32} stroke="#9fb6cf" strokeWidth="1" />
           ))}
           <text x="-200" y="-100" fontFamily="IBM Plex Mono, IBM Plex Sans KR, monospace" fontSize="17" fill="#1a1a1a">
-            야간 색인 — 방문자 카드
+            야간 출입 기록 — 방문자 카드
           </text>
           {lines.map((l, i) => (
             <text key={i} x="-200" y={-58 + i * 32} fontFamily="IBM Plex Mono, IBM Plex Sans KR, monospace" fontSize="18" fill="#1a1a1a">

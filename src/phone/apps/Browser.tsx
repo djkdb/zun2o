@@ -52,7 +52,7 @@ export function BrowserApp() {
     emit(`browser:${id}`);
     // Reached the last record of the sequence, but not in broadcast order: say so, without saying the order.
     if (!indexed && id === ARCHIVE_SEQUENCE[ARCHIVE_SEQUENCE.length - 1] && seq.join(',') !== ARCHIVE_SEQUENCE.join(',') && getState().save.flags.includes('self-contact')) {
-      setTimeout(() => setNotice('열람 순서가 방송 순서와 다릅니다. 기록 013은 색인되지 않았습니다.'), 900);
+      setTimeout(() => setNotice('열람 순서가 방송 순서와 다릅니다. 기록 013은 목록에 추가되지 않았습니다.'), 900);
     }
     if (!indexed && seq.join(',') === ARCHIVE_SEQUENCE.join(',')) {
       // Too early: record 013 is being written about *you*, and you aren't there yet.
@@ -64,7 +64,7 @@ export function BrowserApp() {
       setSave({ objective: { text: '목록에 새로 생긴 기록 013을 열어 보자', hint: '인터넷 → 심야 기록보관소 → 맨 아래 기록 013.', since: Date.now() } });
       setTimeout(() => {
         sfx('unlock');
-        setNotice('기록 013이 색인에 추가되었습니다.');
+        setNotice('기록 013이 목록에 추가되었습니다.');
       }, 900);
     }
   };
@@ -142,7 +142,7 @@ export function BrowserApp() {
         <div className="archive-page denied">
           <div className="stamp">작성 중</div>
           <p>기록 013 — 아직 작성되지 않았습니다.</p>
-          <p className="archive-sub">작성 예정: 01:44 · 작성자: 야간 색인</p>
+          <p className="archive-sub">작성 예정: 01:44 · 작성자: 없음</p>
         </div>
       )}
       {view.kind === 'page' && view.id === '__restricted' && (

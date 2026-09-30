@@ -102,9 +102,9 @@ export function PhotoView({ id, brightness = 0, changed = false }: { id: string;
     case 'h01':
       return art('room02-door') ? <SlotPhoto slot="room02-door" stamp="01:53" label="제2서고 문. 벽돌이 안쪽에서 쌓여 있다." /> : <CorridorPhoto door />;
     case 'h02':
-      return art('room02') ? <SlotPhoto slot="room02" stamp="01:55" label="제2서고 안. 끝없는 색인 서랍." /> : <Room02Photo level={5} />;
+      return art('room02') ? <SlotPhoto slot="room02" stamp="01:55" label="제2서고 안. 끝없는 카드 서랍." /> : <Room02Photo level={5} />;
     case 'h03':
-      return <IndexCardPhoto lines={['방문자 #0026  윤채원', '도착  01:13', '열람  사진 7장 · 녹음 1개', '상태  근무 대기']} />;
+      return <IndexCardPhoto lines={['방문자 #0026  윤채원', '도착  01:13', '열람  사진 7장 · 녹음 1개', '상태  안에 있음']} />;
     case 'h04':
       return <SelfiePhoto stage={1} />;
     case 'h05':

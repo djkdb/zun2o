@@ -53,7 +53,7 @@ describe('director timing', () => {
       await vi.advanceTimersByTimeAsync(25);
       first = getState().rt.banner?.title;
     }
-    expect(first).toBe('야간 색인');
+    expect(first).toBe('야간 출입 기록');
   });
 
   it("02:00 waits for 도현's last call to finish, however late it was answered", async () => {

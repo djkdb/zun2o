@@ -17,12 +17,12 @@ export function IndexApp() {
   const clock = useGame((s) => s.save.clock);
   const dohyun = useGame((s) => s.save.flags.includes('dohyun-in'));
   const rows: Row[] = [
-    { no: '색인', name: '서미령', status: '1994.03.14부터', tone: 'index' },
-    { no: '#0024', name: '김수연', status: '근무 종료 2024.09', tone: 'done' },
-    { no: '#0025', name: '박현우', status: '근무 종료 09.27 02:00', tone: 'done' },
-    { no: '#0026', name: '윤채원', status: '근무 중', tone: 'on' },
+    { no: '#0001', name: '서미령', status: '1994.03.14부터 안에 있음', tone: 'index' },
+    { no: '#0024', name: '김수연', status: '풀려남 2024.09', tone: 'done' },
+    { no: '#0025', name: '박현우', status: '풀려남 09.27 02:00', tone: 'done' },
+    { no: '#0026', name: '윤채원', status: '안에 있음', tone: 'on' },
     { no: '#0027', name: name ?? '(이름 없음)', status: `도착 ${fill('{start}')} (당신 시계)`, tone: 'new' },
-    ...(dohyun ? [{ no: '대기', name: '박도현', status: '제2서고 입실 01:56', tone: 'wait' as const }] : []),
+    ...(dohyun ? [{ no: '#0028', name: '박도현', status: '들어옴 01:56', tone: 'wait' as const }] : []),
   ];
   const left = untilTwo(clock);
   return (
@@ -31,12 +31,12 @@ export function IndexApp() {
         <button type="button" className="index-back" onClick={() => openApp(null)}>
           ‹ 닫기
         </button>
-        <span className="index-title">야간 색인 v2.3</span>
+        <span className="index-title">야간 출입 기록</span>
         <span className="index-rec" aria-hidden="true">
           ● REC
         </span>
       </div>
-      <p className="index-sub">해원고 도서관 제2서고 · 근무자 명단</p>
+      <p className="index-sub">해원고 도서관 · 지금 안에 있는 사람</p>
       <ul className="index-table">
         {rows.map((r) => (
           <li key={r.no + r.name} className={`index-row ${r.tone}`}>
@@ -47,15 +47,15 @@ export function IndexApp() {
         ))}
       </ul>
       <div className="index-count">
-        <small>근무 교대까지</small>
+        <small>다음 이름이 적히기까지</small>
         <strong>{left === 0 ? '지금' : `${left}분`}</strong>
-        <small>현재 시각 {clock} · 교대 02:00</small>
+        <small>현재 시각 {clock} · 기록 02:00</small>
       </div>
       <div className="index-rules">
-        <p>색인: 제2서고의 카드 목록. 여기 이름이 적힌 사람은 서고를 떠나지 못한다.</p>
-        <p>등록 규칙: 부스의 폰을 주운 사람은 방문자가 된다.</p>
-        <p>매일 02:00, 방문자 한 명이 근무자로 등록된다.</p>
-        <p>연장 열쇠 입력은 02:00에만 가능하다.</p>
+        <p>매일 02:00, 학교 안에 있는 사람 한 명의 이름이 기록된다.</p>
+        <p>이름이 기록된 사람은 도서관을 나갈 수 없다. 다음 사람이 기록되면 풀려난다.</p>
+        <p>정문 부스의 폰을 주운 사람도 들어온 것으로 본다.</p>
+        <p>삭제 코드 입력은 02:00에만 가능하다.</p>
       </div>
       <p className="index-prompt">
         &gt; <span className="index-blink">▌</span>

@@ -122,7 +122,7 @@ for (const [w, h] of SIZES) {
   await page.locator('.dbg button', { hasText: '—' }).click();
   await page.waitForTimeout(4500);
   await page.click('.homebar');
-  await page.locator('.app-icon', { hasText: '야간 색인' }).click();
+  await page.locator('.app-icon', { hasText: '출입 기록' }).click();
   await audit(page, `${tag}-index`);
   await debugClick(page, /^02:00$/);
   await page.locator('.dbg button', { hasText: '—' }).click();

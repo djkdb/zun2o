@@ -7,7 +7,7 @@ import { PHOTOS } from '../../content/media';
 import { audio } from '../../audio/engine';
 import { setSpeechEnabled } from '../../audio/speech';
 
-const ENDING_NAMES: Record<string, string> = { poweroff: '1. 전원 끄기', shift: '2. 교대', release: '3. 색인 종료' };
+const ENDING_NAMES: Record<string, string> = { poweroff: '1. 전원 끄기', shift: '2. 남는 사람', release: '3. 기록 삭제' };
 
 export function SettingsApp() {
   const save = useGame((s) => s.save);
@@ -18,7 +18,7 @@ export function SettingsApp() {
     setRt({
       dialog: hasFlag('ch4')
         ? { title: '전원을 끌 수 없습니다', body: '02:00 이전에는 종료할 수 없습니다.' }
-        : { title: '전원을 끌 수 없습니다', body: '시스템이 사용 중입니다. (야간 색인)' },
+        : { title: '전원을 끌 수 없습니다', body: '시스템이 사용 중입니다. (야간 출입 기록)' },
     });
   };
 

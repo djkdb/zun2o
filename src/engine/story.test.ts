@@ -76,7 +76,7 @@ describe('story data', () => {
 
   it('the chain is told: booth photo, 박현우 article, the phone restarting', () => {
     expect(PHOTOS[0].id).toBe('p00');
-    expect(ARCHIVE.news2.lines.join(' ')).toContain('교대했다');
+    expect(ARCHIVE.news2.lines.join(' ')).toContain('다음 사람이 왔다');
     expect(BEATS.some((b) => b.actions.some((a) => a.t === 'reboot'))).toBe(true);
   });
 

@@ -227,14 +227,14 @@ function FloorPlanInner({ level }: SceneProps) {
   const doorOpen = level >= 3;
   const rooms: { id: string; x: number; y: number; w: number; h: number; label: string }[] = [
     { id: '01', x: 40, y: 40, w: 180, h: 150, label: '제1서고' },
-    { id: '02', x: 220, y: 40, w: 150, h: 150, label: '제2서고 — 색인' },
+    { id: '02', x: 220, y: 40, w: 150, h: 150, label: '제2서고' },
     { id: '03', x: 370, y: 40, w: 230, h: 150, label: '열람실' },
     { id: '04', x: 40, y: 250, w: 170, h: 130, label: '사서실 (야간)' },
     { id: '05', x: 210, y: 250, w: 190, h: 130, label: '대출실' },
     { id: '06', x: 400, y: 250, w: 200, h: 130, label: '자료 보관실' },
   ];
   return (
-    <svg viewBox="0 0 640 420" role="img" aria-label="3층 평면도. 복도를 둘러싼 방 여섯 개. 색인 서고인 제2서고는 빗금이 쳐져 있고 봉인이라고 적혀 있다.">
+    <svg viewBox="0 0 640 420" role="img" aria-label="3층 평면도. 복도를 둘러싼 방 여섯 개. 제2서고는 빗금이 쳐져 있고 봉인이라고 적혀 있다.">
       <defs>
         <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
           <line x1="0" y1="0" x2="0" y2="8" stroke={ink} strokeWidth="1" opacity="0.55" />
@@ -330,7 +330,7 @@ function TowerInner(_: SceneProps) {
 function Room02Inner(_: SceneProps) {
   const id = useSvgId();
   return (
-    <svg viewBox="0 0 640 420" role="img" aria-label="바닥부터 천장까지 작은 색인 서랍으로 덮인 어두운 방. 서랍 하나가 열려 불빛이 새어 나온다. 누군가 카메라를 등지고 책상에 앉아 있다.">
+    <svg viewBox="0 0 640 420" role="img" aria-label="바닥부터 천장까지 작은 카드 서랍으로 덮인 어두운 방. 서랍 하나가 열려 불빛이 새어 나온다. 누군가 카메라를 등지고 책상에 앉아 있다.">
       <FilmDefs id={id} />
       <g filter={`url(#${id}-grain)`}>
         <rect width="640" height="420" fill="#141312" />

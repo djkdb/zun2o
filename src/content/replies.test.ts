@@ -33,8 +33,8 @@ describe('free-text replies', () => {
 
   it('채원 answers the name that was asked about, and knows the key only once it is found', () => {
     expect(replyFor('self', '서미령이 누구예요?', ctx()).rule).toBe('miryeong');
-    expect(replyFor('self', '연장 열쇠가 뭐예요?', ctx()).lines[0]).toContain('몰라');
-    expect(replyFor('self', '연장 열쇠가 뭐예요?', ctx({ flags: ['found-key'] })).lines[0]).toContain('색인을 끝낼');
+    expect(replyFor('self', '삭제 코드가 뭐예요?', ctx()).lines[0]).toContain('몰라');
+    expect(replyFor('self', '삭제 코드가 뭐예요?', ctx({ flags: ['found-key'] })).lines[0]).toContain('기록을 지울');
     expect(replyFor('self', '도현이랑 처음 만난 날이 언제예요?', ctx()).rule).toBe('met');
   });
 });

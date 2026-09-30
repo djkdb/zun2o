@@ -12,7 +12,7 @@ export const APP_META: Record<AppId, { name: string; bg: string }> = {
   browser: { name: '인터넷', bg: 'linear-gradient(180deg,#5ea8ff,#2d6fe0)' },
   phone: { name: '전화', bg: 'linear-gradient(180deg,#48d06f,#22a049)' },
   settings: { name: '설정', bg: 'linear-gradient(180deg,#9aa0a8,#5f646b)' },
-  index: { name: '야간 색인', bg: '#050505' },
+  index: { name: '출입 기록', bg: '#050505' },
 };
 
 export function AppGlyph({ app }: { app: AppId }) {
