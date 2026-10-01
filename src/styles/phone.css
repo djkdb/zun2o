@@ -5482,3 +5482,78 @@ body,
   color: #e9b7a8;
   transition: opacity 0.15s linear;
 }
+
+/* ─── 01:59: the phone stops being yours, one function at a time ───────── */
+.brink {
+  position: absolute;
+  inset: 0;
+}
+.brink > .home {
+  position: absolute;
+  inset: 0;
+}
+.brink-chip {
+  position: absolute;
+  top: 54px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(30, 30, 34, 0.92);
+  color: #d6d6da;
+  font-size: 12px;
+  white-space: nowrap;
+  animation: fade-in 0.4s ease both;
+}
+.brink-call {
+  z-index: 6;
+}
+.brink-photo {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: #000;
+  animation: app-in 0.2s ease both;
+}
+.brink-photo-head {
+  position: absolute;
+  top: 52px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: #eee;
+}
+.brink-photo-head small {
+  display: block;
+  color: #9a9aa0;
+  font-size: 11px;
+}
+.brink-photo svg {
+  width: 100%;
+  height: auto;
+}
+/* the green dot a phone shows when the camera is on (nothing is actually on) */
+.brink-cam {
+  position: absolute;
+  top: 18px;
+  right: 92px;
+  z-index: 8;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34c759;
+  box-shadow: 0 0 6px rgba(52, 199, 89, 0.8);
+}
+/* 02:00:00 — nothing moves */
+.brink-7 .home {
+  filter: brightness(0.55);
+}
+.brink-still {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+}

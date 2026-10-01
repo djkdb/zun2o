@@ -1,6 +1,6 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useGame } from '../hooks/useGame';
-import { reachEnding, sfx, vibrate } from '../engine/director';
+import { mix, reachEnding, sfx, vibrate } from '../engine/director';
 import { getState } from '../engine/state';
 import { HomeScreen } from './HomeScreen';
 import { VideoFeed } from '../art/phonePhotos';
@@ -12,6 +12,7 @@ import { VIDEO_CALL_LINES } from '../content/calls';
 import { setSave } from '../engine/state';
 import { art } from '../art/photoArt';
 import { VIDEO } from '../art/videos';
+import { PhotoView } from './apps/Gallery';
 
 // ─────────────────────────────────────────────────────────────────────────
 // 02:00. The clock stops, the phone floods, the home screen empties, 채원
@@ -19,7 +20,7 @@ import { VIDEO } from '../art/videos';
 // choose how the night ends.
 // ─────────────────────────────────────────────────────────────────────────
 
-type Step = 'freeze' | 'flood' | 'strip' | 'ring' | 'video' | 'dark' | 'recall' | 'choice' | 'key' | 'name' | 'sign' | 'off';
+type Step = 'brink' | 'freeze' | 'flood' | 'strip' | 'ring' | 'video' | 'dark' | 'recall' | 'choice' | 'key' | 'name' | 'sign' | 'off';
 
 const FLOOD = [
   ['도현', '채원아'],
@@ -101,7 +102,9 @@ function buildRecall(): string[] {
 
 export function Finale() {
   const save = useGame((s) => s.save);
-  const [step, setStep] = useState<Step>('freeze');
+  const [step, setStep] = useState<Step>('brink');
+  // 01:59 — the last minute, compressed: the phone stops being yours one function at a time.
+  const [brink, setBrink] = useState(0);
   const [flood, setFlood] = useState(0);
   const [stripped, setStripped] = useState(0);
   const [close, setClose] = useState(0);
@@ -120,8 +123,30 @@ export function Finale() {
   // 채원's side of the call is a real clip; if it can't play, the drawn feed takes over.
   const [clipOk, setClipOk] = useState(true);
 
-  // Scripted timeline up to the ringing video call.
   useEffect(() => {
+    if (step !== 'brink') return;
+    setSave({ clock: '01:59', battery: 3 });
+    const at = (ms: number, f: () => void) => setTimeout(f, ms);
+    const ts = [
+      at(1400, () => setBrink(1)), // messages stop going out
+      at(2900, () => (setBrink(2), sfx('ding'))), // 도현 calls — and can't get through
+      at(4600, () => setBrink(3)),
+      at(5400, () => (setBrink(4), sfx('zoom'))), // the gallery opens by itself: a photo taken just now
+      at(7000, () => setBrink(5)), // home
+      at(7900, () => setBrink(6)), // the camera-in-use dot
+      // 02:00:00 — everything stops. Silence first, then the night lands.
+      at(8900, () => (setBrink(7), mix(0, 0, 0.25), setSave({ clock: '02:00' }))),
+      at(10400, () => setStep('freeze')),
+    ];
+    return () => ts.forEach(clearTimeout);
+  }, [step]);
+
+  // Scripted timeline up to the ringing video call. Starts once, when 02:00 lands; its timers
+  // outlive the steps they move through (only unmounting stops them).
+  const landed = useRef<ReturnType<typeof setTimeout>[]>([]);
+  useEffect(() => () => landed.current.forEach(clearTimeout), []);
+  useEffect(() => {
+    if (step !== 'freeze' || landed.current.length) return;
     setSave({ clock: '02:00', battery: 2 });
     sfx('thud');
     vibrate([500]);
@@ -137,8 +162,8 @@ export function Finale() {
       ...Array.from({ length: 8 }, (_, i) => setTimeout(() => setStripped(i + 1), 4800 + i * 420)),
       setTimeout(() => setStep('ring'), 8600),
     ];
-    return () => ts.forEach(clearTimeout);
-  }, []);
+    landed.current = ts;
+  }, [step]);
 
   // Ringing: auto-answers after 6 s — she does not wait.
   useEffect(() => {
@@ -272,6 +297,32 @@ export function Finale() {
 
   return (
     <div className={`finale step-${step}`}>
+      {step === 'brink' && (
+        <div className={`brink brink-${brink}`}>
+          <HomeScreen />
+          {brink >= 1 && brink < 7 && <div className="brink-chip">통신 불안정 · 메시지 3개 전송 대기</div>}
+          {(brink === 2 || brink === 3) && (
+            <div className="incoming brink-call">
+              <div className="incoming-top">
+                <small className="call-kind">휴대전화</small>
+                <h2>도현</h2>
+                <p className="finale-auto">{brink === 2 ? '수신 전화…' : '연결할 수 없습니다'}</p>
+              </div>
+            </div>
+          )}
+          {brink === 4 && (
+            <div className="brink-photo">
+              <div className="brink-photo-head">
+                <b>방금</b>
+                <small>01:59 · 자동 저장</small>
+              </div>
+              <PhotoView id="p08" />
+            </div>
+          )}
+          {brink >= 6 && <span className="brink-cam" aria-label="카메라 사용 중 표시" />}
+          {brink === 7 && <div className="brink-still" aria-hidden="true" />}
+        </div>
+      )}
       {(step === 'freeze' || step === 'flood' || step === 'strip') && (
         <>
           <div className="finale-clock">02:00</div>
