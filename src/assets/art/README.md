@@ -20,3 +20,6 @@ reading-empty ↔ reading-figure)은 두 칸의 어긋남을 계산해 같은 �
 
 6차 시트(`life-cafe`, `life-desk`, `life-cake`, `life-busstop`)는 채원의 평범한 날(9월 24~26일). 2×2 시트를 잘라 그대로 썼고,
 밤 사진과 달리 색 보정 필터를 걸지 않습니다. `life-busstop`은 홈 화면 배경화면으로도 쓰입니다.
+
+7차 시트: `miryeong-id`(1994년 실종 신고서의 서미령 증명사진 — 기록 003), `miryeong-daughter`(서미령과 11살 딸 — 진엔딩 “엄마 왔어”),
+`chair-coat` / `chair-empty`(같은 열람실 의자, 외투 있음/없음 — 엔딩 2 / 진엔딩).

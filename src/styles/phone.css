@@ -5685,3 +5685,16 @@ body,
 .art-photo.life {
   filter: none;
 }
+
+/* endings: a photograph on the line it belongs to */
+.ending-inline-photo {
+  display: block;
+  width: 62%;
+  max-width: 230px;
+  margin: 4px auto 8px;
+  border: 5px solid #f1ede4;
+  border-bottom-width: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  transform: rotate(-1.5deg);
+  animation: fade-in 1.6s ease both;
+}

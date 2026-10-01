@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useGame } from '../hooks/useGame';
 import { newGame, replayFinale, sfx } from '../engine/director';
 import type { EndingId } from '../engine/types';
-import { art } from '../art/photoArt';
+import { art, type ArtSlot } from '../art/photoArt';
 import { VIDEO } from '../art/videos';
 import { copula } from '../content/korean';
 
@@ -10,7 +10,7 @@ interface EndingDef {
   n: number;
   title: string;
   line: string;
-  scene: { who?: string; text: string; side?: 'left' | 'right' }[];
+  scene: { who?: string; text: string; side?: 'left' | 'right'; img?: ArtSlot }[];
 }
 
 const ENDINGS: Record<EndingId, EndingDef> = {
@@ -38,7 +38,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
       { who: '도현', text: '채원이랑 같이 전화부스 안에서 깼어요. 둘 다 무사해요', side: 'left' },
       { who: '도현', text: '근데 당신은 어디 있어요? 이 폰만 선반에 있어요', side: 'left' },
       { text: '이름을 적는 사람 — {name}. 서미령의 이름은 31년 만에 지워졌다.' },
-      { text: '열람실 의자에 외투 하나가 걸렸다. 31년 동안 걸려 있던 것과 자리만 같다.' },
+      { text: '열람실 의자에 외투 하나가 걸렸다. 31년 동안 걸려 있던 것과 자리만 같다.', img: 'chair-coat' },
       { text: '1년 뒤. 해원고 정문 앞 공중전화 부스.' },
       { who: '발신자 정보 없음', text: '들어오세요. 저는 {name}{이에요}. 오래 기다렸어요.', side: 'left' },
     ],
@@ -53,8 +53,8 @@ const ENDINGS: Record<EndingId, EndingDef> = {
       { who: '엄마', text: '누구신지 몰라도, 정말 고맙습니다', side: 'left' },
       { who: '발신자 정보 없음', text: '서미령이에요. 쓰지 말라고 한 건 제가 아니라 기록이었어요. 제 이름 불러 줘서 고마워요. 31년 만에 집에 가요.', side: 'left' },
       { text: '(대화 상대를 찾을 수 없습니다)' },
-      { text: '열람실 의자에 31년 동안 걸려 있던 외투가 없어졌다.' },
-      { text: '같은 새벽, 해원시의 한 아파트. 마흔두 살 여자가 잠에서 깼다. 현관에서 누가 “엄마 왔어” 하고 말한 것 같았다.' },
+      { text: '열람실 의자에 31년 동안 걸려 있던 외투가 없어졌다.', img: 'chair-empty' },
+      { text: '같은 새벽, 해원시의 한 아파트. 마흔두 살 여자가 잠에서 깼다. 현관에서 누가 “엄마 왔어” 하고 말한 것 같았다.', img: 'miryeong-daughter' },
       { text: '다음 날 아침, 비가 그쳤다. 공중전화 부스의 선반은 비어 있다.' },
     ],
   },
@@ -81,8 +81,17 @@ export function EndingScreen({ id }: { id: EndingId }) {
   }, [def]);
 
   const done = shown >= def.scene.length;
+  // each new line (and the card at the end) comes into view, like a chat scrolling on its own
+  const box = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = box.current;
+    if (!el || shown === 0) return;
+    const smooth = typeof matchMedia === 'function' && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const t = setTimeout(() => el.scrollTo({ top: el.scrollHeight, behavior: smooth ? 'smooth' : 'auto' }), 60);
+    return () => clearTimeout(t);
+  }, [shown, done]);
   return (
-    <div className={`ending ending-${id}`}>
+    <div ref={box} className={`ending ending-${id}`}>
       {/* the last photograph of the night, behind the words */}
       {art(`ending-${id}`) && <img className="ending-photo" src={art(`ending-${id}`)} alt="" />}
       {/* the true ending's last line comes with the morning: rain stopping over the empty phone booth */}
@@ -95,9 +104,10 @@ export function EndingScreen({ id }: { id: EndingId }) {
               <span>{l.text.replaceAll('{name}{이에요}', spoken + copula(spoken)).replaceAll('{name}', spoken)}</span>
             </div>
           ) : (
-            <p key={i} className="ending-line">
-              {l.text.replaceAll('{name}', name)}
-            </p>
+            <div key={i} className="ending-line-wrap">
+              {l.img && art(l.img) && <img className="ending-inline-photo" src={art(l.img)} alt="" draggable={false} />}
+              <p className="ending-line">{l.text.replaceAll('{name}', name)}</p>
+            </div>
           ),
         )}
       </div>

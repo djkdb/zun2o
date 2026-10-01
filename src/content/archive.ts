@@ -6,7 +6,7 @@ export interface ArchivePage {
   title: string;
   /** `**…**` marks the words a skimming reader should still catch. */
   lines: string[];
-  photo?: 'reading-room' | 'annex' | 'floorplan' | 'tower' | 'room-02';
+  photo?: 'reading-room' | 'annex' | 'floorplan' | 'tower' | 'room-02' | 'miryeong';
   access?: 'restricted' | 'denied' | 'hidden';
   /** Archive records: where the document came from. */
   meta?: string;
@@ -42,7 +42,7 @@ export const ARCHIVE: Record<string, ArchivePage> = {
     id: 'r003',
     title: '기록 003 — 실종자 신고: 서미령',
     meta: '1994.03.14 · 해원경찰서 실종 신고서 사본',
-    photo: 'reading-room',
+    photo: 'miryeong',
     lines: [
       '성명: **서미령** (41) · 해원고등학교 도서관 야간 사서',
       '1994년 3월 14일, 장서 정리로 혼자 밤늦게 남아 있다가 01:50경 열람실에서 마지막으로 목격. 외투는 의자에.',
