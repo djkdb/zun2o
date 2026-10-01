@@ -113,8 +113,7 @@ export function LockScreen() {
           <p className="lock-pad-title">암호 입력</p>
           {/* the clue stays in view while typing: her riddle, once it's been left, and the camera notice */}
           <div className="lock-pad-clues">
-            <p>도현 · “비번은 저희 처음 만난 날이에요.” “어젯밤에도 일부러 딱 그 시각에 들어갔어요.”</p>
-            {threads.unknown.some((m) => m.text.includes('날짜인 줄 알죠')) && <p>발신자 정보 없음 · “날짜인 줄 알죠? 시각이에요.”</p>}
+            <p>도현 · “비번 저랑 처음 만난 날이에요” “걔 어제도 그 숫자 맞춰서 들어간다고…”</p>
             <p>카메라 · 01:13에 시작한 영상을 저장하지 못했습니다.</p>
           </div>
           <div className={`lock-dots${shake ? ' shake' : ''}`}>

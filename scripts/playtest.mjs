@@ -69,7 +69,7 @@ await snap('opening-call');
 check('the opening call rings on the lock screen', (await page.textContent('.incoming')).includes('발신자 정보 없음'));
 await page.locator('.accept').dispatchEvent('click');
 await page.waitForSelector('.callscreen', { state: 'detached', timeout: 30000 });
-await page.waitForFunction(() => window.__game.getState().save.threads.unknown.some((m) => m.text.includes('날짜인 줄 알죠')), null, { timeout: 15000 });
+await page.waitForFunction(() => window.__game.getState().save.threads.unknown.some((m) => m.text.includes('문 열어 뒀어요')), null, { timeout: 15000 });
 await wait(600);
 await snap('lock');
 check('lock screen shows the passcode riddle and its answer', (await page.textContent('.lock')).includes('처음 만난 날') && (await page.textContent('.lock')).includes('01:13에 시작한'));

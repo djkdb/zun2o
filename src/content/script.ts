@@ -39,7 +39,7 @@ export const BEATS: Beat[] = [
     id: 'door-riddle',
     on: 'door:done',
     forbids: ['unlocked'],
-    actions: [{ t: 'wait', ms: 900 }, { t: 'msg', th: 'unknown', text: '문은 열어 뒀어요. 도현 씨 말, 날짜인 줄 알죠? 시각이에요.', typing: 1200 }],
+    actions: [{ t: 'wait', ms: 900 }, { t: 'msg', th: 'unknown', text: '문 열어 뒀어요. 들어와요.', typing: 1200 }],
   },
   {
     id: 'lock-idle',
@@ -70,7 +70,7 @@ export const BEATS: Beat[] = [
       },
       { t: 'wait', ms: 1800 },
       // 채원 walked in at 01:13 on purpose: her passcode, the day she met 도현 (her script note says so). (One message: nothing can land between.)
-      { t: 'msg', th: 'unknown', text: '들어왔네요. 1월 13일, 1시 13분. 채원 씨도 그 숫자로 들어왔어요.', typing: 1800 },
+      { t: 'msg', th: 'unknown', text: '들어왔네요. 채원 씨도 1시 13분에 들어왔어요.', typing: 1800 },
     ],
   },
   {
