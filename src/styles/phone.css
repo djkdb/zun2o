@@ -5407,6 +5407,8 @@ body,
 /* ─── 채원's home screen: her wallpaper, and what the night does to it ─── */
 .home {
   isolation: isolate;
+  min-height: 100%;
+  box-sizing: border-box;
 }
 .home-wall {
   position: absolute;
@@ -5463,13 +5465,6 @@ body,
   transition:
     transform 0.12s ease,
     filter 0.12s ease;
-}
-.home {
-  min-height: 100%;
-  box-sizing: border-box;
-}
-.home > .home-dock-hint {
-  margin-top: auto;
 }
 
 /* 02:00: sliding to power off shows who stays instead */
@@ -5556,4 +5551,133 @@ body,
   position: absolute;
   inset: 0;
   z-index: 9;
+}
+
+/* ─── browser: a real address bar, and an archive someone stopped running ─ */
+.browser-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 8px;
+  padding-right: 10px;
+}
+.browser-bar .back {
+  flex: 0 0 auto;
+  min-width: 32px;
+  font-size: 22px;
+}
+.url-pill {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 10px;
+  background: #1f2023;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.url-warn {
+  flex: 0 0 auto;
+  color: #ff9f5a;
+  font-size: 11px;
+}
+.url-lock {
+  flex: 0 0 auto;
+  font-size: 11px;
+}
+.url-host {
+  color: #e8e8ea;
+}
+.url-path {
+  color: #8d8d93;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.url-placeholder {
+  color: #77777d;
+}
+.url-tabs {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1.6px solid #c8c8cc;
+  border-radius: 5px;
+  color: #c8c8cc;
+  font-size: 11px;
+  font-weight: 600;
+}
+.arc-broken {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 4px 8px;
+  border: 1px dashed #4a4a4a;
+  color: #7a7a7a;
+  font-size: 10.5px;
+  font-family: var(--mono);
+}
+.arc-notice {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border-left: 3px solid #a08a4a;
+  background: rgba(160, 138, 74, 0.08);
+  color: #cbbf98;
+  font-size: 12px;
+  line-height: 1.55;
+}
+.arc-notice i {
+  color: #8c8470;
+  font-style: normal;
+}
+.arc-links {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  margin: 16px 0 4px;
+}
+.arc-links button {
+  min-height: 32px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  color: #6f8fd8;
+  text-decoration: underline;
+  font-size: 12.5px;
+}
+.dead-page {
+  padding: 40px 22px;
+  background: #fff;
+  color: #000;
+  min-height: 100%;
+  font-family: 'Times New Roman', serif;
+}
+.dead-page h2 {
+  margin: 0 0 14px;
+  font-size: 24px;
+}
+.dead-page code {
+  font-family: var(--mono);
+  font-size: 13px;
+}
+.dead-small {
+  margin-top: 30px;
+  padding-top: 10px;
+  border-top: 1px solid #ccc;
+  font-size: 12px;
+  font-style: italic;
+  color: #333;
+}
+/* the hint chip sits at the top right: make room for it in the address bar */
+.shell:has(.hint-chip) .browser-bar {
+  padding-right: 104px;
+}
+.shell:has(.hint-chip) .browser-bar .url-tabs {
+  display: none;
 }

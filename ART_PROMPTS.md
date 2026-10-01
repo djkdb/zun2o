@@ -302,3 +302,17 @@ cold desaturated green-grey tones, dust in the air.
    cross-hatched in red, a small red dot for "you are here", a green running-man exit pictogram in a corner.
    The plan has NO readable text, only empty label boxes. Dust, a dead moth inside the frame.
 ```
+
+## 시트 6 — 채원의 평범한 날 (선택, 아직 슬롯 없음)
+
+“사라진 사람”이 아니라 “어제까지 평범했던 사람”을 보여 주는 사진 4장. 받으면 사진 앱 최근 항목의 앞쪽(9월 24~26일)에 넣는다.
+
+```
+Create ONE high-resolution image: a 2×2 contact sheet of 4 separate portrait (3:4) casual smartphone photos of the
+same young Korean woman in her early 20s (match the reference: shoulder-length dark hair), warm and ordinary,
+daylight or cozy indoor light, slightly imperfect framing like real phone photos. Thin black gutters, NO text.
+1. A selfie in a café, holding up an iced coffee, laughing, a small handheld camera on the table.
+2. A messy desk at night: laptop with a video editing timeline, a flashlight and a power bank, sticky notes.
+3. A bakery display case, a sweet-potato cake circled with her finger in frame (a birthday cake for her mother).
+4. A blurry, happy two-shot with a young man in a hoodie at a bus stop at dusk, both making a V sign.
+```

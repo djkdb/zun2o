@@ -3,7 +3,6 @@ import { useGame } from '../../hooks/useGame';
 import { emit, openApp, sfx } from '../../engine/director';
 import { addFlag, getState, setRt, setSave } from '../../engine/state';
 import { ARCHIVE, ARCHIVE_LIST, ARCHIVE_SEQUENCE, type ArchivePage } from '../../content/archive';
-import { AppHeader } from '../AppHeader';
 import { art } from '../../art/photoArt';
 import { FloorPlanPhoto, SlotPhoto } from '../../art/phonePhotos';
 import { AnnexPhoto, FloorPlan, ReadingRoomPhoto, Room02Photo, TowerPhoto } from '../../art/scenes';
@@ -16,7 +15,7 @@ const PHOTO = {
   'room-02': () => (art('room02') ? <SlotPhoto slot="room02" w={640} h={420} label="제2서고." /> : <Room02Photo level={5} />),
 };
 
-type View = { kind: 'home' } | { kind: 'archive' } | { kind: 'page'; id: string };
+type View = { kind: 'home' } | { kind: 'archive' } | { kind: 'page'; id: string } | { kind: 'dead'; path: string };
 
 function seenPages(): string[] {
   return (getState().save.choices.archiveSeen ?? '').split(',').filter(Boolean);
@@ -71,16 +70,45 @@ export function BrowserApp() {
 
   const back = () => {
     setNotice(null);
-    if (view.kind === 'page') setView({ kind: view.id.startsWith('news') ? 'home' : 'archive' });
+    if (view.kind === 'dead') setView({ kind: 'archive' });
+    else if (view.kind === 'page') setView({ kind: view.id.startsWith('news') ? 'home' : 'archive' });
     else if (view.kind === 'archive') setView({ kind: 'home' });
     else openApp(null);
   };
 
-  const url = view.kind === 'home' ? '즐겨찾기' : view.kind === 'archive' || (view.kind === 'page' && !view.id.startsWith('news')) ? 'nightarchive.or.kr' : 'haewon-ilbo.kr';
+  // The address bar says where you are — and that the archive isn't a secure site.
+  const news = view.kind === 'page' && view.id.startsWith('news');
+  const host = view.kind === 'home' ? '' : news ? 'haewon-ilbo.kr' : 'nightarchive.or.kr';
+  const path =
+    view.kind === 'page' && !view.id.startsWith('__')
+      ? news
+        ? `/society/2025/09/27/${view.id === 'news' ? '1830' : '0740'}`
+        : `/record/${view.id.replace('r', '')}.html`
+      : view.kind === 'dead'
+        ? view.path
+        : '';
 
   return (
     <div className="browser">
-      <AppHeader title={url} onBack={back} backLabel={view.kind === 'home' ? '홈' : '뒤로'} />
+      <header className="app-header browser-bar">
+        <button type="button" className="back" onClick={back} aria-label={view.kind === 'home' ? '홈으로' : '뒤로'}>
+          ‹
+        </button>
+        <div className={`url-pill${host ? '' : ' empty'}`}>
+          {host ? (
+            <>
+              <span className={news ? 'url-lock' : 'url-warn'}>{news ? '🔒' : '주의 요함'}</span>
+              <span className="url-host">{host}</span>
+              <span className="url-path">{path}</span>
+            </>
+          ) : (
+            <span className="url-placeholder">검색 또는 주소 입력</span>
+          )}
+        </div>
+        <span className="url-tabs" aria-label="열린 탭 3개">
+          3
+        </span>
+      </header>
       {view.kind === 'home' && (
         <div className="bookmarks">
           <p className="bm-label">즐겨찾기</p>
@@ -109,6 +137,10 @@ export function BrowserApp() {
       )}
       {view.kind === 'archive' && (
         <div className="archive arc-site">
+          {/* the 1999 banner never made it through the server move */}
+          <div className="arc-broken" aria-label="깨진 이미지">
+            <span>⊠</span> banner_nightarchive_1999.gif
+          </div>
           <header className="arc-head">
             <span className="arc-logo">夜</span>
             <div>
@@ -116,6 +148,9 @@ export function BrowserApp() {
               <p>1995년 폐교된 해원고등학교 기록 · 자원봉사자 운영</p>
             </div>
           </header>
+          <p className="arc-notice">
+            <b>[공지]</b> 서버 이전 후 일부 기록이 보이지 않을 수 있습니다. 기록 번호 013은 원래 없는 번호입니다. 문의하지 마십시오. <i>— 관리자 2004.11.02</i>
+          </p>
           <p className="arc-counter">
             누적 방문자 <b>000413</b> · 지금 보는 사람 <b className="arc-blink">2</b>
           </p>
@@ -135,7 +170,23 @@ export function BrowserApp() {
               );
             })}
           </ul>
+          <p className="arc-links">
+            {['방명록', '자료실', '운영자에게'].map((t, i) => (
+              <button key={t} type="button" onClick={() => (sfx('click'), setView({ kind: 'dead', path: ['/guestbook.cgi', '/pds/', '/mailto.php'][i] }))}>
+                {t}
+              </button>
+            ))}
+          </p>
           <p className="arc-foot">최종 수정 2004.11.02 · 운영자 연락처 없음 · 이 사이트는 더 이상 관리되지 않습니다</p>
+        </div>
+      )}
+      {view.kind === 'dead' && (
+        <div className="dead-page">
+          <h2>페이지를 찾을 수 없습니다</h2>
+          <p>
+            요청하신 페이지 <code>{view.path}</code> 가 서버에 없습니다.
+          </p>
+          <p className="dead-small">404 Not Found · Apache/1.3.27 Server at nightarchive.or.kr Port 80</p>
         </div>
       )}
       {view.kind === 'page' && view.id === '__early' && (
