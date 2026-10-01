@@ -5681,3 +5681,7 @@ body,
 .shell:has(.hint-chip) .browser-bar .url-tabs {
   display: none;
 }
+/* her ordinary days stay warm */
+.art-photo.life {
+  filter: none;
+}

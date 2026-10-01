@@ -36,7 +36,8 @@ function Defs({ id, flashX = 50, flashY = 50, r = 60 }: { id: string; flashX?: n
 function ArtImage({ slot, w, h, x = 0, y = 0, style, align = 'xMidYMid' }: { slot: ArtSlot; w: number; h: number; x?: number; y?: number; style?: React.CSSProperties; align?: string }) {
   const url = art(slot);
   if (!url) return null;
-  return <image href={url} x={x} y={y} width={w} height={h} preserveAspectRatio={`${align} slice`} className="art-photo" style={style} />;
+  // 채원's daytime photos keep their colour; only the night is drained.
+  return <image href={url} x={x} y={y} width={w} height={h} preserveAspectRatio={`${align} slice`} className={slot.startsWith('life-') ? 'art-photo life' : 'art-photo'} style={style} />;
 }
 
 function Stamp({ text, x = 16, y = 30 }: { text: string; x?: number; y?: number }) {

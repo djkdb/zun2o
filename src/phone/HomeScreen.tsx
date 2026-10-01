@@ -35,7 +35,7 @@ export function HomeScreen({ stripped = 0 }: { stripped?: number }) {
     <div className={`home home-ch${chapter}`}>
       {/* 채원's own wallpaper — until the phone picks another one for you */}
       <div className="home-wall" aria-hidden="true">
-        {wallpaper === 'booth' ? <BoothPhoto fill /> : art('avatar-self') && <img src={art('avatar-self')} alt="" draggable={false} />}
+        {wallpaper === 'booth' ? <BoothPhoto fill /> : (art('life-busstop') ?? art('avatar-self')) && <img src={art('life-busstop') ?? art('avatar-self')} alt="" draggable={false} />}
       </div>
       {stripped === 0 && <CalendarWidget />}
       <div className="home-grid">

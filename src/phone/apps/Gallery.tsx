@@ -81,6 +81,14 @@ export function PhotoView({ id, brightness = 0, changed = false }: { id: string;
     case 'v01':
     case 'v02':
       return <VideoStill id={id} />;
+    case 'l1':
+      return <SlotPhoto slot="life-cafe" label="카페에서 아이스커피를 들고 웃는 채원의 셀카." />;
+    case 'l2':
+      return <SlotPhoto slot="life-desk" label="밤의 책상. 편집 중인 노트북, 손전등, 동그라미 친 학교 평면도." />;
+    case 'l3':
+      return <SlotPhoto slot="life-cake" label="빵집 진열장의 고구마 케이크를 가리키는 손가락." />;
+    case 'l4':
+      return <SlotPhoto slot="life-busstop" label="노을 진 버스 정류장에서 채원과 도현이 브이를 하고 있다." />;
     case 'p00':
       return <BoothShelfPhoto />;
     case 'p01':

@@ -75,7 +75,10 @@ describe('story data', () => {
   });
 
   it('the chain is told: booth photo, 박현우 article, the phone restarting', () => {
-    expect(PHOTOS[0].id).toBe('p00');
+    // 채원's ordinary days come first in the camera roll; the night starts with the booth photo.
+    const night = PHOTOS.findIndex((p) => !p.id.startsWith('l'));
+    expect(PHOTOS.slice(0, night).every((p) => p.date && p.date < '9월 27일')).toBe(true);
+    expect(PHOTOS[night].id).toBe('p00');
     expect(ARCHIVE.news2.lines.join(' ')).toContain('다음 사람이 왔다');
     expect(BEATS.some((b) => b.actions.some((a) => a.t === 'reboot'))).toBe(true);
   });

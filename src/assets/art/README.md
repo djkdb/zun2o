@@ -17,3 +17,6 @@ reading-empty ↔ reading-figure)은 두 칸의 어긋남을 계산해 같은 �
 
 5차 시트(`index-card`, `floorplan`)는 제작자가 생성한 1×2 시트를 잘라 그대로 썼습니다. 둘 다 **글자 없는 사진**이고,
 방문자 카드의 타자 글씨와 평면도의 방 이름(제2서고·현위치 등)은 `phonePhotos.tsx`가 그 위에 얹습니다.
+
+6차 시트(`life-cafe`, `life-desk`, `life-cake`, `life-busstop`)는 채원의 평범한 날(9월 24~26일). 2×2 시트를 잘라 그대로 썼고,
+밤 사진과 달리 색 보정 필터를 걸지 않습니다. `life-busstop`은 홈 화면 배경화면으로도 쓰입니다.

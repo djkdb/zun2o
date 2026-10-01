@@ -15,6 +15,11 @@ export interface PhotoItem {
 }
 
 export const PHOTOS: PhotoItem[] = [
+  // 채원's ordinary days, before the night: her camera roll starts here.
+  { id: 'l1', time: '14:32', caption: '마감 끝!! 아아 수혈 중 ☕ 브이로그 카메라 새로 삼', album: 'recent', portrait: true, date: '9월 24일' },
+  { id: 'l2', time: '02:10', caption: '또 새벽 2시… 해원고 평면도 뽑아 둠. 동그라미 친 데만 찍기', album: 'recent', portrait: true, date: '9월 25일' },
+  { id: 'l3', time: '18:47', caption: '엄마 고구마 케이크 찜!! 토요일에 찾으러 오기 🎂', album: 'recent', portrait: true, date: '9월 26일' },
+  { id: 'l4', time: '19:12', caption: '도현이 또 딴 데 봄 ㅋㅋ 오늘 밤 촬영 따라와 줘서 고마워 (입구까지만이래)', album: 'recent', portrait: true, date: '9월 26일' },
   { id: 'p00', time: '00:58', caption: '제보 진짜였음. 전화부스 선반에 폰이 있다.', album: 'recent' },
   { id: 'p01', time: '00:59', caption: '정문. 체인이 끊어져 있다.', album: 'recent' },
   { id: 'p02', time: '01:14', caption: '1층 현관. 층별 안내판.', album: 'recent' },
