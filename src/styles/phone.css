@@ -5279,3 +5279,78 @@ body,
   object-position: 50% 78%;
   filter: grayscale(0.2) brightness(0.8);
 }
+
+/* long captions: the line being said is never cut — the faded one above gives way first */
+.call-subs > .sub.now {
+  flex-shrink: 0;
+}
+.call-subs > .sub.past {
+  flex-shrink: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.sub.past .sub-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.sub.now.long {
+  font-size: 16.5px;
+  line-height: 1.45;
+}
+.call-subs {
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 22px);
+  mask-image: linear-gradient(180deg, transparent 0, #000 22px);
+  padding-top: 22px;
+}
+
+/* The phone frame on a desktop is shorter than the window (100vh − 40px), so size the call
+   screen by the frame, not the window; and never let a focused button scroll it. */
+.device {
+  container: device / size;
+}
+.callscreen,
+.incoming {
+  overflow: clip;
+}
+@container device (max-height: 720px) {
+  .callscreen {
+    padding-top: 40px;
+    padding-bottom: 32px;
+  }
+  .call-avatar {
+    width: 72px;
+    height: 72px;
+  }
+  .call-top h2 {
+    font-size: 28px;
+  }
+  .call-ctl-icon {
+    width: 54px;
+    height: 54px;
+  }
+  .call-controls {
+    margin-bottom: 14px;
+  }
+  .call-kind {
+    margin-bottom: 8px;
+  }
+  .call-subs {
+    margin: 12px 0 12px;
+  }
+  .sub.now {
+    font-size: 17px;
+  }
+  .sub.now.long {
+    font-size: 15.5px;
+  }
+}
+@container device (max-height: 600px) {
+  .sub.past {
+    display: none;
+  }
+}
+.call-backdrop {
+  overflow: hidden;
+}

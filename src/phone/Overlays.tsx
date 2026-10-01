@@ -239,7 +239,7 @@ function ActiveCall({ id }: { id: string }) {
       </div>
       <div className="call-subs" aria-live="polite">
         {lines.map((l, i) => (
-          <p key={`${l.at}-${i}`} className={`sub ${l.who}${i === lines.length - 1 ? ' now' : ' past'}`}>
+          <p key={`${l.at}-${i}`} className={`sub ${l.who}${i === lines.length - 1 ? ' now' : ' past'}${l.text.length > 32 ? ' long' : ''}`}>
             {l.label && <span className="sub-who">{l.label}</span>}
             <span className="sub-text">{l.text}</span>
           </p>

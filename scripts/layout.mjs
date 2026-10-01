@@ -14,6 +14,8 @@ const SIZES = [
   [360, 640],
   [320, 568],
   [430, 932],
+  // a laptop window: the phone frame is drawn at 100vh − 40px
+  [1280, 720],
 ];
 
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
@@ -28,14 +30,14 @@ async function audit(page, label) {
       const cs = getComputedStyle(el);
       if (cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity) === 0) continue;
       // decorative layers, clipped by design (the page itself sideways-scrolling is still checked below)
-      if (el.closest('.scare, .glitch, .dbg, .dbg-fab, svg, .rotate-note, .wave, .coldopen-scene')) continue;
+      if (el.closest('.scare, .glitch, .dbg, .dbg-fab, svg, .rotate-note, .wave, .coldopen-scene, .call-backdrop')) continue;
       const r = el.getBoundingClientRect();
       if (r.width === 0 || r.height === 0) continue;
       // Inside a scroll container, being below the fold is fine.
       let clipped = false;
       for (let p = el.parentElement; p; p = p.parentElement) {
         const ps = getComputedStyle(p);
-        if (/(auto|scroll|hidden)/.test(ps.overflow + ps.overflowX + ps.overflowY)) {
+        if (/(auto|scroll|hidden|clip)/.test(ps.overflow + ps.overflowX + ps.overflowY)) {
           const pr = p.getBoundingClientRect();
           if (r.left >= pr.left - 1 && r.right <= pr.right + 1) clipped = true;
           break;
@@ -50,6 +52,15 @@ async function audit(page, label) {
       }
     }
     if (document.documentElement.scrollWidth > W + 1) out.push(`page scrolls sideways (${document.documentElement.scrollWidth} > ${W})`);
+    // Full-screen overlays don't scroll: everything laid out in them has to fit the phone (frame) top to bottom.
+    for (const box of document.querySelectorAll('.callscreen, .incoming')) {
+      const br = box.getBoundingClientRect();
+      for (const c of box.children) {
+        if (getComputedStyle(c).position !== 'static') continue;
+        const r = c.getBoundingClientRect();
+        if (r.height && (r.top < br.top - 1 || r.bottom > br.bottom + 1)) out.push(`cut off vertically in ${box.className.split(' ')[0]}: ${c.className || c.tagName} (${Math.round(r.top - br.top)}–${Math.round(r.bottom - br.top)} of ${Math.round(br.height)})`);
+      }
+    }
     return [...new Set(out)];
   });
   for (const f of found) problems.push(`${label}: ${f}`);
@@ -101,6 +112,17 @@ for (const [w, h] of SIZES) {
     await page.setViewportSize({ width: w, height: h });
     await page.evaluate(() => document.documentElement.style.removeProperty('--app-h'));
   }
+  // a call with a long line on screen (도현's first call, after the choice)
+  await page.click('.homebar');
+  await page.evaluate(() => window.__game.setRt({ activeCall: 'dohyun1', incoming: null }));
+  await page.waitForSelector('.call-choices', { timeout: 15000 });
+  await page.locator('.call-choices .choice').first().click();
+  await page.waitForFunction(() => [...document.querySelectorAll('.sub.now')].some((p) => p.textContent.includes('클라우드')), null, { timeout: 15000 });
+  await page.waitForTimeout(400);
+  await audit(page, `${tag}-call-long-line`);
+  await page.locator('.hangup').click();
+  await page.waitForSelector('.callscreen', { state: 'detached', timeout: 10000 });
+  await page.waitForTimeout(800);
   // gallery viewer, zoomed
   await page.click('.homebar');
   await page.locator('.app-icon', { hasText: '사진' }).click();
