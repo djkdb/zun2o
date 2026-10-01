@@ -13,5 +13,8 @@ import boothWebm from '../assets/video/booth.webm';
 import boothPoster from '../assets/video/booth-poster.jpg';
 import opening from '../assets/video/opening.mp4';
 import openingWebm from '../assets/video/opening.webm';
+import dawn from '../assets/video/dawn.mp4';
+import dawnWebm from '../assets/video/dawn.webm';
+import dawnPoster from '../assets/video/dawn-poster.jpg';
 
-export const VIDEO = { recovered, recoveredWebm, recoveredPoster, videocall, videocallWebm, booth, boothWebm, boothPoster, opening, openingWebm };
+export const VIDEO = { recovered, recoveredWebm, recoveredPoster, videocall, videocallWebm, booth, boothWebm, boothPoster, opening, openingWebm, dawn, dawnWebm, dawnPoster };

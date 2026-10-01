@@ -5367,3 +5367,14 @@ body,
   -webkit-mask-image: linear-gradient(180deg, transparent 0, transparent 40px, #000 70px);
   mask-image: linear-gradient(180deg, transparent 0, transparent 40px, #000 70px);
 }
+
+/* true ending: the morning clip fades in over the still with the last line */
+.ending-photo.ending-clip {
+  opacity: 0;
+  filter: none;
+  animation: none;
+  transition: opacity 3s ease;
+}
+.ending-photo.ending-clip.on {
+  opacity: 0.6;
+}

@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useGame } from '../hooks/useGame';
 import { newGame, replayFinale, sfx } from '../engine/director';
 import type { EndingId } from '../engine/types';
 import { art } from '../art/photoArt';
+import { VIDEO } from '../art/videos';
 import { copula } from '../content/korean';
 
 interface EndingDef {
@@ -82,6 +83,8 @@ export function EndingScreen({ id }: { id: EndingId }) {
     <div className={`ending ending-${id}`}>
       {/* the last photograph of the night, behind the words */}
       {art(`ending-${id}`) && <img className="ending-photo" src={art(`ending-${id}`)} alt="" />}
+      {/* the true ending's last line comes with the morning: rain stopping over the empty phone booth */}
+      {id === 'release' && <DawnClip on={shown >= def.scene.length} />}
       <div className="ending-scene">
         {def.scene.slice(0, shown).map((l, i) =>
           l.who ? (
@@ -116,5 +119,28 @@ export function EndingScreen({ id }: { id: EndingId }) {
         </div>
       )}
     </div>
+  );
+}
+
+/** Dawn over the empty booth. Muted unless the game's sound is on; still photo for reduced motion. */
+function DawnClip({ on }: { on: boolean }) {
+  const sound = useGame((s) => s.save.sound);
+  const ref = useRef<HTMLVideoElement>(null);
+  const [ok, setOk] = useState(() => !(typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches));
+  useEffect(() => {
+    const v = ref.current;
+    if (!on || !v) return;
+    v.muted = !sound;
+    v.play().catch(() => {
+      v.muted = true;
+      v.play().catch(() => setOk(false));
+    });
+  }, [on, sound]);
+  if (!ok) return null;
+  return (
+    <video ref={ref} className={`ending-photo ending-clip${on ? ' on' : ''}`} poster={VIDEO.dawnPoster} playsInline muted preload="auto" aria-hidden="true">
+      <source src={VIDEO.dawn} type="video/mp4" />
+      <source src={VIDEO.dawnWebm} type="video/webm" onError={() => setOk(false)} />
+    </video>
   );
 }
