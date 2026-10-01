@@ -11,7 +11,7 @@ export const CALLS: Record<string, CallScript> = {
       { at: 500, who: 'sfx', text: '(숨소리)' },
       { at: 2200, who: 'other', text: '…들려요?', voice: 'entity' },
       { at: 4600, who: 'other', text: '문은 열어 뒀어요.', voice: 'entity' },
-      { at: 7000, who: 'other', text: '채원 씨가 들어온 시각. 그게 번호예요.', voice: 'entity' },
+      { at: 7000, who: 'other', text: '도현 씨가 비밀번호를 보냈네요. …날짜가 아니에요.', voice: 'entity' },
       { at: 10400, who: 'sfx', text: '(통화 종료)' },
     ],
   },
@@ -32,7 +32,7 @@ export const CALLS: Record<string, CallScript> = {
       ],
     },
     after: [
-      { at: 500, who: 'caller', text: '…학교 앞 부스에서 주운 거죠? 지금 부스 안이에요? 문… 열려요?', voice: 'male' },
+      { at: 500, who: 'caller', text: '…학교 앞 전화부스에서 주운 거죠? 지금 전화부스 안이에요? 문… 열려요?', voice: 'male' },
       { at: 4600, who: 'caller', text: '채원이 녹음 앱 켜 놓고 들어갔어요. 마지막 녹음이 클라우드에 올라와 있어요. 보내 드릴게요.', voice: 'male' },
       { at: 9800, who: 'caller', text: '경찰은 장난이래요. 근데 그 녹음 들어 보면… 알 거예요.', voice: 'male' },
       { at: 14200, who: 'sfx', text: '(지지직—)' },

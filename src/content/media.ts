@@ -15,7 +15,7 @@ export interface PhotoItem {
 }
 
 export const PHOTOS: PhotoItem[] = [
-  { id: 'p00', time: '00:58', caption: '제보 진짜였음. 부스 선반에 폰이 있다.', album: 'recent' },
+  { id: 'p00', time: '00:58', caption: '제보 진짜였음. 전화부스 선반에 폰이 있다.', album: 'recent' },
   { id: 'p01', time: '00:59', caption: '정문. 체인이 끊어져 있다.', album: 'recent' },
   { id: 'p02', time: '01:14', caption: '1층 현관. 층별 안내판.', album: 'recent' },
   { id: 'p03', time: '01:25', caption: '3층으로 가는 계단.', album: 'recent' },
@@ -76,7 +76,7 @@ export const NOTES: Record<string, NoteItem> = {
 "새벽 2시에 학교 안에 있으면 도서관에 갇힌다.
  다음 사람이 들어와야 나올 수 있다"
 
-"부스 폰을 들고 있으면 안에 있는 걸로 친다.
+"전화부스 폰을 들고 있으면 안에 있는 걸로 친다.
  끄면 나온 걸로 친다" ← 제보 메일 끝에 있던 말.
 도현이한테 보여 줬더니 가지 말래 ㅋㅋ`,
   },
@@ -92,7 +92,7 @@ export const NOTES: Record<string, NoteItem> = {
     id: 'n5',
     title: '주운 폰',
     date: '9월 27일 00:58',
-    body: `부스 선반에 진짜 폰 있었음!! (제보자 말대로)
+    body: `전화부스 선반에 진짜 폰 있었음!! (제보자 말대로)
 잠금 화면 이름: 박현우
 배터리 12% — 켜 두는데도 안 떨어짐?? 이상함
 

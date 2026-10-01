@@ -78,7 +78,7 @@ function buildRecall(): string[] {
     [toMom, '채원 씨 어머니께 답장하려고 했죠. 전송은 안 됐어요. 제가 막았으니까.'],
     [s.choices.c3 === 'chaewon', '채원 씨 이름을 먼저 불러 줬죠. 그 애가 울었어요.'],
     [s.flags.includes('dwelt'), '사진을 한참 들여다봤죠. 사진 속에서도 당신을 보고 있었어요.'],
-    [s.flags.includes('zoomed-booth'), '부스 안의 당신을 확대해서 봤죠. 저도 거기서 봤어요.'],
+    [s.flags.includes('zoomed-booth'), '전화부스 안의 당신을 확대해서 봤죠. 저도 거기서 봤어요.'],
     [s.flags.includes('hung-once') || (s.flags.includes('declined-once') && !s.flags.includes('missed-dohyun')), '도현 씨 전화를 끊었죠. 그래도 그 사람은 왔어요.'],
     [s.flags.includes('missed-dohyun') && !s.flags.includes('hung-once'), '도현 씨 전화, 받지 않았죠. 그래도 그 사람은 왔어요.'],
     [s.choices.c1 === 'silent', '처음부터 대답하지 않았죠. 그래도 전부 읽었잖아요.'],
@@ -92,7 +92,7 @@ function buildRecall(): string[] {
     .forEach(([, line]) => lines.push(line));
   if (new Date().getHours() === 2) lines.push('그리고… 지금은 진짜로 새벽 두 시네요.');
   lines.push('#0025 박현우. #0026 윤채원. 그리고 #0027, 당신.');
-  lines.push('다들 그 부스에서 폰을 주웠어요. 주운 사람은 들어오게 돼 있어요.');
+  lines.push('다들 그 전화부스에서 폰을 주웠어요. 주운 사람은 들어오게 돼 있어요.');
   lines.push('도현 씨는 지금 제2서고 안에 있어요. 당신이 남지 않으면, 도현 씨가 남아요.');
   lines.push('이제 누군가는 안에 남아야 합니다.');
   return lines;

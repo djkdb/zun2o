@@ -82,7 +82,7 @@ describe('director timing', () => {
     expect(getState().rt.incoming).toBe('door');
     setRt({ incoming: null });
     emit('call:door:decline');
-    await until(() => getState().save.threads.unknown.some((m) => m.text.includes('채원 씨가 들어온 시각')), 20000);
+    await until(() => getState().save.threads.unknown.some((m) => m.text.includes('날짜인 줄 알죠')), 20000);
     expect(getState().save.threads.unknown.some((m) => m.text === '받지 그랬어요.')).toBe(true);
   });
 

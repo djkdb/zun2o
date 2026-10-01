@@ -6,7 +6,13 @@ import { setRt, setSave } from '../engine/state';
 import { art } from '../art/photoArt';
 import { VIDEO } from '../art/videos';
 
-const LINES = ['9월 27일 토요일, 밤 11시 51분.', '폐교된 해원고등학교 정문 앞. 비가 내린다.', '공중전화 부스 선반 위에 휴대폰 한 대가 놓여 있다.', '화면이 켜진다. 배터리 12%.'];
+const LINES = [
+  '9월 27일 토요일, 밤 11시 51분.',
+  '막차를 놓쳤다. 폐교된 해원고등학교 정문 앞, 비가 거세진다.',
+  '비를 피해 들어온 공중전화부스. 선반 위에 누가 두고 간 휴대폰이 있다.',
+  '어젯밤 이 학교에서 유튜버가 사라졌다는 기사가 떠오른다.',
+  '그 순간, 화면이 켜진다. 배터리 12%.',
+];
 
 export function ColdOpen() {
   const [n, setN] = useState(0);
@@ -35,9 +41,10 @@ export function ColdOpen() {
   const clip = useRef<HTMLVideoElement>(null);
   const useClip = !still && clipOk;
   useEffect(() => {
-    if (scene !== 'booth' || !useClip) return;
+    // the shelf first, still; it lights up with the last line
+    if (n < 4 || !useClip) return;
     void clip.current?.play().catch(() => setClipOk(false));
-  }, [scene, useClip]);
+  }, [n, useClip]);
   return (
     <div className="coldopen">
       <div className="coldopen-scene" aria-hidden="true">
@@ -58,9 +65,9 @@ export function ColdOpen() {
             <source src={VIDEO.openingWebm} type="video/webm" onError={() => setClipOk(false)} />
           </video>
         ) : (
-          art('booth-shelf') && <img className={`co-img co-booth${scene === 'booth' ? ' on' : ''}${n >= 4 ? ' lit' : ''}`} src={art('booth-shelf')} alt="" draggable={false} />
+          art('booth-shelf') && <img className={`co-img co-booth${scene === 'booth' ? ' on' : ''}${n >= 5 ? ' lit' : ''}`} src={art('booth-shelf')} alt="" draggable={false} />
         )}
-        {n >= 4 && !useClip && <span className="co-glow" />}
+        {n >= 5 && !useClip && <span className="co-glow" />}
       </div>
       <div className="coldopen-lines">
         {LINES.slice(0, n).map((l, i) => (
