@@ -94,6 +94,7 @@ function buildRecall(): string[] {
   lines.push('#0025 박현우. #0026 윤채원. 그리고 #0027, 당신.');
   lines.push('다들 그 전화부스에서 폰을 주웠어요. 주운 사람은 들어오게 돼 있어요.');
   lines.push('도현 씨는 지금 제2서고 안에 있어요. 당신이 남지 않으면, 도현 씨가 남아요.');
+  lines.push('이름을 계속 물은 건… 적어야 해서였어요. 그리고 누가 한 번은 제 이름도 물어봐 주길 바랐어요.');
   lines.push('이제 누군가는 안에 남아야 합니다.');
   return lines;
 }
@@ -392,6 +393,10 @@ export function Finale() {
                   aria-label="밀어서 전원 끄기"
                 />
               </label>
+              {/* the further you slide, the clearer who stays instead */}
+              <p className="power-cost" style={{ opacity: Math.min(1, slide * 1.6) }} aria-live="polite">
+                {slide > 0.15 ? '당신이 나가면 — #0028 강도현 · 안에 남음' : '\u00a0'}
+              </p>
               <button
                 type="button"
                 onClick={() => {

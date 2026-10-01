@@ -5471,3 +5471,14 @@ body,
 .home > .home-dock-hint {
   margin-top: auto;
 }
+
+/* 02:00: sliding to power off shows who stays instead */
+.power-cost {
+  margin: -2px 0 4px;
+  min-height: 18px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: #e9b7a8;
+  transition: opacity 0.15s linear;
+}
