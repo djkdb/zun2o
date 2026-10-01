@@ -303,6 +303,11 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
     case 'vibrate':
       vibrate(a.ms);
       return;
+    case 'typing':
+      flashTyping(a.th, a.ms);
+      if (isViewing(a.th)) sfx('type');
+      await sleep(a.ms);
+      return;
     case 'unsend':
       // Someone deletes a message you already read.
       setSave((s) => ({

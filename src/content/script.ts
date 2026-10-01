@@ -639,6 +639,59 @@ export const BEATS: Beat[] = [
       { t: 'msg', th: 'dohyun', text: '당신이죠? 한참 전에 보낸 게 이제 왔어요. 여기 신호가 이상해요', typing: 1800 },
     ],
   },
+  // ── She sees what you're looking at ───────────────────────────────────
+  // Small, once each: the phone answers the screen you just opened.
+  {
+    id: 'sees-notes',
+    on: 'app:notes',
+    requires: ['unlocked'],
+    forbids: ['ch3'],
+    actions: [
+      { t: 'wait', ms: 7000 },
+      { t: 'msg', th: 'unknown', text: '채원 씨 메모 읽고 있죠. 엄마 생신 거는 넘겨요. 그건 좀 슬퍼서.', typing: 2000 },
+    ],
+  },
+  {
+    // typing… nothing… then it's there anyway
+    id: 'sees-gallery',
+    on: 'app:gallery',
+    requires: ['call1-done'],
+    forbids: ['album-open'],
+    actions: [
+      { t: 'wait', ms: 4000 },
+      { t: 'typing', th: 'unknown', ms: 2600 },
+      { t: 'wait', ms: 3200 },
+      { t: 'msg', th: 'unknown', text: '01:40 열람실 사진, 오래 들여다보지 마요. 거기 앉아 있던 건 제가 아니에요.' },
+    ],
+  },
+  {
+    id: 'sees-browser',
+    on: 'app:browser',
+    requires: ['self-contact'],
+    actions: [
+      { t: 'wait', ms: 5000 },
+      { t: 'msg', th: 'unknown', text: '그 사이트, 채원 씨는 순서를 세 번 틀렸어요.', typing: 1500 },
+    ],
+  },
+  {
+    // reading the missing-person record: she helps — and the record takes it back
+    id: 'r003-help',
+    on: 'browser:r003',
+    requires: ['self-contact'],
+    actions: [
+      { t: 'wait', ms: 2400 },
+      { t: 'msg', th: 'unknown', text: '그 이름, 외워 둬요. 저는 못 불러요.', typing: 1300 },
+      { t: 'wait', ms: 4200 },
+      { t: 'unsend', th: 'unknown', match: '그 이름, 외워 둬요' },
+    ],
+  },
+  {
+    // chapter 4: it was written before you opened the app
+    id: 'ready-ch4',
+    on: 'app:messages',
+    requires: ['ch4'],
+    actions: [{ t: 'msg', th: 'unknown', text: '열 줄 알았어요.' }],
+  },
   { id: 'radio', on: 'dial:1340', actions: [{ t: 'flag', f: 'heard-radio' }] },
   { id: 'read-mom', on: 'thread:mom', actions: [{ t: 'flag', f: 'read-mom' }] },
   { id: 'read-hyunwoo', on: 'browser:news2', actions: [{ t: 'flag', f: 'read-hyunwoo' }] },

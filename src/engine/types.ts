@@ -119,7 +119,9 @@ export type Action =
   | { t: 'photo'; id: string }
   | { t: 'memo'; id: string }
   | { t: 'calllog'; entry: CallLogEntry }
-  | { t: 'vibrate'; ms: number[] };
+  | { t: 'vibrate'; ms: number[] }
+  /** Someone starts typing… and sends nothing. */
+  | { t: 'typing'; th: ThreadId; ms: number };
 
 export interface Beat {
   id: string;
