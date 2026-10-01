@@ -77,7 +77,8 @@ export function ColdOpen() {
         ))}
       </div>
       <div className={`coldopen-actions${n >= LINES.length ? ' show' : ''}`}>
-        <h1>새벽 2시의 휴대폰</h1>
+        <h1>12%</h1>
+        <p className="co-sub">새벽 2시, 해원고 전화부스 괴담</p>
         <button type="button" className="primary" onClick={() => begin(true)}>
           집는다
         </button>

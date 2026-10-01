@@ -1,4 +1,4 @@
-// Automated playthrough of 새벽 2시의 휴대폰 on a phone-sized screen.
+// Automated playthrough of 12% on a phone-sized screen.
 // Plays like a player (taps, types, waits), screenshots every beat, logs
 // timings and fails on any console error.
 //

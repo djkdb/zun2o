@@ -11,7 +11,7 @@ export function App() {
         <PhoneShell />
       </div>
       <aside className="stage-note" aria-hidden="true">
-        <p>새벽 2시의 휴대폰</p>
+        <p>12%</p>
         <p>휴대폰에서 “홈 화면에 추가”로 설치하면 앱처럼 전체 화면으로 즐길 수 있습니다. 이어폰 권장.</p>
       </aside>
       {debug && <DebugPanel />}

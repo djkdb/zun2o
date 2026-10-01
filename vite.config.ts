@@ -13,9 +13,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icon.svg', 'icon-192.png', 'icon-512.png'],
       manifest: {
-        name: '새벽 2시의 휴대폰',
-        short_name: '새벽 2시',
-        description: '폐건물 앞에서 주운 휴대폰. 잠금을 풀면, 모르는 번호가 말을 건다.',
+        name: '12% — 새벽 2시, 해원고 전화부스 괴담',
+        short_name: '12%',
+        description: '비 오는 밤, 폐교 앞 전화부스에서 주운 휴대폰. 잠금을 풀면 모르는 번호가 말을 건다. “들어오세요.”',
         lang: 'ko',
         display: 'standalone',
         orientation: 'portrait',

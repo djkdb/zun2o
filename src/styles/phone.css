@@ -1,5 +1,5 @@
 /* ─────────────────────────────────────────────────────────────────────────
-   새벽 2시의 휴대폰 — the phone.
+   12% — the phone.
    Mobile: the game IS the screen. Desktop: a device frame in a dark room.
    ───────────────────────────────────────────────────────────────────────── */
 
@@ -5377,4 +5377,29 @@ body,
 }
 .ending-photo.ending-clip.on {
   opacity: 0.6;
+}
+
+/* cold open: the subtitle under the title */
+.coldopen-actions .co-sub {
+  margin: -6px 0 18px;
+  color: #ff8a6e;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  letter-spacing: 0.06em;
+}
+
+/* the title is a battery reading */
+.coldopen .coldopen-actions h1 {
+  margin-bottom: 4px;
+  font-family: var(--mono);
+  font-size: 56px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: #f2f2f4;
+  text-shadow: 0 0 24px rgba(255, 90, 60, 0.25);
+}
+.coldopen .coldopen-actions p.co-sub {
+  margin: 0 0 22px;
+  color: #ff8a6e;
 }

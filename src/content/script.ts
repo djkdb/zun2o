@@ -1,7 +1,7 @@
 import type { Beat } from '../engine/types';
 
 // ─────────────────────────────────────────────────────────────────────────
-// 새벽 2시의 휴대폰 — the story, as beats.
+// 12% — the story, as beats.
 // Each beat fires once when its event happens (and its flags allow it).
 // {name} is replaced with the player's name (or 방문자님) at delivery time.
 //

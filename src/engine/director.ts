@@ -802,7 +802,7 @@ export function startLifeTicker(): () => void {
     if (s.unlocked && cap && n % 5 === 0 && night(s.clock) < night(cap)) {
       setSave({ clock: fromMinutes(toMinutes(s.clock) + 1) });
     }
-    if (s.unlocked && n % 36 === 0 && s.battery > 7 && s.chapter < 4) setSave({ battery: s.battery - 1 });
+    // No drain: the phone sits at 12% all night (채원's note: "켜 두는데도 안 떨어짐"), until chapter 4 takes it down.
     const o = s.objective;
     // Just finished a memo or a call: give the story a beat to answer before anyone nags.
     if (playerBusy()) busyAt = Date.now();

@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "새벽 2시의 휴대폰 — 주운 휴대폰 호러 게임 (PWA)",
+  "description": "12% — 새벽 2시, 해원고 전화부스 괴담. 주운 휴대폰 호러 게임 (PWA)",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

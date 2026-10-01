@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────
-// 새벽 2시의 휴대폰 — shared types.
+// 12% — shared types.
 // The story is data (content/script.ts): beats listen for events and run
 // actions. The director (engine/director.ts) executes them, persists
 // progress and resumes half-finished sequences after a reload.
