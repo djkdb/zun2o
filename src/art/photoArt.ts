@@ -38,6 +38,7 @@ export type ArtSlot =
   | 'life-desk'
   | 'life-cake'
   | 'life-busstop'
+  | 'life-busstop-ghost'
   | 'floorplan'
   | 'black-empty'
   | 'tower'

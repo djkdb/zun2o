@@ -23,3 +23,6 @@ reading-empty ↔ reading-figure)은 두 칸의 어긋남을 계산해 같은 �
 
 7차 시트: `miryeong-id`(1994년 실종 신고서의 서미령 증명사진 — 기록 003), `miryeong-daughter`(서미령과 11살 딸 — 진엔딩 “엄마 왔어”),
 `chair-coat` / `chair-empty`(같은 열람실 의자, 외투 있음/없음 — 엔딩 2 / 진엔딩).
+
+`life-busstop-ghost`: `life-busstop`과 같은 사진에서 왼쪽 정류장 유리에 희미한 여자 형체만 더한 변형(제작자 생성, 원본 크기로 맞춤).
+4장 이전에 그 사진을 본 적이 있으면, 4장에 다시 열 때 이 사진으로 바뀐다.

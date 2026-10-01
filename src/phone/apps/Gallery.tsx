@@ -83,6 +83,7 @@ function ClipVideo({ id }: { id: string }) {
 
 export function PhotoView({ id, brightness = 0, changed = false }: { id: string; brightness?: number; changed?: boolean }) {
   const flags = useGame((s) => s.save.flags);
+  const chapter = useGame((s) => s.save.chapter);
   switch (id) {
     case 'v01':
     case 'v02':
@@ -94,7 +95,12 @@ export function PhotoView({ id, brightness = 0, changed = false }: { id: string;
     case 'l3':
       return <SlotPhoto slot="life-cake" label="빵집 진열장의 고구마 케이크를 가리키는 손가락." />;
     case 'l4':
-      return <SlotPhoto slot="life-busstop" label="노을 진 버스 정류장에서 채원과 도현이 브이를 하고 있다." />;
+      // seen before chapter 4? come back now and the shelter glass shows who was standing behind the camera
+      return chapter >= 4 && flags.includes('l4-seen') && art('life-busstop-ghost') ? (
+        <SlotPhoto slot="life-busstop-ghost" label="노을 진 버스 정류장에서 채원과 도현이 브이를 하고 있다. 왼쪽 정류장 유리에 긴 머리 여자가 희미하게 비친다." />
+      ) : (
+        <SlotPhoto slot="life-busstop" label="노을 진 버스 정류장에서 채원과 도현이 브이를 하고 있다." />
+      );
     case 'p00':
       return <BoothShelfPhoto />;
     case 'p01':

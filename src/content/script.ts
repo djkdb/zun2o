@@ -711,6 +711,17 @@ export const BEATS: Beat[] = [
   },
   // the bus-stop photo, first seen before chapter 3: look again later and its time has changed
   { id: 'l4-early', on: 'photo:l4', forbids: ['ch3'], actions: [{ t: 'flag', f: 'l4-early' }] },
+  // …and in chapter 4 the shelter glass shows someone behind the camera
+  { id: 'l4-seen', on: 'photo:l4', forbids: ['ch4'], actions: [{ t: 'flag', f: 'l4-seen' }] },
+  {
+    id: 'l4-ghost',
+    on: 'photo:l4',
+    requires: ['ch4', 'l4-seen'],
+    actions: [
+      { t: 'wait', ms: 3200 },
+      { t: 'msg', th: 'unknown', text: '그 사진, 다시 봤죠. 유리는 늘 정직해요.', typing: 1600 },
+    ],
+  },
   // you start typing to her — she knows before you send it
   {
     id: 'dont-send',
