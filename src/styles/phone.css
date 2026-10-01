@@ -5289,20 +5289,19 @@ body,
   min-height: 0;
   overflow: hidden;
 }
+/* only the line just before stays, faded, on one line */
+.call-subs > .sub.past:not(:nth-last-child(2)) {
+  display: none;
+}
 .sub.past .sub-text {
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 .sub.now.long {
   font-size: 16.5px;
   line-height: 1.45;
-}
-.call-subs {
-  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 22px);
-  mask-image: linear-gradient(180deg, transparent 0, #000 22px);
-  padding-top: 22px;
 }
 
 /* The phone frame on a desktop is shorter than the window (100vh − 40px), so size the call

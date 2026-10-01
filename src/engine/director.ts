@@ -464,6 +464,9 @@ export function sendText(th: ThreadId, raw: string): void {
   if (th === 'dohyun' || th === 'mom') {
     appendMessage(th, { from: 'me', text, time, failed: true });
     sfx('error');
+    // It doesn't go through — and someone wants you to know why. (도현 gets it much later.)
+    if (th === 'dohyun') setSave((s) => ({ choices: { ...s.choices, toDohyun: text } }));
+    emit(`${th}:blocked`);
     return;
   }
   appendMessage(th, { from: 'me', text, time });

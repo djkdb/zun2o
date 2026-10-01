@@ -447,6 +447,7 @@ export const BEATS: Beat[] = [
       { t: 'msg', th: 'unknown', text: '두 번 눌러서 확대해 봐요. 부스 안이요.', typing: 1500 },
       { t: 'wait', ms: 6000 },
       { t: 'msg', th: 'dohyun', text: '택시가 안 잡혀서 늦었어요. 학교 앞 도착. 부스 쪽으로 갈게요.', typing: 1400 },
+      { t: 'emit', ev: 'dohyun:late-text' },
       { t: 'wait', ms: 7000 },
       { t: 'sound', id: 'knock', caption: '유리를 두드리는 소리가 감지되었습니다.' },
       { t: 'wait', ms: 1800 },
@@ -604,6 +605,38 @@ export const BEATS: Beat[] = [
       { t: 'sound', id: 'whisper', caption: '가까이에서 속삭이는 소리가 감지되었습니다.' },
       { t: 'vibrate', ms: [80, 60, 80] },
       { t: 'msg', th: 'unknown', text: '가까이 볼수록, 더 가까이 가요.', typing: 900 },
+    ],
+  },
+  // Texting 도현 or 엄마 never goes through. The first time, she says why.
+  {
+    id: 'dohyun-blocked',
+    on: 'dohyun:blocked',
+    forbids: ['dohyun-blocked'],
+    actions: [
+      { t: 'flag', f: 'dohyun-blocked' },
+      { t: 'wait', ms: 1600 },
+      { t: 'msg', th: 'unknown', text: '도현 씨한테는 안 가요. 지금 이 폰은 저하고만 얘기해요.', typing: 1500 },
+    ],
+  },
+  {
+    id: 'mom-blocked',
+    on: 'mom:blocked',
+    forbids: ['mom-blocked'],
+    actions: [
+      { t: 'flag', f: 'mom-blocked' },
+      { t: 'wait', ms: 1600 },
+      { t: 'msg', th: 'unknown', text: '어머니께는 아무것도 안 가요. 아직은요.', typing: 1300 },
+    ],
+  },
+  // …but what you sent him arrives, an hour late, when he reaches the school.
+  {
+    id: 'dohyun-late-text',
+    on: 'dohyun:late-text',
+    requires: ['dohyun-blocked'],
+    actions: [
+      { t: 'wait', ms: 2200 },
+      { t: 'msg', th: 'dohyun', text: '방금 문자 하나 들어왔어요. “{toDohyun}”', typing: 1600 },
+      { t: 'msg', th: 'dohyun', text: '당신이죠? 한참 전에 보낸 게 이제 왔어요. 여기 신호가 이상해요', typing: 1800 },
     ],
   },
   { id: 'radio', on: 'dial:1340', actions: [{ t: 'flag', f: 'heard-radio' }] },

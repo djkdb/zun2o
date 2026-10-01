@@ -140,4 +140,14 @@ describe('director timing', () => {
     const last = getState().save.threads.dohyun.at(-1)!;
     expect(last.failed).toBe(true);
   });
+
+  it('the first blocked text to 도현 is explained once, and it reaches him late when he gets to the school', async () => {
+    sendText('dohyun', '폰 주웠어요');
+    sendText('dohyun', '거기 어디예요');
+    await until(() => getState().save.threads.unknown.some((m) => m.text.includes('도현 씨한테는 안 가요')));
+    await vi.advanceTimersByTimeAsync(10000);
+    expect(getState().save.threads.unknown.filter((m) => m.text.includes('도현 씨한테는 안 가요'))).toHaveLength(1);
+    emit('dohyun:late-text');
+    await until(() => getState().save.threads.dohyun.some((m) => m.from === 'them' && m.text.includes('“거기 어디예요”')));
+  });
 });

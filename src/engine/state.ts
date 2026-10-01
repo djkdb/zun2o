@@ -260,6 +260,7 @@ export function fill(text: string): string {
     // The player's real local time — the one thing the phone should not know.
     real: `${String(new Date().getHours()).padStart(2, '0')}:${String(new Date().getMinutes()).padStart(2, '0')}`,
     clock: s.clock,
+    toDohyun: s.choices.toDohyun ?? '',
   };
   return text.replace(/\{(\w+)\}/g, (m, k: string) => values[k] ?? m);
 }
