@@ -4264,7 +4264,7 @@ body,
 
 /* small helper text that people actually need to read: more contrast */
 .lock-hint,
-.coldopen-actions p,
+.coldopen-actions p:not(.co-sub),
 .viewer-zoomhint,
 .settings-note,
 .ending-card small {

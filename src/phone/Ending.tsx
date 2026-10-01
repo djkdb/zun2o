@@ -96,6 +96,8 @@ export function EndingScreen({ id }: { id: EndingId }) {
       {art(`ending-${id}`) && <img className="ending-photo" src={art(`ending-${id}`)} alt="" />}
       {/* the true ending's last line comes with the morning: rain stopping over the empty phone booth */}
       {id === 'release' && <DawnClip on={shown >= def.scene.length} />}
+      {/* ending 1 closes where the game opened: the same booth, the same phone lighting up — for someone else */}
+      {id === 'poweroff' && <BoothClip on={shown >= def.scene.findIndex((l) => l.text.startsWith('화면이 켜진다')) + 1} />}
       <div className="ending-scene">
         {def.scene.slice(0, shown).map((l, i) =>
           l.who ? (
@@ -153,6 +155,30 @@ function DawnClip({ on }: { on: boolean }) {
     <video ref={ref} className={`ending-photo ending-clip${on ? ' on' : ''}`} poster={VIDEO.dawnPoster} playsInline muted preload="auto" aria-hidden="true">
       <source src={VIDEO.dawn} type="video/mp4" />
       <source src={VIDEO.dawnWebm} type="video/webm" onError={() => setOk(false)} />
+    </video>
+  );
+}
+
+/** The opening clip again: rain on the booth glass, the phone on the shelf lights up — and stays lit. Muted. */
+function BoothClip({ on }: { on: boolean }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [ok, setOk] = useState(() => !(typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches));
+  useEffect(() => {
+    if (on) ref.current?.play().catch(() => setOk(false));
+  }, [on]);
+  if (!ok) return null;
+  return (
+    <video
+      ref={ref}
+      className={`ending-photo ending-clip${on ? ' on' : ''}`}
+      muted
+      playsInline
+      preload="auto"
+      aria-hidden="true"
+      onTimeUpdate={(e) => e.currentTarget.currentTime > 3.6 && e.currentTarget.pause()}
+    >
+      <source src={VIDEO.opening} type="video/mp4" />
+      <source src={VIDEO.openingWebm} type="video/webm" onError={() => setOk(false)} />
     </video>
   );
 }
