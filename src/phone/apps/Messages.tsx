@@ -3,7 +3,7 @@ import { useGame } from '../../hooks/useGame';
 import { choose, openApp, openAttach, openThread, sendText, teaseTyping } from '../../engine/director';
 import { THREAD_META, THREAD_ORDER, dayLabel, lastSent, timeline } from '../../content/threads';
 import type { Attach, ThreadId } from '../../engine/types';
-import { MEMO_TITLES } from '../../content/media';
+import { MEMO_TITLES, PHOTOS } from '../../content/media';
 import { PhotoView } from './Gallery';
 import { AppHeader } from '../AppHeader';
 import { Avatar } from '../Avatar';
@@ -48,13 +48,15 @@ function ThreadList() {
 /** A shared photo / recording / link: the bridge from a chat to the thing it talks about. */
 function AttachCard({ a }: { a: Attach }) {
   const albumOpen = useGame((s) => s.save.flags.includes('album-open'));
-  if (a.kind === 'photo')
+  if (a.kind === 'photo') {
+    const what = PHOTOS.find((p) => p.id === a.id)?.video ? '동영상' : '사진';
     return (
-      <button type="button" className="attach attach-photo" onClick={() => openAttach(a)} aria-label="사진 열기">
+      <button type="button" className="attach attach-photo" onClick={() => openAttach(a)} aria-label={`${what} 열기`}>
         <PhotoView id={a.id} />
-        <span className="attach-cap">사진 · 탭해서 열기</span>
+        <span className="attach-cap">{what} · 탭해서 열기</span>
       </button>
     );
+  }
   if (a.kind === 'memo')
     return (
       <button type="button" className="attach attach-memo" onClick={() => openAttach(a)}>

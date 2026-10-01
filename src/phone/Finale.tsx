@@ -30,6 +30,16 @@ const FLOOD = [
   ['발신자 정보 없음', '두 시예요. 이름을 적을 시간이에요'],
 ];
 
+/** When the choices (or an input) appear under the long recall text, bring them on screen:
+ *  on a short screen the slider alone would look like the only way out. */
+function reveal(el: HTMLElement | null): void {
+  if (!el) return;
+  const smooth = typeof matchMedia === 'function' && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // to the very bottom of the scroller, so its padding shows too
+  const box = el.closest('.index-final');
+  setTimeout(() => box?.scrollTo({ top: box.scrollHeight, behavior: smooth ? 'smooth' : 'auto' }), 80);
+}
+
 function useTyped(lines: string[], active: boolean, speed = 38): string[] {
   const [n, setN] = useState(0);
   const total = lines.reduce((a, l) => a + l.length + 8, 0);
@@ -367,7 +377,7 @@ export function Finale() {
             <p key={i}>{l}</p>
           ))}
           {step === 'choice' && (
-            <div className="final-choices">
+            <div className="final-choices" ref={reveal}>
               <p className="final-choices-title">하나를 고르십시오</p>
               <label className="power-slider">
                 <span style={{ opacity: 1 - slide }}>밀어서 전원 끄기 — 도망친다 ›</span>
@@ -399,7 +409,7 @@ export function Finale() {
             </div>
           )}
           {step === 'key' && (
-            <form className="final-form" onSubmit={submitKey}>
+            <form className="final-form" onSubmit={submitKey} ref={reveal}>
               <label htmlFor="fk">삭제 코드</label>
               <input id="fk" autoFocus value={input} onChange={(e) => setInput(e.target.value)} autoComplete="off" autoCapitalize="characters" />
               <button type="submit">입력</button>
@@ -411,7 +421,7 @@ export function Finale() {
             </form>
           )}
           {step === 'sign' && (
-            <form className="final-form" onSubmit={sign}>
+            <form className="final-form" onSubmit={sign} ref={reveal}>
               <label htmlFor="fs">출입 기록에 당신의 이름을 적으십시오</label>
               <input id="fs" autoFocus value={input} maxLength={12} onChange={(e) => setInput(e.target.value)} autoComplete="off" />
               <button type="submit" disabled={!input.trim()}>
@@ -423,7 +433,7 @@ export function Finale() {
             </form>
           )}
           {step === 'name' && (
-            <form className="final-form" onSubmit={submitName}>
+            <form className="final-form" onSubmit={submitName} ref={reveal}>
               <label htmlFor="fn">처음 갇힌 사람의 이름</label>
               <input id="fn" autoFocus value={input} onChange={(e) => setInput(e.target.value)} autoComplete="off" />
               <button type="submit">입력</button>

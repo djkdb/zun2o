@@ -5353,3 +5353,17 @@ body,
 .call-backdrop {
   overflow: hidden;
 }
+
+/* Desktop phone frame: clip everything to the rounded screen, composited layers included
+   (the 02:00 screen escaped the corners). */
+@media (min-width: 700px) and (min-height: 600px) {
+  .device {
+    clip-path: inset(0 round 46px);
+  }
+}
+
+/* 02:00: the recall scrolls under the status bar — fade it out there */
+.finale > .index-final {
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, transparent 40px, #000 70px);
+  mask-image: linear-gradient(180deg, transparent 0, transparent 40px, #000 70px);
+}
