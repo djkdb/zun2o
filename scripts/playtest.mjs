@@ -72,7 +72,7 @@ await page.waitForSelector('.callscreen', { state: 'detached', timeout: 30000 })
 await page.waitForFunction(() => window.__game.getState().save.threads.unknown.some((m) => m.text.includes('문 열어 뒀어요')), null, { timeout: 15000 });
 await wait(600);
 await snap('lock');
-check('lock screen shows the passcode riddle and its answer', (await page.textContent('.lock')).includes('처음 만난 날') && (await page.textContent('.lock')).includes('01:13에 시작한'));
+check('lock screen shows the passcode riddle and its answer', (await page.textContent('.lock')).includes('들어간 시간') && (await page.textContent('.lock')).includes('01:13에 시작한'));
 await tap('.lock-main');
 for (const d of '0000') await page.locator('.keypad .key', { hasText: d }).first().click();
 await wait(500);
