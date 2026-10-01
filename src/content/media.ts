@@ -44,6 +44,16 @@ export interface NoteItem {
 }
 
 export const NOTES: Record<string, NoteItem> = {
+  n6: {
+    id: 'n6',
+    title: '엄마 생신 🎂',
+    date: '9월 24일',
+    body: `엄마 생신 9/27 (토) 저녁!!
+- 케이크: 엄마 좋아하는 고구마 케이크 (금요일까지 예약)
+- 미역국은 엄마가 끓인대 ㅠ 내가 하고 싶었는데
+- 편지 쓰기 (이번엔 진짜로)
+- 촬영 끝나면 바로 집 가기. 늦잠 금지`,
+  },
   n1: {
     id: 'n1',
     title: '영상 대본 — 새벽 2시에 가면 안 되는 곳',

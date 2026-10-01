@@ -47,6 +47,9 @@ export interface Runtime {
   clockGlitch: string | null;
   /** The screen dips in brightness on its own. */
   dip: boolean;
+  /** For a moment an app on the home screen has another name, or isn't there at all. */
+  appGlitch: { app: AppId; name: string } | null;
+  vanishApp: AppId | null;
   audioReady: boolean;
   debug: boolean;
 }
@@ -73,7 +76,7 @@ export function newSave(keep?: Partial<Save>): Save {
     clock: '23:51',
     battery: 12,
     installed: [],
-    notes: ['n1', 'n2', 'n3', 'n5'],
+    notes: ['n6', 'n1', 'n2', 'n3', 'n5'],
     seenPhotos: [],
     calls: [
       { who: '엄마', time: '23:12', kind: 'missed', count: 6 },
@@ -154,6 +157,8 @@ const initialRuntime = (debug: boolean): Runtime => ({
   rebooting: false,
   clockGlitch: null,
   dip: false,
+  appGlitch: null,
+  vanishApp: null,
   audioReady: false,
   debug,
 });

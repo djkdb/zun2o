@@ -20,7 +20,7 @@ export const THREAD_ORDER: ThreadId[] = ['unknown', 'dohyun', 'mom', 'self'];
 
 /** 9월 27일 — the night the phone is found. Everything that arrives during play belongs to it. */
 const TONIGHT = 9 * 31 + 27;
-const WEEKDAY: Record<number, string> = { 26: '금', 27: '토', 28: '일' };
+const WEEKDAY: Record<number, string> = { 24: '수', 26: '금', 27: '토', 28: '일' };
 
 /**
  * The day (9 * 31 + d) and minute of every message in a thread, on one timeline.
@@ -63,6 +63,7 @@ export function today(clock: string): { d: number; weekday: string } {
 let n = 0;
 const m = (from: ChatMsg['from'], time: string, text: string, day?: string): ChatMsg => ({ id: `h${n++}`, from, time, text, day });
 
+const D24 = '9월 24일 (수)';
 const D26 = '9월 26일 (금)';
 const D27 = '9월 27일 (토)';
 
@@ -101,11 +102,16 @@ export const INITIAL_THREADS: Record<ThreadId, ChatMsg[]> = {
     m('them', '23:51', '방금 비번 보낸 거 왜 지워졌지?? 다시 보낼게요'),
   ],
   mom: [
+    m('them', '21:14', '채원아 토요일 저녁에 올 수 있지? 엄마 생일이라 미역국 끓일게', D24),
+    m('me', '21:30', '당연하지!! 케이크는 내가 사 갈게 🎂'),
+    m('me', '21:31', '근데 금요일 밤에 촬영 있어서 토요일 낮엔 좀 잘 수도 ㅋㅋ'),
+    m('them', '21:33', '또 그 무서운 거 찍니 ㅎㅎ 조심해서 다녀'),
     m('them', '19:02', '채원아 저녁은 먹었니', D26),
     m('me', '19:40', '응 먹었어 오늘 촬영 늦게 끝나'),
     m('them', '19:41', '너무 위험한 데는 가지 마'),
     m('them', '07:30', '채원아 왜 전화를 안 받아', D27),
     m('them', '12:04', '경찰서에서 연락 왔어'),
+    m('them', '17:40', '미역국 끓여 놨어. 케이크 같은 거 안 사 와도 돼'),
     m('them', '18:20', '엄마가 잔소리해서 미안해. 전화 한 통만 해 줘'),
     m('them', '23:10', '우리 딸 어디 있니'),
   ],
@@ -117,4 +123,4 @@ export const INITIAL_THREADS: Record<ThreadId, ChatMsg[]> = {
   unknown: [m('them', '02:00', '방문해 주셔서 감사합니다.', D27)],
 };
 
-export const INITIAL_UNREAD: Record<ThreadId, number> = { dohyun: 14, mom: 4, self: 0, unknown: 1 };
+export const INITIAL_UNREAD: Record<ThreadId, number> = { dohyun: 14, mom: 6, self: 0, unknown: 1 };

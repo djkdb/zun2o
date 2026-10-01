@@ -3,6 +3,8 @@ import { HINT_TIER_MS, openApp } from '../engine/director';
 import { APP_META, AppGlyph } from './icons';
 import type { AppId } from '../engine/types';
 import { CalendarWidget } from './CalendarWidget';
+import { art } from '../art/photoArt';
+import { BoothPhoto } from '../art/phonePhotos';
 
 const ORDER: AppId[] = ['messages', 'gallery', 'notes', 'memos', 'browser', 'phone', 'settings'];
 const SHUFFLED: AppId[] = ['memos', 'settings', 'gallery', 'phone', 'messages', 'browser', 'notes'];
@@ -18,6 +20,9 @@ export function HomeScreen({ stripped = 0 }: { stripped?: number }) {
   const opens = useGame((s) => s.save.opens);
   const obj = useGame((s) => s.save.objective);
   const now = useTicker(5000);
+  const wallpaper = useGame((s) => s.save.wallpaper);
+  const appGlitch = useGame((s) => s.rt.appGlitch);
+  const vanish = useGame((s) => s.rt.vanishApp);
   // Hint tier 2: the app to look in glows faintly — no words.
   const glow = obj?.app && now - obj.since > HINT_TIER_MS[1] ? obj.app : null;
   // The phone notices habits: from chapter 2 the app you open most sits a little off.
@@ -27,7 +32,11 @@ export function HomeScreen({ stripped = 0 }: { stripped?: number }) {
       : undefined;
 
   return (
-    <div className="home">
+    <div className={`home home-ch${chapter}`}>
+      {/* 채원's own wallpaper — until the phone picks another one for you */}
+      <div className="home-wall" aria-hidden="true">
+        {wallpaper === 'booth' ? <BoothPhoto fill /> : art('avatar-self') && <img src={art('avatar-self')} alt="" draggable={false} />}
+      </div>
       {stripped === 0 && <CalendarWidget />}
       <div className="home-grid">
         {apps.map((app, i) => {
@@ -36,7 +45,7 @@ export function HomeScreen({ stripped = 0 }: { stripped?: number }) {
             <button
               key={app}
               type="button"
-              className={`app-icon${gone ? ' gone' : ''}${app === 'index' ? ' app-new' : ''}${glow === app ? ' hint-glow' : ''}${habit === app ? ' habit' : ''}`}
+              className={`app-icon${gone ? ' gone' : ''}${vanish === app ? ' vanished' : ''}${app === 'index' ? ' app-new' : ''}${glow === app ? ' hint-glow' : ''}${habit === app ? ' habit' : ''}`}
               onClick={() => openApp(app)}
               disabled={gone}
             >
@@ -44,7 +53,7 @@ export function HomeScreen({ stripped = 0 }: { stripped?: number }) {
                 <AppGlyph app={app} />
                 {app === 'messages' && totalUnread > 0 && <span className="badge">{totalUnread}</span>}
               </span>
-              <span className="app-name">{APP_META[app].name}</span>
+              <span className={`app-name${appGlitch?.app === app ? ' glitched' : ''}`}>{appGlitch?.app === app ? appGlitch.name : APP_META[app].name}</span>
             </button>
           );
         })}

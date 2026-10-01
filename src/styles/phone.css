@@ -5403,3 +5403,71 @@ body,
   margin: 0 0 22px;
   color: #ff8a6e;
 }
+
+/* ─── 채원's home screen: her wallpaper, and what the night does to it ─── */
+.home {
+  isolation: isolate;
+}
+.home-wall {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.home-wall img,
+.home-wall svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 30%;
+  opacity: 0.42;
+  filter: saturate(0.85);
+  transition:
+    opacity 4s ease,
+    filter 4s ease;
+}
+.home-wall::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.1) 40%, rgba(0, 0, 0, 0.65));
+}
+/* each chapter the wallpaper is a little darker — nobody touched the brightness */
+.home-ch2 .home-wall img {
+  opacity: 0.36;
+}
+.home-ch3 .home-wall img {
+  opacity: 0.3;
+  filter: saturate(0.6);
+}
+.home-ch4 .home-wall img,
+.home-ch5 .home-wall img {
+  opacity: 0.22;
+  filter: saturate(0.3);
+}
+/* an app that is simply not there for a moment (no animation: it's just gone) */
+.app-icon.vanished {
+  visibility: hidden;
+}
+.app-name.glitched {
+  letter-spacing: 0.02em;
+  color: #d8d8dc;
+}
+/* real buttons give under the thumb */
+.app-icon:active .app-tile {
+  transform: scale(0.92);
+  filter: brightness(0.85);
+}
+.app-tile {
+  transition:
+    transform 0.12s ease,
+    filter 0.12s ease;
+}
+.home {
+  min-height: 100%;
+  box-sizing: border-box;
+}
+.home > .home-dock-hint {
+  margin-top: auto;
+}

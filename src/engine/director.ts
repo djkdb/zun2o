@@ -690,13 +690,13 @@ function playerBusy(): boolean {
 // typing who never sends. Sparse (never while the player is busy), denser
 // every chapter, and each kind only a few times a night.
 
-type Anomaly = 'clock' | 'typing' | 'buzz' | 'dim' | 'phantom' | 'stamp';
+type Anomaly = 'clock' | 'typing' | 'buzz' | 'dim' | 'phantom' | 'stamp' | 'rebadge' | 'rename' | 'vanish';
 const ANOMALY_GAP: Record<number, number> = { 1: 150000, 2: 110000, 3: 75000, 4: 40000 };
 const ANOMALY_POOL: Record<number, Anomaly[]> = {
   1: ['clock', 'typing', 'buzz'],
   2: ['clock', 'typing', 'buzz', 'dim', 'phantom'],
-  3: ['clock', 'typing', 'dim', 'phantom', 'stamp', 'buzz'],
-  4: ['clock', 'dim', 'phantom', 'typing'],
+  3: ['clock', 'typing', 'dim', 'phantom', 'stamp', 'buzz', 'rebadge'],
+  4: ['clock', 'dim', 'phantom', 'typing', 'rebadge', 'rename', 'vanish'],
 };
 const anomalyCount: Partial<Record<Anomaly, number>> = {};
 let lastAnomaly = Date.now();
@@ -745,6 +745,23 @@ function runAnomaly(kind: Anomaly): void {
       if (getState().rt.app === 'messages' && getState().rt.thread === 'unknown') return;
       showBanner('messages', THREAD_META.unknown.name, '…', 'unknown');
       return;
+    case 'rebadge': {
+      // You read it. The badge comes back anyway — and there's nothing new inside.
+      const s = getState();
+      if (s.save.unread.unknown > 0 || (s.rt.app === 'messages' && s.rt.thread === 'unknown')) return;
+      setSave((v) => ({ unread: { ...v.unread, unknown: 1 } }));
+      return;
+    }
+    case 'rename':
+    case 'vanish': {
+      // On the home screen only, for a moment: an app answers to another name, or is just gone.
+      if (getState().rt.app) return;
+      const pick: AppId[] = ['memos', 'gallery', 'notes', 'browser'];
+      const app = pick[Math.floor(Math.random() * pick.length)];
+      if (kind === 'rename') flashRt({ appGlitch: { app, name: app === 'gallery' ? '기록' : app === 'memos' ? '녹취' : app === 'notes' ? '명단' : '보관소' } }, { appGlitch: null }, 900);
+      else flashRt({ vanishApp: app }, { vanishApp: null }, 2400);
+      return;
+    }
     case 'stamp': {
       // Something you already read now says it was sent at 02:00.
       const th = getState().save.threads.unknown;
