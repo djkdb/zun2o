@@ -29,6 +29,7 @@ export function BrowserApp() {
   }, []);
   const [notice, setNotice] = useState<string | null>(null);
   const indexed = useGame((s) => s.save.flags.includes('r013-indexed'));
+  const chapter = useGame((s) => s.save.chapter);
 
   const openPage = (id: string) => {
     const page = ARCHIVE[id];
@@ -178,6 +179,8 @@ export function BrowserApp() {
               </button>
             ))}
           </p>
+          {/* once 013 is there, the site has a record of you too */}
+          {indexed && <p className="arc-lastvisit">마지막 접속: 방금 · 방문자 #0027</p>}
           <p className="arc-foot">최종 수정 2004.11.02 · 운영자 연락처 없음 · 이 사이트는 더 이상 관리되지 않습니다</p>
         </div>
       )}
@@ -188,6 +191,9 @@ export function BrowserApp() {
             요청하신 페이지 <code>{view.path}</code> 가 서버에 없습니다.
           </p>
           <p className="dead-small">404 Not Found · Apache/1.3.27 Server at nightarchive.or.kr Port 80</p>
+          {/* an ordinary error page — that, later in the night, counts who is looking */}
+          {chapter >= 3 && <p className="dead-watch">현재 이 페이지를 보는 사람: 1</p>}
+          {chapter >= 4 && <p className="dead-watch">방문자 #0027</p>}
         </div>
       )}
       {view.kind === 'page' && view.id === '__early' && (

@@ -45,7 +45,7 @@ export const BEATS: Beat[] = [
     id: 'lock-idle',
     on: 'lock:idle',
     forbids: ['unlocked'],
-    actions: [{ t: 'msg', th: 'unknown', text: '들어오세요.' }],
+    actions: [{ t: 'msg', th: 'unknown', text: '지금 보고 있죠?' }],
   },
   {
     id: 'lock-fail3',
@@ -691,6 +691,29 @@ export const BEATS: Beat[] = [
     on: 'app:messages',
     requires: ['ch4'],
     actions: [{ t: 'msg', th: 'unknown', text: '열 줄 알았어요.' }],
+  },
+  // 채원's ordinary days: close one and go home — someone remembers that smile.
+  { id: 'saw-life', on: 'photo:l*', actions: [{ t: 'flag', f: 'saw-life' }] },
+  {
+    id: 'life-smile',
+    on: 'home',
+    requires: ['saw-life', 'unlocked'],
+    actions: [
+      { t: 'wait', ms: 2600 },
+      { t: 'msg', th: 'unknown', text: '그때도 이렇게 웃었어요.', typing: 1400 },
+    ],
+  },
+  // the bus-stop photo, first seen before chapter 3: look again later and its time has changed
+  { id: 'l4-early', on: 'photo:l4', forbids: ['ch3'], actions: [{ t: 'flag', f: 'l4-early' }] },
+  // you start typing to her — she knows before you send it
+  {
+    id: 'dont-send',
+    on: 'typing:unknown',
+    requires: ['ch3'],
+    actions: [
+      { t: 'wait', ms: 900 },
+      { t: 'msg', th: 'unknown', text: '그거 보내지 마요.', typing: 700 },
+    ],
   },
   { id: 'radio', on: 'dial:1340', actions: [{ t: 'flag', f: 'heard-radio' }] },
   { id: 'read-mom', on: 'thread:mom', actions: [{ t: 'flag', f: 'read-mom' }] },

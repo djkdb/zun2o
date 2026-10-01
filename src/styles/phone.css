@@ -5698,3 +5698,16 @@ body,
   transform: rotate(-1.5deg);
   animation: fade-in 1.6s ease both;
 }
+.arc-lastvisit {
+  margin: 10px 0 0;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: #b0726a;
+}
+.dead-watch {
+  margin: 6px 0 0;
+  font-size: 11px;
+  font-family: 'Times New Roman', serif;
+  color: #555;
+}

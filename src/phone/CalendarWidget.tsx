@@ -21,7 +21,7 @@ export function CalendarWidget() {
   if (chapter >= 2) events.push({ time: dohyunCall?.time ?? '00:31', text: '통화 — 도현', color: '#3d6fd6', wrong: true });
   // 2장: an entry nobody made, with no title. 3장: it has one.
   if (chapter === 2) events.push({ time: '02:00', text: '', color: '#777', wrong: true });
-  if (chapter >= 3) events.push({ time: '02:00', text: `이름 기록 — ${name ?? '방문자'}`, color: '#b33', wrong: true });
+  if (chapter >= 3) events.push({ time: '02:00', text: `이름 기록 — ${name ?? (chapter >= 4 ? '당신' : '방문자')}`, color: '#b33', wrong: true });
   if (dohyunIn) events.push({ time: '01:56', text: '입실 — 강도현', color: '#b33', wrong: true });
   return (
     <div className="widget">

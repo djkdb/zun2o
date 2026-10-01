@@ -9,6 +9,12 @@ import { AnnexPhoto, FloorPlan, ReadingRoomPhoto, Room02Photo } from '../../art/
 import { art } from '../../art/photoArt';
 import { BlackPhoto, BoothPhoto, BoothShelfPhoto, REVEAL_AT, SlotPhoto, CorridorPhoto, FloorPlanPhoto, IndexCardPhoto, LobbyPhoto, SelfiePhoto, StairsPhoto } from '../../art/phonePhotos';
 
+/** The time a photo shows: 채원's bus-stop photo, seen before chapter 3, says 02:00 when you come back to it. */
+function shownTime(p: PhotoItem): string {
+  const s = getState().save;
+  return p.id === 'l4' && s.chapter >= 3 && s.flags.includes('l4-early') ? '02:00' : p.time;
+}
+
 /** Photos that change if you stare at them zoomed in. */
 const DWELL_PHOTOS = ['p03', 'p05', 'p08'];
 
@@ -241,7 +247,7 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
         if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
       }}
     >
-      <AppHeader title={photo.time} subtitle={photo.album === 'hidden' ? '숨김' : (photo.date ?? '9월 27일')} onBack={onClose} backLabel="앨범" />
+      <AppHeader title={shownTime(photo)} subtitle={photo.album === 'hidden' ? '숨김' : (photo.date ?? '9월 27일')} onBack={onClose} backLabel="앨범" />
       <div
         className={`viewer-img${photo.portrait ? ' portrait' : ''}${zoom ? ' zoomed' : ''}`}
         onPointerDown={onDown}
@@ -391,10 +397,10 @@ export function GalleryApp() {
         <AppHeader title={album === 'recent' ? '최근 항목' : '숨김'} onBack={() => setAlbum(null)} backLabel="앨범" />
         <div className="grid">
           {list.map((p, i) => (
-            <button key={p.id} type="button" className="thumb" onClick={() => setOpen(i)} aria-label={`${p.time} 사진`}>
+            <button key={p.id} type="button" className="thumb" onClick={() => setOpen(i)} aria-label={`${shownTime(p)} 사진`}>
               <PhotoView id={p.id} />
               {!seen.includes(p.id) && <span className="thumb-new" />}
-              <span className="thumb-time">{p.time}</span>
+              <span className="thumb-time">{shownTime(p)}</span>
             </button>
           ))}
         </div>

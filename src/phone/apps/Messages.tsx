@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useGame } from '../../hooks/useGame';
-import { choose, openApp, openAttach, openThread, sendText, teaseTyping } from '../../engine/director';
+import { choose, emit, openApp, openAttach, openThread, sendText, teaseTyping } from '../../engine/director';
 import { THREAD_META, THREAD_ORDER, dayLabel, lastSent, timeline } from '../../content/threads';
 import type { Attach, ThreadId } from '../../engine/types';
 import { MEMO_TITLES, PHOTOS } from '../../content/media';
@@ -92,7 +92,11 @@ function Composer({ th }: { th: ThreadId }) {
       <input
         value={text}
         maxLength={80}
-        onChange={(e) => setText(e.target.value)}
+        onChange={(e) => {
+          // only that you started typing — never what
+          if (!text && e.target.value && th === 'unknown') emit('typing:unknown');
+          setText(e.target.value);
+        }}
         placeholder={offline ? '메시지 (네트워크 불안정)' : '메시지 입력'}
         aria-label="메시지 입력"
         autoComplete="off"

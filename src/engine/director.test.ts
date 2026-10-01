@@ -141,6 +141,28 @@ describe('director timing', () => {
     expect(last.failed).toBe(true);
   });
 
+  it('the phone notices you: idle on the lock screen, a smile remembered, typing caught (once each)', async () => {
+    setSave({ unlocked: false });
+    emit('lock:idle');
+    await until(() => getState().save.threads.unknown.some((m) => m.text === '지금 보고 있죠?'));
+    // (the unlock beat sets this flag in play)
+    setSave((v) => ({ unlocked: true, flags: [...v.flags, 'unlocked'] }));
+    emit('photo:l1');
+    await vi.advanceTimersByTimeAsync(200);
+    emit('home');
+    await until(() => getState().save.threads.unknown.some((m) => m.text === '그때도 이렇게 웃었어요.'));
+    // typing before chapter 3: nothing; after: one warning, only once
+    emit('typing:unknown');
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(getState().save.threads.unknown.some((m) => m.text === '그거 보내지 마요.')).toBe(false);
+    setSave((s) => ({ flags: [...s.flags, 'ch3'] }));
+    emit('typing:unknown');
+    emit('typing:unknown');
+    await until(() => getState().save.threads.unknown.some((m) => m.text === '그거 보내지 마요.'));
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(getState().save.threads.unknown.filter((m) => m.text === '그거 보내지 마요.')).toHaveLength(1);
+  });
+
   it('the first blocked text to 도현 is explained once, and it reaches him late when he gets to the school', async () => {
     sendText('dohyun', '폰 주웠어요');
     sendText('dohyun', '거기 어디예요');

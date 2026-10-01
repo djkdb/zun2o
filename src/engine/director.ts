@@ -422,7 +422,10 @@ export function openApp(app: AppId | null): void {
   }
   setRt({ app, thread: null });
   if (app) emit(`app:${app}`);
-  else if (wasInApp) maybeReflect();
+  else if (wasInApp) {
+    maybeReflect();
+    emit('home');
+  }
 }
 
 /**
