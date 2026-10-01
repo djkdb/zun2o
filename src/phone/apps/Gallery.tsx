@@ -12,11 +12,20 @@ import { BlackPhoto, BoothPhoto, BoothShelfPhoto, REVEAL_AT, SlotPhoto, Corridor
 /** Photos that change if you stare at them zoomed in. */
 const DWELL_PHOTOS = ['p03', 'p05', 'p08'];
 
-/** The recovered clip, as a still: thumbnail and chat card. */
-function VideoStill() {
+/** The clips in the gallery: 채원's recovered stairs video, and the one 도현 sends from across the street. */
+const CLIPS = {
+  v01: { mp4: VIDEO.recovered, webm: VIDEO.recoveredWebm, poster: VIDEO.recoveredPoster, alt: '복구된 동영상. 어두운 계단.', tag: 'REC 01:25 · 복구됨' },
+  v02: { mp4: VIDEO.booth, webm: VIDEO.boothWebm, poster: VIDEO.boothPoster, alt: '도현이 보낸 동영상. 비 오는 길 건너편의 공중전화 부스.', tag: '도현 · 01:53' },
+} as const;
+type ClipId = keyof typeof CLIPS;
+const clipOf = (id: string) => CLIPS[(id in CLIPS ? id : 'v01') as ClipId];
+
+/** A clip, as a still: thumbnail and chat card. */
+function VideoStill({ id }: { id: string }) {
+  const c = clipOf(id);
   return (
     <span className="video-still">
-      <img src={VIDEO.recoveredPoster} alt="복구된 동영상. 어두운 계단." draggable={false} />
+      <img src={c.poster} alt={c.alt} draggable={false} />
       <span className="video-still-play" aria-hidden="true">
         ▶
       </span>
@@ -25,8 +34,9 @@ function VideoStill() {
   );
 }
 
-/** Plays the recovered clip in the viewer. Sound only if the game's sound is on. */
-function RecoveredVideo() {
+/** Plays a clip in the viewer. Sound only if the game's sound is on. */
+function ClipVideo({ id }: { id: string }) {
+  const c = clipOf(id);
   const sound = useGame((s) => s.save.sound);
   const ref = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -43,24 +53,24 @@ function RecoveredVideo() {
     <div className="recovered">
       <video
         ref={ref}
-        poster={VIDEO.recoveredPoster}
+        poster={c.poster}
         playsInline
         preload="auto"
         onEnded={() => {
           setPlaying(false);
           setEnded(true);
-          emit('video:v01:end');
+          emit(`video:${id}:end`);
         }}
       >
-        <source src={VIDEO.recovered} type="video/mp4" />
-        <source src={VIDEO.recoveredWebm} type="video/webm" />
+        <source src={c.mp4} type="video/mp4" />
+        <source src={c.webm} type="video/webm" />
       </video>
       {!playing && (
         <button type="button" className="recovered-play" onClick={play} aria-label={ended ? '다시 재생' : '재생'}>
           {ended ? '↻' : '▶'}
         </button>
       )}
-      <span className="recovered-tag">REC 01:25 · 복구됨</span>
+      <span className="recovered-tag">{c.tag}</span>
     </div>
   );
 }
@@ -69,7 +79,8 @@ export function PhotoView({ id, brightness = 0, changed = false }: { id: string;
   const flags = useGame((s) => s.save.flags);
   switch (id) {
     case 'v01':
-      return <VideoStill />;
+    case 'v02':
+      return <VideoStill id={id} />;
     case 'p00':
       return <BoothShelfPhoto />;
     case 'p01':
@@ -231,7 +242,7 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
         onPointerCancel={() => (press.current = null)}
       >
         {photo.video ? (
-          <RecoveredVideo key={photo.id} />
+          <ClipVideo key={photo.id} id={photo.id} />
         ) : (
           <div key={photo.id} className="viewer-zoom" style={zoom ? { transform: 'scale(2.5)', transformOrigin: `${zoom.x}% ${zoom.y}%` } : undefined}>
             <PhotoView id={photo.id} brightness={brightness} changed={dwelt === photo.id || hasFlag(`dwell-${photo.id}`)} />

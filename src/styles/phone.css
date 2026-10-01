@@ -5273,3 +5273,9 @@ body,
   line-height: 1.45;
   color: #8a9a80;
 }
+
+/* cold open: the booth as a muted clip (phone lights up and stays lit) */
+.co-clip {
+  object-position: 50% 78%;
+  filter: grayscale(0.2) brightness(0.8);
+}

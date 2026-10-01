@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { audio } from '../audio/engine';
 import { setSpeechEnabled } from '../audio/speech';
 import { applyChapterMix, emit } from '../engine/director';
 import { setRt, setSave } from '../engine/state';
 import { art } from '../art/photoArt';
+import { VIDEO } from '../art/videos';
 
 const LINES = ['9월 27일 토요일, 밤 11시 51분.', '폐교된 해원고등학교 정문 앞. 비가 내린다.', '공중전화 부스 선반 위에 휴대폰 한 대가 놓여 있다.', '화면이 켜진다. 배터리 12%.'];
 
@@ -28,12 +29,38 @@ export function ColdOpen() {
 
   // The words come with pictures: the Annex at night, then the booth shelf and the phone on it — which lights up.
   const scene = n >= 3 ? 'booth' : n >= 2 ? 'annex' : null;
+  // The booth is a short muted clip: rain on the glass, the phone lights up — and stays lit.
+  const [still] = useState(() => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const [clipOk, setClipOk] = useState(true);
+  const clip = useRef<HTMLVideoElement>(null);
+  const useClip = !still && clipOk;
+  useEffect(() => {
+    if (scene !== 'booth' || !useClip) return;
+    void clip.current?.play().catch(() => setClipOk(false));
+  }, [scene, useClip]);
   return (
     <div className="coldopen">
       <div className="coldopen-scene" aria-hidden="true">
         {art('wallpaper') && <img className={`co-img${scene === 'annex' ? ' on' : ''}`} src={art('wallpaper')} alt="" draggable={false} />}
-        {art('booth-shelf') && <img className={`co-img co-booth${scene === 'booth' ? ' on' : ''}${n >= 4 ? ' lit' : ''}`} src={art('booth-shelf')} alt="" draggable={false} />}
-        {n >= 4 && <span className="co-glow" />}
+        {useClip ? (
+          <video
+            ref={clip}
+            className={`co-img co-clip${scene === 'booth' ? ' on' : ''}`}
+            muted
+            playsInline
+            preload="auto"
+            poster={art('booth-shelf')}
+            onTimeUpdate={(e) => e.currentTarget.currentTime > 3.6 && e.currentTarget.pause()}
+            // a failing <source> also reaches here through React; only the video's own error counts
+            onError={(e) => e.target === e.currentTarget && setClipOk(false)}
+          >
+            <source src={VIDEO.opening} type="video/mp4" />
+            <source src={VIDEO.openingWebm} type="video/webm" onError={() => setClipOk(false)} />
+          </video>
+        ) : (
+          art('booth-shelf') && <img className={`co-img co-booth${scene === 'booth' ? ' on' : ''}${n >= 4 ? ' lit' : ''}`} src={art('booth-shelf')} alt="" draggable={false} />
+        )}
+        {n >= 4 && !useClip && <span className="co-glow" />}
       </div>
       <div className="coldopen-lines">
         {LINES.slice(0, n).map((l, i) => (

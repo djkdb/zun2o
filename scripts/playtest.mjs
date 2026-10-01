@@ -325,6 +325,7 @@ if (await page.locator('.incoming').count()) {
   await wait(12000);
   await snap('ch4-call-voice');
 }
+check('도현 sends the booth video (v02)', await page.evaluate(() => window.__game.getState().save.photos.includes('v02')));
 
 await page.evaluate((x) => window.__game.setSpeed(x), SPEED);
 // ── 02:00 ──────────────────────────────────────────────────────────────

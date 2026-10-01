@@ -26,6 +26,7 @@ export const PHOTOS: PhotoItem[] = [
   { id: 'p07', time: '01:59', caption: '(노출 부족)', album: 'recent', portrait: true },
   { id: 'p08', time: '01:39', caption: '(자동 백업) 3층 창문', album: 'recent', extra: true, date: '9월 28일' },
   { id: 'p09', time: '01:53', caption: '(도현이 보낸 사진)', album: 'recent', extra: true, date: '9월 28일' },
+  { id: 'v02', time: '01:53', caption: '(도현이 보낸 동영상 · 길 건너편에서)', album: 'recent', portrait: true, extra: true, video: true, date: '9월 28일' },
   { id: 'h01', time: '01:53', caption: '제2서고. 벽돌이… 안에서 쌓여 있다.', album: 'hidden' },
   { id: 'h02', time: '01:55', caption: '들어왔다. 어떻게 들어왔는지 모르겠다.', album: 'hidden' },
   { id: 'h03', time: '01:56', caption: '서랍 안에 내 카드가 있었다.', album: 'hidden' },

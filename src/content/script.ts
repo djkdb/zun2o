@@ -517,8 +517,8 @@ export const BEATS: Beat[] = [
       { t: 'time', hm: '01:53' },
       { t: 'msg', th: 'dohyun', text: '부스 보여요. 당신도 보여요. 거기 계속 계세요', typing: 1200 },
       { t: 'wait', ms: 4000 },
-      { t: 'photo', id: 'p09' },
-      { t: 'msg', th: 'dohyun', text: '근데 당신 뒤에 서 있는 사람 누구예요?', typing: 1400, attach: { kind: 'photo', id: 'p09' } },
+      { t: 'photo', id: 'v02' },
+      { t: 'msg', th: 'dohyun', text: '근데 당신 뒤에 서 있는 사람 누구예요?', typing: 1400, attach: { kind: 'photo', id: 'v02' } },
       { t: 'wait', ms: 6000 },
       { t: 'time', hm: '01:54' },
       { t: 'msg', th: 'dohyun', text: '뒤돌아보지 마요.', typing: 500 },
@@ -584,6 +584,16 @@ export const BEATS: Beat[] = [
       { t: 'flag', f: 'zoomed-booth' },
       { t: 'wait', ms: 1400 },
       { t: 'msg', th: 'unknown', text: '맞아요. 당신이에요. 3층 창문에서 찍었어요.', typing: 1600 },
+    ],
+  },
+  {
+    id: 'v02-end',
+    on: 'video:v02:end',
+    actions: [
+      { t: 'wait', ms: 900 },
+      { t: 'sound', id: 'whisper', caption: '가까이에서 속삭이는 소리가 감지되었습니다.' },
+      { t: 'vibrate', ms: [80, 60, 80] },
+      { t: 'msg', th: 'unknown', text: '영상 속에서도 가까웠죠. 지금은 더 가까워요.', typing: 1100 },
     ],
   },
   {

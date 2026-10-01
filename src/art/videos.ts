@@ -8,5 +8,10 @@ import recoveredWebm from '../assets/video/recovered.webm';
 import recoveredPoster from '../assets/video/recovered-poster.jpg';
 import videocall from '../assets/video/videocall.mp4';
 import videocallWebm from '../assets/video/videocall.webm';
+import booth from '../assets/video/booth.mp4';
+import boothWebm from '../assets/video/booth.webm';
+import boothPoster from '../assets/video/booth-poster.jpg';
+import opening from '../assets/video/opening.mp4';
+import openingWebm from '../assets/video/opening.webm';
 
-export const VIDEO = { recovered, recoveredWebm, recoveredPoster, videocall, videocallWebm };
+export const VIDEO = { recovered, recoveredWebm, recoveredPoster, videocall, videocallWebm, booth, boothWebm, boothPoster, opening, openingWebm };
