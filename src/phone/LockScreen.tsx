@@ -18,10 +18,11 @@ export function LockScreen() {
   const [code, setCode] = useState('');
   const [shake, setShake] = useState(0);
 
-  // Standing still on the lock screen is noticed.
+  // Standing still on the lock screen is noticed — twice, with a silence between:
+  // first the invitation, then, if you still haven't moved, the sign that you're being watched.
   useEffect(() => {
-    const t = setTimeout(() => emit('lock:idle'), 16000);
-    return () => clearTimeout(t);
+    const ts = [setTimeout(() => emit('lock:idle'), 22000), setTimeout(() => emit('lock:idle2'), 40000)];
+    return () => ts.forEach(clearTimeout);
   }, []);
 
   const notifications = useMemo(() => {

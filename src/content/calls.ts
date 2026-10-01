@@ -11,7 +11,7 @@ export const CALLS: Record<string, CallScript> = {
       { at: 500, who: 'sfx', text: '(숨소리)' },
       { at: 2200, who: 'other', text: '…들려요?', voice: 'entity' },
       { at: 4600, who: 'other', text: '문은 열어 뒀어요.', voice: 'entity' },
-      { at: 7000, who: 'other', text: '들어와요.', voice: 'entity' },
+      { at: 7000, who: 'other', text: '채원 씨도 어젯밤 이 전화를 받았어요.', voice: 'entity' },
       { at: 10400, who: 'sfx', text: '(통화 종료)' },
     ],
   },

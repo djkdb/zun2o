@@ -144,6 +144,8 @@ describe('director timing', () => {
   it('the phone notices you: idle on the lock screen, a smile remembered, typing caught (once each)', async () => {
     setSave({ unlocked: false });
     emit('lock:idle');
+    await until(() => getState().save.threads.unknown.some((m) => m.text === '들어오세요.'));
+    emit('lock:idle2');
     await until(() => getState().save.threads.unknown.some((m) => m.text === '지금 보고 있죠?'));
     // (the unlock beat sets this flag in play)
     setSave((v) => ({ unlocked: true, flags: [...v.flags, 'unlocked'] }));

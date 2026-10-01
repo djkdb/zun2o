@@ -39,11 +39,17 @@ export const BEATS: Beat[] = [
     id: 'door-riddle',
     on: 'door:done',
     forbids: ['unlocked'],
-    actions: [{ t: 'wait', ms: 900 }, { t: 'msg', th: 'unknown', text: '문 열어 뒀어요. 들어와요.', typing: 1200 }],
+    actions: [{ t: 'wait', ms: 900 }, { t: 'msg', th: 'unknown', text: '문 열어 뒀어요. 도현 씨가 다 알려 줬잖아요.', typing: 1200 }],
   },
   {
     id: 'lock-idle',
     on: 'lock:idle',
+    forbids: ['unlocked'],
+    actions: [{ t: 'msg', th: 'unknown', text: '들어오세요.' }],
+  },
+  {
+    id: 'lock-idle2',
+    on: 'lock:idle2',
     forbids: ['unlocked'],
     actions: [{ t: 'msg', th: 'unknown', text: '지금 보고 있죠?' }],
   },
