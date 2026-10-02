@@ -1,4 +1,5 @@
 import type { CallScript } from '../engine/types';
+import { CALLS_S2 } from './s2/calls';
 
 export const CALLS: Record<string, CallScript> = {
   // Two seconds after you pick the phone up: she calls it, and leaves the door open as a riddle.
@@ -83,6 +84,8 @@ export const CALLS: Record<string, CallScript> = {
       { at: 10000, who: 'sfx', text: '(통화 종료)' },
     ],
   },
+  // 시즌 2
+  ...CALLS_S2,
 };
 
 /** 02:00, 채원's video call (Finale): what she says, in order. */

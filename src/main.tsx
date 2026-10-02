@@ -4,6 +4,8 @@ import '@fontsource/ibm-plex-sans-kr/400.css';
 import '@fontsource/ibm-plex-sans-kr/500.css';
 import '@fontsource/ibm-plex-sans-kr/600.css';
 import '@fontsource/ibm-plex-mono/400.css';
+// season 2: her mother's handwriting
+import '@fontsource/nanum-pen-script/400.css';
 import './styles/phone.css';
 import { App } from './App';
 import { flush, getState, initState, setRt, setSave } from './engine/state';

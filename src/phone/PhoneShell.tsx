@@ -18,6 +18,9 @@ import { BrowserApp } from './apps/Browser';
 import { PhoneApp } from './apps/PhoneApp';
 import { SettingsApp } from './apps/Settings';
 import { IndexApp } from './apps/IndexApp';
+import { AdminApp } from './apps/AdminApp';
+import { Finale2 } from './Finale2';
+import { isS2 } from '../content/season';
 import type { AppId } from '../engine/types';
 
 function AppView({ app }: { app: AppId }) {
@@ -37,7 +40,7 @@ function AppView({ app }: { app: AppId }) {
     case 'settings':
       return <SettingsApp />;
     case 'index':
-      return <IndexApp />;
+      return isS2() ? <AdminApp /> : <IndexApp />;
   }
 }
 
@@ -130,13 +133,12 @@ export function PhoneShell() {
     return (
       <div className="shell">
         <StatusBar dark />
-        <div className="screen">
-          <Finale />
-        </div>
+        <div className="screen">{isS2() ? <Finale2 /> : <Finale />}</div>
       </div>
     );
 
-  const darkBar = !unlocked || app === null || app === 'index';
+  // (season 2's admin page is light paper, not season 1's black terminal)
+  const darkBar = !unlocked || app === null || (app === 'index' && !isS2());
   return (
     <div className={`shell chapter-${chapter}${idle ? ' idle' : ''}${dip ? ' dip' : ''}${unlocked && app ? ' in-app' : ''}`}>
       <StatusBar dark={darkBar} />

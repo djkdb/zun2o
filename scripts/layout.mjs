@@ -170,6 +170,27 @@ for (const [w, h] of SIZES) {
     await page.waitForSelector('.ending-card', { timeout: 30000 });
     await audit(page, `${tag}-ending-${e}`);
   }
+  // season 2: the admin page (login, dashboard), 02:00 and its endings
+  await debugClick(page, /^S2·3$/);
+  await page.locator('.dbg button', { hasText: '—' }).click();
+  await page.waitForTimeout(4500);
+  await page.evaluate(() => window.__game.setRt({ chapterCard: null, app: 'index' }));
+  await page.waitForTimeout(400);
+  await audit(page, `${tag}-s2-admin-login`);
+  await page.evaluate(() => window.__game.setSave({ flags: [...window.__game.getState().save.flags, 'admin'] }));
+  await page.waitForTimeout(300);
+  await audit(page, `${tag}-s2-admin`);
+  await debugClick(page, /^S2·02$/);
+  await page.locator('.dbg button', { hasText: '—' }).click();
+  await page.waitForSelector('.final-choices', { timeout: 60000 });
+  await page.waitForTimeout(800);
+  await audit(page, `${tag}-s2-finale-choice`);
+  for (const e of ['s2-daughter', 's2-instead', 's2-home']) {
+    await debugClick(page, `END ${e}`);
+    await page.locator('.dbg button', { hasText: '—' }).click();
+    await page.waitForSelector('.ending-card', { timeout: 30000 });
+    await audit(page, `${tag}-ending-${e}`);
+  }
   for (const e of errors) problems.push(`${tag}: console — ${e}`);
   await ctx.close();
 }

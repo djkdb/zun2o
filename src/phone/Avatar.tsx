@@ -1,6 +1,10 @@
 import type { ThreadId } from '../engine/types';
 import { AppGlyph, APP_META } from './icons';
-import { art } from '../art/photoArt';
+import { art, type ArtSlot } from '../art/photoArt';
+import { isS2 } from '../content/season';
+
+/** Season 2's faces: 엄마 is 서미령 (her ID photo), the 'dohyun' slot is 채원, 나에게 is 소연's plain initial. */
+const S2_PHOTO: Record<ThreadId, ArtSlot | null> = { mom: 'miryeong-id', dohyun: 'avatar-self', unknown: 'avatar-unknown', self: null };
 
 // Contact profile pictures, drawn (no photos of real people).
 // 도현: the back-view-at-the-sea photo every guy has. 엄마: flowers, always.
@@ -9,8 +13,18 @@ import { art } from '../art/photoArt';
 
 function Portrait({ th }: { th: ThreadId }) {
   // A real profile photo, if one was provided (src/assets/art/avatar-<thread>).
-  const photo = art(`avatar-${th}`);
+  const slot = isS2() ? S2_PHOTO[th] : (`avatar-${th}` as const);
+  const photo = slot ? art(slot) : undefined;
   if (photo) return <img src={photo} alt="" draggable={false} />;
+  if (isS2() && th === 'self')
+    return (
+      <svg viewBox="0 0 40 40" aria-hidden="true">
+        <rect width="40" height="40" fill="#3f5a48" />
+        <text x="20" y="26" textAnchor="middle" fontSize="15" fontWeight="600" fill="#e8efe9" fontFamily="IBM Plex Sans KR, sans-serif">
+          소
+        </text>
+      </svg>
+    );
   switch (th) {
     case 'dohyun':
       return (

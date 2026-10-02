@@ -1,4 +1,6 @@
 import type { ChatMsg, ThreadId } from '../engine/types';
+import { pick } from './season';
+import { INITIAL_THREADS_S2, INITIAL_UNREAD_S2, THREAD_META_S2, THREAD_ORDER_S2 } from './s2/threads';
 
 // 폰에 원래 남아 있던 대화. 게임이 진행되면서 새 메시지가 뒤에 붙는다.
 
@@ -18,9 +20,15 @@ export const THREAD_META: Record<ThreadId, ThreadMeta> = {
 
 export const THREAD_ORDER: ThreadId[] = ['unknown', 'dohyun', 'mom', 'self'];
 
-/** 9월 27일 — the night the phone is found. Everything that arrives during play belongs to it. */
+/** This season's contacts (season 2 reuses the four slots: 엄마 is 서미령, the 'dohyun' slot is 채원). */
+export const threadMeta = (): Record<ThreadId, ThreadMeta> => pick(THREAD_META, THREAD_META_S2);
+export const threadOrder = (): ThreadId[] => pick(THREAD_ORDER, THREAD_ORDER_S2);
+
+/** 9월 27일 — the night the phone is found (both seasons). Everything that arrives during play belongs to it. */
 const TONIGHT = 9 * 31 + 27;
-const WEEKDAY: Record<number, string> = { 24: '수', 26: '금', 27: '토', 28: '일' };
+/** Season 1 is 2025; season 2, a year later. */
+const year = () => pick(2025, 2026);
+const weekday = (m: number, d: number) => '일월화수목금토'[new Date(year(), m - 1, d).getDay()];
 
 /**
  * The day (9 * 31 + d) and minute of every message in a thread, on one timeline.
@@ -50,15 +58,19 @@ export function lastSent(msgs: ChatMsg[]): number {
 
 /** '9월 28일 (일)' for a timeline day. */
 export function dayLabel(day: number): string {
-  const d = day - 9 * 31;
-  return `9월 ${d}일 (${WEEKDAY[d] ?? ''})`;
+  const m = Math.floor(day / 31);
+  const d = day - m * 31;
+  return `${m}월 ${d}일 (${weekday(m, d)})`;
 }
 
 /** The phone's date tonight: the 27th until midnight, the 28th after. */
 export function today(clock: string): { d: number; weekday: string } {
   const d = Number(clock.split(':')[0]) >= 12 ? 27 : 28;
-  return { d, weekday: `${WEEKDAY[d]}요일` };
+  return { d, weekday: `${weekday(9, d)}요일` };
 }
+
+export const initialThreads = (): Record<ThreadId, ChatMsg[]> => pick(INITIAL_THREADS, INITIAL_THREADS_S2);
+export const initialUnread = (): Record<ThreadId, number> => pick(INITIAL_UNREAD, INITIAL_UNREAD_S2);
 
 let n = 0;
 const m = (from: ChatMsg['from'], time: string, text: string, day?: string): ChatMsg => ({ id: `h${n++}`, from, time, text, day });

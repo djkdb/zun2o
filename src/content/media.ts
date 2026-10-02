@@ -1,4 +1,6 @@
-// Gallery, notes and voice memos on 채원's phone.
+// Gallery, notes and voice memos on 채원's phone (season 2: 소연's, in ./s2/media).
+import { pick } from './season';
+import { NOTES_S2, PHOTOS_S2 } from './s2/media';
 
 export interface PhotoItem {
   id: string;
@@ -40,6 +42,9 @@ export const PHOTOS: PhotoItem[] = [
 ];
 
 export const HIDDEN_ALBUM_CODE = '1340';
+
+/** This season's camera roll. */
+export const photos = (): PhotoItem[] => pick(PHOTOS, PHOTOS_S2);
 
 export interface NoteItem {
   id: string;
@@ -128,11 +133,13 @@ export const NOTES: Record<string, NoteItem> = {
 
 02:00까지 얼마 남지 않았습니다.`,
   },
+  // 시즌 2
+  ...NOTES_S2,
 };
 
 export interface MemoLine {
   at: number; // seconds
-  who: '채원' | '???' | '';
+  who: '채원' | '???' | '소연' | '엄마' | '';
   text: string;
   sfx?: 'footsteps' | 'drawer' | 'whisper' | 'scream' | 'static' | 'key';
 }
@@ -157,4 +164,4 @@ export const MEMO_M1 = {
   ] as MemoLine[],
 };
 
-export const MEMO_TITLES: Record<string, string> = { m1: '새 녹음 17', m2: '새 녹음 18' };
+export const MEMO_TITLES: Record<string, string> = { m1: '새 녹음 17', m2: '새 녹음 18', s2m1: '8월 28일 01:58' };

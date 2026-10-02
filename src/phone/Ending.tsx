@@ -59,7 +59,53 @@ const ENDINGS: Record<EndingId, EndingDef> = {
       { text: '다음 날 아침, 비가 그쳤다. 공중전화 부스의 선반은 비어 있다.' },
     ],
   },
+  // ── 시즌 2 「귀가」 ──
+  's2-daughter': {
+    n: 4,
+    title: '딸',
+    line: '딸이 엄마 대신 남았다. 엄마는 이제 기다리는 사람이다.',
+    scene: [
+      { who: '채원', text: '도현이 나왔어요!! 전화부스에서 자고 있었어요', side: 'left' },
+      { who: '채원', text: '근데 언니가 안 나와요', side: 'left' },
+      { text: '02:00. 노트의 마지막 줄: 9월 28일 02:00 — 한소연.' },
+      { text: '그날 이후 엄마는 더 이상 이름을 쓰지 않았다. 쓰는 사람이 바뀌었으니까.', img: 'reading-empty' },
+      { text: '엄마는 매일 밤 창가에 앉아 있다. 마흔한 살의 얼굴로.' },
+      { who: '엄마', text: '소연이가 두 시 전에는 온다고 했어요.', side: 'left' },
+    ],
+  },
+  's2-instead': {
+    n: 5,
+    title: '대신',
+    line: '누군가는 안에 남아야 한다. 소연 대신, 당신이다.',
+    scene: [
+      { who: '나에게', text: '…나왔어요. 해가 떠요', side: 'right' },
+      { who: '나에게', text: '엄마한테 가요. 고마워요. 근데 당신은요?', side: 'right' },
+      { who: '채원', text: '도현이랑 언니 둘 다 전화부스에서 깼어요. 이 폰만 선반에 있어요', side: 'left' },
+      { text: '02:00. 노트의 마지막 줄: “한소” 위에 줄. 그 아래 — {name}.' },
+      { text: '엄마의 손은 그날 이후 멈췄다. 이름을 적는 사람이 바뀌었으니까.' },
+      { text: '1년 뒤. 해원고 정문 앞 공중전화 부스. 선반 위에 휴대폰 한 대.', img: 'booth-shelf' },
+      { who: '발신자 정보 없음', text: '들어오세요. 저는 {name}{이에요}.', side: 'left' },
+    ],
+  },
+  's2-home': {
+    n: 6,
+    title: '귀가',
+    line: '기록은 끝났다. 엄마는 1년 동안 집에 있었다.',
+    scene: [
+      { text: '기록 013 (사본) — 삭제되었습니다. 이 기록을 보는 사람: 0' },
+      { who: '채원', text: '도현이 나왔어요. 언니도요!!!', side: 'left' },
+      { who: '나에게', text: '엄마한테 전화가 안 돼요', side: 'right' },
+      { text: '새벽 여섯 시, 소연은 집 현관문을 열었다. 식탁 위에 노트 한 권이 펼쳐져 있었다.' },
+      { text: '열한 개의 이름 위에 줄이 그어져 있었다. 마지막 장에는 이름 대신 한 줄.' },
+      { text: '“소연아 엄마 왔다 간다.”', img: 'miryeong-daughter' },
+      { text: '의자에 걸려 있던 외투가 없었다.' },
+      { text: '다음 날 아침, 공중전화 부스의 선반은 비어 있다. 이번에는, 계속.' },
+    ],
+  },
 };
+
+/** Season 2's last photographs, behind the words. */
+const S2_BG: Partial<Record<EndingId, ArtSlot>> = { 's2-daughter': 'reading-empty', 's2-instead': 'booth-shelf', 's2-home': 'ending-release' };
 
 /** The night as you played it: who you kept out, whether she has your name. */
 function endingFor(id: EndingId, flags: string[]): EndingDef {
@@ -100,6 +146,10 @@ export function EndingScreen({ id }: { id: EndingId }) {
   // In dialogue, someone who never gave a name is just their number.
   const spoken = playerName ?? '#0027';
   const endings = useGame((s) => s.save.endings);
+  const s2 = id.startsWith('s2-');
+  // endings found in this season only
+  const found = endings.filter((e) => e.startsWith('s2-') === s2).length;
+  const bg: ArtSlot | null = s2 ? S2_BG[id] ?? null : (`ending-${id}` as ArtSlot);
   const [shown, setShown] = useState(0);
 
   useEffect(() => {
@@ -126,9 +176,9 @@ export function EndingScreen({ id }: { id: EndingId }) {
   return (
     <div ref={box} className={`ending ending-${id}`}>
       {/* the last photograph of the night, behind the words */}
-      {art(`ending-${id}`) && <img className="ending-photo" src={art(`ending-${id}`)} alt="" />}
+      {bg && art(bg) && <img className="ending-photo" src={art(bg)} alt="" />}
       {/* the true ending's last line comes with the morning: rain stopping over the empty phone booth */}
-      {id === 'release' && <DawnClip on={shown >= def.scene.length} />}
+      {(id === 'release' || id === 's2-home') && <DawnClip on={shown >= def.scene.length} />}
       {/* ending 1 closes where the game opened: the same booth, the same phone lighting up — for someone else */}
       {id === 'poweroff' && <BoothClip on={shown >= def.scene.findIndex((l) => l.text.startsWith('화면이 켜진다')) + 1} />}
       <div className="ending-scene">
@@ -149,20 +199,31 @@ export function EndingScreen({ id }: { id: EndingId }) {
       {done && (
         <div className="ending-card">
           <small>
-            엔딩 {def.n} · 결말 3개 중 {endings.length}개 발견
+            {s2 ? '시즌 2' : '시즌 1'} · 엔딩 {def.n} · 결말 3개 중 {found}개 발견
           </small>
           <h2>{def.title}</h2>
           <p>{def.line}</p>
           {id === 'release' && new Date().getHours() === 2 && <p className="badge-real">★ 진짜 새벽 2시에 기록을 지웠습니다</p>}
-          {endings.length < 3 && <p className="ending-more">다른 선택도 있습니다. 결말은 세 가지.</p>}
-          {endings.length < 3 && (
+          {found < 3 && <p className="ending-more">다른 선택도 있습니다. 결말은 세 가지.</p>}
+          {found < 3 && (
             <button type="button" onClick={() => replayFinale() || newGame()}>
               02:00부터 다시 (다른 선택)
             </button>
           )}
-          <button type="button" className={endings.length < 3 ? 'secondary' : undefined} onClick={newGame}>
-            처음부터 다시 하기
+          {/* after season 1: the next night, a year later */}
+          {!s2 && (
+            <button type="button" className={found < 3 ? 'secondary' : undefined} onClick={() => newGame(2)}>
+              시즌 2 「귀가」 — 1년 뒤
+            </button>
+          )}
+          <button type="button" className="secondary" onClick={() => newGame()}>
+            {s2 ? '시즌 2 처음부터' : '처음부터 다시 하기'}
           </button>
+          {s2 && (
+            <button type="button" className="secondary" onClick={() => newGame(1)}>
+              시즌 1 다시 하기
+            </button>
+          )}
         </div>
       )}
     </div>

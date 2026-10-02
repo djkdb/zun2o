@@ -1,4 +1,5 @@
 import type { AppId } from '../engine/types';
+import { isS2 } from '../content/season';
 
 // Generic app glyphs (drawn here; no platform icon assets).
 
@@ -14,6 +15,9 @@ export const APP_META: Record<AppId, { name: string; bg: string }> = {
   settings: { name: '설정', bg: 'linear-gradient(180deg,#9aa0a8,#5f646b)' },
   index: { name: '출입 기록', bg: '#050505' },
 };
+
+/** An app's name on the home screen: season 2's extra app is 소연's archive admin. */
+export const appName = (app: AppId): string => (isS2() && app === 'index' ? '보관소 관리' : APP_META[app].name);
 
 export function AppGlyph({ app }: { app: AppId }) {
   switch (app) {

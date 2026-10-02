@@ -7,7 +7,15 @@
 
 export type AppId = 'messages' | 'gallery' | 'notes' | 'memos' | 'browser' | 'phone' | 'settings' | 'index';
 export type ThreadId = 'dohyun' | 'mom' | 'unknown' | 'self';
-export type EndingId = 'poweroff' | 'shift' | 'release';
+export type EndingId = 'poweroff' | 'shift' | 'release' | 's2-daughter' | 's2-instead' | 's2-home';
+
+/** What season 2 remembers of you from season 1. */
+export interface S1Summary {
+  name: string | null;
+  endings: EndingId[];
+  /** One thing you typed to her last year. */
+  typed: string | null;
+}
 
 export type SoundId =
   | 'click'
@@ -124,7 +132,9 @@ export type Action =
   /** Someone starts typing… and sends nothing. */
   | { t: 'typing'; th: ThreadId; ms: number }
   /** a question left unanswered goes away (only if it is still that one) */
-  | { t: 'unchoice'; id: string };
+  | { t: 'unchoice'; id: string }
+  /** Someone else's hand writes into the notes app, a character at a time. */
+  | { t: 'write'; text: string; ms: number };
 
 export interface Beat {
   id: string;
@@ -155,6 +165,8 @@ export interface CallScript {
   /** Choice shown at `choiceAt` ms; the call pauses until answered. */
   choice?: { at: number; options: { id: string; label: string }[] };
   after?: CallLine[];
+  /** What follows depends on what you said (falls back to `after`). */
+  afterBy?: Record<string, CallLine[]>;
   duration: number;
 }
 
@@ -211,4 +223,10 @@ export interface Save {
   pendingCall?: string | null;
   /** Objectives already nudged by a character. */
   nudged: string[];
+  /** Season 2 (absent: season 1). */
+  season?: 2;
+  /** Season 2 only: what it remembers of your season 1. */
+  s1?: S1Summary;
+  /** Season 2 only: the note that writes itself before 02:00. */
+  liveNote?: string;
 }

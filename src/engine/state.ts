@@ -1,5 +1,7 @@
-import type { AppId, Attach, ChatMsg, EndingId, ScareKind, Save, ThreadId } from './types';
+import type { AppId, Attach, ChatMsg, EndingId, S1Summary, ScareKind, Save, ThreadId } from './types';
 import { INITIAL_THREADS, INITIAL_UNREAD } from '../content/threads';
+import { INITIAL_THREADS_S2, INITIAL_UNREAD_S2 } from '../content/s2/threads';
+import { syncSeason } from '../content/season';
 import { readItem, removeItem, writeItem } from './storage';
 import type { GhostLook } from '../art/Ghost';
 
@@ -99,6 +101,31 @@ export function newSave(keep?: Partial<Save>): Save {
   };
 }
 
+/** Season 2's opening state: 소연's phone, a year later. */
+export function newSave2(s1: S1Summary | undefined, keep?: Partial<Save>): Save {
+  return newSave({
+    season: 2,
+    s1,
+    threads: structuredClone(INITIAL_THREADS_S2),
+    unread: { ...INITIAL_UNREAD_S2 },
+    notes: ['s2n2', 's2n3', ...(s1 ? ['s2n4'] : []), 's2n1'],
+    calls: [
+      { who: '엄마', time: '23:48', kind: 'missed', count: 9 },
+      { who: '채원', time: '23:46', kind: 'missed', count: 4 },
+    ],
+    memos: [],
+    // what it remembers of you, as flags the beats can read
+    flags: [...(s1?.name ? ['s1-name'] : []), ...(s1?.typed ? ['s1-typed'] : [])],
+    ...keep,
+  });
+}
+
+/** What season 2 keeps of a season-1 save. */
+export function summarizeS1(s: Save): S1Summary {
+  const typed = [...s.inputs].reverse().map((e) => /(?:(?:발신자 정보 없음)에게|나에게) 보낸 메시지 "(.+)"$/.exec(e)?.[1]).find(Boolean) ?? null;
+  return { name: s.playerName, endings: s.endings.filter((e) => !e.startsWith('s2-')), typed };
+}
+
 function isSave(x: unknown): x is Save {
   if (!x || typeof x !== 'object') return false;
   const s = x as Partial<Save>;
@@ -169,6 +196,7 @@ let persistTimer: ReturnType<typeof setTimeout> | null = null;
 
 export function initState(debug: boolean): void {
   state = { save: loadSave(), rt: initialRuntime(debug) };
+  syncSeason(state.save.season);
 }
 
 export const getState = (): State => state;
@@ -185,6 +213,8 @@ function notify(): void {
 export function setSave(patch: Partial<Save> | ((s: Save) => Partial<Save>)): void {
   const p = typeof patch === 'function' ? patch(state.save) : patch;
   state = { ...state, save: { ...state.save, ...p } };
+  // the season has to be right before anyone re-renders
+  if ('season' in p || 'v' in p) syncSeason(state.save.season);
   notify();
   schedulePersist();
 }
@@ -266,6 +296,8 @@ export function fill(text: string): string {
     real: `${String(new Date().getHours()).padStart(2, '0')}:${String(new Date().getMinutes()).padStart(2, '0')}`,
     clock: s.clock,
     toDohyun: s.choices.toDohyun ?? '',
+    s1name: s.s1?.name ?? '(이름 없음)',
+    typed1: s.s1?.typed ?? '',
   };
   return text.replace(/\{(\w+)\}/g, (m, k: string) => values[k] ?? m);
 }

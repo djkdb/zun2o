@@ -16,6 +16,20 @@ const JUMPS: [string, () => void][] = [
   ['02:00', () => (setSave({ started: true, unlocked: true, chapter: 4 }), addFlag('found-key'), saveCheckpoint(), addFlag('finale'), setRt({ finale: true }))],
 ];
 
+// Season 2 (starts a fresh season-2 save first).
+const S2 = () => {
+  if (getState().save.season !== 2) newGame(2);
+  setSave({ started: true, unlocked: true });
+  addFlag('unlocked');
+};
+const JUMPS_S2: [string, () => void][] = [
+  ['S2', () => (newGame(2), setSave({ started: true }), emit('start'))],
+  ['S2·2', () => (S2(), ['read-letter', 's2-n3-more'].forEach(addFlag), emit('ch2'))],
+  ['S2·3', () => (S2(), setSave({ playerName: getState().save.playerName ?? '테스터' }), ['read-letter', 'ch2', 'memo-done', 'gave-name'].forEach(addFlag), emit('s2c2:done'))],
+  ['S2·4', () => (S2(), ['read-letter', 'ch2', 'memo-done', 'ch3', 'admin'].forEach(addFlag), emit('ch4'))],
+  ['S2·02', () => (S2(), setSave({ chapter: 4 }), addFlag('copy-armed'), saveCheckpoint(), addFlag('finale'), setRt({ finale: true }))],
+];
+
 export function DebugPanel() {
   const [open, setOpen] = useState(false);
   const [fast, setFast] = useState(false);
@@ -47,6 +61,13 @@ export function DebugPanel() {
         ))}
       </div>
       <div className="dbg-row">
+        {JUMPS_S2.map(([l, f]) => (
+          <button key={l} type="button" onClick={f}>
+            {l}
+          </button>
+        ))}
+      </div>
+      <div className="dbg-row">
         <button
           type="button"
           onClick={() => {
@@ -56,7 +77,7 @@ export function DebugPanel() {
         >
           {fast ? '×1' : '×6 속도'}
         </button>
-        <button type="button" onClick={newGame}>
+        <button type="button" onClick={() => newGame()}>
           새 게임
         </button>
       </div>
@@ -82,7 +103,7 @@ export function DebugPanel() {
         ))}
       </div>
       <div className="dbg-row">
-        {(['poweroff', 'shift', 'release'] as const).map((e) => (
+        {(['poweroff', 'shift', 'release', 's2-daughter', 's2-instead', 's2-home'] as const).map((e) => (
           <button key={e} type="button" onClick={() => (setSave({ started: true }), reachEnding(e))}>
             END {e}
           </button>

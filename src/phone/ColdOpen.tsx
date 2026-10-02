@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { audio } from '../audio/engine';
 import { preloadVoices, setSpeechEnabled } from '../audio/speech';
-import { applyChapterMix, emit, mix, sfx, vibrate } from '../engine/director';
+import { applyChapterMix, emit, mix, newGame, sfx, vibrate } from '../engine/director';
+import { useGame } from '../hooks/useGame';
+import { isS2 } from '../content/season';
 import { setRt, setSave } from '../engine/state';
 import { art } from '../art/photoArt';
 import { VIDEO } from '../art/videos';
@@ -18,8 +20,44 @@ import { VIDEO } from '../art/videos';
  */
 type Step = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
+/** The words of each step, per season. Season 2: a year later, the same booth — and this time the door stays open. */
+const TEXT = {
+  1: {
+    stamp: '9월 27일 토요일 · 밤 11시 51분',
+    night: '막차가 끊겼다.',
+    school: '폐교된 해원고등학교 앞. 비가 쏟아진다.',
+    run: '전화부스로 뛰어간다 ›',
+    booth: '공중전화부스. 선반 위에 누가 두고 간 휴대폰.',
+    notes: [
+      { who: '해원일보', text: '[속보] 폐교 촬영 나선 20대 유튜버, 하루째 연락 두절' },
+      { who: '발신자 정보 없음', text: '들어오세요.' },
+    ],
+    sub: '새벽 2시, 해원고 전화부스 괴담',
+    shut: '등 뒤에서 전화부스 문이 닫혔다.',
+    pushed: '꿈쩍도 하지 않는다. 손 안의 화면만 밝다.',
+  },
+  2: {
+    stamp: '2026년 9월 27일 일요일 · 밤 11시 51분',
+    night: '1년 뒤.',
+    school: '해원고 정문 앞. 1년 동안 비어 있던 선반.',
+    run: '전화부스로 간다 ›',
+    booth: '공중전화부스. 선반 위에 — 휴대폰.',
+    notes: [
+      { who: '엄마', text: '소연아 어디니' },
+      { who: '발신자 정보 없음', text: '다시 들어오세요.' },
+    ],
+    sub: '시즌 2 — 귀가',
+    shut: '등 뒤에서 문이 천천히 닫히다가, 멈췄다.',
+    pushed: '문은 열려 있다. 이번엔 닫히지 않는다.',
+  },
+} as const;
+
 export function ColdOpen() {
   const [step, setStep] = useState<Step>(0);
+  // re-render when the season switches under the start screen
+  useGame((s) => s.save.season);
+  const T = TEXT[isS2() ? 2 : 1];
+  const s1Done = useGame((s) => s.save.endings.some((e) => !e.startsWith('s2-')));
   const [sound, setSound] = useState(true);
   const [notes, setNotes] = useState(0);
   const [still] = useState(() => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -78,7 +116,7 @@ export function ColdOpen() {
   const push = () => {
     if (pushed) return;
     setPushed(true);
-    sfx('thud');
+    sfx(isS2() ? 'creak' : 'thud');
     vibrate([40, 30, 40]);
     setTimeout(begin, 2300);
   };
@@ -121,16 +159,16 @@ export function ColdOpen() {
         <div className="co-notes" aria-live="polite">
           {notes >= 1 && (
             <div className="co-note">
-              <b>해원일보</b>
+              <b>{T.notes[0].who}</b>
               <small>지금</small>
-              <span>[속보] 폐교 촬영 나선 20대 유튜버, 하루째 연락 두절</span>
+              <span>{T.notes[0].text}</span>
             </div>
           )}
           {notes >= 2 && (
             <div className="co-note her">
-              <b>발신자 정보 없음</b>
+              <b>{T.notes[1].who}</b>
               <small>지금</small>
-              <span>들어오세요.</span>
+              <span>{T.notes[1].text}</span>
             </div>
           )}
         </div>
@@ -138,7 +176,8 @@ export function ColdOpen() {
 
       {step === 0 && (
         <div className="co-start">
-          <p className="co-stamp">9월 27일 토요일 · 밤 11시 51분</p>
+          {isS2() && <p className="co-season">시즌 2 「귀가」 · 시즌 1 엔딩 3 「기록 삭제」 1년 뒤</p>}
+          <p className="co-stamp">{T.stamp}</p>
           <p className="co-ear">🎧 이어폰을 끼고, 소리를 켜 주세요.</p>
           <button type="button" className="primary co-go" onClick={() => void start(true)}>
             시작
@@ -146,6 +185,11 @@ export function ColdOpen() {
           <button type="button" className="co-silent" onClick={() => void start(false)}>
             소리 없이 하기
           </button>
+          {s1Done && (
+            <button type="button" className="co-silent co-switch" onClick={() => newGame(isS2() ? 1 : 2)}>
+              {isS2() ? '‹ 시즌 1로' : '시즌 2 「귀가」 ›'}
+            </button>
+          )}
           <p className="co-fine">약 15–20분 · 갑작스러운 소리와 장면이 있습니다 · 소리는 폰 안의 설정 앱에서 끌 수 있습니다.</p>
           <p className="coldopen-privacy">진행 기록은 이 기기에만 저장됩니다. 카메라·마이크·위치를 쓰지 않습니다.</p>
         </div>
@@ -154,10 +198,10 @@ export function ColdOpen() {
       {step >= 1 && step <= 3 && (
         <div className="co-line" key={step}>
           {step === 1 && <p className="co-stamp">밤 11시 51분</p>}
-          <p>{step === 1 ? '막차가 끊겼다.' : step === 2 ? '폐교된 해원고등학교 앞. 비가 쏟아진다.' : '공중전화부스. 선반 위에 누가 두고 간 휴대폰.'}</p>
+          <p>{step === 1 ? T.night : step === 2 ? T.school : T.booth}</p>
           {step === 2 && (
             <button type="button" className="co-act" onClick={run}>
-              전화부스로 뛰어간다 ›
+              {T.run}
             </button>
           )}
         </div>
@@ -180,7 +224,7 @@ export function ColdOpen() {
 
       <div className={`coldopen-actions${step === 5 ? ' show' : ''}`}>
         <h1>12%</h1>
-        <p className="co-sub">새벽 2시, 해원고 전화부스 괴담</p>
+        <p className="co-sub">{T.sub}</p>
         <button type="button" className="primary" onClick={pick}>
           집는다
         </button>
@@ -188,7 +232,7 @@ export function ColdOpen() {
 
       {step === 6 && (
         <div className={`co-line co-shut${pushed ? ' pushed' : ''}`} key={pushed ? 'b' : 'a'}>
-          <p>{pushed ? '꿈쩍도 하지 않는다. 손 안의 화면만 밝다.' : '등 뒤에서 전화부스 문이 닫혔다.'}</p>
+          <p>{pushed ? T.pushed : T.shut}</p>
           {!pushed && (
             <button type="button" className="co-act co-push" onClick={push}>
               문을 민다

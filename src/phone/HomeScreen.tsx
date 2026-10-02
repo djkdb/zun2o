@@ -1,10 +1,11 @@
 import { useGame, usePhoneOwner, useTicker } from '../hooks/useGame';
 import { HINT_TIER_MS, openApp } from '../engine/director';
-import { APP_META, AppGlyph } from './icons';
+import { APP_META, AppGlyph, appName } from './icons';
 import type { AppId } from '../engine/types';
 import { CalendarWidget } from './CalendarWidget';
 import { art } from '../art/photoArt';
 import { BoothPhoto } from '../art/phonePhotos';
+import { isS2 } from '../content/season';
 
 const ORDER: AppId[] = ['messages', 'gallery', 'notes', 'memos', 'browser', 'phone', 'settings'];
 const SHUFFLED: AppId[] = ['memos', 'settings', 'gallery', 'phone', 'messages', 'browser', 'notes'];
@@ -36,7 +37,13 @@ export function HomeScreen({ stripped = 0 }: { stripped?: number }) {
     <div className={`home home-ch${chapter}`}>
       {/* 채원's own wallpaper — until the phone picks another one for you */}
       <div className="home-wall" aria-hidden="true">
-        {wallpaper === 'booth' ? <BoothPhoto fill /> : (art('life-busstop') ?? art('avatar-self')) && <img src={art('life-busstop') ?? art('avatar-self')} alt="" draggable={false} />}
+        {isS2() ? (
+          art('miryeong-daughter') && <img src={art('miryeong-daughter')} alt="" draggable={false} />
+        ) : wallpaper === 'booth' ? (
+          <BoothPhoto fill />
+        ) : (
+          (art('life-busstop') ?? art('avatar-self')) && <img src={art('life-busstop') ?? art('avatar-self')} alt="" draggable={false} />
+        )}
       </div>
       {stripped === 0 && <CalendarWidget />}
       <div className="home-grid">
@@ -54,12 +61,12 @@ export function HomeScreen({ stripped = 0 }: { stripped?: number }) {
                 <AppGlyph app={app} />
                 {app === 'messages' && totalUnread > 0 && <span className="badge">{totalUnread}</span>}
               </span>
-              <span className={`app-name${appGlitch?.app === app ? ' glitched' : ''}`}>{appGlitch?.app === app ? appGlitch.name : APP_META[app].name}</span>
+              <span className={`app-name${appGlitch?.app === app ? ' glitched' : ''}`}>{appGlitch?.app === app ? appGlitch.name : appName(app)}</span>
             </button>
           );
         })}
       </div>
-      <div className={`home-dock-hint${owner.startsWith('채원') ? '' : ' changed'}`}>{owner}</div>
+      <div className={`home-dock-hint${owner.endsWith('의 휴대폰') && /^(채원|소연)/.test(owner) ? '' : ' changed'}`}>{owner}</div>
     </div>
   );
 }

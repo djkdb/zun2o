@@ -8,7 +8,7 @@ import { speak, stopSpeech } from '../audio/speech';
 import type { CallLine } from '../engine/types';
 import { CallIcon } from './CallIcon';
 import { Avatar } from './Avatar';
-import { APP_META, AppGlyph } from './icons';
+import { APP_META, AppGlyph, appName } from './icons';
 import { art } from '../art/photoArt';
 
 export function BannerView() {
@@ -67,7 +67,7 @@ export function BannerView() {
 }
 
 function CallAvatar({ from, hijacked = false }: { from: string; hijacked?: boolean }) {
-  const th = from === 'dohyun' ? 'dohyun' : from === '0200' ? 'unknown' : null;
+  const th = from === 'dohyun' ? 'dohyun' : from === 'mom' ? 'mom' : from === '0200' ? 'unknown' : null;
   // An unsaved number: the plain default silhouette, not a letter.
   if (!th)
     return (
@@ -117,7 +117,7 @@ export function CallScreen() {
 
 /** The contact's picture, blurred to fill the screen behind the call — like a real phone's contact poster. */
 function CallBackdrop({ from, hijacked = false }: { from: string; hijacked?: boolean }) {
-  const photo = from === 'dohyun' ? art('avatar-dohyun') : undefined;
+  const photo = from === 'dohyun' ? art('avatar-dohyun') : from === 'mom' ? art('miryeong-id') : undefined;
   return (
     <div className={`call-backdrop${hijacked ? ' hijacked' : ''}`} aria-hidden="true">
       {photo && !hijacked && <img src={photo} alt="" draggable={false} />}
@@ -142,6 +142,7 @@ function ActiveCall({ id }: { id: string }) {
   const [lines, setLines] = useState<(CallLine & { label: string | null })[]>([]);
   const [choice, setChoice] = useState(false);
   const [phase, setPhase] = useState<'main' | 'after'>('main');
+  const [picked, setPicked] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
   // The moment the voice on 도현's line stops being 도현.
   const [hijacked, setHijacked] = useState(false);
@@ -155,7 +156,7 @@ function ActiveCall({ id }: { id: string }) {
 
   useEffect(() => {
     if (!call) return;
-    const script = phase === 'main' ? call.lines : call.after ?? [];
+    const script: CallLine[] = phase === 'main' ? call.lines : ((picked ? call.afterBy?.[picked] : undefined) ?? call.after ?? []);
     const clear = () => timers.current.forEach(clearTimeout);
     script.forEach((l) =>
       timers.current.push(
@@ -203,6 +204,8 @@ function ActiveCall({ id }: { id: string }) {
       clear();
       clearTimeout(quiet.current);
     };
+    // `picked` is set together with the phase change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [call, phase, sound]);
 
   useEffect(() => {
@@ -217,6 +220,7 @@ function ActiveCall({ id }: { id: string }) {
     setChoice(false);
     sfx('key');
     emit(`call:${call.id}:choice:${opt}`);
+    setPicked(opt);
     setPhase('after');
   };
   const hangUp = () => {
@@ -229,7 +233,7 @@ function ActiveCall({ id }: { id: string }) {
     <div className={`callscreen${hijacked ? ' hijacked' : ''}`} role="dialog" aria-label="통화 중">
       <CallBackdrop from={call.from} hijacked={hijacked} />
       <div className="call-top">
-        <small className="call-kind">{hijacked || call.from === '0200' || call.from === 'dohyun' ? '휴대전화' : '저장되지 않은 번호'}</small>
+        <small className="call-kind">{hijacked || call.from === '0200' || call.from === 'dohyun' || call.from === 'mom' ? '휴대전화' : '저장되지 않은 번호'}</small>
         <CallAvatar from={hijacked ? '0200' : call.from} hijacked={hijacked} />
         <h2 className={hijacked ? 'hijacked' : undefined}>{hijacked ? '발신자 정보 없음' : call.label}</h2>
         <span className={`call-status${noisy ? ' noisy' : ''}`}>
@@ -390,7 +394,7 @@ export function HintChip() {
             </button>
           </div>
           <strong>{obj.text}</strong>
-          {obj.app && !showFull && <p className="hint-app">살펴볼 곳: {APP_META[obj.app].name}</p>}
+          {obj.app && !showFull && <p className="hint-app">살펴볼 곳: {appName(obj.app)}</p>}
           {showFull ? (
             <p>{obj.hint}</p>
           ) : (

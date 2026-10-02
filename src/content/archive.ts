@@ -1,3 +1,6 @@
+import { pick } from './season';
+import { ARCHIVE_LIST_S2, ARCHIVE_S2 } from './s2/archive';
+
 // The browser app: the old "심야 기록보관소" fan archive 채원 was researching,
 // plus a news article about her. Kept short — this is a game, not homework.
 
@@ -18,6 +21,8 @@ export interface ArchivePage {
 export const plain = (line: string): string => line.replace(/\*\*/g, '');
 
 export const ARCHIVE_LIST = ['r001', 'r002', 'r003', 'r005', 'r007', 'r009'];
+/** The records listed on the site this season. */
+export const archiveList = (): string[] => pick(ARCHIVE_LIST, ARCHIVE_LIST_S2);
 
 export const ARCHIVE: Record<string, ArchivePage> = {
   r001: {
@@ -139,6 +144,8 @@ export const ARCHIVE: Record<string, ArchivePage> = {
       '한 수사 관계자는 “벽돌이 안쪽에서 쌓인 것처럼 보인다”고 말했다.',
     ],
   },
+  // 시즌 2
+  ...ARCHIVE_S2,
 };
 
 /** Opening these in order (consecutively) reveals 013. */

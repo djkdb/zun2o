@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useGame } from '../../hooks/useGame';
 import { choose, emit, openApp, openAttach, openThread, sendText, teaseTyping } from '../../engine/director';
-import { THREAD_META, THREAD_ORDER, dayLabel, lastSent, timeline } from '../../content/threads';
+import { dayLabel, lastSent, threadMeta, threadOrder, timeline } from '../../content/threads';
 import type { Attach, ThreadId } from '../../engine/types';
-import { MEMO_TITLES, PHOTOS } from '../../content/media';
+import { MEMO_TITLES, photos } from '../../content/media';
 import { PhotoView } from './Gallery';
 import { AppHeader } from '../AppHeader';
 import { Avatar } from '../Avatar';
@@ -15,13 +15,13 @@ function ThreadList() {
   const typing = useGame((s) => s.rt.typing);
   const choice = useGame((s) => s.save.choice);
   // Newest conversation on top, like a real phone.
-  const order = [...THREAD_ORDER].sort((a, b) => lastSent(threads[b]) - lastSent(threads[a]));
+  const order = [...threadOrder()].sort((a, b) => lastSent(threads[b]) - lastSent(threads[a]));
   return (
     <div className="messages">
       <AppHeader title="메시지" onBack={() => openApp(null)} backLabel="홈" />
       <ul className="thread-list">
         {order.map((th) => {
-          const meta = THREAD_META[th];
+          const meta = threadMeta()[th];
           const last = threads[th][threads[th].length - 1];
           const waiting = choice?.thread === th;
           return (
@@ -49,7 +49,7 @@ function ThreadList() {
 function AttachCard({ a }: { a: Attach }) {
   const albumOpen = useGame((s) => s.save.flags.includes('album-open'));
   if (a.kind === 'photo') {
-    const what = PHOTOS.find((p) => p.id === a.id)?.video ? '동영상' : '사진';
+    const what = photos().find((p) => p.id === a.id)?.video ? '동영상' : '사진';
     return (
       <button type="button" className="attach attach-photo" onClick={() => openAttach(a)} aria-label={`${what} 열기`}>
         <PhotoView id={a.id} />
@@ -119,7 +119,7 @@ function Chat({ th }: { th: ThreadId }) {
   const endRef = useRef<HTMLDivElement>(null);
   const [nameMode, setNameMode] = useState<string | null>(null);
   const [name, setName] = useState('');
-  const meta = THREAD_META[th];
+  const meta = threadMeta()[th];
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: 'end', behavior: 'smooth' });

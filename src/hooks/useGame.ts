@@ -20,6 +20,9 @@ export function useTicker(ms: number): number {
 export function usePhoneOwner(): string {
   const ch4 = useGame((s) => s.save.flags.includes('ch4'));
   const name = useGame((s) => s.save.playerName);
+  const s2 = useGame((s) => s.save.season === 2);
+  // Season 2: 소연's phone. From 01:50, her name is the one being written.
+  if (s2) return ch4 ? '한소연 — 안에 있음' : '소연의 휴대폰';
   if (!ch4) return '채원의 휴대폰';
   return `${name ?? '방문자 #0027'}의 휴대폰`;
 }

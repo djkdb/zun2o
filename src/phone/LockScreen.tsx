@@ -1,13 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useGame } from '../hooks/useGame';
-import { BoothPhoto, WallpaperPhoto } from '../art/phonePhotos';
+import { BoothPhoto, SlotPhoto, WallpaperPhoto } from '../art/phonePhotos';
 import { emit, sfx, vibrate } from '../engine/director';
 import { logInput, setSave } from '../engine/state';
-import { THREAD_META, lastSent, today } from '../content/threads';
+import { lastSent, threadMeta, today } from '../content/threads';
+import { isS2, pick } from '../content/season';
 import { Avatar } from './Avatar';
 import type { ThreadId } from '../engine/types';
 
-const CODE = '0113';
+/** 채원's phone: the day she met 도현. 소연's: the day her mother disappeared. */
+const passcode = () => pick('0113', '0314');
+/** Season 2 shows only what arrived tonight (from the 27th on). */
+const TONIGHT_AT = (9 * 31 + 27) * 1440;
 
 export function LockScreen() {
   const clock = useGame((s) => s.save.clock);
@@ -27,11 +31,12 @@ export function LockScreen() {
 
   const notifications = useMemo(() => {
     const out: { th: ThreadId; text: string; time: string; at: number; seq: number }[] = [];
-    (['unknown', 'dohyun'] as ThreadId[]).forEach((th) => {
+    pick<ThreadId[]>(['unknown', 'dohyun'], ['unknown', 'mom', 'dohyun']).forEach((th) => {
       const all = threads[th];
       all.forEach((m, i) => {
         if (i < all.length - 2) return;
-        if (m.from === 'them' && m.day !== '9월 26일 (금)') out.push({ th, text: m.text, time: m.time, at: lastSent(all.slice(0, i + 1)), seq: i });
+        const at = lastSent(all.slice(0, i + 1));
+        if (m.from === 'them' && m.day !== '9월 26일 (금)' && (!isS2() || at >= TONIGHT_AT)) out.push({ th, text: m.text, time: m.time, at, seq: i });
       });
     });
     // Newest on top, like a real lock screen.
@@ -47,8 +52,8 @@ export function LockScreen() {
     setCode(next);
     if (next.length < 4) return;
     setTimeout(() => {
-      if (next === CODE) {
-        logInput('잠금 해제 0113');
+      if (next === passcode()) {
+        logInput(`잠금 해제 ${next}`);
         sfx('unlock');
         setSave({ unlocked: true });
         emit('unlock');
@@ -67,7 +72,9 @@ export function LockScreen() {
 
   return (
     <div className="lock">
-      <div className={`lock-wall${wallpaper === 'booth' ? ' changed' : ''}`}>{wallpaper === 'booth' ? <BoothPhoto fill /> : <WallpaperPhoto />}</div>
+      <div className={`lock-wall${wallpaper === 'booth' ? ' changed' : ''}`}>
+        {isS2() ? <SlotPhoto slot="miryeong-daughter" w={390} h={844} fill label="1994년, 도서관 앞의 엄마와 열한 살 딸." /> : wallpaper === 'booth' ? <BoothPhoto fill /> : <WallpaperPhoto />}
+      </div>
       {!pad ? (
         <div className="lock-main" onClick={() => setPad(true)}>
           <div className="lock-date">
@@ -80,14 +87,16 @@ export function LockScreen() {
                 <Avatar th={n.th} size={40} badge />
                 <div className="lock-note-body">
                   <div className="lock-note-head">
-                    <strong>{THREAD_META[n.th].name}</strong>
+                    <strong>{threadMeta()[n.th].name}</strong>
                     <span>{n.time}</span>
                   </div>
                   <p>{n.text}</p>
                 </div>
               </div>
             ))}
+            {isS2() && <NewsClue />}
             {/* The passcode clue: when 채원 started filming tonight. */}
+            {!isS2() && (
             <div className="lock-note">
               <span className="avatar pic camera-app" style={{ width: 40, height: 40 }}>
                 <svg viewBox="0 0 32 32" aria-hidden="true">
@@ -104,6 +113,7 @@ export function LockScreen() {
                 <p>녹화가 중단되었습니다. 01:13에 시작한 영상(45분)을 저장하지 못했습니다.</p>
               </div>
             </div>
+            )}
           </div>
           <button type="button" className="lock-hint" onClick={() => setPad(true)}>
             눌러서 잠금 해제
@@ -114,8 +124,8 @@ export function LockScreen() {
           <p className="lock-pad-title">암호 입력</p>
           {/* the clue stays in view while typing: her riddle, once it's been left, and the camera notice */}
           <div className="lock-pad-clues">
-            <p>도현 · (지워진 메시지) “걔가 어제 학교 들어간 시간이랑 똑같아요.”</p>
-            <p>카메라 · 01:13에 시작한 영상을 저장하지 못했습니다.</p>
+            {isS2() ? <p>채원 · “언니 비번 아직 어머니 사라지신 날이죠?”</p> : <p>도현 · (지워진 메시지) “걔가 어제 학교 들어간 시간이랑 똑같아요.”</p>}
+            {isS2() ? <p>해원일보 · 1994년 3월 14일 실종된 사서, 31년 만에 귀가</p> : <p>카메라 · 01:13에 시작한 영상을 저장하지 못했습니다.</p>}
           </div>
           <div className={`lock-dots${shake ? ' shake' : ''}`}>
             {[0, 1, 2, 3].map((i) => (
@@ -145,6 +155,24 @@ export function LockScreen() {
           {fails > 0 && <p className="lock-fails">암호가 틀렸습니다 ({fails}회)</p>}
         </div>
       )}
+    </div>
+  );
+}
+
+/** Season 2's passcode clue: today's "a year ago" push, with the date in it. */
+function NewsClue() {
+  return (
+    <div className="lock-note">
+      <span className="avatar pic news-app" style={{ width: 40, height: 40 }} aria-hidden="true">
+        해
+      </span>
+      <div className="lock-note-body">
+        <div className="lock-note-head">
+          <strong>해원일보</strong>
+          <span>23:30</span>
+        </div>
+        <p>[1년 전 오늘] 1994년 3월 14일 실종된 도서관 사서, 31년 만에 귀가… “도서관에 잠깐 있었다”</p>
+      </div>
     </div>
   );
 }

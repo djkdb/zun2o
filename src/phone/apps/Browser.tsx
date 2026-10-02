@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useGame } from '../../hooks/useGame';
 import { emit, openApp, sfx } from '../../engine/director';
 import { addFlag, getState, setRt, setSave } from '../../engine/state';
-import { ARCHIVE, ARCHIVE_LIST, ARCHIVE_SEQUENCE, type ArchivePage } from '../../content/archive';
+import { ARCHIVE, ARCHIVE_SEQUENCE, archiveList, type ArchivePage } from '../../content/archive';
+import { isS2 } from '../../content/season';
 import { art } from '../../art/photoArt';
 import { FloorPlanPhoto, SlotPhoto } from '../../art/phonePhotos';
 import { AnnexPhoto, FloorPlan, ReadingRoomPhoto, Room02Photo, TowerPhoto } from '../../art/scenes';
@@ -36,6 +37,13 @@ export function BrowserApp() {
     const seen = seenPages();
     sfx('click');
     setNotice(null);
+    // Season 2: it's 소연's site, and she's logged in. Nothing is locked; no sequence.
+    if (isS2()) {
+      setSave((s) => ({ choices: { ...s.choices, archiveSeen: Array.from(new Set([...seen, id])).join(',') } }));
+      setView({ kind: 'page', id });
+      emit(`browser:${id}`);
+      return;
+    }
     if (page.access === 'restricted' && !(seen.includes('r001') && seen.includes('r003'))) {
       setView({ kind: 'page', id: '__restricted' });
       return;
@@ -84,7 +92,9 @@ export function BrowserApp() {
   const path =
     view.kind === 'page' && !view.id.startsWith('__')
       ? news
-        ? `/society/2025/09/27/${view.id === 'news' ? '1830' : '0740'}`
+        ? view.id === 'news3'
+          ? '/society/2026/08/28/0710'
+          : `/society/2025/09/27/${view.id === 'news' ? '1830' : '0740'}`
         : `/record/${view.id.replace('r', '')}.html`
       : view.kind === 'dead'
         ? view.path
@@ -121,18 +131,28 @@ export function BrowserApp() {
               <small>nightarchive.or.kr — 폐교 해원고등학교 기록 보존</small>
             </span>
           </button>
-          <button type="button" className="bm" onClick={() => openPage('news2')}>
-            <span className="bm-icon bm-icon-news">해</span>
-            <span>
-              <strong>해원일보 — 실종 1년 대학생, 폐교 앞 공중전화 부스에서 발견</strong>
-              <small>9월 27일 06:12 · 이 폰에서 열어 본 기사</small>
-            </span>
-          </button>
+          {isS2() ? (
+            <button type="button" className="bm" onClick={() => openPage('news3')}>
+              <span className="bm-icon bm-icon-news">해</span>
+              <span>
+                <strong>{ARCHIVE.news3.title}</strong>
+                <small>8월 28일 07:10 · 이 폰에서 열어 본 기사</small>
+              </span>
+            </button>
+          ) : (
+            <button type="button" className="bm" onClick={() => openPage('news2')}>
+              <span className="bm-icon bm-icon-news">해</span>
+              <span>
+                <strong>해원일보 — 실종 1년 대학생, 폐교 앞 공중전화 부스에서 발견</strong>
+                <small>9월 27일 06:12 · 이 폰에서 열어 본 기사</small>
+              </span>
+            </button>
+          )}
           <button type="button" className="bm" onClick={() => openPage('news')}>
             <span className="bm-icon bm-icon-news">해</span>
             <span>
               <strong>해원일보 — 폐건물 촬영 나선 유튜버 실종</strong>
-              <small>9월 27일 18:30 · 방문 기록 없음</small>
+              <small>{isS2() ? '작년 9월 27일 18:30 · 수없이 열어 본 기사' : '9월 27일 18:30 · 방문 기록 없음'}</small>
             </span>
           </button>
         </div>
@@ -150,14 +170,20 @@ export function BrowserApp() {
               <p>1995년 폐교된 해원고등학교 기록 · 자원봉사자 운영</p>
             </div>
           </header>
-          <p className="arc-notice">
-            <b>[공지]</b> 서버 이전 후 일부 기록이 보이지 않을 수 있습니다. 기록 번호 013은 원래 없는 번호입니다. 문의하지 마십시오. <i>— 관리자 2004.11.02</i>
-          </p>
+          {isS2() ? (
+            <p className="arc-notice">
+              <b>[공지]</b> 원본 출입 기록은 2025년 9월 28일 02:00에 소실되었습니다. 남은 것은 기록 013의 사본뿐입니다. <i>— 관리자 한소연 2025.10.30</i>
+            </p>
+          ) : (
+            <p className="arc-notice">
+              <b>[공지]</b> 서버 이전 후 일부 기록이 보이지 않을 수 있습니다. 기록 번호 013은 원래 없는 번호입니다. 문의하지 마십시오. <i>— 관리자 2004.11.02</i>
+            </p>
+          )}
           <p className="arc-counter">
-            누적 방문자 <b>000413</b> · 지금 보는 사람 <b className="arc-blink">2</b>
+            누적 방문자 <b>{isS2() ? '214,870' : '000413'}</b> · 지금 보는 사람 <b className="arc-blink">{isS2() ? (chapter >= 4 ? 3 : 2) : 2}</b>
           </p>
           <ul className="arc-list">
-            {[...ARCHIVE_LIST, ...(indexed ? ['r013'] : [])].map((id) => {
+            {[...archiveList(), ...(indexed && !isS2() ? ['r013'] : [])].map((id) => {
               const p = ARCHIVE[id];
               const [no, name] = p.title.replace('기록 ', '').split(' — ');
               const badge = id === 'r013' ? 'NEW' : p.access === 'restricted' ? '열람 제한' : p.access === 'denied' ? '접근 거부' : null;
@@ -180,8 +206,9 @@ export function BrowserApp() {
             ))}
           </p>
           {/* once 013 is there, the site has a record of you too */}
-          {indexed && <p className="arc-lastvisit">마지막 접속: 방금 · 방문자 #0027</p>}
-          <p className="arc-foot">최종 수정 2004.11.02 · 운영자 연락처 없음 · 이 사이트는 더 이상 관리되지 않습니다</p>
+          {indexed && !isS2() && <p className="arc-lastvisit">마지막 접속: 방금 · 방문자 #0027</p>}
+          {isS2() && <p className="arc-lastvisit">관리자로 로그인됨 · 한소연 (이 기기)</p>}
+          <p className="arc-foot">{isS2() ? '최종 수정 2026.09.03 · 관리자 한소연' : '최종 수정 2004.11.02 · 운영자 연락처 없음 · 이 사이트는 더 이상 관리되지 않습니다'}</p>
         </div>
       )}
       {view.kind === 'dead' && (
@@ -243,7 +270,7 @@ function Rich({ text }: { text: string }) {
 /** 해원일보: laid out like a real mobile news page. */
 function NewsArticle({ page, onOpen }: { page: ArchivePage; onOpen: (id: string) => void }) {
   const n = page.news!;
-  const other = page.id === 'news' ? 'news2' : 'news';
+  const other = page.id === 'news3' ? 'news' : page.id === 'news' ? (isS2() ? 'news3' : 'news2') : 'news';
   const [lead, ...rest] = page.lines;
   return (
     <article className="news">

@@ -1,4 +1,6 @@
 import type { ThreadId } from '../engine/types';
+import { isS2 } from './season';
+import { FALLBACK_S2, SELF_S2, UNKNOWN_S2 } from './s2/replies';
 
 // ─────────────────────────────────────────────────────────────────────────
 // What 발신자 정보 없음 and 채원 say back when the player types freely. Local,
@@ -98,7 +100,8 @@ const FALLBACK: Record<'unknown' | 'self', string[]> = {
 
 /** Pure: decide what to say back. `roll` (0..1) picks the fallback line. */
 export function replyFor(th: ThreadId, text: string, ctx: ReplyContext, roll = Math.random()): Reply {
-  const rules = th === 'unknown' ? UNKNOWN : th === 'self' ? SELF : [];
+  const s2 = isS2();
+  const rules = th === 'unknown' ? (s2 ? UNKNOWN_S2 : UNKNOWN) : th === 'self' ? (s2 ? SELF_S2 : SELF) : [];
   for (const r of rules) {
     if (!r.re.test(text)) continue;
     const stages = r.say(ctx);
@@ -107,6 +110,7 @@ export function replyFor(th: ThreadId, text: string, ctx: ReplyContext, roll = M
   }
   // Sometimes the story's own nudge, but not every time: a person doesn't repeat one line forever.
   if (ctx.nudge && roll < 0.4) return { rule: null, lines: [ctx.nudge] };
-  const pool = th === 'unknown' ? FALLBACK.unknown : FALLBACK.self;
+  const fallback = s2 ? FALLBACK_S2 : FALLBACK;
+  const pool = th === 'unknown' ? fallback.unknown : fallback.self;
   return { rule: null, lines: [pool[Math.floor(roll * pool.length) % pool.length]] };
 }

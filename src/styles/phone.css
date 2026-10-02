@@ -5971,3 +5971,303 @@ body,
   background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.85) 60%, #000);
   pointer-events: none;
 }
+
+/* ─── season 2 「귀가」 ────────────────────────────────────────────────── */
+
+.co-season {
+  margin: 0 0 14px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: #c9a96b;
+}
+.coldopen .co-switch {
+  margin-top: 6px;
+  color: #c9a96b;
+}
+
+/* the news push on 소연's lock screen */
+.avatar.news-app {
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #1f3b6b;
+  color: #fff;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+/* the note nobody here is writing */
+.note-live .note-text p {
+  font-family: 'Nanum Pen Script', 'IBM Plex Sans KR', cursive;
+  font-size: 30px;
+  line-height: 1.3;
+}
+.note-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 26px;
+  margin-left: 2px;
+  background: currentColor;
+  animation: s2-blink 1s steps(1) infinite;
+}
+
+/* tonight's page: the line that appears while you look */
+.nb-more {
+  animation: fade-in 2.4s ease both;
+}
+
+/* the archive admin page: 소연's, 2004-style */
+.admin {
+  min-height: 100%;
+  overflow-y: auto;
+  padding: 52px 14px 40px;
+  background: #ece5d3;
+  color: #2b2620;
+  font-size: 14px;
+}
+.admin-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: #7a6f5e;
+}
+.admin .index-back {
+  color: #6b5d48;
+  margin: 0;
+}
+.admin-logo {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin: 18px auto 10px;
+  border: 2px solid #2b2620;
+  font-size: 30px;
+  font-family: serif;
+}
+.admin-logo.small {
+  width: 38px;
+  height: 38px;
+  margin: 0;
+  font-size: 20px;
+}
+.admin-login {
+  text-align: center;
+}
+.admin-login .lock-dots.dark span {
+  border-color: #2b2620;
+}
+.admin-login .lock-dots.dark span.on {
+  background: #2b2620;
+}
+.admin-login .keypad.dark .key,
+.admin-login .keypad.dark .key-del {
+  background: #ddd3bd;
+  color: #2b2620;
+}
+.admin-login h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.admin-who,
+.admin-hint {
+  margin: 6px 0;
+  font-size: 13px;
+  color: #6b5d48;
+}
+.admin-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0 14px;
+  border-bottom: 1px solid #c9bfa7;
+}
+.admin-head h2 {
+  margin: 0;
+  font-size: 17px;
+}
+.admin-head p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #6b5d48;
+}
+.admin-box {
+  margin-top: 14px;
+  padding: 12px;
+  background: #f6f1e4;
+  border: 1px solid #cfc4aa;
+}
+.admin-box h3 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+.admin-queue {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.admin-queue li {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 0 8px;
+  padding: 8px 0;
+  border-top: 1px dashed #d6ccb4;
+}
+.admin-queue li:first-child {
+  border-top: 0;
+}
+.admin-queue small {
+  grid-column: 2;
+  color: #7a6f5e;
+  font-size: 12px;
+}
+.admin-queue .first .admin-name {
+  color: #a3261d;
+  font-weight: 600;
+}
+.admin-queue .you .admin-name::after {
+  content: ' ← 당신';
+  color: #a3261d;
+  font-size: 12px;
+}
+.admin-no {
+  font-family: var(--mono);
+  color: #7a6f5e;
+}
+.admin-note,
+.admin-warn {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: #6b5d48;
+}
+.admin-warn {
+  color: #8a2a20;
+}
+.admin-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+}
+.admin-row .locked {
+  color: #6b5d48;
+}
+.admin-row .armed {
+  color: #a3261d;
+}
+.admin-btn {
+  margin-top: 10px;
+  min-height: 44px;
+  width: 100%;
+  border: 1px solid #2b2620;
+  background: #2b2620;
+  color: #f6f1e4;
+  font-size: 14px;
+}
+.admin-form label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+.admin-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  border: 1px solid #b9ad92;
+  background: #fff;
+  color: #2b2620;
+  font: inherit;
+  font-size: 16px;
+  resize: none;
+}
+.admin-form .final-err {
+  color: #a3261d;
+}
+.admin-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.admin-actions .final-back {
+  color: #6b5d48;
+}
+.admin-draft-btn {
+  width: 100%;
+  min-height: 44px;
+  text-align: left;
+  color: #2b2620;
+  text-decoration: underline;
+}
+.admin-draft p {
+  margin: 0 0 8px;
+  line-height: 1.6;
+}
+.admin-draft-end {
+  color: #8a7f6c;
+  font-size: 12px;
+}
+
+/* 02:00 — the notebook fills the top of the screen */
+.finale2 {
+  display: flex;
+  flex-direction: column;
+  background: #0b0a09;
+  overflow-y: auto;
+}
+.finale2-clock {
+  padding: 46px 0 8px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 15px;
+  color: #e6534b;
+  letter-spacing: 0.1em;
+}
+.nb-sheet {
+  margin: 4px 14px 0;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+  transform: rotate(-1deg);
+}
+.nb-sheet svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.step-page .nb-sheet {
+  margin-top: 28%;
+  transform: rotate(-1deg) scale(1.04);
+}
+.nb-pen {
+  animation: s2-blink 1s steps(1) infinite;
+}
+.finale2-recall {
+  padding: 18px 18px 30px;
+  font-family: var(--mono);
+  color: #d0d8c6;
+}
+.finale2-recall p {
+  margin: 0 0 10px;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.finale2 .final-label {
+  margin: 0 0 10px;
+  font-size: 15px;
+  line-height: 1.6;
+}
+@keyframes s2-blink {
+  50% {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .note-cursor,
+  .nb-pen,
+  .nb-more {
+    animation: none;
+  }
+}

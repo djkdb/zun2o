@@ -1,7 +1,9 @@
 import type { Action, AppId, Attach, Beat, EndingId, SoundId, ThreadId } from './types';
 import { BEATS } from '../content/script';
-import { addFlag, appendMessage, clearCheckpoint, fill, flush, getState, hasFlag, loadCheckpoint, logInput, newSave, saveCheckpoint, setRt, setSave, wipeSave } from './state';
-import { THREAD_META } from '../content/threads';
+import { BEATS_S2 } from '../content/s2/script';
+import { addFlag, appendMessage, clearCheckpoint, fill, flush, getState, hasFlag, loadCheckpoint, logInput, newSave, newSave2, saveCheckpoint, setRt, setSave, summarizeS1, wipeSave } from './state';
+import { threadMeta } from '../content/threads';
+import { isS2, pick } from '../content/season';
 import { CALLS } from '../content/calls';
 import { replyFor } from '../content/replies';
 
@@ -75,6 +77,9 @@ function sleepReal(ms: number): Promise<void> {
   });
 }
 
+/** This season's story. */
+const beats = () => pick(BEATS, BEATS_S2);
+
 function matches(pattern: string, ev: string): boolean {
   return pattern.endsWith('*') ? ev.startsWith(pattern.slice(0, -1)) : pattern === ev;
 }
@@ -90,7 +95,7 @@ function eligible(b: Beat): boolean {
 export function emit(ev: string): void {
   // Decide the targets first: a beat's own flags must not make a sibling
   // beat eligible within the same event (e.g. "declined once" → "twice").
-  const targets = BEATS.filter((beat) => matches(beat.on, ev) && eligible(beat));
+  const targets = beats().filter((beat) => matches(beat.on, ev) && eligible(beat));
   targets.forEach((beat) => void run(beat, 0));
 }
 
@@ -112,7 +117,7 @@ async function run(beat: Beat, from: number): Promise<void> {
 export function resume(): void {
   const running = getState().save.running;
   for (const r of running) {
-    const beat = BEATS.find((b) => b.id === r.beat);
+    const beat = beats().find((b) => b.id === r.beat);
     if (beat) void run(beat, r.index);
   }
   const s = getState().save;
@@ -206,7 +211,7 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
         sfx('key');
       } else {
         setSave((s) => ({ unread: { ...s.unread, [a.th]: s.unread[a.th] + 1 } }));
-        showBanner('messages', THREAD_META[a.th].name, text, a.th);
+        showBanner('messages', threadMeta()[a.th].name, text, a.th);
       }
       await sleep(350);
       return;
@@ -217,6 +222,17 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
     case 'unchoice':
       if (getState().save.choice?.id === a.id) setSave({ choice: null });
       return;
+    case 'write': {
+      // Someone else's hand, in your notes app: one character at a time.
+      setSave((s) => ({ notes: s.notes.includes('live') ? s.notes : [...s.notes, 'live'] }));
+      for (const ch of a.text) {
+        if (myEpoch !== epoch) return;
+        setSave((s) => ({ liveNote: (s.liveNote ?? '') + ch }));
+        if (getState().rt.app === 'notes' && ch.trim()) sfx('key');
+        await sleepReal(a.ms);
+      }
+      return;
+    }
     case 'notify':
       await whenFree(myEpoch);
       showBanner(a.app, a.title, a.body, a.open?.thread);
@@ -479,7 +495,7 @@ export function sendText(th: ThreadId, raw: string): void {
   const text = raw.replace(/\s+/g, ' ').trim().slice(0, 80);
   if (!text) return;
   const time = getState().save.clock;
-  logInput(`${th === 'self' ? '나에게' : `${THREAD_META[th].name}에게`} 보낸 메시지 "${text}"`);
+  logInput(`${th === 'self' ? '나에게' : `${threadMeta()[th].name}에게`} 보낸 메시지 "${text}"`);
   if (th === 'dohyun' || th === 'mom') {
     appendMessage(th, { from: 'me', text, time, failed: true });
     sfx('error');
@@ -492,10 +508,10 @@ export function sendText(th: ThreadId, raw: string): void {
   sfx('send');
   const now = Date.now();
   const s = getState().save;
-  // Before 채원 is reachable, "나에게" is just a notepad.
-  if (th === 'self' && !s.flags.includes('selfie-scare')) return;
+  // Before 채원 (season 2: 소연) is reachable, "나에게" is just a notepad.
+  if (th === 'self' && !s.flags.includes(pick('selfie-scare', 'soyeon-contact'))) return;
   // Her real name, sent to her: she starts to answer… and stops. Then silence.
-  if (th === 'unknown' && /서\s*미\s*령|미령/.test(text) && !s.flags.includes('named-her')) {
+  if (!isS2() && th === 'unknown' && /서\s*미\s*령|미령/.test(text) && !s.flags.includes('named-her')) {
     addFlag('named-her');
     silentUntil = now + 90000;
     const myEpoch0 = epoch;
@@ -633,7 +649,7 @@ export function reachEnding(id: EndingId): void {
   setRt({ ending: id, finale: false });
 }
 
-export function newGame(): void {
+export function newGame(season?: 1 | 2): void {
   epoch++;
   teased.clear();
   (Object.keys(anomalyCount) as Anomaly[]).forEach((k) => delete anomalyCount[k]);
@@ -645,7 +661,10 @@ export function newGame(): void {
   const s = getState().save;
   wipeSave();
   clearCheckpoint();
-  setSave(newSave({ endings: s.endings, sound: s.sound, reduceFx: s.reduceFx, startedAtReal: Date.now() }));
+  const keep = { endings: s.endings, sound: s.sound, reduceFx: s.reduceFx, startedAtReal: Date.now() };
+  // Starting over stays in the season you are in (or the one asked for).
+  const to = season ?? (s.season === 2 ? 2 : 1);
+  setSave(to === 2 ? newSave2(s.season === 2 ? s.s1 : summarizeS1(s), keep) : newSave(keep));
   flush();
   setRt({
     app: null,
@@ -762,7 +781,7 @@ function runAnomaly(kind: Anomaly): void {
     case 'phantom':
       // A notification that leads nowhere: open the thread and nothing new is there.
       if (getState().rt.app === 'messages' && getState().rt.thread === 'unknown') return;
-      showBanner('messages', THREAD_META.unknown.name, '…', 'unknown');
+      showBanner('messages', threadMeta().unknown.name, '…', 'unknown');
       return;
     case 'rebadge': {
       // You read it. The badge comes back anyway — and there's nothing new inside.
@@ -816,7 +835,7 @@ export function teaseTyping(th: ThreadId): void {
   const s = getState().save;
   const key = `${th}-${s.chapter}`;
   if (teased.has(key) || playerBusy() || s.choice?.thread === th) return;
-  if (th === 'self' && !s.flags.includes('selfie-scare')) return;
+  if (th === 'self' && !s.flags.includes(pick('selfie-scare', 'soyeon-contact'))) return;
   teased.add(key);
   flashTyping(th, 2400);
   sfx('type');

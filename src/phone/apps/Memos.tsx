@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useGame } from '../../hooks/useGame';
 import { emit, openApp, sfx } from '../../engine/director';
 import { MEMO_M1, type MemoLine } from '../../content/media';
+import { MEMO_S2M1 } from '../../content/s2/media';
+import { isS2 } from '../../content/season';
 import { getState, setRt } from '../../engine/state';
 import { AppHeader } from '../AppHeader';
 import { speak, stopSpeech } from '../../audio/speech';
@@ -60,8 +62,10 @@ function Player({ memo }: { memo: Memo }) {
           fired.current.add(i);
           if (l.sfx) sfx(l.sfx);
           else if (l.text.startsWith('(키패드')) sfx('key');
-          if (sound && l.who === '채원') speak(l.text, 'female');
-          if (sound && l.who === '???') speak(l.text, 'entity');
+          // (a stage direction in parentheses is shown, not said)
+          const said = l.text.replace(/^\([^)]*\)\s*/, '');
+          if (sound && (l.who === '채원' || l.who === '소연')) speak(said, 'female');
+          if (sound && (l.who === '???' || l.who === '엄마')) speak(said, 'entity');
         }
       });
     }, 100);
@@ -139,6 +143,7 @@ function deepMemo(): Memo | null {
   const d = getState().rt.deep;
   if (d?.kind !== 'memo') return null;
   if (d.id === 'm2') return buildM2();
+  if (d.id === 's2m1') return MEMO_S2M1;
   return getState().save.flags.includes('call1-done') ? MEMO_M1 : null;
 }
 
@@ -162,6 +167,30 @@ export function MemosApp() {
       <AppHeader title="녹음" onBack={() => (open ? setOpen(null) : openApp(null))} backLabel={open ? '목록' : '홈'} />
       {open ? (
         <Player memo={open} />
+      ) : isS2() ? (
+        <ul className="memo-list">
+          {memos.includes('s2m1') && (
+            <li>
+              <button type="button" className="new" onClick={() => setOpen(MEMO_S2M1)}>
+                <MemoIcon kind="play" />
+                <span className="memo-row-text">
+                  <strong>{MEMO_S2M1.title}</strong>
+                  <span>방금 복원됨 · {fmt(MEMO_S2M1.duration)}</span>
+                </span>
+                <MiniWave seed={28} />
+              </button>
+            </li>
+          )}
+          <li>
+            <div className="memo-old">
+              <MemoIcon kind="broken" />
+              <span className="memo-row-text">
+                <strong>엄마 목소리</strong>
+                <span>1994년 3월 · 카세트에서 옮김 · 0:09 · 재생할 수 없음</span>
+              </span>
+            </div>
+          </li>
+        </ul>
       ) : (
         <ul className="memo-list">
           {memos.includes('m2') && (

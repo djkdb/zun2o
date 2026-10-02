@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { useGame } from '../../hooks/useGame';
 import { applyChapterMix, emit, markPhoto, mix, openApp, sfx, vibrate } from '../../engine/director';
 import { addFlag, getState, hasFlag, logInput, setRt } from '../../engine/state';
-import { HIDDEN_ALBUM_CODE, PHOTOS, type PhotoItem } from '../../content/media';
+import { HIDDEN_ALBUM_CODE, photos, type PhotoItem } from '../../content/media';
+import { isS2 } from '../../content/season';
+import { HomecomingPhoto, KitchenPhoto, NotebookPage } from '../../art/s2Photos';
 import { VIDEO } from '../../art/videos';
 import { AppHeader } from '../AppHeader';
 import { AnnexPhoto, FloorPlan, ReadingRoomPhoto, Room02Photo } from '../../art/scenes';
@@ -141,6 +143,22 @@ export function PhotoView({ id, brightness = 0, changed = false }: { id: string;
     case 'h05':
       // Just her, crying — until the scare. When it fades, she was at 채원's cheek all along.
       return <SelfiePhoto stage={flags.includes('h05-revealed') ? 2 : flags.includes('h05-far') ? 1 : 0} />;
+    // ── season 2 ──
+    case 's2-old':
+      return <SlotPhoto slot="miryeong-daughter" label="1994년 3월, 도서관 앞에서 손을 잡은 엄마와 열한 살 딸." />;
+    case 's2-home':
+      return <HomecomingPhoto />;
+    case 's2-kitchen':
+      return <KitchenPhoto />;
+    case 's2-booth':
+      return <BoothShelfPhoto />;
+    case 's2-n1':
+      return <NotebookPage page={1} />;
+    case 's2-n2':
+      return <NotebookPage page={2} />;
+    case 's2-n3':
+      // look long enough and, while you look, there's one more line — the next page's name
+      return <NotebookPage page={3} more={flags.includes('s2-n3-more') ? `10월 28일 02:00 — ${getState().save.playerName ?? getState().save.s1?.name ?? '　　　'}` : ''} />;
     default:
       return null;
   }
@@ -159,8 +177,8 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
 
   useEffect(() => {
     markPhoto(photo.id);
-    if (photo.id !== 'h05') return;
-    const t = setTimeout(() => emit('photo:h05:dwell'), 1800);
+    if (photo.id !== 'h05' && photo.id !== 's2-n3') return;
+    const t = setTimeout(() => emit(`photo:${photo.id}:dwell`), photo.id === 'h05' ? 1800 : 2600);
     return () => clearTimeout(t);
   }, [photo.id]);
 
@@ -253,7 +271,7 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
         if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
       }}
     >
-      <AppHeader title={shownTime(photo)} subtitle={photo.album === 'hidden' ? '숨김' : (photo.date ?? '9월 27일')} onBack={onClose} backLabel="앨범" />
+      <AppHeader title={shownTime(photo)} subtitle={photo.album === 'hidden' ? (isS2() ? '노트' : '숨김') : (photo.date ?? '9월 27일')} onBack={onClose} backLabel="앨범" />
       <div
         className={`viewer-img${photo.portrait ? ' portrait' : ''}${zoom ? ' zoomed' : ''}`}
         onPointerDown={onDown}
@@ -370,11 +388,11 @@ function deepTarget(): { album: 'recent' | 'hidden' | null; open: number | null 
   const d = getState().rt.deep;
   if (d?.kind === 'album') return { album: 'hidden', open: null };
   if (d?.kind !== 'photo') return { album: null, open: null };
-  const p = PHOTOS.find((x) => x.id === d.id);
+  const p = photos().find((x) => x.id === d.id);
   if (!p) return { album: null, open: null };
   const s = getState().save;
-  const list = PHOTOS.filter((x) => x.album === p.album && (!x.extra || s.photos.includes(x.id)));
-  const locked = p.album === 'hidden' && !(s.flags.includes('album-code') || s.flags.includes('album-open'));
+  const list = photos().filter((x) => x.album === p.album && (!x.extra || s.photos.includes(x.id)));
+  const locked = p.album === 'hidden' && !isS2() && !(s.flags.includes('album-code') || s.flags.includes('album-open'));
   return { album: p.album, open: locked ? null : Math.max(0, list.findIndex((x) => x.id === p.id)) };
 }
 
@@ -385,22 +403,25 @@ export function GalleryApp() {
     if (getState().rt.deep) setRt({ deep: null });
   }, []);
   const [locked, setLocked] = useState(true);
-  const albumOpen = useGame((s) => s.save.flags.includes('album-code') || s.save.flags.includes('album-open'));
+  // (season 2's second album is 소연's "노트": not locked, nothing to sync)
+  const albumOpen = useGame((s) => s.save.season === 2 || s.save.flags.includes('album-code') || s.save.flags.includes('album-open'));
   // The code can be found early, but the photos only arrive once 02:00 wants you to see them.
-  const synced = useGame((s) => s.save.chapter >= 3);
+  const synced = useGame((s) => s.save.season === 2 || s.save.chapter >= 3);
   const seen = useGame((s) => s.save.seenPhotos);
   const extra = useGame((s) => s.save.photos);
   const visible = (p: PhotoItem) => !p.extra || extra.includes(p.id);
 
   if (album === 'hidden' && !albumOpen && locked) return <HiddenLock onOpen={() => setLocked(false)} onBack={() => setAlbum(null)} />;
   if (album === 'hidden' && !synced) return <SyncingAlbum onBack={() => setAlbum(null)} />;
-  const list = album ? PHOTOS.filter((p) => p.album === album && visible(p)) : [];
+  const all = photos();
+  const hiddenName = isS2() ? '노트' : '숨김';
+  const list = album ? all.filter((p) => p.album === album && visible(p)) : [];
   if (album && open !== null) return <Viewer list={list} index={open} onClose={() => setOpen(null)} />;
 
   if (album) {
     return (
       <div className="gallery">
-        <AppHeader title={album === 'recent' ? '최근 항목' : '숨김'} onBack={() => setAlbum(null)} backLabel="앨범" />
+        <AppHeader title={album === 'recent' ? '최근 항목' : hiddenName} onBack={() => setAlbum(null)} backLabel="앨범" />
         <div className="grid">
           {list.map((p, i) => (
             <button key={p.id} type="button" className="thumb" onClick={() => setOpen(i)} aria-label={`${shownTime(p)} 사진`}>
@@ -414,7 +435,7 @@ export function GalleryApp() {
     );
   }
 
-  const recent = PHOTOS.filter((p) => p.album === 'recent' && visible(p));
+  const recent = all.filter((p) => p.album === 'recent' && visible(p));
   return (
     <div className="gallery">
       <AppHeader title="앨범" onBack={() => openApp(null)} backLabel="홈" />
@@ -427,9 +448,9 @@ export function GalleryApp() {
           <small>{recent.length}</small>
         </button>
         <button type="button" className="album" onClick={() => setAlbum('hidden')}>
-          <span className="album-cover locked">{albumOpen && synced ? <PhotoView id="h01" /> : <span className="lock-glyph">{albumOpen ? '☁' : '🔒'}</span>}</span>
-          <strong>숨김</strong>
-          <small>{!albumOpen ? '잠김' : synced ? 5 : '동기화 중'}</small>
+          <span className="album-cover locked">{albumOpen && synced ? <PhotoView id={isS2() ? 's2-n3' : 'h01'} /> : <span className="lock-glyph">{albumOpen ? '☁' : '🔒'}</span>}</span>
+          <strong>{hiddenName}</strong>
+          <small>{!albumOpen ? '잠김' : synced ? all.filter((p) => p.album === 'hidden').length : '동기화 중'}</small>
         </button>
       </div>
     </div>
