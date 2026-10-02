@@ -17,7 +17,7 @@ export function IndexApp() {
   const clock = useGame((s) => s.save.clock);
   const dohyun = useGame((s) => s.save.flags.includes('dohyun-in'));
   const rows: Row[] = [
-    { no: '#0001', name: '서미령', status: '1994.03.14부터 · 이름을 적는 사람', tone: 'index' },
+    { no: '#0001', name: '서○○', status: '1994.03.14부터 · 이름을 적는 사람', tone: 'index' },
     { no: '#0024', name: '김수연', status: '풀려남 2024.09', tone: 'done' },
     { no: '#0025', name: '박현우', status: '풀려남 09.27 02:00', tone: 'done' },
     { no: '#0026', name: '윤채원', status: '안에 있음', tone: 'on' },

@@ -207,4 +207,11 @@ describe('director timing', () => {
     expect(getState().save.choice).toBeNull();
     await until(() => getState().rt.incoming === 'dohyun2');
   });
+  it('01:54: look behind you and the screen goes dark in your hand — and she says nobody is there', async () => {
+    emit('choice:c5:turn');
+    await until(() => getState().rt.scare?.kind === 'turn', 5000, 50);
+    expect(getState().save.flags).toContain('turned');
+    await until(() => getState().save.threads.unknown.some((m) => m.text === '거봐요. 아무도 없죠.'));
+    await until(() => getState().save.threads.dohyun.some((m) => m.text.includes('같이 돌았어요')));
+  });
 });

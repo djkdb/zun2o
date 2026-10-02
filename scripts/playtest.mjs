@@ -251,7 +251,11 @@ await snap('archive-index');
 for (const r of ['기록 001', '기록 003', '기록 007']) {
   await page.getByRole('button', { name: r }).first().click();
   await wait(700);
-  if (r === '기록 003') await snap('archive-003');
+  if (r === '기록 003') {
+    await snap('archive-003');
+    const t = await page.textContent('.arc-page-wrap');
+    check('record 003 gives the surname only — the name is hidden', t.includes('서○○') && !t.includes('서미령'));
+  }
   await tap('.back');
   await wait(300);
 }
@@ -260,6 +264,14 @@ check('record 013 appears after the broadcast order', true);
 await page.locator('.archive li button.new').click();
 await wait(600);
 await snap('archive-013-key');
+check('record 013 points to where her given name was written', (await page.textContent('.arc-page-wrap')).includes('옥상에서 날씨를 적던 아이들'));
+// …and the students' weather notebook has it
+await tap('.back');
+await wait(300);
+await page.getByRole('button', { name: '기록 002' }).first().click();
+await wait(600);
+check('record 002: the students call the librarian by her given name', (await page.textContent('.arc-page-wrap')).includes('미령 쌤'));
+await snap('archive-002-name');
 mark('found the key → CH4');
 
 // ── CH4 ────────────────────────────────────────────────────────────────

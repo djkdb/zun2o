@@ -2643,6 +2643,30 @@ svg {
   height: 105%;
 }
 
+/* looking behind you: the phone goes dark in your hand, and the black glass shows who is there */
+.scare-turn {
+  background: #000;
+  animation: fade-in 0.25s ease both;
+}
+.scare-turn .ghost {
+  height: 100%;
+  opacity: 0;
+  filter: blur(2px) grayscale(1);
+  animation: turn-glass 1.8s ease both;
+}
+@keyframes turn-glass {
+  0%,
+  55% {
+    opacity: 0;
+  }
+  75% {
+    opacity: 0.32;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 /* the voice that isn't 도현's */
 .sub.other {
   color: #ff6b61;

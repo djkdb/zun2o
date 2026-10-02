@@ -86,7 +86,8 @@ export interface Nudge {
   from?: 'them' | 'me';
 }
 
-export type ScareKind = 'lunge' | 'peek' | 'flash' | 'reflect';
+/** `turn`: you look behind you — the screen is the dark glass you're holding, and for a moment it isn't empty. */
+export type ScareKind = 'lunge' | 'peek' | 'flash' | 'reflect' | 'turn';
 
 export type Action =
   | { t: 'wait'; ms: number }

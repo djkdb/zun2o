@@ -74,6 +74,8 @@ function buildRecall(): string[] {
   const typed = [...s.inputs].reverse().map((e) => /(?:(?:발신자 정보 없음|발신자 표시제한|모르는 번호)에게|나에게(?:에게)?) 보낸 메시지 "(.+)"$/.exec(e)?.[1]).find(Boolean);
   const toMom = s.inputs.some((e) => /^엄마.*에게 보낸 메시지/.test(e));
   const personal: [boolean, string][] = [
+    [s.flags.includes('turned'), '01:54에 돌아봤죠. 저랑 눈이 마주쳤어요. 당신은 기억 못 하겠지만.'],
+    [s.flags.includes('held'), '끝까지 돌아보지 않았죠. 도현 씨 말을 들었네요. 저는 계속 뒤에 있었어요.'],
     [s.flags.includes('kept-out'), '도현 씨를 밖에 세워 뒀죠. 31년 전에 저를 그렇게 막아 준 사람은 없었어요.'],
     [s.flags.includes('named-her'), '그 이름을 저한테 보냈죠. 한동안 대답을 못 했어요. 그건 인정할게요.'],
     [!!typed, `“${typed}”라고 보냈죠. 다 적어 뒀어요.`],
@@ -278,7 +280,7 @@ export function Finale() {
     if (n >= 2) {
       setErr('처음 갇힌 사람의 이름이 아닙니다. 당신의 이름이 기록됩니다.');
       setTimeout(() => reachEnding('shift'), 2600);
-    } else setErr('처음 갇힌 사람의 이름이 아닙니다. 한 번 더.');
+    } else setErr(input.trim().startsWith('서') ? '처음 갇힌 사람의 이름이 아닙니다. 성은… 맞습니다. 한 번 더.' : '처음 갇힌 사람의 이름이 아닙니다. 한 번 더.');
   };
 
   const powerOff = () => {
@@ -501,6 +503,7 @@ export function Finale() {
               <button type="submit">입력</button>
               {err && <p className="final-err">{err}</p>}
               {save.flags.includes('read-miryeong') && <Reread id="r003" />}
+              {save.flags.includes('read-r002') && <Reread id="r002" />}
               {tries === 0 && (
                 <button type="button" className="final-back" onClick={() => (setStep('choice'), setErr(''), setInput(''))}>
                   …다른 선택
@@ -531,7 +534,7 @@ function VideoIcon() {
 }
 
 /** At 02:00 you can't open the browser any more — but what you already read, you can read again. */
-function Reread({ id }: { id: 'r013' | 'r003' }) {
+function Reread({ id }: { id: 'r013' | 'r003' | 'r002' }) {
   const [open, setOpen] = useState(false);
   const page = ARCHIVE[id];
   if (!page) return null;

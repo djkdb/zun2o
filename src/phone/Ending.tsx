@@ -38,7 +38,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
       { who: '나에게', text: '…나왔어. 해가 떠', side: 'right' },
       { who: '도현', text: '채원이랑 같이 전화부스 안에서 깼어요. 둘 다 무사해요', side: 'left' },
       { who: '도현', text: '근데 당신은 어디 있어요? 이 폰만 선반에 있어요', side: 'left' },
-      { text: '이름을 적는 사람 — {name}. 서미령의 이름은 31년 만에 지워졌다.' },
+      { text: '이름을 적는 사람 — {name}. 처음 적힌 사람의 이름은 31년 만에 지워졌다.' },
       { text: '열람실 의자에 외투 하나가 걸렸다. 31년 동안 걸려 있던 것과 자리만 같다.', img: 'chair-coat' },
       { text: '1년 뒤. 해원고 정문 앞 공중전화 부스.' },
       { who: '발신자 정보 없음', text: '들어오세요. 저는 {name}{이에요}. 오래 기다렸어요.', side: 'left' },

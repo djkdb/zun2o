@@ -238,6 +238,9 @@ export const BEATS: Beat[] = [
       { t: 'chapter', n: 2, title: '목소리' },
       { t: 'time', hm: '00:47' },
       { t: 'msg', th: 'dohyun', text: '채원이 마지막 녹음이에요. 꼭 끝까지 들어요.', typing: 1600, attach: { kind: 'memo', id: 'm1' } },
+      // The rule of the night, in one plain line, before any of the lore.
+      { t: 'msg', th: 'dohyun', text: '채원이가 찍으려던 괴담이요. 새벽 두 시에 그 학교 안에 있으면 이름이 적히고, 다음 사람이 들어와야 나올 수 있대요.', typing: 2400 },
+      { t: 'msg', th: 'dohyun', text: '웃기는 얘기죠. 근데 채원이가 아직 안 나왔어요.', typing: 1500 },
       { t: 'msg', th: 'dohyun', text: '그리고 저 지금 학교로 가요. 20분이면 가요.', typing: 1800 },
       { t: 'msg', th: 'unknown', text: '전화부스 문, 밀어 봐요. 두 시까지는 안 열려요.', typing: 1600 },
       {
@@ -467,6 +470,8 @@ export const BEATS: Beat[] = [
       { t: 'msg', th: 'unknown', text: '배경화면 바꿔 놨어요. 마음에 들어요?' },
     ],
   },
+  // the students' weather notebook: the one place her given name was written down
+  { id: 'read-r002', on: 'browser:r002', actions: [{ t: 'flag', f: 'read-r002' }] },
   {
     id: 'read-miryeong',
     on: 'browser:r003',
@@ -510,7 +515,7 @@ export const BEATS: Beat[] = [
       {
         t: 'objective', app: 'index',
         text: '02:00에 삭제 코드와 처음 갇힌 사람의 이름이 필요하다',
-        hint: '02:00에 선택의 순간이 옵니다. 삭제 코드(HAEWON-0200, 기록 013)와 처음 갇힌 사람의 이름(기록 003)을 기억해 두세요. 02:00 화면에서도 읽은 기록을 다시 볼 수 있어요. 새로 생긴 녹음 18도 들어 보세요.',
+        hint: '02:00에 선택의 순간이 옵니다. 삭제 코드(HAEWON-0200, 기록 013)와 처음 갇힌 사람의 이름을 기억해 두세요. 성은 기록 003에, 가려진 이름은 기록 013의 마지막 줄이 가리키는 기록(옥상 관측 노트, 기록 002)에 있습니다. 02:00 화면에서도 읽은 기록을 다시 볼 수 있어요. 새로 생긴 녹음 18도 들어 보세요.',
       },
       { t: 'sound', id: 'heartbeat' },
       // One thing every in-game minute, until 02:00.
@@ -534,7 +539,18 @@ export const BEATS: Beat[] = [
       { t: 'time', hm: '01:54' },
       { t: 'msg', th: 'dohyun', text: '뒤돌아보지 마요.', typing: 500 },
       { t: 'msg', th: 'unknown', text: '돌아봐도 돼요.', typing: 900 },
-      { t: 'wait', ms: 10000 },
+      // Two voices, one neck. Nothing typed: you either look or you don't.
+      {
+        t: 'choice',
+        th: 'dohyun',
+        id: 'c5',
+        options: [
+          { id: 'turn', label: '(뒤돌아본다)', reply: '' },
+          { id: 'hold', label: '(돌아보지 않는다)', reply: '' },
+        ],
+      },
+      { t: 'wait', ms: 11000 },
+      { t: 'unchoice', id: 'c5' },
       { t: 'time', hm: '01:55' },
       { t: 'battery', v: 4 },
       { t: 'dialog', title: '배터리 부족', body: '배터리가 4% 남았습니다. 저전력 모드를 켤 수 없습니다: 야간 출입 기록이 사용 중.' },
@@ -568,6 +584,27 @@ export const BEATS: Beat[] = [
       { t: 'hush', ms: 3000 },
       { t: 'wait', ms: 2500 },
       { t: 'finale' },
+    ],
+  },
+  // ── 01:54, behind you ──
+  {
+    id: 'c5-turn',
+    on: 'choice:c5:turn',
+    actions: [
+      { t: 'flag', f: 'turned' },
+      { t: 'scare', kind: 'turn' },
+      { t: 'msg', th: 'dohyun', text: '방금 돌아봤을 때, 그 사람도 같이 돌았어요. 당신 등에 붙어서', typing: 1400 },
+      { t: 'msg', th: 'unknown', text: '거봐요. 아무도 없죠.', typing: 800 },
+    ],
+  },
+  {
+    id: 'c5-hold',
+    on: 'choice:c5:hold',
+    actions: [
+      { t: 'flag', f: 'held' },
+      { t: 'wait', ms: 1200 },
+      { t: 'msg', th: 'dohyun', text: '잘했어요. 그 사람 아직 거기 있어요. 머리 바로 뒤에요', typing: 1400 },
+      { t: 'msg', th: 'unknown', text: '괜찮아요. 두 시엔 어차피 마주 볼 거예요.', typing: 1600 },
     ],
   },
   // ── 01:55, the door: he goes in — or, because you told him to, he doesn't ──
@@ -748,9 +785,9 @@ export const BEATS: Beat[] = [
     requires: ['self-contact'],
     actions: [
       { t: 'wait', ms: 2400 },
-      { t: 'msg', th: 'unknown', text: '그 이름, 외워 둬요. 저는 못 불러요.', typing: 1300 },
+      { t: 'msg', th: 'unknown', text: '성은 거기 있어요. 이름은… 저는 못 불러요.', typing: 1300 },
       { t: 'wait', ms: 4200 },
-      { t: 'unsend', th: 'unknown', match: '그 이름, 외워 둬요' },
+      { t: 'unsend', th: 'unknown', match: '성은 거기 있어요' },
     ],
   },
   {

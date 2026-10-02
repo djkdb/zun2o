@@ -10,7 +10,7 @@ import { AnnexPhoto, FloorPlan, ReadingRoomPhoto, Room02Photo, TowerPhoto } from
 const PHOTO = {
   'reading-room': () => (art('reading-empty') ? <SlotPhoto slot="reading-empty" w={640} h={420} label="1994년 열람실." /> : <ReadingRoomPhoto level={3} stage={1} />),
   annex: () => (art('wallpaper') ? <SlotPhoto slot="wallpaper" w={640} h={420} label="해원고등학교." /> : <AnnexPhoto level={3} />),
-  miryeong: () => (art('miryeong-id') ? <SlotPhoto slot="miryeong-id" w={420} h={560} label="실종 신고서에 붙은 서미령의 증명사진. 안경을 쓴 40대 여성이 옅게 웃고 있다." /> : <ReadingRoomPhoto level={3} stage={1} />),
+  miryeong: () => (art('miryeong-id') ? <SlotPhoto slot="miryeong-id" w={420} h={560} label="실종 신고서에 붙은 야간 사서의 증명사진. 안경을 쓴 40대 여성이 옅게 웃고 있다." /> : <ReadingRoomPhoto level={3} stage={1} />),
   floorplan: () => (art('floorplan') ? <FloorPlanPhoto /> : <FloorPlan level={3} />),
   tower: () => (art('tower') ? <SlotPhoto slot="tower" w={640} h={420} align="xMidYMin" label="해원방송 송신탑." /> : <TowerPhoto level={0} />),
   'room-02': () => (art('room02') ? <SlotPhoto slot="room02" w={640} h={420} label="제2서고." /> : <Room02Photo level={5} />),

@@ -250,6 +250,14 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
       return;
     case 'scare':
       setRt({ scare: { kind: a.kind, nonce: nonce++, look: a.look } });
+      if (a.kind === 'turn') {
+        sfx('inhale');
+        await sleepReal(1100);
+        sfx('whisper');
+        await sleepReal(700);
+        setRt({ scare: null });
+        return;
+      }
       if (a.kind === 'lunge') {
         sfx('scream');
         vibrate([300, 60, 500]);
