@@ -4,3 +4,4 @@ qa-output
 *.log
 .DS_Store
 .vite
+voice-raw
