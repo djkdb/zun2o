@@ -4,6 +4,7 @@
 // silently when speech is unavailable or sound is off.
 
 import { spokenText, voiceKey, type VoiceId } from './voiceKey';
+import { audio } from './engine';
 
 export type Voice = VoiceId;
 
@@ -12,8 +13,16 @@ const FILES = new Map(
     ([path, url]) => [path.slice(path.lastIndexOf('/') + 1, -4), url],
   ),
 );
-const VOLUME: Record<Voice, number> = { male: 0.9, female: 0.85, entity: 0.7 };
+// the recordings are loudness-matched; play them full and let the bed duck under them
+const VOLUME: Record<Voice, number> = { male: 1, female: 1, entity: 0.95 };
 let playing: HTMLAudioElement | null = null;
+let stopBuffer: (() => void) | null = null;
+let seq = 0;
+
+/** Decode every recorded line in the background once sound is on, so each plays the moment it's due. */
+export function preloadVoices(): void {
+  FILES.forEach((url) => audio.preloadVoice(url));
+}
 
 let enabled = true;
 let koVoice: SpeechSynthesisVoice | null = null;
@@ -55,18 +64,29 @@ export function speak(text: string, voice: Voice): void {
   if (voice === 'entity') entityLayer?.(clean);
   const file = FILES.get(voiceKey(text, voice));
   if (file) {
-    try {
-      playing?.pause();
-      playing = new Audio(file);
-      playing.volume = VOLUME[voice];
-      void playing.play().catch(() => {});
-    } catch {
-      /* speech is decoration */
-    }
+    stopSpeech();
+    const my = ++seq;
+    // the audio context first (works from timers on phones); a plain <audio> only if that can't play
+    void audio.playVoice(file, VOLUME[voice]).then((stop) => {
+      if (my !== seq) return stop?.();
+      if (stop) {
+        stopBuffer = stop;
+        return;
+      }
+      try {
+        playing = new Audio(file);
+        playing.volume = VOLUME[voice];
+        void playing.play().catch(() => {});
+      } catch {
+        /* speech is decoration */
+      }
+    });
     return;
   }
   const s = synth();
   if (!s) return;
+  // No Korean voice on this device: an English voice would read the Korean. Subtitles only, then.
+  if (!pickVoice()) return;
   try {
     const u = new SpeechSynthesisUtterance(clean);
     u.lang = 'ko-KR';
@@ -93,6 +113,9 @@ export function speak(text: string, voice: Voice): void {
 
 export function stopSpeech(): void {
   try {
+    seq++;
+    stopBuffer?.();
+    stopBuffer = null;
     playing?.pause();
     playing = null;
     synth()?.cancel();

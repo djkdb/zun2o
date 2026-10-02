@@ -82,6 +82,13 @@ for (const [w, h] of SIZES) {
   await page.goto(`${BASE}?debug=1&speed=6`);
   await page.evaluate(() => localStorage.clear());
   await page.reload();
+  await page.waitForSelector('.co-go', { timeout: 15000 });
+  await audit(page, `${tag}-coldopen-start`);
+  await page.click('.co-go');
+  await page.waitForSelector('.co-act', { timeout: 8000 });
+  await page.waitForTimeout(1500);
+  await audit(page, `${tag}-coldopen-school`);
+  await page.click('.co-skip');
   await page.waitForSelector('.coldopen-actions.show', { timeout: 15000 });
   await audit(page, `${tag}-coldopen`);
   await page.click('.coldopen-actions .primary');

@@ -9,7 +9,7 @@ import { App } from './App';
 import { flush, getState, initState, setRt, setSave } from './engine/state';
 import { applyChapterMix, connectAudio, emit, onReturn, resume, setSpeed, startLifeTicker } from './engine/director';
 import { audio } from './audio/engine';
-import { setEntityLayer, setSpeechEnabled } from './audio/speech';
+import { preloadVoices, setEntityLayer, setSpeechEnabled } from './audio/speech';
 
 const params = new URLSearchParams(window.location.search);
 // `?debug=1` opens the debug panel. A release build can strip it entirely
@@ -39,6 +39,7 @@ const unlockOnce = async () => {
   if (!getState().save.sound) return;
   await audio.unlock();
   audio.setEnabled(true);
+  preloadVoices();
   applyChapterMix(4);
 };
 window.addEventListener('pointerdown', unlockOnce);

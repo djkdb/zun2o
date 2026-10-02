@@ -55,10 +55,19 @@ async function openThread(name) {
 // ── Cold open ───────────────────────────────────────────────────────────
 await page.goto(`${BASE}?debug=1&speed=${SPEED}`);
 await waitFor('.coldopen');
-await wait(2500);
+await wait(1500);
 await snap('coldopen');
-await waitFor('.coldopen-actions.show', 12000);
-mark('cold open finished typing');
+// played, not read: start → (rain) → run for the booth → the phone lights up → pick it up
+await tap('.co-go');
+await waitFor('.co-act', 8000);
+await wait(1400);
+await snap('coldopen-school');
+await tap('.co-act');
+await waitFor('.co-note.her', 12000);
+await snap('coldopen-phone-lights');
+check('cold open: the found phone lights up with the news push and "들어오세요."', (await page.locator('.co-note').count()) === 2);
+await waitFor('.coldopen-actions.show', 8000);
+mark('cold open played');
 await tap('.coldopen-actions .primary');
 
 // ── Lock ───────────────────────────────────────────────────────────────
@@ -389,6 +398,8 @@ for (const [label, cls] of [
 
 // ── Regression: exploits found by the playtester ────────────────────────
 await page.getByText('처음부터 다시 하기').click();
+await tap('.co-go');
+await tap('.co-skip');
 await waitFor('.coldopen-actions.show', 15000);
 await tap('.coldopen-actions .primary');
 await waitFor('.lock');

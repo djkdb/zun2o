@@ -11,10 +11,12 @@ import { existsSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 const OUT = 'src/assets/sfx';
 const KEY = process.env.ELEVEN_API_KEY;
 
+// (whisper.mp3 is not generated: generated whispers came out as English words — "No mercy".
+// It is 서미령's own lines 28+24 reversed, lowered and thinned to breath, in voice-raw/ → see sfx README.)
+//
 // id → what it is, how long. Written as foley, never music; close-miked and dry
 // (the engine places them in the building).
 const SFX = {
-  whisper: ['A woman whispering unintelligibly very close to the ear in an empty room, breathy, slow, creepy, no words clear, no music', 2.5],
   scream: ['A short distant female scream in an empty concrete school building, cut off abruptly, realistic, no music', 1.6],
   drawer: ['Many old wooden card catalogue drawers sliding open one after another in a large dark room, dry wood, creaking runners, no music', 3.5],
   knock: ['Three slow knocks with a knuckle on the glass door of an outdoor phone booth, rain in background, close, no music', 2.0],

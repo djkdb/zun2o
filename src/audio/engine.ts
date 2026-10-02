@@ -23,6 +23,8 @@ class AudioEngine {
   private ctx: Ctx | null = null;
   private master: GainNode | null = null;
   private ambience: GainNode | null = null;
+  private bed: GainNode | null = null;
+  private ducks = 0;
   private ambienceFilter: BiquadFilterNode | null = null;
   private drone: GainNode | null = null;
   /** A dying fluorescent tube somewhere in the building: follows the drone. */
@@ -92,7 +94,11 @@ class AudioEngine {
     const src = ctx.createBufferSource();
     src.buffer = buffer;
     src.loop = true;
-    src.connect(filter).connect(ambience).connect(master);
+    // the bed (rain, hum, drone) sits on its own gain, so voices can push it down
+    const bed = ctx.createGain();
+    bed.connect(master);
+    this.bed = bed;
+    src.connect(filter).connect(ambience).connect(bed);
     const hum = ctx.createOscillator();
     hum.frequency.value = 60;
     const humGain = ctx.createGain();
@@ -122,7 +128,7 @@ class AudioEngine {
     lfo.connect(lfoGain).connect(droneFilter.frequency);
     o1.connect(droneFilter);
     o2.connect(droneFilter);
-    droneFilter.connect(drone).connect(master);
+    droneFilter.connect(drone).connect(bed);
     o1.start();
     o2.start();
     lfo.start();
@@ -318,6 +324,59 @@ class AudioEngine {
         }
       }),
     );
+  }
+
+  /**
+   * Voice lines go through the same (already unlocked) audio context as the sounds:
+   * phones block a new <audio> started by a timer, but not a buffer on a running context.
+   * Decoded once and kept. Returns a stop function, or null if it can't play (yet).
+   */
+  private voices = new Map<string, AudioBuffer | Promise<AudioBuffer | null>>();
+  preloadVoice(url: string): void {
+    if (!this.ctx || this.voices.has(url)) return;
+    const ctx = this.ctx;
+    const p = fetch(url)
+      .then((r) => r.arrayBuffer())
+      .then((d) => ctx.decodeAudioData(d))
+      .then((b) => (this.voices.set(url, b), b))
+      .catch(() => (this.voices.delete(url), null));
+    this.voices.set(url, p);
+  }
+  async playVoice(url: string, volume: number): Promise<(() => void) | null> {
+    if (!this.enabled || !this.ctx || !this.master || this.ctx.state !== 'running') return null;
+    this.preloadVoice(url);
+    const buf = await this.voices.get(url);
+    if (!buf || !this.ctx || !this.master) return null;
+    const src = this.ctx.createBufferSource();
+    src.buffer = buf;
+    const g = this.ctx.createGain();
+    g.gain.value = volume;
+    // voices are dry and on top: in your ear, not in the building
+    src.connect(g).connect(this.master);
+    this.duck(true);
+    let done = false;
+    const end = () => {
+      if (done) return;
+      done = true;
+      this.duck(false);
+    };
+    src.onended = end;
+    src.start();
+    return () => {
+      try {
+        src.stop();
+      } catch {
+        /* already stopped */
+      }
+      end();
+    };
+  }
+
+  /** While someone is talking (a call, a memo, the video call) the rain and drone step back. */
+  duck(on: boolean): void {
+    this.ducks = Math.max(0, this.ducks + (on ? 1 : -1));
+    if (!this.ctx || !this.bed) return;
+    this.bed.gain.setTargetAtTime(this.ducks ? 0.22 : 1, this.ctx.currentTime, on ? 0.15 : 0.6);
   }
 
   play(id: SoundId): void {
