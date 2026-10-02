@@ -31,9 +31,9 @@ function Paper({ children, tilt = -2.2, label }: { children: React.ReactNode; ti
   );
 }
 
-const Line = ({ y, children, dim = false, strike = false, size = 23 }: { y: number; children: string; dim?: boolean; strike?: boolean; size?: number }) => (
-  <g opacity={dim ? 0.55 : 1}>
-    <text x="88" y={y} fontFamily={HAND} fontSize={size} fill="#24252e">
+const Line = ({ y, children, dim = false, strike = false, size = 23, pencil = false }: { y: number; children: string; dim?: boolean; strike?: boolean; size?: number; pencil?: boolean }) => (
+  <g opacity={dim ? 0.55 : pencil ? 0.6 : 1}>
+    <text x="88" y={y} fontFamily={HAND} fontSize={size} fill={pencil ? '#6b6f7a' : '#24252e'}>
       {children}
     </text>
     {strike && <line x1="86" x2={96 + children.length * 10.5} y1={y - 7} y2={y - 9} stroke="#24252e" strokeWidth="1.4" />}
@@ -44,11 +44,15 @@ const Line = ({ y, children, dim = false, strike = false, size = 23 }: { y: numb
 export const NotebookPage = memo(function NotebookPage({ page, more = '' }: { page: 1 | 2 | 3; more?: string }) {
   if (page === 3)
     return (
-      <Paper tilt={1.4} label="노트의 새 페이지. 9월 28일 02:00 — 한소연. 엄마의 글씨.">
-        <Line y={112}>9월 28일 02:00 — 한소연</Line>
+      <Paper tilt={1.4} label="노트의 새 페이지. 연필로 옅게: 9월 28일 02:00 — 한소연. 엄마의 글씨.">
+        <Line y={112} pencil>
+          9월 28일 02:00 — 한소연
+        </Line>
         {more && (
           <g className="nb-more">
-            <Line y={160}>{more}</Line>
+            <Line y={160} pencil>
+              {more}
+            </Line>
           </g>
         )}
       </Paper>

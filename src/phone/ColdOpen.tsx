@@ -58,6 +58,7 @@ export function ColdOpen() {
   useGame((s) => s.save.season);
   const T = TEXT[isS2() ? 2 : 1];
   const s1Done = useGame((s) => s.save.endings.some((e) => !e.startsWith('s2-')));
+  const sawRelease = useGame((s) => s.save.endings.includes('release'));
   const [sound, setSound] = useState(true);
   const [notes, setNotes] = useState(0);
   const [still] = useState(() => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -176,7 +177,7 @@ export function ColdOpen() {
 
       {step === 0 && (
         <div className="co-start">
-          {isS2() && <p className="co-season">시즌 2 「귀가」 · 시즌 1 엔딩 3 「기록 삭제」 1년 뒤</p>}
+          {isS2() && <p className="co-season">시즌 2 「귀가」 · 시즌 1 엔딩 3 「기록 삭제」 1년 뒤{!sawRelease && ' (엔딩 3을 아직 못 봤다면 그 결말이 나옵니다)'}</p>}
           <p className="co-stamp">{T.stamp}</p>
           <p className="co-ear">🎧 이어폰을 끼고, 소리를 켜 주세요.</p>
           <button type="button" className="primary co-go" onClick={() => void start(true)}>

@@ -6271,3 +6271,59 @@ body,
     animation: none;
   }
 }
+
+/* 나에게, from inside: hers, on the left, a cold tint and a small label */
+.bubble.them.inside {
+  background: #1f2a33;
+  color: #d8e4ee;
+  border: 1px solid #2f4252;
+}
+.bubble-who {
+  margin: 10px 0 2px 4px;
+  font-size: 12px;
+  color: #7f97aa;
+}
+
+/* reduced effects: no shaking, no blinking clocks, no flash from the dark glass */
+.reduce-fx .lock-dots.shake,
+.reduce-fx .call-top.hijacked,
+.reduce-fx .finale-clock,
+.reduce-fx .index-blink,
+.reduce-fx .index-rec,
+.reduce-fx .arc-blink,
+.reduce-fx .wave i.live.loud,
+.reduce-fx .note-cursor,
+.reduce-fx .nb-pen,
+.reduce-fx .co-step-6 .coldopen-scene {
+  animation: none !important;
+}
+.reduce-fx .scare-reflect {
+  display: none;
+}
+
+/* the admin login keypad has to fit a small phone */
+@container device (max-height: 700px) {
+  .admin-login .admin-logo {
+    width: 40px;
+    height: 40px;
+    margin: 6px auto 6px;
+    font-size: 22px;
+  }
+  .admin-login h2 {
+    font-size: 16px;
+  }
+  .admin-login .keypad .key,
+  .admin-login .keypad .key-del {
+    width: 60px;
+    height: 60px;
+    font-size: 22px;
+  }
+  .admin-login .keypad {
+    grid-template-columns: repeat(3, 60px);
+    gap: 8px 14px;
+  }
+}
+.admin-login .keypad {
+  justify-content: center;
+  margin: 10px auto 0;
+}

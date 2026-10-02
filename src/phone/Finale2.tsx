@@ -14,15 +14,15 @@ const WRITTEN = '9월 28일 02:00 — 한소';
 
 function buildRecall(): string[] {
   const s = getState().save;
-  const lines = ['02:00:00 — 어머니의 손이 멈춰 있어요. 한 글자 남았어요.'];
-  lines.push(s.s1?.name ? `${s.s1.name} 씨. 작년엔 누군가의 이름을 불러 줬죠. 올해는 누구 이름을 남길 거예요?` : '이번엔 누구 이름이 남을까요.');
-  if (s.flags.includes('pretended')) lines.push('어머니한테 소연 씨인 척했죠. 어머니는 믿었어요. 믿고 싶었으니까.');
-  if (s.flags.includes('told-truth')) lines.push('어머니한테 사실대로 말했죠. 어머니는 그 뒤로 한마디도 안 했어요. 손만 움직였어요.');
-  if (s.flags.includes('promised')) lines.push('소연 씨한테 지우겠다고 했죠. 소연 씨는 그 말을 믿고 기다려요.');
-  if (s.flags.includes('asked-her')) lines.push('소연 씨한테 정말 남을 거냐고 물었죠. 대답 대신 무섭다고 했어요.');
-  lines.push(s.flags.includes('copy-armed') ? '사본 삭제가 예약돼 있어요. 지우면 기록이 끝나요. 어머니도요.' : '사본은 그대로예요. 기록은 계속돼요.');
+  const lines = ['02:00. 어머니 손이 멈췄어요. 한 글자 남았어요.'];
+  // last year: only ending 3 called her name; anyone else just came and went
+  if (s.s1?.name) lines.push(s.s1.endings.includes('release') ? `${s.s1.name} 씨. 작년엔 어머니 이름 불러 줬잖아요.` : `${s.s1.name} 씨. 작년에도 여기 있었죠.`);
+  if (s.flags.includes('pretended')) lines.push('어머니한테 소연 씨인 척했죠. 어머니는 감기 걸렸냐고만 했어요.');
+  if (s.flags.includes('told-truth')) lines.push('어머니한테 사실대로 말했죠. 그 뒤로 어머니 손만 움직였어요.');
+  if (s.flags.includes('promised')) lines.push('소연 씨한테 지운다고 했죠. 기다리고 있어요.');
+  if (s.flags.includes('asked-her')) lines.push('소연 씨한테 정말 남을 거냐고 물었죠. 무섭대요.');
+  lines.push(s.flags.includes('copy-armed') ? '삭제 예약돼 있어요. 지우면 끝나요. 어머니도요.' : '사본은 그대로예요.');
   lines.push('누구든 적히면 도현 씨는 나와요.');
-  lines.push('누군가는 적혀야 해요. 아니면, 아무것도 남지 않거나.');
   return lines;
 }
 
@@ -99,6 +99,10 @@ export function Finale2() {
             <line key={y} x1="0" x2="360" y1={y} y2={y} stroke="#9fb4cc" strokeWidth="0.8" opacity="0.7" />
           ))}
           <line x1="34" x2="34" y1="0" y2="150" stroke="#d27a7a" strokeWidth="1" opacity="0.7" />
+          {/* written in pencil beforehand; at two her pen goes over it */}
+          <text x="44" y="74" fontFamily={HAND} fontSize="27" fill="#6b6f7a" opacity="0.45">
+            {WRITTEN}연
+          </text>
           <text x="44" y="74" fontFamily={HAND} fontSize="27" fill="#24252e">
             {WRITTEN.slice(0, ink)}
           </text>
@@ -112,7 +116,7 @@ export function Finale2() {
           ))}
           {step === 'choice' && (
             <div className="final-choices" ref={reveal as React.RefObject<HTMLDivElement>}>
-              <p className="final-choices-title">하나를 고르십시오</p>
+              <p className="final-choices-title">하나만 고를 수 있어요</p>
               <button type="button" onClick={() => (sfx('thud'), reachEnding('s2-daughter'))}>
                 <b>지켜본다</b>
                 <small>어머니의 손이 마지막 글자를 쓴다. 소연이 남는다.</small>

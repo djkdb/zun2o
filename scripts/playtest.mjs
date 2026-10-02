@@ -381,7 +381,7 @@ await snap('final-choices');
 await tapText('삭제 코드를 입력한다');
 await page.fill('#fk', 'HAEWON-0200');
 await tapText('입력');
-await page.fill('#fn', '서미령');
+await page.fill('#fn', '서미령 씨');
 await tapText('입력');
 await waitFor('.ending-release', 10000);
 mark('ENDING 3 — 기록 삭제');

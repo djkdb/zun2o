@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useGame } from '../../hooks/useGame';
 import { emit, openApp, sfx } from '../../engine/director';
-import { addFlag, getState, setRt, setSave } from '../../engine/state';
+import { addFlag, fill, getState, setRt, setSave } from '../../engine/state';
 import { ARCHIVE, ARCHIVE_SEQUENCE, archiveList, type ArchivePage } from '../../content/archive';
 import { isS2 } from '../../content/season';
 import { art } from '../../art/photoArt';
@@ -19,6 +19,14 @@ const PHOTO = {
 
 type View = { kind: 'home' } | { kind: 'archive' } | { kind: 'page'; id: string } | { kind: 'dead'; path: string };
 
+/** Record 009 "hasn't been written yet" — until, in chapter 3, it is being written about you. */
+function pageOf(id: string): ArchivePage {
+  const s = getState().save;
+  if (id === 'r009' && s.flags.includes('r009-you'))
+    return { ...ARCHIVE.r009, title: '기록 009 — 작성 중', access: undefined, lines: ['이 기록은 지금 쓰이고 있습니다.', `방문자 #0027 ${s.playerName ?? '(이름 없음)'} · 들어옴 ${fill('{start}')} · 완료 예정 02:00`] };
+  return ARCHIVE[id];
+}
+
 function seenPages(): string[] {
   return (getState().save.choices.archiveSeen ?? '').split(',').filter(Boolean);
 }
@@ -30,6 +38,7 @@ export function BrowserApp() {
   }, []);
   const [notice, setNotice] = useState<string | null>(null);
   const indexed = useGame((s) => s.save.flags.includes('r013-indexed'));
+  const writing = useGame((s) => s.save.flags.includes('r009-you'));
   const chapter = useGame((s) => s.save.chapter);
 
   const openPage = (id: string) => {
@@ -48,7 +57,14 @@ export function BrowserApp() {
       setView({ kind: 'page', id: '__restricted' });
       return;
     }
-    const seq = [...(getState().save.choices.archiveSeq ?? '').split(',').filter(Boolean), id].slice(-3);
+    const prevSeq = (getState().save.choices.archiveSeq ?? '').split(',').filter(Boolean);
+    const seq = [...prevSeq, id].slice(-3);
+    // How far into the broadcast order the last opened records were, before this one.
+    const progress = (list: string[]) => {
+      for (let k = Math.min(list.length, ARCHIVE_SEQUENCE.length); k > 0; k--) if (list.slice(-k).join(',') === ARCHIVE_SEQUENCE.slice(0, k).join(',')) return k;
+      return 0;
+    };
+    const broke = getState().save.flags.includes('self-contact') && !indexed && id !== ARCHIVE_SEQUENCE[0] && progress(prevSeq) > 0 && progress(seq) !== progress(prevSeq) + 1;
     setSave((s) => ({
       choices: { ...s.choices, archiveSeq: seq.join(','), archiveSeen: Array.from(new Set([...seen, id])).join(',') },
     }));
@@ -59,6 +75,8 @@ export function BrowserApp() {
     }
     setView({ kind: 'page', id });
     emit(`browser:${id}`);
+    // Started the broadcast order and opened something else: say so right away.
+    if (broke) setTimeout(() => setNotice('순서가 섞였어요. 001부터 다시 차례로 열어야 해요.'), 700);
     // Reached the last record of the sequence, but not in broadcast order: say so, without saying the order.
     if (!indexed && id === ARCHIVE_SEQUENCE[ARCHIVE_SEQUENCE.length - 1] && seq.join(',') !== ARCHIVE_SEQUENCE.join(',') && getState().save.flags.includes('self-contact')) {
       setTimeout(() => setNotice('열람 순서가 방송 순서와 다릅니다. 기록 013은 목록에 추가되지 않았습니다.'), 900);
@@ -117,8 +135,9 @@ export function BrowserApp() {
             <span className="url-placeholder">검색 또는 주소 입력</span>
           )}
         </div>
-        <span className="url-tabs" aria-label="열린 탭 3개">
-          3
+        {/* a tab you didn't open */}
+        <span className="url-tabs" aria-label={`열린 탭 ${writing ? 4 : 3}개`}>
+          {writing ? 4 : 3}
         </span>
       </header>
       {view.kind === 'home' && (
@@ -184,7 +203,7 @@ export function BrowserApp() {
           </p>
           <ul className="arc-list">
             {[...archiveList(), ...(indexed && !isS2() ? ['r013'] : [])].map((id) => {
-              const p = ARCHIVE[id];
+              const p = pageOf(id);
               const [no, name] = p.title.replace('기록 ', '').split(' — ');
               const badge = id === 'r013' ? 'NEW' : p.access === 'restricted' ? '열람 제한' : p.access === 'denied' ? '접근 거부' : null;
               return (
@@ -237,15 +256,15 @@ export function BrowserApp() {
         </div>
       )}
       {view.kind === 'page' && ARCHIVE[view.id]?.news && <NewsArticle page={ARCHIVE[view.id]} onOpen={openPage} />}
-      {view.kind === 'page' && ARCHIVE[view.id] && !ARCHIVE[view.id].news && (
+      {view.kind === 'page' && pageOf(view.id) && !pageOf(view.id).news && (
         <div className="arc-site arc-page-wrap">
-          <article className={`archive-page arc-doc${ARCHIVE[view.id].access === 'denied' ? ' denied' : ''}`}>
-            <p className="arc-doc-no">{ARCHIVE[view.id].title.split(' — ')[0]}</p>
-            <h2>{ARCHIVE[view.id].title.split(' — ')[1]}</h2>
-            {ARCHIVE[view.id].meta && <p className="arc-doc-meta">{ARCHIVE[view.id].meta}</p>}
-            {ARCHIVE[view.id].access === 'restricted' && <div className="stamp arc-stamp">열람 제한</div>}
-            {ARCHIVE[view.id].photo && <div className="archive-photo arc-scan">{PHOTO[ARCHIVE[view.id].photo!]()}</div>}
-            {ARCHIVE[view.id].lines.map((l, i) => (
+          <article className={`archive-page arc-doc${pageOf(view.id).access === 'denied' ? ' denied' : ''}`}>
+            <p className="arc-doc-no">{pageOf(view.id).title.split(' — ')[0]}</p>
+            <h2>{pageOf(view.id).title.split(' — ')[1]}</h2>
+            {pageOf(view.id).meta && <p className="arc-doc-meta">{pageOf(view.id).meta}</p>}
+            {pageOf(view.id).access === 'restricted' && <div className="stamp arc-stamp">열람 제한</div>}
+            {pageOf(view.id).photo && <div className="archive-photo arc-scan">{PHOTO[pageOf(view.id).photo!]()}</div>}
+            {pageOf(view.id).lines.map((l, i) => (
               <p key={i} className={l.includes('HAEWON-0200') ? 'key-line' : undefined}>
                 <Rich text={l} />
               </p>

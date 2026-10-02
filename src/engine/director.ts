@@ -153,10 +153,11 @@ export function showBanner(app: AppId, title: string, body: string, thread?: Thr
   setRt({ banner: { id, app, title, body, thread } });
   sfx('ding');
   vibrate([60]);
+  // what the phone heard (sound off) stays up longer than a message
   const t = setTimeout(() => {
     timers.delete(t);
     if (getState().rt.banner?.id === id) setRt({ banner: null });
-  }, 3200);
+  }, title === '소리 인식' ? 6000 : 3200);
   timers.add(t);
 }
 
@@ -206,7 +207,14 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
         setRt((r) => ({ typing: { ...r.typing, [a.th]: false } }));
       }
       const text = fill(a.text);
-      appendMessage(a.th, { from: a.from ?? 'them', text, time: getState().save.clock, ...(a.attach ? { attach: a.attach } : {}) });
+      appendMessage(a.th, {
+        from: a.from ?? 'them',
+        text,
+        time: getState().save.clock,
+        ...(a.attach ? { attach: a.attach } : {}),
+        // her 나에게 from inside: shown as hers, not yours
+        ...(a.th === 'self' && a.from === 'me' ? { inside: true } : {}),
+      });
       if (isViewing(a.th)) {
         sfx('key');
       } else {
@@ -225,11 +233,12 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
     case 'write': {
       // Someone else's hand, in your notes app: one character at a time.
       setSave((s) => ({ notes: s.notes.includes('live') ? s.notes : [...s.notes, 'live'] }));
-      for (const ch of a.text) {
+      // '\b' scratches out the last character
+      for (const ch of fill(a.text)) {
         if (myEpoch !== epoch) return;
-        setSave((s) => ({ liveNote: (s.liveNote ?? '') + ch }));
-        if (getState().rt.app === 'notes' && ch.trim()) sfx('key');
-        await sleepReal(a.ms);
+        setSave((s) => ({ liveNote: ch === '\b' ? (s.liveNote ?? '').slice(0, -1) : (s.liveNote ?? '') + ch }));
+        if (getState().rt.app === 'notes' && ch.trim()) sfx(ch === '\b' ? 'glitch' : 'key');
+        await sleepReal(ch === '\b' ? a.ms * 2 : a.ms);
       }
       return;
     }
@@ -267,6 +276,7 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
     case 'scare':
       setRt({ scare: { kind: a.kind, nonce: nonce++, look: a.look } });
       if (a.kind === 'turn') {
+        if (!getState().save.sound) showBanner('settings', '소리 인식', '바로 뒤에서 숨소리가 감지되었습니다.');
         sfx('inhale');
         await sleepReal(1100);
         sfx('whisper');

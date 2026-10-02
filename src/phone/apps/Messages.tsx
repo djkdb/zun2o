@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useGame } from '../../hooks/useGame';
 import { choose, emit, openApp, openAttach, openThread, sendText, teaseTyping } from '../../engine/director';
 import { dayLabel, lastSent, threadMeta, threadOrder, timeline } from '../../content/threads';
+import { isS2 } from '../../content/season';
 import type { Attach, ThreadId } from '../../engine/types';
 import { MEMO_TITLES, photos } from '../../content/media';
 import { PhotoView } from './Gallery';
@@ -120,6 +121,7 @@ function Chat({ th }: { th: ThreadId }) {
   const [nameMode, setNameMode] = useState<string | null>(null);
   const [name, setName] = useState('');
   const meta = threadMeta()[th];
+  const insideName = isS2() ? '소연' : '채원';
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: 'end', behavior: 'smooth' });
@@ -153,11 +155,15 @@ function Chat({ th }: { th: ThreadId }) {
       />
       <div className={`chat-body${th === 'unknown' ? ' chat-unknown' : ''}`}>
         {msgs.map((m, i) => {
+          // 채원 (or 소연) writing to 나에게 from inside: on the left, labelled, so it never reads as you
+          const side = m.inside ? 'them inside' : m.from;
+          const label = m.inside && !msgs[i - 1]?.inside;
           return (
             <div key={m.id}>
               {dayHeaders[i] && <div className="chat-day">{dayHeaders[i]}</div>}
-              <div className={`bubble-row ${m.from}${m.attach ? ' has-attach' : ''}`}>
-                <div className={`bubble ${m.from}${m.failed ? ' failed' : ''}`}>
+              {label && <div className="bubble-who">{insideName} · 안에서</div>}
+              <div className={`bubble-row ${side}${m.attach ? ' has-attach' : ''}`}>
+                <div className={`bubble ${side}${m.failed ? ' failed' : ''}`}>
                   {m.text}
                   {m.attach && <AttachCard a={m.attach} />}
                 </div>
@@ -167,8 +173,8 @@ function Chat({ th }: { th: ThreadId }) {
           );
         })}
         {typing && (
-          <div className={`bubble-row ${th === 'self' ? 'me' : 'them'}`}>
-            <div className={`bubble ${th === 'self' ? 'me' : 'them'} typing`} aria-label="입력 중">
+          <div className={`bubble-row them${th === 'self' ? ' inside' : ''}`}>
+            <div className={`bubble them${th === 'self' ? ' inside' : ''} typing`} aria-label="입력 중">
               <i />
               <i />
               <i />

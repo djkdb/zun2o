@@ -297,6 +297,8 @@ export function fill(text: string): string {
     clock: s.clock,
     toDohyun: s.choices.toDohyun ?? '',
     s1name: s.s1?.name ?? '(이름 없음)',
+    // the first letter of your name (or of "당신")
+    initial: (s.playerName ?? s.s1?.name ?? '당신').slice(0, 1),
     typed1: s.s1?.typed ?? '',
   };
   return text.replace(/\{(\w+)\}/g, (m, k: string) => values[k] ?? m);

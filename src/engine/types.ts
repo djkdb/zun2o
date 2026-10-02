@@ -64,6 +64,8 @@ export interface ChatMsg {
   attach?: Attach;
   /** The player's text that never left the phone. */
   failed?: boolean;
+  /** 나에게, sent from inside (채원 / 소연 on the phone you're holding) — not by you. */
+  inside?: boolean;
 }
 
 export type Attach =

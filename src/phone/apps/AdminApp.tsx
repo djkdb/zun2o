@@ -1,19 +1,28 @@
 import { useState, type FormEvent } from 'react';
 import { useGame } from '../../hooks/useGame';
 import { emit, openApp, sfx, vibrate } from '../../engine/director';
-import { addFlag, logInput } from '../../engine/state';
+import { addFlag, logInput, setRt } from '../../engine/state';
+import { ARCHIVE, plain } from '../../content/archive';
 
 // 시즌 2 — "보관소 관리": 소연's admin page for the 심야 기록보관소, still logged in.
 // The waiting list for 02:00, the last copy of record 013, and the letter she didn't finish.
 
 const PASSWORD = '0928'; // the day 엄마 came home
-/** The first sentence the record ever kept: eleven-year-old 소연, at the police station. */
-const FIRST = '엄마가두시전에는온다고했어요';
-const norm = (t: string) => t.replace(/[\s.,!?·…'"“”‘’「」()]/g, '');
+/**
+ * Where the record starts: the missing-person report, and the first thing said in it —
+ * eleven-year-old 소연 at the police station. "2시" counts as "두 시"; small slips are fine.
+ */
+const norm = (t: string) =>
+  t
+    .replace(/[\s.,!?·…'"“”‘’「」()~]/g, '')
+    .replace(/2시/g, '두시')
+    .replace(/(\d|두)시전엔/g, '두시전에는');
 const isFirst = (t: string) => {
-  const n = norm(t);
-  return n.includes(FIRST) || n.includes('두시전에는온다고');
+  const n = norm(t).replace(/전에는/g, '전에');
+  return n.includes('두시전에온다고') || n.includes('두시전에온댔') || n.includes('두시전에온다했');
 };
+/** The trap: her mother's text tonight says it the other way round. */
+const isMothers = (t: string) => /두시전에는?집에오라/.test(norm(t));
 
 function untilTwo(clock: string): number {
   const [h, m] = clock.split(':').map(Number);
@@ -88,6 +97,10 @@ function Dashboard() {
   const chapter = useGame((s) => s.save.chapter);
   const name = useGame((s) => s.save.playerName);
   const s1 = useGame((s) => s.save.s1);
+  // did last year end with her name being called (ending 3)?
+  const calledHer = !!s1?.endings.includes('release');
+  const [reread, setReread] = useState(false);
+  const [near, setNear] = useState(false);
   const armed = useGame((s) => s.save.flags.includes('copy-armed'));
   const [asking, setAsking] = useState(false);
   const [text, setText] = useState('');
@@ -97,7 +110,7 @@ function Dashboard() {
   const queue: { no: number; who: string; why: string; you?: boolean; first?: boolean }[] = [
     { no: 1, who: '한소연', why: '자원 · 관리자가 직접 맨 위로 옮김 (22:47)', first: true },
     { no: 2, who: '윤채원', why: '작년 기록 013 열람' },
-    ...(s1 ? [{ no: 3, who: `방문자 #0027 ${s1.name ?? '(이름 없음)'}`, why: '작년 기록 013 열람 · 이름을 불러 준 사람' }] : []),
+    ...(s1 ? [{ no: 3, who: `방문자 #0027 ${s1.name ?? '(이름 없음)'}`, why: calledHer ? '작년 기록 013 열람 · 이름을 불러 준 사람' : '작년 기록 013 열람' }] : []),
     { no: s1 ? 4 : 3, who: name ?? '방문자 #0031', why: '지금 이 페이지를 보는 사람', you: true },
   ];
 
@@ -110,9 +123,11 @@ function Dashboard() {
       addFlag('copy-armed');
       emit('admin:armed');
       setAsking(false);
+      setRt({ engaged: false });
     } else {
       sfx('error');
       vibrate([80]);
+      setNear(isMothers(text));
       setWrong((n) => n + 1);
       emit('admin:wrong');
     }
@@ -149,7 +164,7 @@ function Dashboard() {
             </li>
           ))}
         </ol>
-        <p className="admin-note">맨 위부터 기록됩니다. 맨 위 사람이 학교 안에 있으면 그 사람이 기록됩니다.</p>
+        <p className="admin-note">맨 위부터 적힙니다.</p>
       </section>
 
       <section className="admin-box">
@@ -160,17 +175,41 @@ function Dashboard() {
         </p>
         {!armed && !asking && (
           <>
-            <p className="admin-warn">관리자 계정으로는 삭제할 수 없습니다. 이 계정의 이름이 기록에 있습니다 (기록 003 · 신고자).</p>
+            <p className="admin-warn">관리자 계정으로는 삭제할 수 없습니다. 이 기록을 시작한 사람입니다 (기록 003 · 신고자).</p>
             <button type="button" className="admin-btn" onClick={() => (sfx('click'), setAsking(true))}>
-              기록에 이름이 없는 사람으로 삭제 요청
+              다른 사람이 대신 삭제 요청
             </button>
           </>
         )}
         {!armed && asking && (
           <form className="admin-form" onSubmit={submit}>
-            <label htmlFor="first">본인 확인 대신: 이 기록에 처음 남은 문장을 입력하세요.</label>
-            <textarea id="first" rows={2} value={text} onChange={(e) => setText(e.target.value)} autoComplete="off" />
-            {wrong > 0 && <p className="final-err">첫 문장이 아닙니다.{wrong >= 2 ? ' 이 기록은 실종 신고에서 시작되었습니다.' : ''}</p>}
+            <label htmlFor="first">확인: 이 기록이 시작된 말. 신고한 사람이 처음 한 말을 입력하세요.</label>
+            <textarea
+              id="first"
+              rows={2}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              // while you type, the night holds its pop-ups
+              onFocus={() => setRt({ engaged: true })}
+              onBlur={() => setRt({ engaged: false })}
+              autoComplete="off"
+            />
+            {wrong > 0 && (
+              <p className="final-err">
+                {near ? '비슷해요. 그건 엄마가 오늘 한 말이에요. 첫 문장이 아닙니다.' : '첫 문장이 아닙니다.'}
+                {wrong >= 2 && !near ? ' 이 기록은 실종 신고에서 시작되었습니다.' : ''}
+              </p>
+            )}
+            <button type="button" className="admin-draft-btn" onClick={() => (sfx('click'), setReread((v) => !v))} aria-expanded={reread}>
+              {reread ? '기록 003 닫기' : '기록 003 (실종 신고) 다시 보기'}
+            </button>
+            {reread && (
+              <div className="admin-draft">
+                {ARCHIVE.r003.lines.map((l) => (
+                  <p key={l}>{plain(l)}</p>
+                ))}
+              </div>
+            )}
             <div className="admin-actions">
               <button type="submit" className="admin-btn">
                 요청

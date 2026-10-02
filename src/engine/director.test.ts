@@ -214,4 +214,13 @@ describe('director timing', () => {
     await until(() => getState().save.threads.unknown.some((m) => m.text === '거봐요. 아무도 없죠.'));
     await until(() => getState().save.threads.dohyun.some((m) => m.text.includes('같이 돌았어요')));
   });
+  it('채원 writing to 나에게 from inside is marked as hers, not the player\'s', async () => {
+    setSave({ flags: ['selfie-scare'] });
+    emit('choice:c3:finder');
+    await until(() => getState().save.threads.self.some((m) => m.text.includes('도와줘')));
+    const hers = getState().save.threads.self.filter((m) => m.text.includes('도와줘'));
+    expect(hers.every((m) => m.inside)).toBe(true);
+    sendText('self', '어디야');
+    expect(getState().save.threads.self.at(-1)?.inside).toBeUndefined();
+  });
 });

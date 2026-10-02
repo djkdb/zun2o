@@ -31,7 +31,6 @@ function check(name, ok, detail = '') {
 const snap = (name) => page.screenshot({ path: `${OUT}/${String(++shot).padStart(2, '0')}-${name}.png` });
 const wait = (ms) => page.waitForTimeout(ms);
 const save = () => page.evaluate(() => window.__game.getState().save);
-const rt = () => page.evaluate(() => window.__game.getState().rt);
 const setRt = (patch) => page.evaluate((p) => window.__game.setRt(p), patch);
 /** Wait for a condition on the game state, answering nothing on the way. */
 async function until(fn, ms = 120000) {
@@ -125,12 +124,15 @@ await snap('admin');
 const admin = await page.textContent('.admin');
 check('admin: the waiting list puts 소연 first and you last', admin.includes('한소연') && admin.includes('지금 이 페이지를 보는 사람'));
 await page.getByText('“두 시 전에…”').click();
-await page.getByText('기록에 이름이 없는 사람으로 삭제 요청').click();
-await page.fill('#first', '엄마');
+await page.getByText('다른 사람이 대신 삭제 요청').click();
+await page.fill('#first', '엄마가 두시 전에는 집에 오라고 했잖아');
 await page.getByRole('button', { name: '요청' }).click();
 await wait(300);
-check('a wrong first sentence is refused', (await page.textContent('.admin')).includes('첫 문장이 아닙니다'));
-await page.fill('#first', '엄마가 두 시 전에는 온다고 했어요.');
+check('her mother\'s text (the trap) is refused, and told apart', (await page.textContent('.admin')).includes('엄마가 오늘 한 말'));
+await page.getByText('기록 003 (실종 신고) 다시 보기').click();
+check('record 003 can be reread right in the form', (await page.textContent('.admin')).includes('신고자: 딸'));
+// "2시" for "두 시" is fine
+await page.fill('#first', '엄마가 2시 전에는 온다고 했어요');
 await page.getByRole('button', { name: '요청' }).click();
 check('the first sentence (record 003) arms the deletion for 02:00', await until(() => window.__game.getState().save.flags.includes('copy-armed'), 5000));
 await snap('admin-armed');
