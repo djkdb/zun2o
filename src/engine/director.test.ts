@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { emit, newGame, sendText, setSpeed } from './director';
+import { choose, emit, newGame, sendText, setSpeed } from './director';
 import { getState, initState, setRt, setSave } from './state';
 
 // The director's timing rules, checked on the real story script with fake
@@ -125,14 +125,16 @@ describe('director timing', () => {
     expect(getState().save.flags).toContain('p07-revealed');
   });
 
-  it('the selfie: just 채원 until the scare, and she is at her cheek once it fades', async () => {
+  it('the selfie changes while you look: her far back first, then at 채원\'s cheek — no lunge', async () => {
     setSave({ flags: ['ch3'] });
     expect(getState().save.flags).not.toContain('h05-revealed');
     emit('photo:h05:dwell');
     await vi.advanceTimersByTimeAsync(300);
-    expect(getState().rt.scare?.kind).toBe('lunge');
-    expect(getState().rt.scare?.look).toBe('profile');
+    expect(getState().save.flags).toContain('h05-far');
+    expect(getState().save.flags).not.toContain('h05-revealed');
+    await vi.advanceTimersByTimeAsync(3000);
     expect(getState().save.flags).toContain('h05-revealed');
+    expect(getState().rt.scare).toBeNull();
   });
 
   it('messages to 도현 never leave the phone', () => {
@@ -173,5 +175,36 @@ describe('director timing', () => {
     expect(getState().save.threads.unknown.filter((m) => m.text.includes('도현 씨한테는 안 가요'))).toHaveLength(1);
     emit('dohyun:late-text');
     await until(() => getState().save.threads.dohyun.some((m) => m.from === 'them' && m.text.includes('“거기 어디예요”')));
+  });
+  it('01:55: tell 도현 to stay out and he does — no call from inside, and 채원 is the one still in there', async () => {
+    setSave({ flags: ['found-key', 'self-contact'] });
+    setSpeed(40);
+    emit('ch4');
+    await until(() => {
+      if (getState().rt.dialog) setRt({ dialog: null });
+      return getState().save.choice?.id === 'c4';
+    });
+    choose('stop');
+    await until(() => getState().save.threads.self.some((m) => m.text.includes('나밖에 없어')));
+    expect(getState().save.flags).toContain('kept-out');
+    expect(getState().save.flags).not.toContain('dohyun-in');
+    await until(() => {
+      if (getState().rt.dialog) setRt({ dialog: null });
+      expect(getState().rt.incoming).not.toBe('dohyun2');
+      return getState().rt.finale === true;
+    }, 300000);
+  });
+
+  it('01:55: say nothing and the question goes away — he goes in, and the call comes from inside', async () => {
+    setSave({ flags: ['found-key', 'self-contact'] });
+    setSpeed(40);
+    emit('ch4');
+    await until(() => {
+      if (getState().rt.dialog) setRt({ dialog: null });
+      return getState().save.choice?.id === 'c4';
+    });
+    await until(() => getState().save.flags.includes('dohyun-in'));
+    expect(getState().save.choice).toBeNull();
+    await until(() => getState().rt.incoming === 'dohyun2');
   });
 });

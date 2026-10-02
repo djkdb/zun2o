@@ -92,6 +92,10 @@ for (const [w, h] of SIZES) {
   await page.waitForSelector('.coldopen-actions.show', { timeout: 15000 });
   await audit(page, `${tag}-coldopen`);
   await page.click('.coldopen-actions .primary');
+  await page.waitForSelector('.co-push', { timeout: 4000 });
+  await page.waitForTimeout(800);
+  await audit(page, `${tag}-coldopen-door`);
+  await page.click('.co-push');
   await page.waitForSelector('.lock');
   // The opening call: audit it, then let it go.
   await page.waitForSelector('.incoming', { timeout: 10000 });

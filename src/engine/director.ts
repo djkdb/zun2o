@@ -214,6 +214,9 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
     case 'choice':
       setSave({ choice: { thread: a.th, id: a.id, options: a.options } });
       return;
+    case 'unchoice':
+      if (getState().save.choice?.id === a.id) setSave({ choice: null });
+      return;
     case 'notify':
       await whenFree(myEpoch);
       showBanner(a.app, a.title, a.body, a.open?.thread);

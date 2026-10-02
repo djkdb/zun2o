@@ -15,3 +15,11 @@ export function useTicker(ms: number): number {
   }, [ms]);
   return now;
 }
+
+/** Whose phone this is. From 01:50 on, it isn't hers any more. */
+export function usePhoneOwner(): string {
+  const ch4 = useGame((s) => s.save.flags.includes('ch4'));
+  const name = useGame((s) => s.save.playerName);
+  if (!ch4) return '채원의 휴대폰';
+  return `${name ?? '방문자 #0027'}의 휴대폰`;
+}

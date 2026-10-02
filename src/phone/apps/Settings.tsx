@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useGame } from '../../hooks/useGame';
+import { useGame, usePhoneOwner } from '../../hooks/useGame';
 import { emit, newGame, openApp } from '../../engine/director';
 import { hasFlag, setRt, setSave } from '../../engine/state';
 import { AppHeader } from '../AppHeader';
@@ -11,6 +11,7 @@ const ENDING_NAMES: Record<string, string> = { poweroff: '1. 전원 끄기', shi
 
 export function SettingsApp() {
   const save = useGame((s) => s.save);
+  const owner = usePhoneOwner();
   const [confirm, setConfirm] = useState(false);
 
   const powerOff = () => {
@@ -29,7 +30,7 @@ export function SettingsApp() {
         <h3>휴대전화 정보</h3>
         <div className="row">
           <span>이름</span>
-          <span>채원의 휴대폰</span>
+          <span>{owner}</span>
         </div>
         <div className="row">
           <span>배터리</span>

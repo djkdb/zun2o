@@ -121,7 +121,9 @@ export type Action =
   | { t: 'calllog'; entry: CallLogEntry }
   | { t: 'vibrate'; ms: number[] }
   /** Someone starts typing… and sends nothing. */
-  | { t: 'typing'; th: ThreadId; ms: number };
+  | { t: 'typing'; th: ThreadId; ms: number }
+  /** a question left unanswered goes away (only if it is still that one) */
+  | { t: 'unchoice'; id: string };
 
 export interface Beat {
   id: string;

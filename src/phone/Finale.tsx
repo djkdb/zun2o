@@ -74,6 +74,7 @@ function buildRecall(): string[] {
   const typed = [...s.inputs].reverse().map((e) => /(?:(?:발신자 정보 없음|발신자 표시제한|모르는 번호)에게|나에게(?:에게)?) 보낸 메시지 "(.+)"$/.exec(e)?.[1]).find(Boolean);
   const toMom = s.inputs.some((e) => /^엄마.*에게 보낸 메시지/.test(e));
   const personal: [boolean, string][] = [
+    [s.flags.includes('kept-out'), '도현 씨를 밖에 세워 뒀죠. 31년 전에 저를 그렇게 막아 준 사람은 없었어요.'],
     [s.flags.includes('named-her'), '그 이름을 저한테 보냈죠. 한동안 대답을 못 했어요. 그건 인정할게요.'],
     [!!typed, `“${typed}”라고 보냈죠. 다 적어 뒀어요.`],
     [toMom, '채원 씨 어머니께 답장하려고 했죠. 전송은 안 됐어요. 제가 막았으니까.'],
@@ -94,7 +95,11 @@ function buildRecall(): string[] {
   if (new Date().getHours() === 2) lines.push('그리고… 지금은 진짜로 새벽 두 시네요.');
   lines.push('#0025 박현우. #0026 윤채원. 그리고 #0027, 당신.');
   lines.push('다들 그 전화부스에서 폰을 주웠어요. 주운 사람은 들어오게 돼 있어요.');
-  lines.push('도현 씨는 지금 제2서고 안에 있어요. 당신이 남지 않으면, 도현 씨가 남아요.');
+  lines.push(
+    s.flags.includes('kept-out')
+      ? '도현 씨는 밖에 있어요. 당신 말을 들었죠. 그러니까 당신이 남지 않으면, 채원 씨가 계속 남아요.'
+      : '도현 씨는 지금 제2서고 안에 있어요. 당신이 남지 않으면, 도현 씨가 남아요.',
+  );
   lines.push('이름을 계속 물은 건… 적어야 해서였어요. 그리고 누가 한 번은 제 이름도 물어봐 주길 바랐어요.');
   lines.push('이제 누군가는 안에 남아야 합니다.');
   return lines;
@@ -233,6 +238,7 @@ export function Finale() {
   }, [step, doneTyping]);
 
   const foundKey = save.flags.includes('found-key');
+  const keptOut = save.flags.includes('kept-out');
 
   const submitKey = (e: FormEvent) => {
     e.preventDefault();
@@ -446,7 +452,7 @@ export function Finale() {
               </label>
               {/* the further you slide, the clearer who stays instead */}
               <p className="power-cost" style={{ opacity: Math.min(1, slide * 1.6) }} aria-live="polite">
-                {slide > 0.15 ? '당신이 나가면 — #0028 강도현 · 안에 남음' : '\u00a0'}
+                {slide > 0.15 ? (keptOut ? '당신이 나가면 — #0026 윤채원 · 계속 안에 남음' : '당신이 나가면 — #0028 강도현 · 안에 남음') : '\u00a0'}
               </p>
               <button
                 type="button"
@@ -456,7 +462,7 @@ export function Finale() {
                 }}
               >
                 <b>내가 남는다</b>
-                <small>내가 안에 남아 이름을 적는다. 채원과 도현은 풀려난다.</small>
+                <small>{keptOut ? '내가 안에 남아 이름을 적는다. 채원은 풀려난다.' : '내가 안에 남아 이름을 적는다. 채원과 도현은 풀려난다.'}</small>
               </button>
               <button type="button" disabled={!foundKey} onClick={() => setStep('key')}>
                 <b>삭제 코드를 입력한다</b>

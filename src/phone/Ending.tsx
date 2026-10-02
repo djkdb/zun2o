@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useGame } from '../hooks/useGame';
 import { newGame, replayFinale, sfx } from '../engine/director';
+import { getState } from '../engine/state';
 import type { EndingId } from '../engine/types';
 import { art, type ArtSlot } from '../art/photoArt';
 import { VIDEO } from '../art/videos';
@@ -60,8 +61,40 @@ const ENDINGS: Record<EndingId, EndingDef> = {
   },
 };
 
+/** The night as you played it: who you kept out, whether she has your name. */
+function endingFor(id: EndingId, flags: string[]): EndingDef {
+  const base = ENDINGS[id];
+  const keptOut = flags.includes('kept-out');
+  let scene = base.scene.map((l) => ({ ...l }));
+  let line = base.line;
+  if (keptOut && id === 'poweroff') {
+    line = '당신은 도망쳤다. 도현은 들어가지 않았다. 02:00, 출입 기록에는 채원의 이름이 그대로 남았다.';
+    scene = [
+      { text: '폰은 다시 켜지지 않았다.' },
+      { text: '02:00. 해원고등학교 도서관 3층, 제2서고.' },
+      { text: '방문자 #0026 윤채원 — 안에 있음. 방문자 #0027 — 도주' },
+      { text: '도현은 새벽 여섯 시까지 정문 앞에 서 있었다. 3층 창문은 끝내 열리지 않았다.' },
+      { text: '다음 날 밤, 같은 공중전화 부스. 선반 위에 휴대폰 한 대가 놓여 있다. 채원의 폰이다.' },
+      { text: '화면이 켜진다. 배터리 12%.' },
+      { text: '방문자 #0028 — 대기' },
+      { who: '발신자 정보 없음', text: '들어오세요.', side: 'left' },
+    ];
+  }
+  if (keptOut && id === 'shift') scene[1] = { who: '도현', text: '채원이 정문으로 걸어 나왔어요. 저는 밖에서 기다렸어요. 둘 다 무사해요', side: 'left' };
+  if (keptOut && id === 'release') {
+    scene[0] = { who: '도현', text: '채원이 나왔어요!!! 정문으로 걸어 나왔어요', side: 'left' };
+    scene[1] = { who: '도현', text: '채원이가 그러는데 서랍이 전부 비었대요. 카드가 한 장도 없었대요', side: 'left' };
+  }
+  // She has your name. Running doesn't take it back.
+  if (id === 'poweroff' && flags.includes('gave-name')) {
+    scene.splice(scene.length - 1, 1, { text: '그날부터 당신의 휴대폰은 새벽 두 시가 되면 12%에서 멈춘다.' }, { who: '발신자 정보 없음', text: '이름은 적어 뒀어요, {name} 씨. 들어오세요.', side: 'left' });
+  }
+  return { ...base, line, scene };
+}
+
 export function EndingScreen({ id }: { id: EndingId }) {
-  const def = ENDINGS[id];
+  // fixed for this showing: the scene plays out on timers
+  const def = useMemo(() => endingFor(id, getState().save.flags), [id]);
   const playerName = useGame((s) => s.save.playerName);
   const name = playerName ?? '(이름 없음)';
   // In dialogue, someone who never gave a name is just their number.

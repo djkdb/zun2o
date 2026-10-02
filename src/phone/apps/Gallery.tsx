@@ -140,7 +140,7 @@ export function PhotoView({ id, brightness = 0, changed = false }: { id: string;
       return <SelfiePhoto stage={1} />;
     case 'h05':
       // Just her, crying — until the scare. When it fades, she was at 채원's cheek all along.
-      return <SelfiePhoto stage={flags.includes('h05-revealed') ? 2 : 0} />;
+      return <SelfiePhoto stage={flags.includes('h05-revealed') ? 2 : flags.includes('h05-far') ? 1 : 0} />;
     default:
       return null;
   }

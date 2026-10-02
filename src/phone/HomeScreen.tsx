@@ -1,4 +1,4 @@
-import { useGame, useTicker } from '../hooks/useGame';
+import { useGame, usePhoneOwner, useTicker } from '../hooks/useGame';
 import { HINT_TIER_MS, openApp } from '../engine/director';
 import { APP_META, AppGlyph } from './icons';
 import type { AppId } from '../engine/types';
@@ -23,6 +23,7 @@ export function HomeScreen({ stripped = 0 }: { stripped?: number }) {
   const wallpaper = useGame((s) => s.save.wallpaper);
   const appGlitch = useGame((s) => s.rt.appGlitch);
   const vanish = useGame((s) => s.rt.vanishApp);
+  const owner = usePhoneOwner();
   // Hint tier 2: the app to look in glows faintly — no words.
   const glow = obj?.app && now - obj.since > HINT_TIER_MS[1] ? obj.app : null;
   // The phone notices habits: from chapter 2 the app you open most sits a little off.
@@ -58,7 +59,7 @@ export function HomeScreen({ stripped = 0 }: { stripped?: number }) {
           );
         })}
       </div>
-      <div className="home-dock-hint">채원의 휴대폰</div>
+      <div className={`home-dock-hint${owner.startsWith('채원') ? '' : ' changed'}`}>{owner}</div>
     </div>
   );
 }

@@ -14,8 +14,9 @@ import { VIDEO } from '../art/videos';
  *   3 booth      — the shelf, a phone on it; a beat of nothing
  *   4 lit        — it lights up: a news push about the missing YouTuber, then "들어오세요."
  *   5 pick       — the title, and the choice to pick it up
+ *   6 shut       — the door swings shut behind you; push it — it won't move (the game's stakes, felt first)
  */
-type Step = 0 | 1 | 2 | 3 | 4 | 5;
+type Step = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 export function ColdOpen() {
   const [step, setStep] = useState<Step>(0);
@@ -68,6 +69,20 @@ export function ColdOpen() {
     setStep(3);
   };
 
+  const [pushed, setPushed] = useState(false);
+  const pick = () => {
+    sfx('creak');
+    setTimeout(() => (sfx('thud'), vibrate([90])), 700);
+    setStep(6);
+  };
+  const push = () => {
+    if (pushed) return;
+    setPushed(true);
+    sfx('thud');
+    vibrate([40, 30, 40]);
+    setTimeout(begin, 2300);
+  };
+
   const begin = () => {
     setSave({ started: true, sound, startedAtReal: Date.now() });
     if (sound) applyChapterMix(5);
@@ -102,7 +117,7 @@ export function ColdOpen() {
       </div>
 
       {/* what lands on the phone's screen when it lights up */}
-      {step >= 4 && (
+      {step >= 4 && step < 6 && (
         <div className="co-notes" aria-live="polite">
           {notes >= 1 && (
             <div className="co-note">
@@ -166,10 +181,21 @@ export function ColdOpen() {
       <div className={`coldopen-actions${step === 5 ? ' show' : ''}`}>
         <h1>12%</h1>
         <p className="co-sub">새벽 2시, 해원고 전화부스 괴담</p>
-        <button type="button" className="primary" onClick={begin}>
+        <button type="button" className="primary" onClick={pick}>
           집는다
         </button>
       </div>
+
+      {step === 6 && (
+        <div className={`co-line co-shut${pushed ? ' pushed' : ''}`} key={pushed ? 'b' : 'a'}>
+          <p>{pushed ? '꿈쩍도 하지 않는다. 손 안의 화면만 밝다.' : '등 뒤에서 전화부스 문이 닫혔다.'}</p>
+          {!pushed && (
+            <button type="button" className="co-act co-push" onClick={push}>
+              문을 민다
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

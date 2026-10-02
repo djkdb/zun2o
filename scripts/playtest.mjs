@@ -69,6 +69,11 @@ check('cold open: the found phone lights up with the news push and "들어오세
 await waitFor('.coldopen-actions.show', 8000);
 mark('cold open played');
 await tap('.coldopen-actions .primary');
+// picked up — and the door shuts behind you
+await waitFor('.co-push', 4000);
+await snap('coldopen-door');
+check('cold open: the booth door shuts behind you, and it will not open', (await page.textContent('.co-shut')).includes('문이 닫혔다'));
+await tap('.co-push');
 
 // ── Lock ───────────────────────────────────────────────────────────────
 await waitFor('.lock');
@@ -206,14 +211,15 @@ for (let i = 0; i < 4; i++) {
 }
 const selfieSrc = () => page.locator('.viewer image.art-photo').first().getAttribute('href').catch(() => '');
 const selfieBefore = await selfieSrc();
-await waitFor('.scare-lunge', 6000);
-mark('SCARE 2 — the selfie');
-await wait(250);
+const selfieIs = (slot, ms) => page.waitForFunction((sl) => document.querySelector('.viewer image.art-photo')?.getAttribute('href')?.includes(sl), slot, { timeout: ms }).then(() => true, () => false);
+const sawFar = await selfieIs('selfie-far', 6000);
+mark('SCARE 2 — the selfie changes while you look');
 await snap('scare-selfie');
-await page.waitForSelector('.scare-lunge', { state: 'detached', timeout: 8000 }).catch(() => {});
+const sawClose = await selfieIs('selfie-close', 8000);
+await wait(300);
 await snap('selfie-after');
 const selfieAfter = await selfieSrc();
-check('selfie: just 채원 before the scare, her at the cheek after', /selfie-alone/.test(selfieBefore ?? '') && /selfie-close/.test(selfieAfter ?? ''), `${selfieBefore} → ${selfieAfter}`);
+check('selfie: just 채원, then her far back, then at the cheek — and no lunge', /selfie-alone/.test(selfieBefore ?? '') && sawFar && sawClose && (await page.locator('.scare-lunge').count()) === 0, `${selfieBefore} → ${selfieAfter}`);
 await page.waitForFunction(() => window.__game.getState().save.threads.self.some((m) => m.text.includes('추워')), null, { timeout: 30000 });
 await wait(600);
 await snap('self-message-banner');
@@ -402,6 +408,8 @@ await tap('.co-go');
 await tap('.co-skip');
 await waitFor('.coldopen-actions.show', 15000);
 await tap('.coldopen-actions .primary');
+await waitFor('.co-push', 4000);
+await tap('.co-push');
 await waitFor('.lock');
 // A returning player: let the opening call go, then unlock straight away.
 await waitFor('.incoming', 10000);

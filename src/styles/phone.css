@@ -527,6 +527,11 @@ svg {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.35);
 }
+/* the owner's name is yours now: it doesn't announce it, it just comes in a little slower */
+.home-dock-hint.changed {
+  color: rgba(255, 228, 220, 0.5);
+  animation: fade-in 3s ease both;
+}
 
 /* ─── app chrome ──────────────────────────────────────────────────────── */
 
@@ -5883,6 +5888,36 @@ body,
     transform: translateY(-14px) scale(0.98);
   }
 }
+/* the door: the picture goes darker, and shudders once when you push */
+.co-step-6 .co-img.on {
+  filter: grayscale(0.3) brightness(0.2) blur(2px);
+  transition: filter 1.2s ease;
+}
+.co-step-6 .coldopen-scene {
+  animation: co-shudder 0.32s 0.7s ease-out both;
+}
+.co-step-6:has(.co-shut.pushed) .coldopen-scene {
+  animation: co-shove 0.36s ease-out both;
+}
+@keyframes co-shudder {
+  25% {
+    transform: translateX(-5px);
+  }
+  55% {
+    transform: translateX(4px);
+  }
+  80% {
+    transform: translateX(-2px);
+  }
+}
+@keyframes co-shove {
+  30% {
+    transform: scale(1.015) translateY(3px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+}
 .co-step-5 .co-notes {
   top: 18%;
   opacity: 0.85;
@@ -5892,6 +5927,7 @@ body,
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .co-step-6 .coldopen-scene,
   .coldopen .co-act,
   .co-note,
   .co-line {
