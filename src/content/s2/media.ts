@@ -5,7 +5,7 @@ import type { MemoLine, NoteItem, PhotoItem } from '../media';
 
 export const PHOTOS_S2: PhotoItem[] = [
   { id: 's2-old', time: '16:20', caption: '엄마랑 나. 1994년 3월, 엄마 도서관에서. 이 사진이 엄마 마지막 사진이었다.', album: 'recent', portrait: true, date: '1994년 3월' },
-  { id: 's2-sisters', time: '14:05', caption: '엄마랑 나. 올봄. 가게 아줌마가 자매냐고 물었다. 엄마가 웃었다.', album: 'recent', portrait: true, date: '4월 12일' },
+  { id: 's2-sisters', time: '14:05', caption: '엄마랑 나. 올봄. 가게 아줌마가 자매냐고 물었다. 엄마가 웃었다.', album: 'recent', date: '4월 12일' },
   { id: 's2-home', time: '06:10', caption: '엄마 돌아온 날. 식탁에 앉아서 한참 아무 말도 안 했다. 외투도 그대로.', album: 'recent', date: '2025년 9월 28일' },
   { id: 's2-kitchen', time: '01:59', caption: '8월 28일. 엄마. (몰래 찍음)', album: 'recent', date: '8월 28일' },
   { id: 's2-booth', time: '22:55', caption: '여기 두고 간다. 누군가 주울 때까지.', album: 'recent', date: '9월 27일' },
