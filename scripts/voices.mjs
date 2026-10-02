@@ -186,15 +186,17 @@ async function eleven() {
     console.error('ELEVEN_API_KEY is not set.');
     process.exit(1);
   }
+  // A voice left unset is skipped: those lines can come from elsewhere (voice-raw/NN.*) or stay on browser speech.
   const lacking = Object.entries(voices).filter(([, v]) => !v).map(([k]) => `ELEVEN_VOICE_${k.toUpperCase()}`);
-  if (lacking.length) {
-    console.error(`Set ${lacking.join(', ')} (voice ids from elevenlabs.io → Voices).`);
+  if (lacking.length === 3) {
+    console.error('Set ELEVEN_VOICE_MALE / _FEMALE / _ENTITY (voice ids from elevenlabs.io → Voices).');
     process.exit(1);
   }
+  if (lacking.length) console.log(`(no ${lacking.join(', ')} — those lines are skipped)`);
   mkdirSync(RAW, { recursive: true });
   for (const l of todo) {
     const file = `${RAW}/${l.n}.mp3`;
-    if (existsSync(file) && !process.env.FORCE) continue;
+    if (!voices[l.voice] || (existsSync(file) && !process.env.FORCE)) continue;
     const text = model === 'eleven_v3' && DIRECTION[l.say] ? `${DIRECTION[l.say]} ${l.say}` : l.say;
     if (process.env.DRY) {
       console.log(`would ask ElevenLabs for ${file}  [${l.voice}] ${text}`);

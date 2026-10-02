@@ -1,5 +1,15 @@
 import type { SoundId } from '../engine/types';
 
+// Recorded versions of some sounds (src/assets/sfx, made by `npm run sfx`). A sound with a
+// file plays the recording; everything else stays synthesized.
+const SFX_FILES = new Map(
+  Object.entries(import.meta.glob('../assets/sfx/*.mp3', { eager: true, query: '?url', import: 'default' }) as Record<string, string>).map(
+    ([path, url]) => [path.slice(path.lastIndexOf('/') + 1, -4), url],
+  ),
+);
+/** Recordings sit a little under the synthesized mix's peaks. */
+const SFX_GAIN: Partial<Record<SoundId, number>> = { scream: 0.7, heartbeat: 0.8, drip: 0.6, whisper: 0.9 };
+
 // ─────────────────────────────────────────────────────────────────────────
 // Every sound in the archive is synthesised with the Web Audio API — no
 // external audio files, no licensing questions. The context is created only
@@ -38,6 +48,7 @@ class AudioEngine {
     try {
       if (!this.ctx) this.build();
       if (this.ctx && this.ctx.state !== 'running') await this.ctx.resume();
+      void this.loadRecordings();
       return this.ready;
     } catch {
       this.failed = true;
@@ -290,8 +301,41 @@ class AudioEngine {
     this.loops.clear();
   }
 
+  private recordings = new Map<string, AudioBuffer>();
+  private loading = false;
+  /** Decode the recorded sounds once, in the background; until then the synth covers. */
+  private async loadRecordings(): Promise<void> {
+    if (this.loading || !this.ctx) return;
+    this.loading = true;
+    const ctx = this.ctx;
+    await Promise.all(
+      [...SFX_FILES].map(async ([id, url]) => {
+        try {
+          const data = await (await fetch(url)).arrayBuffer();
+          this.recordings.set(id, await ctx.decodeAudioData(data));
+        } catch {
+          /* the synthesized version stays */
+        }
+      }),
+    );
+  }
+
   play(id: SoundId): void {
     if (!this.enabled || !this.ctx || !this.master || this.ctx.state !== 'running') return;
+    const rec = this.recordings.get(id);
+    if (rec) {
+      try {
+        const src = this.ctx.createBufferSource();
+        src.buffer = rec;
+        const g = this.ctx.createGain();
+        g.gain.value = SFX_GAIN[id] ?? 1;
+        src.connect(g).connect(DRY.has(id) || !this.space ? this.master : this.space);
+        src.start();
+        return;
+      } catch {
+        /* fall back to the synth */
+      }
+    }
     try {
       // Phone UI sounds are dry (in your hand); everything else is in the building.
       SOUNDS[id](this.ctx, DRY.has(id) || !this.space ? this.master : this.space, this);
