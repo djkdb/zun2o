@@ -147,9 +147,11 @@ export function PhotoView({ id, brightness = 0, changed = false }: { id: string;
     case 's2-old':
       return <SlotPhoto slot="miryeong-daughter" label="1994년 3월, 도서관 앞에서 손을 잡은 엄마와 열한 살 딸." />;
     case 's2-home':
-      return <HomecomingPhoto />;
+      return art('s2-home') ? <SlotPhoto slot="s2-home" w={640} h={420} stamp="06:10" label="새벽빛이 드는 부엌. 식탁 의자에 1994년의 낡은 외투가 걸려 있다." /> : <HomecomingPhoto />;
     case 's2-kitchen':
-      return <KitchenPhoto />;
+      return art('s2-kitchen') ? <SlotPhoto slot="s2-kitchen" w={640} h={420} stamp="01:59" label="문틈으로 찍은 어두운 부엌. 스탠드 불빛 아래, 단발머리 여자가 등을 보이고 앉아 무언가를 쓰고 있다." /> : <KitchenPhoto />;
+    case 's2-sisters':
+      return <SlotPhoto slot="s2-sisters" label="봄볕 아래 나란히 선 두 여자. 왼쪽은 마흔 남짓, 오른쪽은 조금 더 나이 들어 보인다." />;
     case 's2-booth':
       return <BoothShelfPhoto />;
     case 's2-n1':
@@ -409,7 +411,8 @@ export function GalleryApp() {
   const synced = useGame((s) => s.save.season === 2 || s.save.chapter >= 3);
   const seen = useGame((s) => s.save.seenPhotos);
   const extra = useGame((s) => s.save.photos);
-  const visible = (p: PhotoItem) => !p.extra || extra.includes(p.id);
+  // (a photo that needs real art shows up only when it has it)
+  const visible = (p: PhotoItem) => (!p.extra || extra.includes(p.id)) && (p.id !== 's2-sisters' || !!art('s2-sisters'));
 
   if (album === 'hidden' && !albumOpen && locked) return <HiddenLock onOpen={() => setLocked(false)} onBack={() => setAlbum(null)} />;
   if (album === 'hidden' && !synced) return <SyncingAlbum onBack={() => setAlbum(null)} />;

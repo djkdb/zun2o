@@ -1,5 +1,6 @@
 import { memo, useId } from 'react';
 import { NOTEBOOK } from '../content/s2/media';
+import { art } from './photoArt';
 
 // 시즌 2 — photos on 소연's phone, drawn (no photos of real people):
 // her mother's notebook, the kitchen at 01:59, the morning she came home.
@@ -9,6 +10,7 @@ const HAND = "'Nanum Pen Script', 'IBM Plex Sans KR', cursive";
 /** A phone photo of a lined notebook page, slightly crooked, under a kitchen light. */
 function Paper({ children, tilt = -2.2, label }: { children: React.ReactNode; tilt?: number; label: string }) {
   const id = useId().replace(/:/g, '');
+  const photo = art('s2-notebook');
   return (
     <svg viewBox="0 0 420 560" role="img" aria-label={label}>
       <defs>
@@ -17,16 +19,26 @@ function Paper({ children, tilt = -2.2, label }: { children: React.ReactNode; ti
           <stop offset="100%" stopColor="#000" stopOpacity="0.55" />
         </radialGradient>
       </defs>
-      <rect width="420" height="560" fill="#2a2420" />
-      <g transform={`rotate(${tilt} 210 280)`}>
-        <rect x="34" y="26" width="352" height="510" fill="#efe7d4" />
-        {Array.from({ length: 19 }, (_, i) => (
-          <line key={i} x1="34" x2="386" y1={92 + i * 24} y2={92 + i * 24} stroke="#9fb4cc" strokeWidth="0.8" opacity="0.7" />
-        ))}
-        <line x1="78" x2="78" y1="26" y2="536" stroke="#d27a7a" strokeWidth="1" opacity="0.7" />
-        {children}
-      </g>
-      <rect width="420" height="560" fill={`url(#${id}-light)`} />
+      {photo ? (
+        // a real photo of the blank page; her lines are written over it
+        <>
+          <image href={photo} width="420" height="560" preserveAspectRatio="xMidYMid slice" />
+          <g transform={`rotate(${tilt} 210 280)`}>{children}</g>
+        </>
+      ) : (
+        <>
+          <rect width="420" height="560" fill="#2a2420" />
+          <g transform={`rotate(${tilt} 210 280)`}>
+            <rect x="34" y="26" width="352" height="510" fill="#efe7d4" />
+            {Array.from({ length: 19 }, (_, i) => (
+              <line key={i} x1="34" x2="386" y1={92 + i * 24} y2={92 + i * 24} stroke="#9fb4cc" strokeWidth="0.8" opacity="0.7" />
+            ))}
+            <line x1="78" x2="78" y1="26" y2="536" stroke="#d27a7a" strokeWidth="1" opacity="0.7" />
+            {children}
+          </g>
+          <rect width="420" height="560" fill={`url(#${id}-light)`} />
+        </>
+      )}
     </svg>
   );
 }

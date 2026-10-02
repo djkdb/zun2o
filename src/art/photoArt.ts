@@ -50,7 +50,14 @@ export type ArtSlot =
   | 'avatar-dohyun'
   | 'avatar-mom'
   | 'avatar-self'
-  | 'avatar-unknown';
+  | 'avatar-unknown'
+  // season 2
+  | 's2-kitchen'
+  | 's2-home'
+  | 's2-notebook'
+  | 's2-sisters'
+  | 's2-window'
+  | 'avatar-soyeon';
 
 const FILES = import.meta.glob('../assets/art/*.{jpg,jpeg,png,webp,avif}', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 

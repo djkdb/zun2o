@@ -151,7 +151,7 @@ export function EndingScreen({ id }: { id: EndingId }) {
   const s2 = id.startsWith('s2-');
   // endings found in this season only
   const found = endings.filter((e) => e.startsWith('s2-') === s2).length;
-  const bg: ArtSlot | null = s2 ? S2_BG[id] ?? null : (`ending-${id}` as ArtSlot);
+  const bg: ArtSlot | null = s2 ? (id === 's2-daughter' && art('s2-window') ? 's2-window' : (S2_BG[id] ?? null)) : (`ending-${id}` as ArtSlot);
   const [shown, setShown] = useState(0);
 
   useEffect(() => {

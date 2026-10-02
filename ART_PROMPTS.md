@@ -316,3 +316,68 @@ daylight or cozy indoor light, slightly imperfect framing like real phone photos
 3. A bakery display case, a sweet-potato cake circled with her finger in frame (a birthday cake for her mother).
 4. A blurry, happy two-shot with a young man in a hoodie at a bus stop at dusk, both making a V sign.
 ```
+
+## 시즌 2 「귀가」 — 6장 (선택, 없으면 코드로 그린 그림)
+
+**공통.** 엄마(서미령)의 얼굴은 `src/assets/art/miryeong-id.webp`를 **참고 이미지로 같이 넣으세요**. 41세, 1990년대 뽀글 단발, 얇은 둥근 안경, 베이지 니트 카디건에 꽃무늬 블라우스입니다. 딸 소연(43)은 엄마와 닮았지만 조금 더 나이 들어 보이고, 옷은 요즘 옷입니다.
+글자(특히 한글)는 넣지 마세요. 노트 글씨는 게임이 손글씨 폰트로 위에 씁니다.
+
+| 파일 이름 | 비율 | 게임 속 위치 |
+|---|---|---|
+| `s2-sisters` | 3:4 세로 | 사진 앱 최근 항목: "엄마랑 나. 올봄. 가게 아줌마가 자매냐고 물었다." (이 파일이 있을 때만 사진이 나타남) |
+| `s2-kitchen` | 3:2 가로 | 사진 앱: 8월 28일 01:59, 소연이 몰래 찍은 엄마 |
+| `s2-home` | 3:2 가로 | 사진 앱: 엄마가 돌아온 날 아침, 의자에 걸린 1994년 외투 |
+| `s2-notebook` | 3:4 세로 | 노트 사진 3장의 배경 (빈 페이지, 이름은 게임이 위에 씀) |
+| `s2-window` | 9:16 세로 | 엔딩 4 「딸」 배경: 새벽 두 시, 창가에서 딸을 기다리는 엄마 |
+| `avatar-soyeon` | 1:1 | 시즌 2 "나에게" 프로필 사진 |
+
+### s2-sisters
+```
+Candid smartphone photo in soft spring daylight, outside a small Korean neighborhood shop. Two Korean women stand side
+by side, shoulders touching. Left: a woman of about 41 with a 1990s permed bob, thin round glasses, beige knit cardigan
+over a floral blouse (match the reference face exactly), smiling a little shyly, slightly old-fashioned. Right: her
+daughter, about 43, clearly resembling her but looking a bit older, shoulder-length hair, modern casual clothes, laughing.
+They look like sisters, and the daughter looks like the older one. Warm, ordinary, slightly imperfect framing,
+realistic photograph, no text, no watermark.
+```
+
+### s2-kitchen
+```
+Night photo taken secretly through the gap of a half-open door into a dark small Korean apartment kitchen. A single desk
+lamp on the kitchen table makes a warm pool of light. A woman with a 1990s permed bob and a beige cardigan sits at the
+table with her back to the camera, very upright, writing in a notebook with a ballpoint pen; her head is tilted at a
+slightly wrong angle, as if asleep. A wall clock reads 1:59. Everything else is black. Still, cold, unsettling, no face
+visible. Shot on an old smartphone, no flash, heavy noise, slight motion blur, realistic, no text, no watermark.
+```
+
+### s2-home
+```
+Early dawn in a small Korean apartment kitchen, blue light through the window, no lamps on. An old brown 1990s wool coat
+hangs on the back of a wooden kitchen chair. On the table, a cup of barley tea nobody drank and a pair of old reading
+glasses. Quiet, empty, a little sad. Smartphone photo, natural light, realistic, no people, no text, no watermark.
+```
+
+### s2-notebook
+```
+Top-down smartphone photo of an open, BLANK lined school notebook lying on a wooden kitchen table under a warm lamp at
+night. The page fills about 80% of the frame, slightly tilted. A cheap ballpoint pen beside it, faint ink smudges near
+the page edge, a soft shadow. The page must be completely empty: NO writing, NO letters, NO numbers. Realistic, no text,
+no watermark.
+```
+
+### s2-window
+```
+Vertical night photo inside a dim Korean apartment at 2 a.m. A woman of about 41 (1990s permed bob, thin round glasses,
+beige cardigan; match the reference) sits on a chair by the window with her hands folded in her lap, looking out at the
+empty street lit by a single street lamp, waiting for someone. Next to her, an empty chair. Her face is half in shadow,
+calm and patient, very lonely. Melancholy rather than scary. Realistic photograph, soft grain, no text, no watermark.
+```
+
+### avatar-soyeon
+```
+Square smartphone photo used as a messenger profile picture: on a cluttered desk, a small stack of old yellowed library
+catalogue cards held with a rubber band, a mug of coffee and a laptop edge, warm desk-lamp light. No people, no text,
+no watermark.
+```
+
+**한 장으로 받기(선택).** 위 6장을 "3×2 contact sheet, thin black gutters, each panel its own aspect ratio cropped inside the cell, NO text"로 한 번에 뽑아도 됩니다. 받으면 칸별로 잘라서 넣겠습니다.

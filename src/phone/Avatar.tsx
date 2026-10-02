@@ -4,7 +4,7 @@ import { art, type ArtSlot } from '../art/photoArt';
 import { isS2 } from '../content/season';
 
 /** Season 2's faces: 엄마 is 서미령 (her ID photo), the 'dohyun' slot is 채원, 나에게 is 소연's plain initial. */
-const S2_PHOTO: Record<ThreadId, ArtSlot | null> = { mom: 'miryeong-id', dohyun: 'avatar-self', unknown: 'avatar-unknown', self: null };
+const S2_PHOTO: Record<ThreadId, ArtSlot | null> = { mom: 'miryeong-id', dohyun: 'avatar-self', unknown: 'avatar-unknown', self: 'avatar-soyeon' };
 
 // Contact profile pictures, drawn (no photos of real people).
 // 도현: the back-view-at-the-sea photo every guy has. 엄마: flowers, always.
