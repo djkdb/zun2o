@@ -414,3 +414,42 @@ Quiet, tender, sad, nobody in the frame. Shot on an old smartphone, natural grai
 no watermark, vertical 9:16.
 ```
 
+
+## 영상 — 시즌 2 (선택)
+
+시즌 1 영상 다섯 개(`src/assets/video/README.md`)와 같은 방식입니다. Gemini(Veo)에서 게임 사진을 **첫 장면**으로 넣고 아래 프롬프트로 8초짜리를 만듭니다. 받으면 워터마크를 지우고 540×960(세로)이나 960×540(가로)으로 줄여 mp4와 webm 두 벌로 넣습니다. 영상이 없거나 효과 줄이기 설정이면 지금 쓰는 사진이 그대로 나옵니다.
+
+| # | 파일 | 첫 장면 | 비율 | 쓰이는 곳 |
+|---|---|---|---|---|
+| 1 | `s2-kitchen` | `src/assets/art/s2-kitchen-close.webp` | 16:9 | 01:52 "방금 찍혔어요." 사진 → 영상 (시즌 2의 최고점) |
+| 2 | `s2-opening` | `src/assets/art/booth-shelf.webp` | 9:16 | 시즌 2 첫 화면: 문이 닫히다가 멈춘다 |
+| 3 | `s2-window` | `src/assets/art/s2-window.webp` | 9:16 | 엔딩 4 「딸」 배경: 창가에서 기다리는 엄마 |
+
+### s2-kitchen
+```
+Static, locked-off shot, as if filmed by a phone lying on a chair behind her. Keep the first frame exactly.
+The woman at the kitchen table keeps writing with a ballpoint pen in slow, steady, mechanical strokes, her head bowed
+at the same slightly wrong angle, as if asleep. The desk lamp flickers once, very faintly. Around second 5 her pen
+stops. She stays completely still. Then, very slowly, her head begins to turn to the right, toward the camera. The
+clip ends before her face is visible, on the edge of her cheek. No camera movement, no zoom, no cuts. Dark, grainy
+old-smartphone video, realistic. Audio: refrigerator hum, the scratch of the pen, a wall clock ticking; the ticking
+stops when the pen stops. No music, no voices.
+```
+
+### s2-opening
+```
+Night, heavy rain. Inside a public phone booth in front of a closed school, a smartphone lies on the metal shelf,
+exactly as in the first frame. The phone screen lights up with a soft white glow. Then the booth's glass door starts
+to swing shut on its own, slowly; its dark metal edge slides into the left side of the frame, and stops halfway,
+leaving the door open. Rain keeps running down the glass. Slight handheld sway, no cuts, no zoom. Grainy old-smartphone
+video, realistic. Audio: rain on glass, a long metal hinge creak that stops abruptly. No music, no voices.
+```
+
+### s2-window
+```
+Locked-off shot. The woman sits by the window at night, exactly as in the first frame, facing the glass, waiting.
+Almost nothing moves: far-away city lights flicker, her faint reflection in the window glass. Around second 4 she
+slowly lifts her head toward a wall clock off-screen, then looks back out of the window. She never turns toward the
+camera. Quiet, still, realistic, grainy phone video. Audio: a wall clock ticking, distant traffic. No music,
+no voices.
+```
