@@ -437,13 +437,14 @@ stops when the pen stops. No music, no voices.
 ```
 
 ### s2-opening
+첫 장면은 유리에 비친 얼굴을 지운 사진으로 넣으세요 (`booth-shelf`의 왼쪽 위를 흐리게 덮은 버전). 얼굴이 있으면 Gemini가 거절합니다.
 ```
-Night, heavy rain. Inside a public phone booth in front of a closed school, a smartphone lies on the metal shelf,
-exactly as in the first frame. In the first two seconds, the pale face reflected in the glass at the top left
-slowly fades out and is gone: the glass shows only rain. Then the phone screen lights up with a soft white glow. Then the booth's glass door starts
-to swing shut on its own, slowly; its dark metal edge slides into the left side of the frame, and stops halfway,
-leaving the door open. Rain keeps running down the glass. Slight handheld sway, no cuts, no zoom. Grainy old-smartphone
-video, realistic. Audio: rain on glass, a long metal hinge creak that stops abruptly. No music, no voices.
+Night, rain. A close, static view inside a public phone booth: a smartphone lies on the metal shelf next to the
+hanging handset, exactly as in the first frame. Raindrops run down the glass behind it. After a moment the phone
+screen lights up with a soft white glow. Then a slow draft of wind pushes the booth's glass door: its dark metal edge
+slowly slides into the left side of the frame, stops halfway, and stays there, leaving the door open. Slight handheld
+sway, no cuts, no zoom. Grainy old-smartphone video, realistic, quiet and moody. Audio: rain on glass, a long metal
+hinge creak that stops abruptly. No music, no voices.
 ```
 
 ### s2-window

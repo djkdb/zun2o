@@ -218,14 +218,52 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
   }, [zoom, edit]);
   useEffect(() => () => setRt({ engaged: false }), []);
 
+  // Fully bright, the room is empty and the sound drops out. She comes when you let go of the
+  // slider — the moment you've decided there's nothing there — or, if you keep holding, a little later.
+  const topAt = useRef<number | null>(null);
+  const dropTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const drop = () => {
+    if (dropTimer.current) clearTimeout(dropTimer.current);
+    dropTimer.current = null;
+    if (topAt.current === null || hasFlag('reveal-scare')) return;
+    topAt.current = null;
+    emit('photo:p07:reveal');
+  };
+  useEffect(
+    () => () => {
+      if (dropTimer.current) clearTimeout(dropTimer.current);
+      // closed the photo while it was fully bright: that's letting go too
+      if (topAt.current !== null) drop();
+    },
+    [],
+  );
   const onBright = (v: number) => {
     setBrightness(v);
-    // The brighter the photo, the louder the room gets — until she's there; then nothing.
-    if (!hasFlag('reveal-scare')) mix(0.16 + v * 0.3, v * 0.45, 0.2, 420 + v * 2600);
-    if (v > 0.55 && Math.random() < 0.08) vibrate([20]);
-    if (v >= REVEAL_AT && !hasFlag('reveal-scare')) {
-      emit('photo:p07:reveal');
+    if (hasFlag('reveal-scare')) return;
+    if (v >= REVEAL_AT) {
+      if (topAt.current !== null) return;
+      topAt.current = Date.now();
+      // nothing: dead silence, an empty room
+      mix(0, 0, 0.12, 420);
+      dropTimer.current = setTimeout(drop, 2600);
+      return;
     }
+    // pulled back down before she came: the room comes back, nothing happened
+    if (topAt.current !== null) {
+      topAt.current = null;
+      if (dropTimer.current) clearTimeout(dropTimer.current);
+    }
+    // The brighter the photo, the louder the room gets.
+    mix(0.16 + v * 0.3, v * 0.45, 0.2, 420 + v * 2600);
+    if (v > 0.55 && Math.random() < 0.08) vibrate([20]);
+  };
+  const onRelease = () => {
+    const at = topAt.current;
+    if (at === null) return;
+    // give the empty room a beat first
+    const wait = Math.max(0, 900 - (Date.now() - at));
+    if (dropTimer.current) clearTimeout(dropTimer.current);
+    dropTimer.current = setTimeout(drop, wait);
   };
 
   const onDown = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -298,7 +336,18 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
       {edit && photo.id === 'p07' ? (
         <div className="editor">
           <label htmlFor="bright">밝기</label>
-          <input id="bright" type="range" min={0} max={1} step={0.01} value={brightness} onChange={(e) => onBright(Number(e.target.value))} />
+          <input
+            id="bright"
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            value={brightness}
+            onChange={(e) => onBright(Number(e.target.value))}
+            onPointerUp={onRelease}
+            onTouchEnd={onRelease}
+            onKeyUp={onRelease}
+          />
         </div>
       ) : (
         <div className="viewer-bar">

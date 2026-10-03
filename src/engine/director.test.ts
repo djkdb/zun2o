@@ -115,14 +115,19 @@ describe('director timing', () => {
     expect(seen).toBe(true);
   });
 
-  it('the dark photo: empty room for a second, the scare, and only then is she in the photo', async () => {
-    emit('photo:p07:reveal');
-    await vi.advanceTimersByTimeAsync(1000);
-    expect(getState().rt.scare).toBeNull();
+  it('the dark photo: she drops in at once (the empty room was the photo app\'s), and the photo changes under the scare', async () => {
     expect(getState().save.flags).not.toContain('p07-revealed');
-    await vi.advanceTimersByTimeAsync(400);
+    emit('photo:p07:reveal');
+    await vi.advanceTimersByTimeAsync(100);
+    expect(getState().rt.scare?.kind).toBe('lunge');
+    expect(getState().rt.scare?.look).toBe('hang');
+    expect(getState().save.flags).not.toContain('p07-revealed');
+    await vi.advanceTimersByTimeAsync(500);
+    // still under the scare when the photo changes: when it lifts, she was there all along
     expect(getState().rt.scare?.kind).toBe('lunge');
     expect(getState().save.flags).toContain('p07-revealed');
+    await vi.advanceTimersByTimeAsync(1600);
+    expect(getState().rt.scare).toBeNull();
   });
 
   it('the selfie changes while you look: her far back first, then at 채원\'s cheek — no lunge', async () => {

@@ -285,10 +285,18 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
         return;
       }
       if (a.kind === 'lunge') {
+        // the hit and the scream on the same frame as the cut; then black, and the ringing
+        sfx('impact');
         sfx('scream');
-        vibrate([300, 60, 500]);
-      } else sfx('anomaly');
-      await sleepReal(a.kind === 'lunge' ? 1300 : 700);
+        vibrate([90, 30, 420, 60, 240]);
+        await sleepReal(1050);
+        sfx('tinnitus');
+        await sleepReal(750);
+        setRt({ scare: null });
+        return;
+      }
+      sfx('anomaly');
+      await sleepReal(700);
       setRt({ scare: null });
       return;
     case 'glitch':

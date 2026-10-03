@@ -39,7 +39,7 @@ export const BEATS: Beat[] = [
     id: 'door-riddle',
     on: 'door:done',
     forbids: ['unlocked'],
-    actions: [{ t: 'wait', ms: 900 }, { t: 'msg', th: 'unknown', text: '문 열어 뒀어요. 도현 씨가 다 알려 줬잖아요.', typing: 1200 }],
+    actions: [{ t: 'wait', ms: 900 }, { t: 'msg', th: 'unknown', text: '문 열어 뒀어요. 채원 씨처럼 들어와요.', typing: 1200 }],
   },
   {
     id: 'lock-idle',
@@ -140,7 +140,7 @@ export const BEATS: Beat[] = [
         t: 'objective', app: 'gallery',
         text: '채원이 마지막으로 찍은 사진을 확인하자',
         hint: '사진 앱 → 최근 항목의 맨 마지막 사진(01:59).',
-        nudge: { th: 'unknown', text: '사진 앱. 맨 마지막 거요.' },
+        nudge: { th: 'unknown', text: '안 볼 거예요? 채원 씨는 봤는데.' },
       },
     ],
   },
@@ -150,24 +150,25 @@ export const BEATS: Beat[] = [
     requires: ['unlocked'],
     actions: [
       { t: 'wait', ms: 1500 },
-      { t: 'msg', th: 'unknown', text: '…너무 밝게 보지는 마요.', typing: 1300 },
+      { t: 'msg', th: 'unknown', text: '…그게 채원 씨가 마지막으로 본 거예요.', typing: 1300 },
       {
         t: 'objective', app: 'gallery',
-        text: '마지막 사진에 뭔가 찍혀 있다',
+        text: '마지막 사진은 거의 까맣다',
         hint: '사진을 연 채로 아래의 [편집]을 누르고, 밝기를 끝까지 올려 보세요.',
-        nudge: { th: 'unknown', text: '편집 버튼, 누르지 마요.' },
+        // 도현 has the same photo from her cloud upload, and couldn't see anything in it either
+        nudge: { th: 'dohyun', text: '채원이 클라우드에 마지막 사진 올라왔는데 새까매요. 그 폰에선 뭐 보여요?' },
       },
     ],
   },
+  { id: 'p07-swap', on: 'p07:swap', actions: [{ t: 'wait', ms: 400 }, { t: 'flag', f: 'p07-revealed' }] },
   {
     id: 'reveal',
     on: 'photo:p07:reveal',
     actions: [
+      // The empty room and the silence were the photo app's (Gallery): this fires when you let go.
       { t: 'flag', f: 'reveal-scare' },
-      // Fully bright, and the room is empty. Nothing changes, no warning.
-      { t: 'wait', ms: 1200 },
-      // Behind the scare, the photo changes: when it fades, she was there all along.
-      { t: 'flag', f: 'p07-revealed' },
+      // Behind the scare, the photo changes: when the black lifts, she was there all along.
+      { t: 'emit', ev: 'p07:swap' },
       { t: 'scare', kind: 'lunge', look: 'hang' },
       { t: 'wait', ms: 1700 },
       { t: 'glitch', ms: 1000 },
@@ -321,9 +322,7 @@ export const BEATS: Beat[] = [
     actions: [
       { t: 'flag', f: 'gave-name' },
       { t: 'msg', th: 'unknown', text: '{name}.', typing: 1300 },
-      { t: 'msg', th: 'unknown', text: '적어 둘게요.', typing: 1900 },
-      { t: 'msg', th: 'unknown', text: '선물이요.', typing: 500 },
-      { t: 'msg', th: 'unknown', text: '숨김 앨범 비번, 채원 씨가 제일 무서워하던 방송이에요.', typing: 2200 },
+      { t: 'msg', th: 'unknown', text: '채원 씨 거 옆에 적어 둘게요.', typing: 1900 },
       { t: 'emit', ev: 'c2:done' },
     ],
   },
@@ -347,7 +346,7 @@ export const BEATS: Beat[] = [
         t: 'objective', app: 'notes',
         text: '사진 앱의 숨김 앨범을 열자',
         hint: '메모 앱 “비번들 (보지 마)”에 힌트가 있습니다. 그 방송의 주파수는 메모 “괴담 정리”나 브라우저의 기록 001에 나와요.',
-        nudge: { th: 'unknown', text: '숫자를 읽던 그 방송. 주파수요.' },
+        nudge: { th: 'dohyun', text: '채원이 비번은 다 메모에 적어 두는 애예요. 보지 말라고 써 놓고' },
       },
       { t: 'msg', th: 'unknown', text: '채원 씨가 숨겨 둔 사진이요. 보고 싶죠?', typing: 1800, attach: { kind: 'album' } },
       // Found the code early? The album has finished syncing now.
@@ -367,7 +366,7 @@ export const BEATS: Beat[] = [
     requires: ['ch3'],
     actions: [
       { t: 'flag', f: 'album-open' },
-      { t: 'objective', app: 'gallery', text: '숨김 앨범을 끝까지 넘겨 보자', hint: '사진을 연 뒤 옆으로 넘기세요. 마지막 사진까지.', nudge: { th: 'unknown', text: '끝까지 넘겨요.' } },
+      { t: 'objective', app: 'gallery', text: '숨김 앨범을 끝까지 넘겨 보자', hint: '사진을 연 뒤 옆으로 넘기세요. 마지막 사진까지.', nudge: { th: 'unknown', text: '마지막 장은 채원 씨가 저랑 같이 찍었어요.' } },
     ],
   },
   {
@@ -449,16 +448,14 @@ export const BEATS: Beat[] = [
       { t: 'msg', th: 'self', from: 'me', text: '여기 문이 없어 서랍만 있어', typing: 1600 },
       { t: 'msg', th: 'self', from: 'me', text: '두시에 다음 사람 적히면 나 나갈 수 있대', typing: 2400 },
       { t: 'msg', th: 'self', from: 'me', text: '나도 그 부스에서 폰 주웠어 박현우라는 사람 거', typing: 2200 },
-      { t: 'msg', th: 'self', from: 'me', text: '내 폰 두시 되자마자 손에서 없어졌어', typing: 900 },
-      { t: 'msg', th: 'self', from: 'me', text: '그 여자가 부스에 갖다 놓는 거야 다음 사람 줍게', typing: 1300 },
-      { t: 'msg', th: 'self', from: 'me', text: '제보 메일도 그 여자였어', typing: 600 },
-      { t: 'msg', th: 'self', from: 'me', text: '박현우 폰 여기 서랍에 있어 12%', typing: 1200 },
-      { t: 'msg', th: 'self', from: 'me', text: '112도 안 걸려 나에게로만 보내져', typing: 1200 },
+      { t: 'msg', th: 'self', from: 'me', text: '그 여자가 폰을 부스에 갖다 놔 다음 사람 줍게', typing: 1300 },
+      { t: 'msg', th: 'self', from: 'me', text: '박현우 폰 여기 서랍에 있어 아직 12%', typing: 1200 },
+      { t: 'msg', th: 'self', from: 'me', text: '112도 안 걸려 나에게로만 가', typing: 1100 },
       { t: 'msg', th: 'self', from: 'me', text: '너 지금 내 폰 들고 있지', typing: 1300 },
       { t: 'msg', th: 'self', from: 'me', text: '그럼 다음 너야', typing: 700 },
-      { t: 'msg', th: 'self', from: 'me', text: '기록보관소 013', typing: 1100 },
-      { t: 'msg', th: 'self', from: 'me', text: '그 여자 그거 무서워해', typing: 1500, attach: { kind: 'archive' } },
-      { t: 'msg', th: 'self', from: 'me', text: '라디오 숫자 순서대로 열어야 돼 메모에 적어놨어', typing: 2000 },
+      { t: 'msg', th: 'self', from: 'me', text: '근데 그 여자 서랍 정리하면서 계속 혼잣말해 013 013', typing: 2000 },
+      { t: 'msg', th: 'self', from: 'me', text: '내 메모에 그 사이트 소문 적어둔 거 있잖아 순서대로 열면 없는 기록 나온다는 거', typing: 2200, attach: { kind: 'archive' } },
+      { t: 'msg', th: 'self', from: 'me', text: '그거 같아', typing: 600 },
       { t: 'wait', ms: 1500 },
       { t: 'draft', th: 'self', text: '그 여자 지금 내 뒤에' },
       { t: 'time', hm: '01:44' },
@@ -473,7 +470,7 @@ export const BEATS: Beat[] = [
       { t: 'wait', ms: 7000 },
       { t: 'photo', id: 'p08' },
       { t: 'msg', th: 'unknown', text: '잘 나왔네요.', typing: 1600, attach: { kind: 'photo', id: 'p08' } },
-      { t: 'msg', th: 'unknown', text: '두 번 눌러서 확대해 봐요. 전화부스 안이요.', typing: 1500 },
+      { t: 'msg', th: 'unknown', text: '그쪽 잘 나왔어요. 부스 안에.', typing: 1500 },
       { t: 'wait', ms: 6000 },
       { t: 'msg', th: 'dohyun', text: '택시가 안 잡혀서 늦었어요', typing: 600 },
       { t: 'msg', th: 'dohyun', text: '학교 앞이에요 부스 쪽으로 가요', typing: 800 },
@@ -539,8 +536,7 @@ export const BEATS: Beat[] = [
       { t: 'wait', ms: 4500 },
       { t: 'unsend', th: 'unknown', match: '…써요. 두 시에' },
       { t: 'wait', ms: 1200 },
-      { t: 'msg', th: 'unknown', text: '앱 하나 깔아 뒀어요.', typing: 900 },
-      { t: 'msg', th: 'unknown', text: '지금 안에 있는 사람들이에요.', typing: 1300 },
+      { t: 'msg', th: 'unknown', text: '지금 안에 누가 있는지 보여 줄게요.', typing: 1300 },
       { t: 'msg', th: 'unknown', text: '그거 쓰면 여기 이름 다 지워져요. 채원 씨 것도.', typing: 2100 },
       { t: 'msg', th: 'unknown', text: '…제 것도.', typing: 500 },
       {
@@ -555,7 +551,7 @@ export const BEATS: Beat[] = [
       { t: 'note', id: 'n4' },
       { t: 'memo', id: 'm2' },
       { t: 'notify', app: 'memos', title: '녹음', body: '새 녹음 18이 저장되었습니다.' },
-      { t: 'msg', th: 'unknown', text: '녹음 하나 더 있어요. 이번엔 채원 씨 거 아니에요.', typing: 1800, attach: { kind: 'memo', id: 'm2' } },
+      { t: 'msg', th: 'unknown', text: '그쪽이 오늘 이 폰으로 한 거, 다 녹음돼 있어요.', typing: 1800, attach: { kind: 'memo', id: 'm2' } },
       // time to actually listen to recording 18 before the last minutes pile up
       { t: 'wait', ms: 20000 },
       { t: 'time', hm: '01:52' },

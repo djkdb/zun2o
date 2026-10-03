@@ -190,8 +190,8 @@ await snap('asks-name');
 await tapText('이름을 알려 준다');
 await page.fill('.name-form input', '테스터');
 await tap('.name-form button');
-await page.waitForFunction(() => window.__game.getState().save.threads.unknown.some((m) => m.text.includes('방송이에요')), null, { timeout: 30000 });
-mark('entity hints at the album code (CH3)');
+await page.waitForFunction(() => window.__game.getState().save.threads.unknown.some((m) => m.text.includes('채원 씨 거 옆에 적어 둘게요')), null, { timeout: 30000 });
+mark('she writes your name down next to 채원\'s (CH3)');
 await snap('name-used');
 await wait(3500);
 

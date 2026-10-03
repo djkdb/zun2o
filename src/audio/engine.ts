@@ -520,7 +520,7 @@ function noiseBurst(ctx: Ctx, out: AudioNode, engine: AudioEngine, peak: number,
   n.stop(at + dur + 0.05);
 }
 
-const DRY = new Set<SoundId>(['click', 'hover', 'key', 'type', 'ding', 'error', 'unlock', 'send', 'hangup', 'transition', 'open', 'zoom', 'connect', 'tape', 'vault', 'inhale']);
+const DRY = new Set<SoundId>(['click', 'hover', 'key', 'type', 'ding', 'error', 'unlock', 'send', 'hangup', 'transition', 'open', 'zoom', 'connect', 'tape', 'vault', 'inhale', 'impact', 'tinnitus']);
 
 const SOUNDS: Record<SoundId, (ctx: Ctx, out: GainNode, engine: AudioEngine) => void> = {
   open(ctx, out, engine) {
@@ -817,6 +817,30 @@ const SOUNDS: Record<SoundId, (ctx: Ctx, out: GainNode, engine: AudioEngine) => 
     lfo.start(t);
     n.stop(t + 3);
     lfo.stop(t + 3);
+  },
+  impact(ctx, out, engine) {
+    // The hit under a jump scare: a sub-bass drop you feel in the phone, and a slam of noise.
+    const t = ctx.currentTime;
+    tone(ctx, out, 'sine', 62, 0.9, 0.003, 0.9, t, 24);
+    tone(ctx, out, 'triangle', 124, 0.35, 0.003, 0.35, t, 40);
+    const n = engine.noiseSource();
+    if (n) {
+      const lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.setValueAtTime(5000, t);
+      lp.frequency.exponentialRampToValueAtTime(300, t + 0.4);
+      const g = ctx.createGain();
+      env(ctx, g, 0.55, 0.002, 0.45, t);
+      n.connect(lp).connect(g).connect(out);
+      n.start(t);
+      n.stop(t + 0.5);
+    }
+  },
+  tinnitus(ctx, out) {
+    // After the hit: the ringing in your ears, one thin high tone fading out.
+    const t = ctx.currentTime;
+    tone(ctx, out, 'sine', 6200, 0.035, 0.02, 2.4, t, 5900);
+    tone(ctx, out, 'sine', 6260, 0.02, 0.02, 2.0, t);
   },
   thud(ctx, out) {
     tone(ctx, out, 'sine', 70, 0.3, 0.005, 0.5, ctx.currentTime, 28);

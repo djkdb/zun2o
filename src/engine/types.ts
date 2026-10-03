@@ -50,7 +50,9 @@ export type SoundId =
   | 'tape'
   | 'vault'
   | 'inhale'
-  | 'buzz';
+  | 'buzz'
+  | 'impact'
+  | 'tinnitus';
 
 export interface ChatMsg {
   id: string;
