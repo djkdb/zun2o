@@ -56,7 +56,8 @@ export function ColdOpen() {
   const [step, setStep] = useState<Step>(0);
   // re-render when the season switches under the start screen
   useGame((s) => s.save.season);
-  const T = TEXT[isS2() ? 2 : 1];
+  const s2 = isS2();
+  const T = TEXT[s2 ? 2 : 1];
   const s1Done = useGame((s) => s.save.endings.some((e) => !e.startsWith('s2-')));
   const sawRelease = useGame((s) => s.save.endings.includes('release'));
   const [sound, setSound] = useState(true);
@@ -108,6 +109,11 @@ export function ColdOpen() {
     setStep(3);
   };
 
+  // Season 2: as the line says the door is swinging shut, the clip shows it — and it stops halfway.
+  useEffect(() => {
+    if (step === 6 && s2 && useClip) void clip.current?.play().catch(() => {});
+  }, [step, s2, useClip]);
+
   const [pushed, setPushed] = useState(false);
   const pick = () => {
     sfx('creak');
@@ -136,18 +142,21 @@ export function ColdOpen() {
         {art('wallpaper') && <img className={`co-img${step === 2 ? ' on' : ''}`} src={art('wallpaper')} alt="" draggable={false} />}
         {useClip ? (
           <video
+            key={s2 ? 's2' : 's1'}
             ref={clip}
             className={`co-img co-clip${step >= 3 ? ' on' : ''}`}
             muted
             playsInline
             preload="auto"
-            poster={art('booth-shelf')}
-            onTimeUpdate={(e) => e.currentTarget.currentTime > 3.6 && e.currentTarget.pause()}
+            // season 2's own clip starts on the dark phone; season 1's still has her face in the glass
+            poster={s2 ? undefined : art('booth-shelf')}
+            // the screen lights and holds — until, in season 2, the door swings in behind you (step 6)
+            onTimeUpdate={(e) => e.currentTarget.currentTime > 3.6 && !(s2 && step === 6) && e.currentTarget.pause()}
             // a failing <source> also reaches here through React; only the video's own error counts
             onError={(e) => e.target === e.currentTarget && setClipOk(false)}
           >
-            <source src={VIDEO.opening} type="video/mp4" />
-            <source src={VIDEO.openingWebm} type="video/webm" onError={() => setClipOk(false)} />
+            <source src={s2 ? VIDEO.s2opening : VIDEO.opening} type="video/mp4" />
+            <source src={s2 ? VIDEO.s2openingWebm : VIDEO.openingWebm} type="video/webm" onError={() => setClipOk(false)} />
           </video>
         ) : (
           art('booth-shelf') && <img className={`co-img co-booth${step >= 3 ? ' on' : ''}${step >= 4 ? ' lit' : ''}`} src={art('booth-shelf')} alt="" draggable={false} />

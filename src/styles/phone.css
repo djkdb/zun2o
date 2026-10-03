@@ -5477,6 +5477,12 @@ body,
 .ending-photo.ending-clip.on {
   opacity: 0.6;
 }
+/* ending 4: a landscape clip on a portrait screen; her on the left, the window on the right */
+.ending-photo.ending-window {
+  object-position: 42% 50%;
+  opacity: 0.42;
+  filter: grayscale(0.25) contrast(1.05);
+}
 
 /* cold open: the subtitle under the title */
 .coldopen-actions .co-sub {

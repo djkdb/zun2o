@@ -176,6 +176,7 @@ export function EndingScreen({ id }: { id: EndingId }) {
   const found = endings.filter((e) => e.startsWith('s2-') === s2).length;
   const bg: ArtSlot | null = s2 ? (id === 's2-daughter' && art('s2-window') ? 's2-window' : (S2_BG[id] ?? null)) : (`ending-${id}` as ArtSlot);
   const [shown, setShown] = useState(0);
+  const [windowClip, setWindowClip] = useState(() => !(typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches));
 
   useEffect(() => {
     sfx('ending');
@@ -201,7 +202,9 @@ export function EndingScreen({ id }: { id: EndingId }) {
   return (
     <div ref={box} className={`ending ending-${id}`}>
       {/* the last photograph of the night, behind the words */}
-      {bg && art(bg) && <img className="ending-photo" src={art(bg)} alt="" />}
+      {bg && art(bg) && !(id === 's2-daughter' && windowClip) && <img className="ending-photo" src={art(bg)} alt="" />}
+      {/* ending 4: 엄마 at the window, waiting, the clock behind her (falls back to the still) */}
+      {id === 's2-daughter' && windowClip && <WindowClip onFail={() => setWindowClip(false)} />}
       {/* the true ending's last line comes with the morning: rain stopping over the empty phone booth */}
       {(id === 'release' || id === 's2-home') && <DawnClip on={shown >= def.scene.length} />}
       {/* ending 1 closes where the game opened: the same booth, the same phone lighting up — for someone else */}
@@ -274,6 +277,16 @@ function DawnClip({ on }: { on: boolean }) {
     <video ref={ref} className={`ending-photo ending-clip${on ? ' on' : ''}`} poster={VIDEO.dawnPoster} playsInline muted preload="auto" aria-hidden="true">
       <source src={VIDEO.dawn} type="video/mp4" />
       <source src={VIDEO.dawnWebm} type="video/webm" onError={() => setOk(false)} />
+    </video>
+  );
+}
+
+/** Ending 4's background: 엄마 by the window at night. Plays once, muted, and holds on its last frame. */
+function WindowClip({ onFail }: { onFail: () => void }) {
+  return (
+    <video className="ending-photo ending-window" poster={VIDEO.s2windowPoster} autoPlay muted playsInline preload="auto" aria-hidden="true" onError={(e) => e.target === e.currentTarget && onFail()}>
+      <source src={VIDEO.s2window} type="video/mp4" />
+      <source src={VIDEO.s2windowWebm} type="video/webm" onError={onFail} />
     </video>
   );
 }

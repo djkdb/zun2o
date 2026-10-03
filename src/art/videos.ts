@@ -17,4 +17,30 @@ import dawn from '../assets/video/dawn.mp4';
 import dawnWebm from '../assets/video/dawn.webm';
 import dawnPoster from '../assets/video/dawn-poster.jpg';
 
-export const VIDEO = { recovered, recoveredWebm, recoveredPoster, videocall, videocallWebm, booth, boothWebm, boothPoster, opening, openingWebm, dawn, dawnWebm, dawnPoster };
+// season 2
+import s2opening from '../assets/video/s2-opening.mp4';
+import s2openingWebm from '../assets/video/s2-opening.webm';
+import s2window from '../assets/video/s2-window.mp4';
+import s2windowWebm from '../assets/video/s2-window.webm';
+import s2windowPoster from '../assets/video/s2-window-poster.jpg';
+
+export const VIDEO = {
+  recovered,
+  recoveredWebm,
+  recoveredPoster,
+  videocall,
+  videocallWebm,
+  booth,
+  boothWebm,
+  boothPoster,
+  opening,
+  openingWebm,
+  dawn,
+  dawnWebm,
+  dawnPoster,
+  s2opening,
+  s2openingWebm,
+  s2window,
+  s2windowWebm,
+  s2windowPoster,
+};
