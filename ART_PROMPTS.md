@@ -331,6 +331,8 @@ daylight or cozy indoor light, slightly imperfect framing like real phone photos
 | `s2-notebook` | 3:4 세로 | 노트 사진 3장의 배경 (빈 페이지, 이름은 게임이 위에 씀) |
 | `s2-window` | 9:16 세로 | 엔딩 4 「딸」 배경: 새벽 두 시, 창가에서 딸을 기다리는 엄마 |
 | `avatar-soyeon` | 1:1 | 시즌 2 "나에게" 프로필 사진 |
+| `s2-card` | 3:4 세로 | 엔딩 4 「딸」: 서랍에 새로 생긴 카드, 소연의 글씨 (없으면 시즌 1 `index-card`) |
+| `s2-ending-home` | 9:16 세로 | 엔딩 6 「귀가」 배경: 엄마가 떠난 새벽 식탁 (없으면 시즌 1 `ending-release`) |
 
 ### s2-sisters
 ```
@@ -392,3 +394,23 @@ no watermark.
 ```
 
 **한 장으로 받기(선택).** 위 6장을 "3×2 contact sheet, thin black gutters, each panel its own aspect ratio cropped inside the cell, NO text"로 한 번에 뽑아도 됩니다. 받으면 칸별로 잘라서 넣겠습니다.
+
+### s2-card
+```
+Extreme close-up inside a dark library archive room at night: a long wooden card-catalogue drawer pulled open, packed
+with old yellowed, water-stained index cards. ONE card in the middle is new: clean, bright white, standing slightly
+higher than the others, facing the camera. It has a few lines of neat handwriting in blue ballpoint pen, out of focus
+and completely unreadable. A ballpoint pen lies across the top of the drawer. Weak warm light from one side, everything
+else falls off into black. Old smartphone photo, no flash, heavy noise, realistic, no readable text, no watermark.
+```
+
+### s2-ending-home
+```
+Early dawn in the same small Korean apartment kitchen, cold blue light through the window, no lamps on. An open
+notebook lies on the kitchen table: many handwritten lines, each crossed out with a single pen stroke, and at the
+bottom of the page one short line that is not crossed out; all of it blurred and unreadable. A ballpoint pen set down
+neatly beside it, a cup of barley tea gone cold. The wooden chair is pulled out and empty: no coat on it anymore.
+Quiet, tender, sad, nobody in the frame. Shot on an old smartphone, natural grain, realistic, no readable text,
+no watermark, vertical 9:16.
+```
+

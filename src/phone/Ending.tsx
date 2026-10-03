@@ -71,8 +71,8 @@ const ENDINGS: Record<EndingId, EndingDef> = {
       { who: '채원', text: '근데 언니가 안 나와요', side: 'left' },
       { who: '채원', text: '(도현) 안에서 소연 씨가 저 깨웠어요. 문까지 데려다주고 다시 들어갔어요', side: 'left' },
       { text: '02:00. 노트의 마지막 줄: 9월 28일 02:00 — 한소연.' },
-      { text: '그 뒤로 엄마 손에 잉크가 묻는 일은 없었다.', img: 'reading-empty' },
-      { text: '10월 28일 02:00. 제2서고 서랍에 카드가 한 장 늘었다. 이름을 적은 글씨는 소연의 것이었다.' },
+      { text: '그 뒤로 엄마 손에 잉크가 묻는 일은 없었다.' },
+      { text: '10월 28일 02:00. 제2서고 서랍에 카드가 한 장 늘었다. 이름을 적은 글씨는 소연의 것이었다.', img: art('s2-card') ? 's2-card' : 'index-card' },
       { text: '엄마는 매일 밤 창가에 앉아 있다. 마흔한 살의 얼굴로.' },
       { who: '엄마', text: '소연이가 두 시 전에는 온다고 했어요.', side: 'left' },
     ],
@@ -111,7 +111,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
 };
 
 /** Season 2's last photographs, behind the words. */
-const S2_BG: Partial<Record<EndingId, ArtSlot>> = { 's2-daughter': 'reading-empty', 's2-instead': 'booth-shelf', 's2-home': 'ending-release' };
+const S2_BG: Partial<Record<EndingId, ArtSlot>> = { 's2-daughter': 'reading-empty', 's2-instead': 'booth-shelf', 's2-home': art('s2-ending-home') ? 's2-ending-home' : 'ending-release' };
 
 /** The night as you played it: who you kept out, whether she has your name. */
 function endingFor(id: EndingId, save: Save): EndingDef {
