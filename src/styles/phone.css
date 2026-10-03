@@ -1846,10 +1846,10 @@ svg {
 .scare-lunge.look-hang .ghost {
   transform-origin: 50% 0;
   animation:
-    drop 1.8s linear both,
+    scare-drop 1.8s linear both,
     jitter 0.06s steps(2) infinite;
 }
-@keyframes drop {
+@keyframes scare-drop {
   0%,
   2.9% {
     opacity: 0;
