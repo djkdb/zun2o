@@ -326,6 +326,7 @@ daylight or cozy indoor light, slightly imperfect framing like real phone photos
 |---|---|---|
 | `s2-sisters` | 3:4 세로 | 사진 앱 최근 항목: "엄마랑 나. 올봄. 가게 아줌마가 자매냐고 물었다." (이 파일이 있을 때만 사진이 나타남) |
 | `s2-kitchen` | 3:2 가로 | 사진 앱: 8월 28일 01:59, 소연이 몰래 찍은 엄마 |
+| `s2-kitchen-close` | 3:2 가로 | 사진 앱 9월 28일 01:52: 부스에 있는 폰이 찍은 부엌. 같은 장면을 방 안에서, 훨씬 가까이 (없으면 `s2-kitchen`을 확대해 씀) |
 | `s2-home` | 3:2 가로 | 사진 앱: 엄마가 돌아온 날 아침, 의자에 걸린 1994년 외투 |
 | `s2-notebook` | 3:4 세로 | 노트 사진 3장의 배경 (빈 페이지, 이름은 게임이 위에 씀) |
 | `s2-window` | 9:16 세로 | 엔딩 4 「딸」 배경: 새벽 두 시, 창가에서 딸을 기다리는 엄마 |
@@ -348,6 +349,16 @@ lamp on the kitchen table makes a warm pool of light. A woman with a 1990s perme
 table with her back to the camera, very upright, writing in a notebook with a ballpoint pen; her head is tilted at a
 slightly wrong angle, as if asleep. A wall clock reads 1:59. Everything else is black. Still, cold, unsettling, no face
 visible. Shot on an old smartphone, no flash, heavy noise, slight motion blur, realistic, no text, no watermark.
+```
+
+### s2-kitchen-close
+```
+The same dark small Korean apartment kitchen at night as the previous photo, but now shot from INSIDE the room, only about
+one meter behind the woman. She sits at the kitchen table under a single warm desk lamp, back to the camera, 1990s permed
+bob, beige cardigan, very upright, writing in an open notebook with a ballpoint pen; her head tilted at a slightly wrong
+angle, as if asleep. Over her shoulder the notebook page is just visible but unreadable. Nobody is holding this camera:
+slightly too low, slightly crooked, as if the phone were lying on a chair. Wall clock reads 1:52. Black all around.
+Old smartphone, no flash, heavy noise, realistic, no text, no watermark.
 ```
 
 ### s2-home

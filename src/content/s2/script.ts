@@ -8,7 +8,7 @@ import type { Beat } from '../../engine/types';
 //   0 잠금      23:51  소연's phone, the door that won't close → 0314
 //   1 엄마      23:52  the letter, the notebook album
 //   2 노트      00:40  the recording of 엄마 at 01:58 → your name
-//   3 관리자    01:12  the archive admin app → 0928, the copy, the first sentence
+//   3 관리자    01:12  소연's voice at the gate, 엄마's 1994 cassette, the admin app → 0928, the copy, the first sentence
 //   4 두 시 전  01:50  엄마 calls, the note writes itself, 소연 from inside
 //   5 02:00            finale (phone/Finale2.tsx), endings 4–6
 // ─────────────────────────────────────────────────────────────────────────
@@ -228,6 +228,9 @@ export const BEATS_S2: Beat[] = [
       { t: 'wait', ms: 1800 },
       { t: 'msg', th: 'unknown', text: '소연 씨가 왜 폰 두고 갔는지 알아요?', typing: 1300 },
       { t: 'msg', th: 'unknown', text: '자기가 못 하는 거 시키려고요.', typing: 1100 },
+      { t: 'wait', ms: 2400 },
+      { t: 'memo', id: 's2m2' },
+      { t: 'msg', th: 'unknown', text: '부스 앞에서 녹음한 거예요. 안 지웠더라고요.', typing: 1500, attach: { kind: 'memo', id: 's2m2' } },
       {
         t: 'objective',
         app: 'index',
@@ -235,8 +238,8 @@ export const BEATS_S2: Beat[] = [
         hint: '비번은 메모 “보관소”와 나에게의 “엄마 돌아온 날”. 홈 화면 달력에 그 날짜가 있어요. 월과 일, 네 자리로.',
         nudge: { th: CHAEWON, text: '언니 비번은 다 어머니 날짜예요. 사라지신 날 아니면 돌아오신 날' },
       },
-      // The night doesn't wait for the password.
-      { t: 'wait', ms: 150000 },
+      // The night doesn't wait for the password (but leaves time for two recordings).
+      { t: 'wait', ms: 200000 },
       { t: 'emit', ev: 'ch4' },
     ],
   },
@@ -256,7 +259,7 @@ export const BEATS_S2: Beat[] = [
         text: '02:00 전에 정하자 — 사본을 지울지',
         hint: '보관소 관리 → 기록 013 (사본) → 삭제. 이 기록에 처음 남은 문장은 실종 신고서(기록 003)의 신고자, 열한 살 소연의 말입니다. 지우지 않아도 02:00은 옵니다.',
       },
-      { t: 'wait', ms: 30000 },
+      { t: 'wait', ms: 45000 },
       { t: 'emit', ev: 'ch4' },
     ],
   },
@@ -299,6 +302,24 @@ export const BEATS_S2: Beat[] = [
       { t: 'msg', th: 'mom', text: '엄마 일년이나 있었잖니', typing: 1800 },
     ],
   },
+  // 소연 at the gate → the cassette she never played to the end opens
+  {
+    id: 's2-memo2-end',
+    on: 'memo:s2m2:end',
+    actions: [
+      { t: 'wait', ms: 1600 },
+      { t: 'msg', th: 'unknown', text: '끝까지 말 못 하죠. 엄마랑 똑같아요.', typing: 1600 },
+      { t: 'wait', ms: 1800 },
+      { t: 'flag', f: 'tape-ok' },
+      { t: 'notify', app: 'memos', title: '녹음', body: '“엄마 목소리” — 이제 재생할 수 있습니다.' },
+      { t: 'msg', th: 'unknown', text: '카세트 하나 더 있죠. 소연 씨가 한 번도 끝까지 못 들은 거.', typing: 1800, attach: { kind: 'memo', id: 's2tape' } },
+    ],
+  },
+  {
+    id: 's2-tape-end',
+    on: 'memo:s2tape:end',
+    actions: [{ t: 'wait', ms: 1600 }, { t: 'msg', th: 'unknown', text: '열한 살짜리가 경찰서에서 이 말을 옮겼어요. 자기 말로.', typing: 2000 }],
+  },
   { id: 's2-wrong', on: 'admin:wrong', actions: [{ t: 'wait', ms: 1200 }, { t: 'msg', th: 'unknown', text: '그거 아니에요. 열한 살짜리가 경찰서에서 뭐라고 했겠어요.', typing: 2000 }] },
 
   // ── 4. 두 시 전 ────────────────────────────────────────────────────────
@@ -318,6 +339,8 @@ export const BEATS_S2: Beat[] = [
       },
       { t: 'msg', th: CHAEWON, text: '저 학교 앞이에요', typing: 600 },
       { t: 'msg', th: CHAEWON, text: '도현이 나오나 보려고', typing: 800 },
+      { t: 'msg', th: CHAEWON, text: '작년엔 도현이가 여기서 저 기다렸대요', typing: 1100 },
+      { t: 'msg', th: CHAEWON, text: '입구까지만 온다더니 아침까지 있었대요', typing: 1200 },
       { t: 'wait', ms: 7000 },
       { t: 'time', hm: '01:51' },
       { t: 'msg', th: 'mom', text: '소연아 엄마 지금 그 사이트 보고 있다', typing: 1800 },
@@ -328,6 +351,8 @@ export const BEATS_S2: Beat[] = [
       { t: 'time', hm: '01:52' },
       { t: 'msg', th: 'unknown', text: '어머니 지금 식탁이에요.', typing: 1500 },
       { t: 'msg', th: 'unknown', text: '볼펜 쥐고.', typing: 700 },
+      { t: 'photo', id: 's2-kitchen2' },
+      { t: 'msg', th: 'unknown', text: '방금 찍혔어요.', typing: 900, attach: { kind: 'photo', id: 's2-kitchen2' } },
       { t: 'msg', th: 'unknown', text: '소연 씨가 들고 간 노트, 식탁에 와 있어요.', typing: 1400 },
       { t: 'wait', ms: 7000 },
       { t: 'time', hm: '01:53' },
@@ -352,6 +377,7 @@ export const BEATS_S2: Beat[] = [
       { t: 'msg', th: 'self', from: 'me', text: '주웠어요? 제 폰', typing: 1400 },
       { t: 'msg', th: 'self', from: 'me', text: '진짜 나에게로밖에 안 가네', typing: 1300 },
       { t: 'msg', th: 'self', from: 'me', text: '채원이 말대로', typing: 700 },
+      { t: 'msg', th: 'self', from: 'me', text: '도현 씨 내 옆에서 자요. 안 깨요', typing: 1300 },
       { t: 'msg', th: 'self', from: 'me', text: '지웠어요?', typing: 900 },
       {
         t: 'choice',
@@ -416,4 +442,5 @@ export const BEATS_S2: Beat[] = [
   { id: 's2-dont-send', on: 'typing:unknown', requires: ['ch3'], actions: [{ t: 'wait', ms: 900 }, { t: 'msg', th: 'unknown', text: '지운다는 얘기면 보내지 마요.', typing: 800 }] },
   { id: 's2-ready-ch4', on: 'app:messages', requires: ['ch4'], actions: [{ t: 'msg', th: 'mom', text: '소연아 열었니' }] },
   { id: 's2-old-photo', on: 'photo:s2-old', actions: [{ t: 'flag', f: 'saw-old' }] },
+  { id: 's2-kitchen2-seen', on: 'photo:s2-kitchen2', actions: [{ t: 'wait', ms: 2400 }, { t: 'msg', th: 'unknown', text: '8월 거보다 가깝죠.', typing: 1000 }] },
 ];

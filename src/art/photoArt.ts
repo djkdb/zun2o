@@ -53,6 +53,7 @@ export type ArtSlot =
   | 'avatar-unknown'
   // season 2
   | 's2-kitchen'
+  | 's2-kitchen-close'
   | 's2-home'
   | 's2-notebook'
   | 's2-sisters'

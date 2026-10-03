@@ -3,7 +3,8 @@ import { useGame } from '../hooks/useGame';
 import { reachEnding, sfx, vibrate } from '../engine/director';
 import { getState, setSave } from '../engine/state';
 
-// 시즌 2 — 02:00. The notebook fills the screen: her mother's hand has written
+// 시즌 2 — 02:00. The notebook on the kitchen table at home (it came back from the school
+// on its own) fills the screen, as the memo app has been showing it: her mother's hand has written
 // "9월 28일 02:00 — 한소" and stopped, one character short. The record says what
 // it knows about you, then you choose: watch, write your own name, or erase the copy.
 
@@ -14,7 +15,7 @@ const WRITTEN = '9월 28일 02:00 — 한소';
 
 function buildRecall(): string[] {
   const s = getState().save;
-  const lines = ['02:00. 어머니 손이 멈췄어요. 한 글자 남았어요.'];
+  const lines = ['02:00. 식탁에서 어머니 손이 멈췄어요. 한 글자 남았어요.'];
   // last year: only ending 3 called her name; anyone else just came and went
   if (s.s1?.name) lines.push(s.s1.endings.includes('release') ? `${s.s1.name} 씨. 작년엔 어머니 이름 불러 줬잖아요.` : `${s.s1.name} 씨. 작년에도 여기 있었죠.`);
   if (s.flags.includes('pretended')) lines.push('어머니한테 소연 씨인 척했죠. 어머니는 감기 걸렸냐고만 했어요.');
@@ -92,7 +93,7 @@ export function Finale2() {
   return (
     <div className={`finale2 step-${step}`}>
       <div className="finale2-clock">{step === 'page' ? '01:59' : '02:00'}</div>
-      <div className="nb-sheet" aria-label={`노트: ${WRITTEN.slice(0, ink)}`}>
+      <div className="nb-sheet" aria-label={`집, 식탁 위의 노트: ${WRITTEN.slice(0, ink)}`}>
         <svg viewBox="0 0 360 150" aria-hidden="true">
           <rect width="360" height="150" fill="#efe7d4" />
           {[48, 82, 116].map((y) => (
@@ -109,6 +110,7 @@ export function Finale2() {
           {step !== 'page' && <rect className="nb-pen" x={44 + ink * 11.4} y="52" width="2" height="26" fill="#24252e" />}
         </svg>
       </div>
+      <p className="nb-where">집, 식탁 위 · 어머니의 노트</p>
       {step !== 'page' && (
         <div className="final-recall finale2-recall">
           {(step === 'recall' ? typed : recall).map((l, i) => (

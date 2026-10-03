@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useGame } from '../hooks/useGame';
 import { newGame, replayFinale, sfx } from '../engine/director';
 import { getState } from '../engine/state';
-import type { EndingId } from '../engine/types';
+import type { EndingId, Save } from '../engine/types';
 import { art, type ArtSlot } from '../art/photoArt';
 import { VIDEO } from '../art/videos';
 import { copula } from '../content/korean';
@@ -69,6 +69,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
     scene: [
       { who: '채원', text: '도현이 나왔어요!! 전화부스에서 자고 있었어요', side: 'left' },
       { who: '채원', text: '근데 언니가 안 나와요', side: 'left' },
+      { who: '채원', text: '(도현) 안에서 소연 씨가 저 깨웠어요. 문까지 데려다주고 다시 들어갔어요', side: 'left' },
       { text: '02:00. 노트의 마지막 줄: 9월 28일 02:00 — 한소연.' },
       { text: '그 뒤로 엄마 손에 잉크가 묻는 일은 없었다.', img: 'reading-empty' },
       { text: '10월 28일 02:00. 제2서고 서랍에 카드가 한 장 늘었다. 이름을 적은 글씨는 소연의 것이었다.' },
@@ -84,6 +85,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
       { who: '나에게', text: '…나왔어요. 해가 떠요', side: 'right' },
       { who: '나에게', text: '엄마한테 가요. 고마워요. 근데 그쪽은요?', side: 'right' },
       { who: '채원', text: '도현이랑 언니 둘 다 전화부스에서 깼어요. 이 폰만 선반에 있어요', side: 'left' },
+      { who: '채원', text: '(도현) 작년엔 입구에서 기다리기만 했잖아요. 이번엔 제가 정문에서 기다릴게요. 그쪽 나올 때까지', side: 'left' },
       { text: '02:00. 노트의 마지막 줄: “한소” 위에 줄. 그 아래 — {name}.' },
       { text: '엄마 손은 그날 이후 다시는 볼펜을 쥐지 않았다.' },
       { text: '1년 뒤. 해원고 정문 앞 공중전화 부스. 선반 위에 휴대폰 한 대.', img: 'booth-shelf' },
@@ -97,6 +99,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
     scene: [
       { text: '기록 013 (사본) — 삭제되었습니다. 이 기록을 보는 사람: 0' },
       { who: '채원', text: '도현이 나왔어요. 언니도요!!!', side: 'left' },
+      { who: '채원', text: '(도현) 안에서 소연 씨가 밤새 어머니 얘기만 했어요. 문 열리자마자 집으로 뛰어갔어요', side: 'left' },
       { who: '나에게', text: '엄마한테 전화가 안 돼요', side: 'right' },
       { text: '새벽 여섯 시, 소연은 집 현관문을 열었다. 학교에 들고 갔던 노트가 식탁 위에 펼쳐져 있었다.' },
       { text: '열한 개의 이름 위에 줄이 그어져 있었다. 마지막 장에는 이름 대신 한 줄.' },
@@ -111,7 +114,8 @@ const ENDINGS: Record<EndingId, EndingDef> = {
 const S2_BG: Partial<Record<EndingId, ArtSlot>> = { 's2-daughter': 'reading-empty', 's2-instead': 'booth-shelf', 's2-home': 'ending-release' };
 
 /** The night as you played it: who you kept out, whether she has your name. */
-function endingFor(id: EndingId, flags: string[]): EndingDef {
+function endingFor(id: EndingId, save: Save): EndingDef {
+  const { flags, choices } = save;
   const base = ENDINGS[id];
   const keptOut = flags.includes('kept-out');
   let scene = base.scene.map((l) => ({ ...l }));
@@ -134,6 +138,22 @@ function endingFor(id: EndingId, flags: string[]): EndingDef {
     scene[0] = { who: '도현', text: '채원이 나왔어요!!! 정문으로 걸어 나왔어요', side: 'left' };
     scene[1] = { who: '도현', text: '채원이가 그러는데 서랍이 전부 비었대요. 카드가 한 장도 없었대요', side: 'left' };
   }
+  // Her name, at last — answering the first thing you said to her.
+  if (id === 'release') {
+    const i = scene.findIndex((l) => l.text === '서미령이에요.');
+    const said = { who: '처음에 누구냐고 물었죠. 서미령이에요.', yes: '서미령이에요. 그 폰, 이제 거기 없어도 돼요.', silent: '서미령이에요. 처음에 대답 안 했죠. 저도 31년 동안 이 말을 못 했어요.' }[choices.c1 ?? ''];
+    if (i >= 0 && said) scene[i] = { ...scene[i], text: said };
+  }
+  // You called 1340 and heard her count. The radio goes on counting — or stops.
+  if (flags.includes('heard-radio') && !id.startsWith('s2-')) {
+    const radio = {
+      poweroff: `새벽 두 시, AM 1340에서 그 목소리가 숫자를 읽었다. “…방문자, ${keptOut ? '공공이팔' : '공공이구'}.”`,
+      shift: '그해 겨울, 1340에서 숫자를 읽는 목소리가 바뀌었다. 당신의 목소리였다.',
+      release: '그날 이후로 1340에 전화를 걸면, 신호만 가다 끊긴다.',
+    }[id as 'poweroff' | 'shift' | 'release'];
+    // (in ending 2 it happens before "1년 뒤")
+    scene.splice(scene.length - (id === 'shift' ? 2 : 1), 0, { text: radio });
+  }
   // You answered her mother as 소연. So the promise she waits on was yours.
   if (id === 's2-daughter' && flags.includes('pretended')) scene[scene.length - 1] = { who: '엄마', text: '소연이가 두 시 전에는 온다고 했어요. 전화로 그랬어요. 목소리가 좀 이상했는데.', side: 'left' };
   // She has your name. Running doesn't take it back.
@@ -145,7 +165,7 @@ function endingFor(id: EndingId, flags: string[]): EndingDef {
 
 export function EndingScreen({ id }: { id: EndingId }) {
   // fixed for this showing: the scene plays out on timers
-  const def = useMemo(() => endingFor(id, getState().save.flags), [id]);
+  const def = useMemo(() => endingFor(id, getState().save), [id]);
   const playerName = useGame((s) => s.save.playerName);
   const name = playerName ?? '(이름 없음)';
   // In dialogue, someone who never gave a name is just their number.

@@ -121,6 +121,27 @@ export const KitchenPhoto = memo(function KitchenPhoto() {
   );
 });
 
+/**
+ * 9월 28일 01:52, tonight: the same kitchen, closer — from inside the room, not the door.
+ * Taken by 소연's phone, which is in the booth. Its own photo if there is one, else the
+ * August photo, cropped in towards her back.
+ */
+export const KitchenTonightPhoto = memo(function KitchenTonightPhoto() {
+  const own = art('s2-kitchen-close');
+  const photo = own ?? art('s2-kitchen');
+  const label = '어두운 부엌. 아까 사진보다 훨씬 가까이에서, 식탁에 앉아 무언가를 쓰는 단발머리 여자의 등이 보인다.';
+  if (!photo) return <KitchenPhoto />;
+  return (
+    <svg viewBox={own ? '0 0 640 585' : '200 150 320 292'} role="img" aria-label={label}>
+      <rect x="0" y="0" width="640" height="585" fill="#050505" />
+      <image href={photo} width="640" height="585" preserveAspectRatio="xMidYMid slice" />
+      <text x={own ? 22 : 212} y={own ? 562 : 432} fontFamily="IBM Plex Mono, monospace" fontSize={own ? 15 : 8} fill="#e6534b" opacity="0.85">
+        01:52
+      </text>
+    </svg>
+  );
+});
+
 /** The morning she came home: the same coat over a kitchen chair, dawn in the window. */
 export const HomecomingPhoto = memo(function HomecomingPhoto() {
   const id = useId().replace(/:/g, '');

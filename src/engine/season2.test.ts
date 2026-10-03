@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { BEATS_S2 } from '../content/s2/script';
 import { CALLS } from '../content/calls';
-import { NOTES } from '../content/media';
+import { MEMO_TITLES, NOTES } from '../content/media';
 import { PHOTOS_S2 } from '../content/s2/media';
 import { INITIAL_THREADS_S2 } from '../content/s2/threads';
 import { ARCHIVE } from '../content/archive';
@@ -23,6 +23,8 @@ describe('season 2 script integrity', () => {
         if (a.t === 'call') expect(CALLS[a.id], `${b.id} → call ${a.id}`).toBeDefined();
         if (a.t === 'msg' || a.t === 'choice') expect(INITIAL_THREADS_S2[a.th], `${b.id} → thread ${a.th}`).toBeDefined();
         if (a.t === 'note') expect(NOTES[a.id], `${b.id} → note ${a.id}`).toBeDefined();
+        if (a.t === 'memo') expect(MEMO_TITLES[a.id], `${b.id} → memo ${a.id}`).toBeDefined();
+        if (a.t === 'photo') expect(PHOTOS_S2.some((p) => p.id === a.id), `${b.id} → photo ${a.id}`).toBe(true);
         if (a.t === 'emit') expect(listens(a.ev), `${b.id} emits ${a.ev}`).toBe(true);
         if (a.t === 'choice') for (const o of a.options) expect(listens(`choice:${a.id}:${o.id}`), `choice ${a.id}:${o.id}`).toBe(true);
       }
@@ -86,6 +88,10 @@ describe('season 2 night', () => {
     choose('same');
     await until(() => getState().save.installed.includes('index'));
     expect(getState().save.chapter).toBe(3);
+    // 소연's own voice from the gate, then the cassette she never finished
+    await until(() => getState().save.memos.includes('s2m2'));
+    emit('memo:s2m2:end');
+    await until(() => getState().save.flags.includes('tape-ok'));
     emit('admin:unlock');
     await until(() => getState().save.threads.unknown.some((m) => m.text.includes('어머니도 지워져요')));
     emit('admin:armed');
@@ -94,6 +100,11 @@ describe('season 2 night', () => {
     await until(() => (getState().save.liveNote ?? '').startsWith('02:00 — 한'));
     await until(() => getState().rt.finale === true);
     expect(getState().save.liveNote).toBe('02:00 — 한소');
+    // the phone in the booth took a photo of the kitchen at home
+    expect(getState().save.photos).toContain('s2-kitchen2');
+    // 엄마 found the site (01:51) before she said it could be deleted
+    const mom = getState().save.threads.mom.map((m) => m.text);
+    expect(mom.indexOf('엄마 얘기가 왜 거기있니')).toBeLessThan(mom.indexOf('지워도 된다'));
     expect(getState().save.battery).toBe(3);
   });
 });

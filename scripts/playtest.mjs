@@ -387,6 +387,7 @@ await waitFor('.ending-release', 10000);
 mark('ENDING 3 — 기록 삭제');
 await waitFor('.ending-card', 20000);
 await snap('ending-release');
+check('ending 3: at last she says her own name', (await page.textContent('.ending-scene')).includes('서미령이에요'));
 
 // ── other endings via debug jump ────────────────────────────────────────
 for (const [label, cls] of [

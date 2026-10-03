@@ -9,6 +9,8 @@ export const PHOTOS_S2: PhotoItem[] = [
   { id: 's2-home', time: '06:10', caption: '엄마 돌아온 날. 식탁에 앉아서 한참 아무 말도 안 했다. 외투도 그대로.', album: 'recent', date: '2025년 9월 28일' },
   { id: 's2-kitchen', time: '01:59', caption: '8월 28일. 엄마. (몰래 찍음)', album: 'recent', date: '8월 28일' },
   { id: 's2-booth', time: '22:55', caption: '여기 두고 간다. 누군가 주울 때까지.', album: 'recent', date: '9월 27일' },
+  // 01:52 tonight: taken by this phone — which is in the booth. Location: home.
+  { id: 's2-kitchen2', time: '01:52', caption: '(이 폰으로 촬영됨 · 촬영 위치: 집)', album: 'recent', extra: true, date: '9월 28일' },
   { id: 's2-n1', time: '01:21', caption: '노트 첫 장. 맨 위 줄은 엄마가 1994년에 쓴 것과 같은 글씨.', album: 'hidden', portrait: true, date: '9월 2일' },
   { id: 's2-n2', time: '01:22', caption: '둘째 장. 8월 28일 — 강도현.', album: 'hidden', portrait: true, date: '9월 2일' },
   { id: 's2-n3', time: '22:31', caption: '오늘 밤 페이지. 연필로 먼저 적혀 있다. 엄마는 두 시에 그 위를 볼펜으로 덧쓴다.', album: 'hidden', portrait: true, date: '9월 27일' },
@@ -90,6 +92,41 @@ export const NOTES_S2: Record<string, NoteItem> = {
 
 연락처는 모른다. 고맙다는 말을 못 했다.`,
   },
+};
+
+/** 22:47 at the school gate: 소연, just before she leaves the phone on the shelf. */
+export const MEMO_S2M2 = {
+  id: 's2m2',
+  title: '9월 27일 22:47',
+  date: '9월 27일 22:47',
+  duration: 41,
+  lines: [
+    { at: 0, who: '', text: '(빗소리. 철문 체인이 흔들리는 소리.)', sfx: 'static' },
+    { at: 3, who: '소연', text: '…녹음 되나. 됐다.' },
+    { at: 6, who: '소연', text: '이거 듣는 분. 제 폰 주운 분이요. 한소연이에요.' },
+    { at: 11, who: '소연', text: '방금 명단에서 제 이름 맨 위로 올렸어요. 관리자는 그게 되더라고요.' },
+    { at: 17, who: '소연', text: '엄마한테는 야근이라고 했어요. 엄마도 그날 야근이었으니까.' },
+    { at: 23, who: '', text: '(긴 숨)' },
+    { at: 25, who: '소연', text: '사본은요, 지우면—' },
+    { at: 28, who: '', text: '(정적)' },
+    { at: 31, who: '소연', text: '…아니에요. 두 시 전에는 끝나요.' },
+    { at: 34, who: '', text: '(휴대폰을 선반에 내려놓는 소리)', sfx: 'key' },
+    { at: 36.5, who: '소연', text: '(멀어지며) 엄마. 나 두 시 전에는 와.' },
+  ] as MemoLine[],
+};
+
+/** 1994년 3월 13일 23:38, the answering machine: the promise the eleven-year-old repeated to the police. */
+export const MEMO_S2TAPE = {
+  id: 's2tape',
+  title: '엄마 목소리',
+  date: '1994년 3월 13일 23:38 · 자동응답기 테이프',
+  duration: 10,
+  lines: [
+    { at: 0, who: '', text: '(자동응답기 삑 소리. 테이프 잡음.)', sfx: 'static' },
+    { at: 2, who: '엄마', text: '소연아, 엄마야. 도서관 정리가 좀 늦어.' },
+    { at: 5.5, who: '엄마', text: '먼저 자. 엄마 두 시 전에는 와.' },
+    { at: 8.6, who: '', text: '(삑)' },
+  ] as MemoLine[],
 };
 
 export const MEMO_S2M1 = {

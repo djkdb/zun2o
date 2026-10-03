@@ -143,6 +143,17 @@ await page.getByRole('button', { name: /기록 003/ }).click();
 await wait(400);
 check('record 003 still has the sentence (the informant, age 11)', (await page.textContent('.arc-page-wrap')).includes('엄마가 두 시 전에는 온다고 했어요'));
 mark('admin');
+// 소연's recording from the gate, then the cassette she never finished
+await openApp('memos');
+await wait(400);
+check('소연\'s 22:47 recording is on the list', (await page.textContent('.memo-list')).includes('9월 27일 22:47'));
+await page.locator('.memo-list button', { hasText: '9월 27일 22:47' }).click();
+await page.locator('.memo-play').click();
+await wait(8000);
+await snap('soyeon-memo');
+check('…and plays in her own words', (await page.textContent('.memo-transcript')).includes('한소연이에요'));
+await page.evaluate(() => window.__game.emit('memo:s2m2:end'));
+check('the 1994 cassette becomes playable', await until(() => window.__game.getState().save.flags.includes('tape-ok'), 20000));
 
 // ── chapter 4: 엄마 calls, the note writes itself ───────────────────────
 check('chapter 4 arrives', await until(() => window.__game.getState().save.chapter === 4, 120000));
@@ -156,6 +167,7 @@ await snap('eomma-choice');
 await page.getByText('소연 씨 폰을 주운 사람이에요.').click();
 await until(() => !window.__game.getState().rt.activeCall, 40000);
 check('the note writes itself: 02:00 — 한', await until(() => (window.__game.getState().save.liveNote ?? '').startsWith('02:00 — 한'), 40000));
+check('the phone in the booth photographed the kitchen at 01:52', (await save()).photos.includes('s2-kitchen2'));
 await openApp('notes');
 await wait(400);
 await page.locator('.note-list button').first().click();

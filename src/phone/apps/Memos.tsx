@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useGame } from '../../hooks/useGame';
 import { emit, openApp, sfx } from '../../engine/director';
 import { MEMO_M1, type MemoLine } from '../../content/media';
-import { MEMO_S2M1 } from '../../content/s2/media';
+import { MEMO_S2M1, MEMO_S2M2, MEMO_S2TAPE } from '../../content/s2/media';
 import { isS2 } from '../../content/season';
 import { getState, setRt } from '../../engine/state';
 import { AppHeader } from '../AppHeader';
@@ -144,6 +144,8 @@ function deepMemo(): Memo | null {
   if (d?.kind !== 'memo') return null;
   if (d.id === 'm2') return buildM2();
   if (d.id === 's2m1') return MEMO_S2M1;
+  if (d.id === 's2m2') return MEMO_S2M2;
+  if (d.id === 's2tape') return getState().save.flags.includes('tape-ok') ? MEMO_S2TAPE : null;
   return getState().save.flags.includes('call1-done') ? MEMO_M1 : null;
 }
 
@@ -152,6 +154,8 @@ export function MemosApp() {
   const [open, setOpen] = useState<Memo | null>(deepMemo);
   const memos = useGame((s) => s.save.memos);
   const synced = useGame((s) => s.save.flags.includes('call1-done'));
+  // season 2: the cassette 소연 never played to the end, until tonight
+  const tapeOk = useGame((s) => s.save.flags.includes('tape-ok'));
   // Tapping the damaged file does something: a burst of static, and a detail that doesn't add up.
   const [broken, setBroken] = useState(false);
   useEffect(() => {
@@ -181,14 +185,37 @@ export function MemosApp() {
               </button>
             </li>
           )}
+          {memos.includes('s2m2') && (
+            <li>
+              <button type="button" className="new" onClick={() => setOpen(MEMO_S2M2)}>
+                <MemoIcon kind="play" />
+                <span className="memo-row-text">
+                  <strong>{MEMO_S2M2.title}</strong>
+                  <span>해원고 정문 · {fmt(MEMO_S2M2.duration)}</span>
+                </span>
+                <MiniWave seed={47} />
+              </button>
+            </li>
+          )}
           <li>
-            <div className="memo-old">
-              <MemoIcon kind="broken" />
-              <span className="memo-row-text">
-                <strong>엄마 목소리</strong>
-                <span>1994년 3월 · 카세트에서 옮김 · 0:09 · 재생할 수 없음</span>
-              </span>
-            </div>
+            {tapeOk ? (
+              <button type="button" className="new" onClick={() => setOpen(MEMO_S2TAPE)}>
+                <MemoIcon kind="play" />
+                <span className="memo-row-text">
+                  <strong>{MEMO_S2TAPE.title}</strong>
+                  <span>1994년 3월 13일 · 자동응답기 테이프 · {fmt(MEMO_S2TAPE.duration)}</span>
+                </span>
+                <MiniWave seed={94} />
+              </button>
+            ) : (
+              <div className="memo-old">
+                <MemoIcon kind="broken" />
+                <span className="memo-row-text">
+                  <strong>엄마 목소리</strong>
+                  <span>1994년 3월 · 카세트에서 옮김 · 0:10 · 재생할 수 없음</span>
+                </span>
+              </div>
+            )}
           </li>
         </ul>
       ) : (
