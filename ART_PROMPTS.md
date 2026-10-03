@@ -439,7 +439,8 @@ stops when the pen stops. No music, no voices.
 ### s2-opening
 ```
 Night, heavy rain. Inside a public phone booth in front of a closed school, a smartphone lies on the metal shelf,
-exactly as in the first frame. The phone screen lights up with a soft white glow. Then the booth's glass door starts
+exactly as in the first frame. In the first two seconds, the pale face reflected in the glass at the top left
+slowly fades out and is gone: the glass shows only rain. Then the phone screen lights up with a soft white glow. Then the booth's glass door starts
 to swing shut on its own, slowly; its dark metal edge slides into the left side of the frame, and stops halfway,
 leaving the door open. Rain keeps running down the glass. Slight handheld sway, no cuts, no zoom. Grainy old-smartphone
 video, realistic. Audio: rain on glass, a long metal hinge creak that stops abruptly. No music, no voices.
