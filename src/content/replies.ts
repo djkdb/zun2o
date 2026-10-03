@@ -25,6 +25,9 @@ export interface Reply {
   lines: string[];
 }
 
+/** Asking her — or it — for a name (not "what's my name": callers check that first). */
+export const ASKS_NAME = /이름(이|은)?\s*(뭐|머|알려|말해|있)|성함/;
+
 interface Rule {
   id: string;
   re: RegExp;
@@ -33,6 +36,13 @@ interface Rule {
 }
 
 const UNKNOWN: Rule[] = [
+  // "what's MY name" first; then the question nobody asks her — her own name
+  { id: 'name', re: /내 이름|제 이름|이름 알아/, say: (c) => [[c.name ? `${c.name}. 적어 뒀어요.` : '아직 안 알려 줬잖아요.']] },
+  {
+    id: 'askname',
+    re: ASKS_NAME,
+    say: () => [['…', '제 이름이요?', '여기 묶이면 자기 이름은 입 밖으로 안 나와요.'], ['성은 서예요.', '…그 뒤가 안 나와요.'], ['물어봐 줘서 고마워요.']],
+  },
   {
     id: 'who',
     re: /누구|정체|뭐야|who/i,
@@ -41,9 +51,8 @@ const UNKNOWN: Rule[] = [
   {
     id: 'chaewon',
     re: /채원/,
-    say: (c) => (c.name ? [[`채원 씨는 서랍 안에 있어요, ${c.name}.`, '보고 싶어요?'], ['조용히 해 줘요. 채원 씨 지금 자고 있어요.']] : [['이름을 먼저 말해 줘요.'], ['당신 이름부터요.']]),
+    say: (c) => (c.name ? [[`채원 씨는 서랍 안에 있어요, ${c.name}.`, '보고 싶어요?'], ['조용히 해 줘요. 채원 씨 지금 자고 있어요.']] : [['이름을 먼저 말해 줘요.'], ['그쪽 이름부터요.']]),
   },
-  { id: 'name', re: /내 이름|이름이 뭐|이름 알아/, say: (c) => [[c.name ? `${c.name}. 적어 뒀어요.` : '아직 안 알려 줬잖아요.']] },
   { id: 'police', re: /경찰|신고|112/, say: () => [['경찰은 이미 왔다 갔어요. 3층엔 아무도 없었죠.'], ['…해 봐요.']] },
   {
     id: 'help',
@@ -55,7 +64,7 @@ const UNKNOWN: Rule[] = [
   { id: 'laugh', re: /ㅋㅋ|ㅎㅎ|lol/i, say: () => [['웃고 있어요? 채원 씨도 처음엔 웃었어요.']] },
   { id: 'game', re: /장난|거짓|가짜|게임|몰카/, say: () => [['게임이면 좋겠죠.'], ['…그럼 끄고 자요. 할 수 있으면.']] },
   { id: 'sorry', re: /미안|고마워|감사/, say: () => [['그런 말은 여기서 처음 들어봐요.']] },
-  { id: 'time', re: /몇 ?시|시간/, say: () => [['이 폰은 {clock}. 당신 쪽은 {real}.']] },
+  { id: 'time', re: /몇 ?시|시간/, say: () => [['이 폰은 {clock}. 그쪽은 {real}.']] },
   { id: 'key', re: /haewon|열쇠|코드|0200-?/i, say: () => [['그 단어, 여기 쓰지 마요.']] },
   { id: 'radio', re: /1340|라디오|방송/, say: () => [['그 방송 듣지 마요. 숫자 세다 보면 이름이 나와요.']] },
   { id: 'hyunwoo', re: /박현우|현우/, say: () => [['#0025. 조용한 분이었어요. 오늘 아침에 나갔어요.']] },

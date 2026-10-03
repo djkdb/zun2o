@@ -27,6 +27,13 @@ describe('free-text replies', () => {
     expect(replyFor('self', '뭘 해야 돼?', ctx({ nudge: '001 003 007' })).lines[0]).toBe('001 003 007');
   });
 
+  it('asking her name is its own question, not "who are you" or "what is my name"', () => {
+    expect(replyFor('unknown', '당신 이름이 뭐예요?', ctx()).rule).toBe('askname');
+    expect(replyFor('unknown', '이름 알려 줘', ctx()).lines).toContain('제 이름이요?');
+    expect(replyFor('unknown', '내 이름 알아?', ctx({ name: '민지' })).lines[0]).toContain('민지');
+    expect(replyFor('unknown', '너 누구야?', ctx()).rule).toBe('who');
+  });
+
   it('도현 and 엄마 never get a scripted answer', () => {
     expect(replyFor('dohyun', '누구야', ctx()).rule).toBeNull();
   });

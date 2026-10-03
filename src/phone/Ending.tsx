@@ -37,7 +37,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
     scene: [
       { who: '나에게', text: '…나왔어. 해가 떠', side: 'right' },
       { who: '도현', text: '채원이랑 같이 전화부스 안에서 깼어요. 둘 다 무사해요', side: 'left' },
-      { who: '도현', text: '근데 당신은 어디 있어요? 이 폰만 선반에 있어요', side: 'left' },
+      { who: '도현', text: '근데 그쪽은 어디 있어요? 이 폰만 선반에 있어요', side: 'left' },
       { text: '이름을 적는 사람 — {name}. 처음 적힌 사람의 이름은 31년 만에 지워졌다.' },
       { text: '열람실 의자에 외투 하나가 걸렸다. 31년 동안 걸려 있던 것과 자리만 같다.', img: 'chair-coat' },
       { text: '1년 뒤. 해원고 정문 앞 공중전화 부스.' },
@@ -71,6 +71,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
       { who: '채원', text: '근데 언니가 안 나와요', side: 'left' },
       { text: '02:00. 노트의 마지막 줄: 9월 28일 02:00 — 한소연.' },
       { text: '그 뒤로 엄마 손에 잉크가 묻는 일은 없었다.', img: 'reading-empty' },
+      { text: '10월 28일 02:00. 제2서고 서랍에 카드가 한 장 늘었다. 이름을 적은 글씨는 소연의 것이었다.' },
       { text: '엄마는 매일 밤 창가에 앉아 있다. 마흔한 살의 얼굴로.' },
       { who: '엄마', text: '소연이가 두 시 전에는 온다고 했어요.', side: 'left' },
     ],
@@ -81,7 +82,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
     line: '누군가는 안에 남아야 한다. 소연 대신, 당신이다.',
     scene: [
       { who: '나에게', text: '…나왔어요. 해가 떠요', side: 'right' },
-      { who: '나에게', text: '엄마한테 가요. 고마워요. 근데 당신은요?', side: 'right' },
+      { who: '나에게', text: '엄마한테 가요. 고마워요. 근데 그쪽은요?', side: 'right' },
       { who: '채원', text: '도현이랑 언니 둘 다 전화부스에서 깼어요. 이 폰만 선반에 있어요', side: 'left' },
       { text: '02:00. 노트의 마지막 줄: “한소” 위에 줄. 그 아래 — {name}.' },
       { text: '엄마 손은 그날 이후 다시는 볼펜을 쥐지 않았다.' },
@@ -97,7 +98,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
       { text: '기록 013 (사본) — 삭제되었습니다. 이 기록을 보는 사람: 0' },
       { who: '채원', text: '도현이 나왔어요. 언니도요!!!', side: 'left' },
       { who: '나에게', text: '엄마한테 전화가 안 돼요', side: 'right' },
-      { text: '새벽 여섯 시, 소연은 집 현관문을 열었다. 식탁 위에 노트 한 권이 펼쳐져 있었다.' },
+      { text: '새벽 여섯 시, 소연은 집 현관문을 열었다. 학교에 들고 갔던 노트가 식탁 위에 펼쳐져 있었다.' },
       { text: '열한 개의 이름 위에 줄이 그어져 있었다. 마지막 장에는 이름 대신 한 줄.' },
       { text: '“소연아 엄마 왔다 간다.”', img: 'miryeong-daughter' },
       { text: '의자에 걸려 있던 외투가 없었다.' },
@@ -133,6 +134,8 @@ function endingFor(id: EndingId, flags: string[]): EndingDef {
     scene[0] = { who: '도현', text: '채원이 나왔어요!!! 정문으로 걸어 나왔어요', side: 'left' };
     scene[1] = { who: '도현', text: '채원이가 그러는데 서랍이 전부 비었대요. 카드가 한 장도 없었대요', side: 'left' };
   }
+  // You answered her mother as 소연. So the promise she waits on was yours.
+  if (id === 's2-daughter' && flags.includes('pretended')) scene[scene.length - 1] = { who: '엄마', text: '소연이가 두 시 전에는 온다고 했어요. 전화로 그랬어요. 목소리가 좀 이상했는데.', side: 'left' };
   // She has your name. Running doesn't take it back.
   if (id === 'poweroff' && flags.includes('gave-name')) {
     scene.splice(scene.length - 1, 1, { text: '그날부터 당신의 휴대폰은 새벽 두 시가 되면 12%에서 멈춘다.' }, { who: '발신자 정보 없음', text: '이름은 적어 뒀어요, {name} 씨. 들어오세요.', side: 'left' });

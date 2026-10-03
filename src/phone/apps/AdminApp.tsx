@@ -111,7 +111,7 @@ function Dashboard() {
     { no: 1, who: '한소연', why: '자원 · 관리자가 직접 맨 위로 옮김 (22:47)', first: true },
     { no: 2, who: '윤채원', why: '작년 기록 013 열람' },
     ...(s1 ? [{ no: 3, who: `방문자 #0027 ${s1.name ?? '(이름 없음)'}`, why: calledHer ? '작년 기록 013 열람 · 이름을 불러 준 사람' : '작년 기록 013 열람' }] : []),
-    { no: s1 ? 4 : 3, who: name ?? '방문자 #0031', why: '지금 이 페이지를 보는 사람', you: true },
+    { no: s1 ? 4 : 3, who: name ?? '방문자 #0028', why: '지금 이 페이지를 보는 사람', you: true },
   ];
 
   const submit = (e: FormEvent) => {

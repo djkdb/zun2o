@@ -498,7 +498,7 @@ export const BEATS: Beat[] = [
     actions: [
       { t: 'wait', ms: 25000 },
       { t: 'flag', f: 'r009-you' },
-      { t: 'msg', th: 'unknown', text: '009 봤어요? 지금 쓰는 중이에요. {name} 씨 거.', typing: 1600 },
+      { t: 'msg', th: 'unknown', text: '009 봤어요? 지금 쓰는 중이에요. 그쪽 거요.', typing: 1600 },
     ],
   },
   {

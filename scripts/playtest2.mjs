@@ -165,7 +165,7 @@ await until(() => window.__game.getState().save.choice?.id === 's2c5', 60000);
 await openApp('messages', 'self');
 await wait(400);
 await snap('soyeon-inside');
-await page.getByText('정말 당신이 남는 게 맞아요?').click();
+await page.getByText('정말 남으실 거예요?').click();
 check('02:00 arrives', await until(() => window.__game.getState().rt.finale, 120000));
 await page.waitForSelector('.final-choices', { timeout: 60000 });
 await snap('final-choices');

@@ -7,6 +7,7 @@ import { VideoFeed } from '../art/phonePhotos';
 import { GhostVisual } from '../art/Ghost';
 import { speak } from '../audio/speech';
 import { ARCHIVE, CONTINUATION_KEY, FIRST_KEEPER, plain } from '../content/archive';
+import { ASKS_NAME } from '../content/replies';
 import { CallIcon } from './CallIcon';
 import { VIDEO_CALL_LINES } from '../content/calls';
 import { setSave } from '../engine/state';
@@ -72,9 +73,10 @@ function buildRecall(): string[] {
   // What you did tonight, the most telling first. Never more than three:
   // it should feel like being known, not like a stat screen.
   const typed = [...s.inputs].reverse().map((e) => /(?:(?:발신자 정보 없음|발신자 표시제한|모르는 번호)에게|나에게(?:에게)?) 보낸 메시지 "(.+)"$/.exec(e)?.[1]).find(Boolean);
+  const toHer = s.inputs.map((e) => /(?:발신자 정보 없음|발신자 표시제한|모르는 번호)에게 보낸 메시지 "(.+)"$/.exec(e)?.[1]).filter((t): t is string => !!t);
   const toMom = s.inputs.some((e) => /^엄마.*에게 보낸 메시지/.test(e));
   const personal: [boolean, string][] = [
-    [s.flags.includes('turned'), '1시 54분에 돌아봤죠. 저랑 눈 마주쳤어요.'],
+    [s.flags.includes('turned'), '1시 54분에 돌아봤죠. 저도 같이 돌았어요.'],
     [s.flags.includes('held'), '끝까지 안 돌아봤죠. 저 계속 뒤에 있었는데.'],
     [s.flags.includes('kept-out'), '도현 씨를 밖에 세워 뒀죠. 그날 학교엔 저 혼자였어요.'],
     [s.flags.includes('named-her'), '그 이름 보냈죠. …한참 아무 말도 못 했어요.'],
@@ -103,7 +105,9 @@ function buildRecall(): string[] {
       : '도현 씨 지금 제2서고에 있어요. 그쪽이 안 남으면 도현 씨가 남아요.',
   );
   lines.push('이름 계속 물어본 거요. 적어야 해서.');
-  lines.push('…근데 제 이름 물어본 사람은 없었어요.');
+  // the one question nobody asks her — unless you did
+  const askedName = toHer.some((t) => ASKS_NAME.test(t) && !/내 이름|제 이름/.test(t));
+  lines.push(askedName ? '…제 이름 물어본 사람은 그쪽이 처음이었어요.' : s.choices.c1 === 'who' ? '누구냐고는 물었죠. 이름은 아무도 안 물어봤어요.' : '…근데 제 이름 물어본 사람은 없었어요.');
   lines.push('이제 한 명은 남아야 돼요.');
   return lines;
 }
