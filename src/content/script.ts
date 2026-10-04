@@ -556,6 +556,10 @@ export const BEATS: Beat[] = [
       // time to actually listen to recording 18 before the last minutes pile up
       { t: 'wait', ms: 20000 },
       { t: 'time', hm: '01:52' },
+      // the 0200 call from 23:53 (the 38 minutes you lost) never ended: the clock becomes a green call pill
+      { t: 'flag', f: 'open-line' },
+      { t: 'sound', id: 'breath', caption: '통화 중인 회선에서 숨소리가 감지되었습니다.' },
+      { t: 'wait', ms: 2400 },
       { t: 'msg', th: 'unknown', text: '이 폰은 {clock}인데 거긴 지금 {real}이죠?', typing: 2000 },
       { t: 'wait', ms: 12000 },
       { t: 'time', hm: '01:53' },

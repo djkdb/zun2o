@@ -1,7 +1,8 @@
 // Shared by the game and scripts/voices.mjs: which audio file belongs to a
 // spoken line. No imports, so Node can load it directly.
 
-export type VoiceId = 'male' | 'female' | 'entity';
+// season 2: 'mother' is 서미령 at home (same voice as 'entity', warm, no haunting), 'soyeon' is her daughter
+export type VoiceId = 'male' | 'female' | 'entity' | 'mother' | 'soyeon';
 
 /** What is actually said: stage directions in parentheses and pause marks dropped. */
 export function spokenText(text: string): string {

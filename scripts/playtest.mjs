@@ -341,6 +341,16 @@ check('double-tap zooms into a photo', (await page.locator('.viewer-img.zoomed')
 await snap('zoom-p08');
 await calmClick(page.locator('.back'));
 await wait(300);
+// 01:52: the 0200 call from 23:53 is still going — the status-bar clock is a green call pill
+await page.waitForFunction(() => window.__game.getState().save.flags.includes('open-line'), null, { timeout: 60000 });
+await calmClick(page.locator('.sb-call'));
+await page.waitForSelector('.openline', { timeout: 5000 });
+await page.locator('.openline .hangup').dispatchEvent('click');
+await wait(300);
+check("the 0200 call never ended: a green call pill, and it can't be hung up", (await page.textContent('.openline')).includes('통화를 종료할 수 없습니다'));
+await snap('open-line');
+await page.locator('.openline-down').dispatchEvent('click');
+await wait(300);
 // the rest of chapter 4 happens on its own clock: battery warning, then 도현's call
 await page.waitForFunction(() => document.querySelector('.incoming, .dialog, .finale'), null, { timeout: 90000 });
 await dismissDialog('ch4-battery-dialog');

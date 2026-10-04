@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useGame, useTicker } from '../hooks/useGame';
 import { answerCall, declineCall, endCall, emit, HINT_TIER_MS, openApp, openThread, sfx } from '../engine/director';
-import { setRt } from '../engine/state';
+import { addFlag, setRt } from '../engine/state';
+import { lineTime } from './StatusBar';
 import { CALLS } from '../content/calls';
 import { GhostVisual } from '../art/Ghost';
 import { speak, stopSpeech } from '../audio/speech';
@@ -110,6 +111,54 @@ export function IncomingCall() {
 }
 
 /** Plays a CallScript: timed subtitle lines, optional mid-call choice. */
+/** Chapter 4: the 0200 call from 23:53 never hung up. Only breathing on the line, and it won't end. */
+export function OpenLineScreen() {
+  // a real call (도현 at 01:57) comes in on top of it
+  const open = useGame((s) => s.rt.openLine && s.rt.incoming === null && s.rt.activeCall === null);
+  const clock = useGame((s) => s.save.clock);
+  const [, tick] = useState(0);
+  const [toast, setToast] = useState(false);
+  useEffect(() => {
+    if (!open) return;
+    addFlag('heard-line');
+    sfx('breath');
+    const iv = setInterval(() => tick((n) => n + 1), 1000);
+    return () => clearInterval(iv);
+  }, [open]);
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(false), 1800);
+    return () => clearTimeout(t);
+  }, [toast]);
+  if (!open) return null;
+  return (
+    <div className="callscreen hijacked openline" role="dialog" aria-label="통화 중">
+      <CallBackdrop from="0200" hijacked />
+      <div className="call-top">
+        <small className="call-kind">휴대전화 · 23:53부터</small>
+        <CallAvatar from="0200" hijacked />
+        <h2 className="hijacked">0200</h2>
+        <span className="call-status noisy">
+          <VoiceBars who="sfx" />
+          <time>{lineTime(clock)}</time>
+        </span>
+      </div>
+      <div className="call-subs" aria-live="polite">
+        <p className="sub sfx now">
+          <span className="sub-text">(숨소리)</span>
+        </p>
+      </div>
+      {toast && <p className="video-toast">통화를 종료할 수 없습니다</p>}
+      <button type="button" className="openline-down" onClick={() => setRt({ openLine: false })}>
+        화면 내리기
+      </button>
+      <button type="button" className="hangup" onClick={() => (sfx('error'), setToast(true))} aria-label="통화 종료">
+        <CallIcon down />
+      </button>
+    </div>
+  );
+}
+
 export function CallScreen() {
   const id = useGame((s) => s.rt.activeCall);
   return id ? <ActiveCall key={id} id={id} /> : null;

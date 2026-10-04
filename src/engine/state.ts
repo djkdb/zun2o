@@ -54,6 +54,8 @@ export interface Runtime {
   vanishApp: AppId | null;
   audioReady: boolean;
   debug: boolean;
+  /** The 0200 call from 23:53 that never hung up: its screen is open. */
+  openLine: boolean;
 }
 
 export interface State {
@@ -188,6 +190,7 @@ const initialRuntime = (debug: boolean): Runtime => ({
   vanishApp: null,
   audioReady: false,
   debug,
+  openLine: false,
 });
 
 let state: State = { save: newSave(), rt: initialRuntime(false) };

@@ -6,7 +6,7 @@ import { MEMO_S2M1, MEMO_S2M2, MEMO_S2TAPE } from '../../content/s2/media';
 import { isS2 } from '../../content/season';
 import { getState, setRt } from '../../engine/state';
 import { AppHeader } from '../AppHeader';
-import { speak, stopSpeech } from '../../audio/speech';
+import { hasRecording, speak, stopSpeech } from '../../audio/speech';
 
 // Voice memo player. The audio is synthesized (footsteps, drawers, whisper,
 // scream) and the dialogue is spoken + subtitled.
@@ -64,8 +64,11 @@ function Player({ memo }: { memo: Memo }) {
           else if (l.text.startsWith('(키패드')) sfx('key');
           // (a stage direction in parentheses is shown, not said)
           const said = l.text.replace(/^\([^)]*\)\s*/, '');
-          if (sound && (l.who === '채원' || l.who === '소연')) speak(said, 'female');
-          if (sound && (l.who === '???' || l.who === '엄마')) speak(said, 'entity');
+          if (sound && l.who === '채원') speak(said, 'female');
+          if (sound && l.who === '소연') speak(said, 'soyeon');
+          if (sound && l.who === '???') speak(said, 'entity');
+          // 엄마: where she says *her* lines ("다 적어 뒀어요"), it is her recorded voice from season 1
+          if (sound && l.who === '엄마') speak(said, hasRecording(said, 'entity') ? 'entity' : 'mother');
         }
       });
     }, 100);

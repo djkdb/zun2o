@@ -5,6 +5,8 @@
 // progress and resumes half-finished sequences after a reload.
 // ─────────────────────────────────────────────────────────────────────────
 
+import type { VoiceId } from '../audio/voiceKey';
+
 export type AppId = 'messages' | 'gallery' | 'notes' | 'memos' | 'browser' | 'phone' | 'settings' | 'index';
 export type ThreadId = 'dohyun' | 'mom' | 'unknown' | 'self';
 export type EndingId = 'poweroff' | 'shift' | 'release' | 's2-daughter' | 's2-instead' | 's2-home';
@@ -156,7 +158,7 @@ export interface CallLine {
   who: 'caller' | 'other' | 'sfx';
   text: string;
   /** Speak with speechSynthesis (subtitles are always shown). */
-  voice?: 'male' | 'female' | 'entity';
+  voice?: VoiceId;
 }
 
 export interface CallScript {

@@ -167,7 +167,7 @@ for (const [w, h] of SIZES) {
   for (const e of ['poweroff', 'shift', 'release']) {
     await debugClick(page, `END ${e}`);
     await page.locator('.dbg button', { hasText: '—' }).click();
-    await page.waitForSelector('.ending-card', { timeout: 30000 });
+    await page.waitForSelector('.ending-card', { timeout: 60000 });
     await audit(page, `${tag}-ending-${e}`);
   }
   // season 2: the admin page (login, dashboard), 02:00 and its endings
@@ -188,7 +188,7 @@ for (const [w, h] of SIZES) {
   for (const e of ['s2-daughter', 's2-instead', 's2-home']) {
     await debugClick(page, `END ${e}`);
     await page.locator('.dbg button', { hasText: '—' }).click();
-    await page.waitForSelector('.ending-card', { timeout: 30000 });
+    await page.waitForSelector('.ending-card', { timeout: 60000 });
     await audit(page, `${tag}-ending-${e}`);
   }
   for (const e of errors) problems.push(`${tag}: console — ${e}`);

@@ -4012,6 +4012,38 @@ body,
   animation: slide-in 0.3s ease both;
 }
 
+/* chapter 4: the open line — the status-bar clock becomes a green call pill */
+.sb-time.sb-call {
+  padding: 2px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: #2bb24c;
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  animation: sb-call 2s ease-in-out infinite;
+}
+@keyframes sb-call {
+  50% {
+    background: #1f8f3b;
+  }
+}
+.reduce-fx .sb-time.sb-call {
+  animation: none;
+}
+.openline .openline-down {
+  margin-top: auto;
+  margin-bottom: 18px;
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  font: inherit;
+  font-size: 14px;
+}
 .video-toast {
   position: absolute;
   z-index: 3;

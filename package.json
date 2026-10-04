@@ -15,10 +15,10 @@
     "deploy:cf": "npm run build && npx wrangler deploy",
     "icons": "node scripts/icons.mjs",
     "qa:layout": "node scripts/layout.mjs",
-    "voices": "node --experimental-strip-types --no-warnings scripts/voices.mjs",
-    "voices:list": "node --experimental-strip-types --no-warnings scripts/voices.mjs list",
-    "voices:fx": "node --experimental-strip-types --no-warnings scripts/voices.mjs fx",
-    "voices:eleven": "node --experimental-strip-types --no-warnings scripts/voices.mjs eleven",
+    "voices": "node --experimental-strip-types --no-warnings --import ./scripts/ts-resolve.mjs scripts/voices.mjs",
+    "voices:list": "node --experimental-strip-types --no-warnings --import ./scripts/ts-resolve.mjs scripts/voices.mjs list",
+    "voices:fx": "node --experimental-strip-types --no-warnings --import ./scripts/ts-resolve.mjs scripts/voices.mjs fx",
+    "voices:eleven": "node --experimental-strip-types --no-warnings --import ./scripts/ts-resolve.mjs scripts/voices.mjs eleven",
     "sfx": "node scripts/sfx.mjs"
   },
   "dependencies": {

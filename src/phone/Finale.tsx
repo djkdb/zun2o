@@ -76,6 +76,7 @@ function buildRecall(): string[] {
   const toHer = s.inputs.map((e) => /(?:발신자 정보 없음|발신자 표시제한|모르는 번호)에게 보낸 메시지 "(.+)"$/.exec(e)?.[1]).filter((t): t is string => !!t);
   const toMom = s.inputs.some((e) => /^엄마.*에게 보낸 메시지/.test(e));
   const personal: [boolean, string][] = [
+    [s.flags.includes('heard-line'), '통화, 안 끊겼죠. 23시 53분부터 계속 듣고 있었어요.'],
     [s.flags.includes('turned'), '1시 54분에 돌아봤죠. 저도 같이 돌았어요.'],
     [s.flags.includes('held'), '끝까지 안 돌아봤죠. 저 계속 뒤에 있었는데.'],
     [s.flags.includes('kept-out'), '도현 씨를 밖에 세워 뒀죠. 1994년 그날 밤엔 아무도 저를 밖에 세워 주지 않았어요.'],

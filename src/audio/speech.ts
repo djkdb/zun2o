@@ -15,7 +15,12 @@ const FILES = new Map(
   ),
 );
 // the recordings are loudness-matched; play them full and let the bed duck under them
-const VOLUME: Record<Voice, number> = { male: 1, female: 1, entity: 0.95 };
+const VOLUME: Record<Voice, number> = { male: 1, female: 1, entity: 0.95, mother: 1, soyeon: 1 };
+
+/** Is there a recorded file for this line in this voice? */
+export function hasRecording(text: string, voice: Voice): boolean {
+  return FILES.has(voiceKey(text, voice));
+}
 let playing: HTMLAudioElement | null = null;
 let stopBuffer: (() => void) | null = null;
 let seq = 0;

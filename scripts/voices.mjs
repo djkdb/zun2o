@@ -3,7 +3,8 @@
 //
 //   npm run voices:list     numbered list of every spoken line → docs/VOICE_LINES.md
 //   npm run voices:eleven   ElevenLabs (v3, with per-line delivery tags) → voice-raw/NN.mp3 → effects
-//                           (ELEVEN_API_KEY=…, ELEVEN_VOICE_MALE / _FEMALE / _ENTITY=<voice id>)
+//                           (ELEVEN_API_KEY=…, ELEVEN_VOICE_MALE / _FEMALE / _ENTITY=<voice id>;
+//                            season 2: ELEVEN_VOICE_MOTHER (default: the ENTITY voice) / ELEVEN_VOICE_SOYEON)
 //   npm run voices          Fish Audio → voice-raw/NN.mp3 → effects → src/assets/voice
 //                           (FISH_API_KEY=… required; keys never go into the repo)
 //   npm run voices:fx       effects only: voice-raw/NN.<mp3|wav|m4a|…> → src/assets/voice
@@ -17,7 +18,9 @@
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { CALLS, VIDEO_CALL_LINES } from '../src/content/calls.ts';
+import { CALLS_S2 } from '../src/content/s2/calls.ts';
 import { MEMO_M1 } from '../src/content/media.ts';
+import { MEMO_S2M1, MEMO_S2M2, MEMO_S2TAPE } from '../src/content/s2/media.ts';
 import { spokenText, voiceKey } from '../src/audio/voiceKey.ts';
 
 const OUT = 'src/assets/voice';
@@ -31,6 +34,9 @@ const VOICES = {
   male: process.env.FISH_VOICE_MALE ?? '3c98ea364b634081a8e505def04edd9a',
   female: process.env.FISH_VOICE_FEMALE ?? '8f3cc2e594cf4a96a5049cb538f1b6d6',
   entity: process.env.FISH_VOICE_ENTITY ?? '3d31499f0e13438bbce8dcce7b7c4298',
+  // season 2: 엄마 is the same woman as the entity, without the haunting; 소연 is 43
+  mother: process.env.FISH_VOICE_MOTHER ?? process.env.FISH_VOICE_ENTITY ?? '3d31499f0e13438bbce8dcce7b7c4298',
+  soyeon: process.env.FISH_VOICE_SOYEON,
 };
 // ElevenLabs v3 reads these audio tags as delivery directions; they are sent to the
 // service only — the game's subtitles and file names use the plain line.
@@ -47,7 +53,19 @@ const DIRECTION = {
   '끄지 마세요.': '[whispers] [cold]',
   '들려요? 저 제2서고 안이에요.': '[whispers] [terrified] [breathing heavily]',
   '서랍이 끝이 없어요. 채원이 목소리가 계속 저 안쪽에서': '[terrified] [shaky voice]',
-  '도현 씨 목소리, 비슷했죠? 도현 씨도 이제 안에 있어요.': '[calm] [softly] [slowly]',
+  '도현 씨 목소리, 비슷했죠?': '[calm] [softly] [slowly]',
+  // season 2 — 엄마: 1994 words, warm, a little slow; 소연: 43, tired, holding it together
+  '소연이니?': '[warm] [tired] [softly]',
+  '엄마야. 왜 대답을 안 해.': '[warm] [worried]',
+  '목소리가 왜 그러니. 감기 걸렸니.': '[warm] [concerned] [softly]',
+  '소연아, 엄마 손이 또 볼펜을 쥐었다. 안 놓아져.': '[scared] [shaky voice]',
+  '오늘은 자지도 않았는데 손이 먼저 일어났다.': '[scared] [whispers]',
+  '엄마가 쓰기 전에 집에 와. 두 시 전에는 와.': '[pleading] [softly]',
+  '그럼 우리 소연이는요.': '[quietly] [shocked]',
+  '미안해요. 손이 혼자 움직여요. 벌써 날짜를 썼어요. 이제 이름이에요.': '[scared] [shaky voice]',
+  '우리 딸 좀 데려와 주세요. 이름 다 쓰기 전에. 부탁합니다.': '[crying] [pleading]',
+  '소연아, 엄마야. 도서관 정리가 좀 늦어.': '[warm] [cheerful]',
+  '먼저 자. 엄마 두 시 전에는 와.': '[warm] [softly]',
   '공공일.': '[monotone] [slowly]',
   '공공삼.': '[monotone] [slowly]',
   '공공칠.': '[monotone] [slowly]',
@@ -69,12 +87,13 @@ const DIRECTION = {
   '잠깐. 네 카메라 네 뒤에도': '[terrified] [gasps]',
 };
 
-const WHO = { male: '도현', female: '채원', entity: '서미령 (발신자 정보 없음)' };
+const WHO = { male: '도현', female: '채원', entity: '서미령 (발신자 정보 없음)', mother: '엄마 (서미령, 시즌 2)', soyeon: '소연 (시즌 2)' };
 
 // Every line the game speaks, with its voice and where it is heard (keep in step
 // with the speak() calls in Overlays, Memos and Finale). Where decides the effect.
 const lines = [];
-for (const call of Object.values(CALLS))
+const S2_CALLS = new Set(Object.keys(CALLS_S2));
+for (const call of Object.values(CALLS).filter((c) => !S2_CALLS.has(c.id)))
   for (const l of [...call.lines, ...(call.after ?? [])]) if (l.voice && l.who !== 'sfx') lines.push({ text: l.text, voice: l.voice, where: 'call' });
 for (const l of MEMO_M1.lines) {
   if (l.who === '채원') lines.push({ text: l.text, voice: 'female', where: 'memo' });
@@ -83,6 +102,19 @@ for (const l of MEMO_M1.lines) {
 // 새녹음 18: its two fixed lines (the one with the player's name can't be prerecorded)
 for (const text of ['다 적어 뒀어요.', '이름은 몰라도 괜찮아요. 두 시에 봐요.']) lines.push({ text, voice: 'entity', where: 'memo' });
 for (const text of VIDEO_CALL_LINES) lines.push({ text, voice: 'female', where: 'video' });
+// Season 2, numbered after season 1 so season 1's voice-raw numbers stay put. A line 엄마 says
+// that season 1 already recorded in her voice ("다 적어 뒀어요.") uses that recording, not a new one.
+const s1Keys = new Set(lines.map((l) => voiceKey(l.text, l.voice)));
+const s2 = [];
+for (const call of Object.values(CALLS_S2))
+  for (const l of [...call.lines, ...(call.after ?? []), ...Object.values(call.afterBy ?? {}).flat()]) if (l.voice && l.who !== 'sfx') s2.push({ text: l.text, voice: l.voice, where: 'call' });
+for (const [memo, where] of [[MEMO_S2M1, 'memo'], [MEMO_S2M2, 'memo'], [MEMO_S2TAPE, 'tape']])
+  for (const l of memo.lines) {
+    const said = l.text.replace(/^\([^)]*\)\s*/, '');
+    if (l.who === '소연') s2.push({ text: said, voice: 'soyeon', where });
+    if (l.who === '엄마') s2.push({ text: said, voice: s1Keys.has(voiceKey(said, 'entity')) ? 'entity' : 'mother', where });
+  }
+lines.push(...s2.filter((l) => !s1Keys.has(voiceKey(l.text, l.voice))));
 
 const todo = [...new Map(lines.filter((l) => spokenText(l.text)).map((l) => [voiceKey(l.text, l.voice), l])).values()].map((l, i) => ({
   ...l,
@@ -97,25 +129,29 @@ const todo = [...new Map(lines.filter((l) => spokenText(l.text)).map((l) => [voi
 const PHONE = 'highpass=f=320,lowpass=f=3300,acompressor=threshold=-20dB:ratio=4:attack=5:release=80,volume=1.6';
 const MEMO = 'highpass=f=110,lowpass=f=7200,aecho=0.8:0.55:45|110:0.18|0.10';
 const VIDEO = 'highpass=f=180,lowpass=f=5200,acompressor=threshold=-18dB:ratio=3';
+// season 2: a 1994 answering-machine cassette — narrow, a little warped, hiss under it
+const TAPE = 'highpass=f=280,lowpass=f=3600,vibrato=f=0.8:d=0.05,acompressor=threshold=-22dB:ratio=5,volume=1.5';
 const LOWER = 'asetrate=44100*0.94,aresample=44100,atempo=1.0638';
 const ROOM = 'aecho=0.8:0.7:70|190|340:0.28|0.16|0.08';
 const TRIM = 'silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.05,areverse,silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.12,areverse';
 function chain(l) {
   const her = l.voice === 'entity';
-  const fx = l.where === 'call' ? PHONE : l.where === 'memo' ? MEMO : VIDEO;
-  const noise = l.where === 'video' ? 0.002 : 0.005;
+  const fx = l.where === 'call' ? PHONE : l.where === 'memo' ? MEMO : l.where === 'tape' ? TAPE : VIDEO;
+  const noise = l.where === 'video' ? 0.002 : l.where === 'tape' ? 0.012 : 0.005;
   const voice = [TRIM, 'aresample=44100', her ? LOWER : null, fx, her ? ROOM : null, 'loudnorm=I=-18:TP=-2:LRA=9'].filter(Boolean).join(',');
   // a bed of line noise under every line, so it never sounds like a studio
   return `[0:a]${voice}[v];anoisesrc=color=pink:amplitude=${noise}:sample_rate=44100[n];[v][n]amix=inputs=2:duration=first:weights=1 1[o]`;
 }
 
 function list() {
-  const rows = todo.map((l) => `| ${l.n} | ${WHO[l.voice]} | ${l.where === 'call' ? '통화' : l.where === 'memo' ? '녹음' : '영상통화'} | ${l.say} |`);
+  const rows = todo.map((l) => `| ${l.n} | ${WHO[l.voice]} | ${l.where === 'call' ? '통화' : l.where === 'memo' ? '녹음' : l.where === 'tape' ? '자동응답기' : '영상통화'} | ${l.say} |`);
   writeFileSync(
     'docs/VOICE_LINES.md',
     `# 음성 대사 목록\n\n\`npm run voices:list\`가 만든 파일입니다. 대사를 바꾸면 다시 실행하세요.\n\n` +
       `한 줄에 파일 하나: \`voice-raw/<번호>.mp3\` (wav·m4a도 됨)로 저장하고 \`npm run voices:fx\`를 실행하면\n` +
       `통화 음질·녹음실 울림·서미령 목소리 처리를 입혀 \`src/assets/voice\`에 넣습니다.\n\n` +
+      `시즌 2(33번부터): 엄마는 서미령과 같은 목소리(\`ELEVEN_VOICE_MOTHER\`, 비우면 \`ELEVEN_VOICE_ENTITY\`)로, 귀신 처리 없이 따뜻하게.\n` +
+      `소연(43)은 \`ELEVEN_VOICE_SOYEON\`. 녹음이 없는 시즌 2 대사는 게임에서 자막으로만 나옵니다.\n\n` +
       `| # | 인물 | 들리는 곳 | 대사 |\n|---|---|---|---|\n${rows.join('\n')}\n`,
   );
   for (const l of todo) console.log(`${l.n}  [${l.voice}/${l.where}] ${l.say}`);
@@ -180,7 +216,14 @@ async function fish() {
 
 async function eleven() {
   const key = process.env.ELEVEN_API_KEY;
-  const voices = { male: process.env.ELEVEN_VOICE_MALE, female: process.env.ELEVEN_VOICE_FEMALE, entity: process.env.ELEVEN_VOICE_ENTITY };
+  const voices = {
+    male: process.env.ELEVEN_VOICE_MALE,
+    female: process.env.ELEVEN_VOICE_FEMALE,
+    entity: process.env.ELEVEN_VOICE_ENTITY,
+    // season 2: 엄마 is the same woman as the entity (warm, no effects on her); 소연 needs her own voice
+    mother: process.env.ELEVEN_VOICE_MOTHER ?? process.env.ELEVEN_VOICE_ENTITY,
+    soyeon: process.env.ELEVEN_VOICE_SOYEON,
+  };
   const model = process.env.ELEVEN_MODEL ?? 'eleven_v3';
   if (!key) {
     console.error('ELEVEN_API_KEY is not set.');
@@ -188,8 +231,8 @@ async function eleven() {
   }
   // A voice left unset is skipped: those lines can come from elsewhere (voice-raw/NN.*) or stay on browser speech.
   const lacking = Object.entries(voices).filter(([, v]) => !v).map(([k]) => `ELEVEN_VOICE_${k.toUpperCase()}`);
-  if (lacking.length === 3) {
-    console.error('Set ELEVEN_VOICE_MALE / _FEMALE / _ENTITY (voice ids from elevenlabs.io → Voices).');
+  if (lacking.length === Object.keys(voices).length) {
+    console.error('Set ELEVEN_VOICE_MALE / _FEMALE / _ENTITY / _MOTHER / _SOYEON (voice ids from elevenlabs.io → Voices).');
     process.exit(1);
   }
   if (lacking.length) console.log(`(no ${lacking.join(', ')} — those lines are skipped)`);
