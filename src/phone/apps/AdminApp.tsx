@@ -183,7 +183,7 @@ function Dashboard() {
         )}
         {!armed && asking && (
           <form className="admin-form" onSubmit={submit}>
-            <label htmlFor="first">확인: 이 기록이 시작된 말. 신고한 사람이 처음 한 말을 입력하세요.</label>
+            <label htmlFor="first">확인: 이 기록을 시작한 말을 입력하세요. 실종 신고서에서 신고자가 한 말입니다.</label>
             <textarea
               id="first"
               rows={2}
@@ -196,7 +196,7 @@ function Dashboard() {
             />
             {wrong > 0 && (
               <p className="final-err">
-                {near ? '비슷해요. 그건 엄마가 오늘 한 말이에요. 첫 문장이 아닙니다.' : '첫 문장이 아닙니다.'}
+                {near ? '어머니가 오늘 보낸 문자와 같습니다. 이 기록의 첫 문장이 아닙니다.' : '첫 문장이 아닙니다.'}
                 {wrong >= 2 && !near ? ' 이 기록은 실종 신고에서 시작되었습니다.' : ''}
               </p>
             )}
@@ -223,7 +223,7 @@ function Dashboard() {
       </section>
 
       <section className="admin-box">
-        <h3>운영자에게 — 임시 저장된 글 1</h3>
+        <h3>방명록 — 임시 저장된 글 1</h3>
         {!draft ? (
           <button type="button" className="admin-draft-btn" onClick={() => (sfx('click'), setDraft(true), emit('admin:draft'))}>
             “두 시 전에…” · 9월 27일 22:49 · 한소연
@@ -233,7 +233,8 @@ function Dashboard() {
             <p>두 시 전에, 기록 013 사본을 지워 주세요.</p>
             <p>저는 못 지워요. 그 기록의 첫 줄이 제 말이라서요. 열한 살 때 경찰서에서 한 말이요. 실종 신고서에 그대로 남아 있어요.</p>
             <p>지우면 엄마도</p>
-            <p>아니에요. 그냥 지워 주세요. 엄마는 1년 동안 집에 있었어요. 그거면 돼요.</p>
+            <p>채원이한테는 못 시켜요. 평생 저를 볼 사람이잖아요. 엄마를 지운 사람 얼굴은 모르고 싶어요.</p>
+            <p>아니에요. 그냥 지워 주세요. 엄마는 1년 동안 집에 있었어요. 그걸로 됐다고 할게요. 할 수 있어요.</p>
             <p className="admin-draft-end">(저장되지 않은 글)</p>
           </div>
         )}

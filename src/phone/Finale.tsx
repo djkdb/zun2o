@@ -27,7 +27,7 @@ const FLOOD = [
   ['도현', '채원아'],
   ['엄마', '우리 딸 어디 있니'],
   ['도현', '채원아 제발'],
-  ['발신자 정보 없음', '{name}, 시간 됐어요'],
+  ['발신자 정보 없음', '{name} 씨, 시간 됐어요'],
   ['나에게', '살려줘'],
   ['발신자 정보 없음', '두 시예요. 이름을 적을 시간이에요'],
 ];
@@ -68,9 +68,9 @@ function buildRecall(): string[] {
     `방문자 #0027  ${s.playerName ?? '(이름을 알려 주지 않음)'}`,
     `그 폰 집은 지 ${Math.max(1, Math.round((Date.now() - s.startedAtReal) / 60000))}분. 그쪽 시계로요.`,
     `사진 ${s.seenPhotos.length}장 봤죠.`,
-    s.flags.includes('read-mom') ? '채원 씨 엄마 문자도 읽었죠.' : '채원 씨 엄마 문자는 끝까지 안 읽었죠.',
+    s.flags.includes('read-mom') ? '채원 씨 어머니 문자도 읽었죠.' : '채원 씨 어머니 문자는 끝까지 안 읽었죠.',
   ];
-  // What you did tonight, the most telling first. Never more than three:
+  // What you did tonight, the most telling first. Never more than two:
   // it should feel like being known, not like a stat screen.
   const typed = [...s.inputs].reverse().map((e) => /(?:(?:발신자 정보 없음|발신자 표시제한|모르는 번호)에게|나에게(?:에게)?) 보낸 메시지 "(.+)"$/.exec(e)?.[1]).find(Boolean);
   const toHer = s.inputs.map((e) => /(?:발신자 정보 없음|발신자 표시제한|모르는 번호)에게 보낸 메시지 "(.+)"$/.exec(e)?.[1]).filter((t): t is string => !!t);
@@ -78,7 +78,7 @@ function buildRecall(): string[] {
   const personal: [boolean, string][] = [
     [s.flags.includes('turned'), '1시 54분에 돌아봤죠. 저도 같이 돌았어요.'],
     [s.flags.includes('held'), '끝까지 안 돌아봤죠. 저 계속 뒤에 있었는데.'],
-    [s.flags.includes('kept-out'), '도현 씨를 밖에 세워 뒀죠. 그날 학교엔 저 혼자였어요.'],
+    [s.flags.includes('kept-out'), '도현 씨를 밖에 세워 뒀죠. 1994년 그날 밤엔 아무도 저를 밖에 세워 주지 않았어요.'],
     [s.flags.includes('named-her'), '그 이름 보냈죠. …한참 아무 말도 못 했어요.'],
     [!!typed, `“${typed}”라고 보냈죠. 다 적어 뒀어요.`],
     [toMom, '채원 씨 어머니한테 답장하려고 했죠. 제가 안 보냈어요.'],
@@ -94,11 +94,10 @@ function buildRecall(): string[] {
   ];
   personal
     .filter(([on]) => on)
-    .slice(0, 3)
+    .slice(0, 2)
     .forEach(([, line]) => lines.push(line));
   if (new Date().getHours() === 2) lines.push('그리고… 지금은 진짜로 새벽 두 시네요.');
-  lines.push('#0025 박현우. #0026 윤채원. 그리고 #0027, 당신.');
-  lines.push('다들 그 부스에서 폰 주웠어요.');
+  lines.push('#0025 박현우. #0026 윤채원. 그리고 #0027, 그쪽.');
   lines.push(
     s.flags.includes('kept-out')
       ? '도현 씨는 밖에 있어요. 그쪽 말 들었죠. 그럼 그쪽이 안 남으면 채원 씨가 계속 남아요.'
@@ -148,7 +147,7 @@ export function Finale() {
       at(7900, () => setBrink(6)), // the camera-in-use dot
       // 02:00:00 — everything stops. Silence first, then the night lands.
       at(8900, () => (setBrink(7), mix(0, 0, 0.25), setSave({ clock: '02:00' }))),
-      at(10400, () => setStep('freeze')),
+      at(12000, () => setStep('freeze')),
     ];
     return () => ts.forEach(clearTimeout);
   }, [step]);
@@ -271,7 +270,7 @@ export function Finale() {
     // An empty box is not a wrong name.
     if (!input.trim()) return;
     // "서미령 씨", "미령 쌤 서미령", "서미령 선생님" — the name is what counts, not the honorific
-    const typedName = input.replace(/\s/g, '').replace(/(씨|쌤|선생님|님|사서님?)$/, '');
+    const typedName = input.replace(/\s/g, '').replace(/(씨|쌤|샘|선생님|님|사서님?)$/, '');
     if (typedName === FIRST_KEEPER) {
       sfx('ending');
       reachEnding('release');
@@ -287,7 +286,7 @@ export function Finale() {
     if (n >= 3) {
       setErr('처음 갇힌 사람의 이름이 아닙니다. 당신의 이름이 기록됩니다.');
       setTimeout(() => reachEnding('shift'), 2600);
-    } else if (n === 2) setErr('아닙니다. 마지막 한 번. …옥상의 아이들은 그 사람을 이름으로 불렀어요.');
+    } else if (n === 2) setErr('아닙니다. 마지막 한 번. …옥상에서 날씨 적던 애들은 그 사람을 이름으로 불렀어요.');
     else setErr(input.trim().startsWith('서') ? '처음 갇힌 사람의 이름이 아닙니다. 성은… 맞습니다. 한 번 더.' : '처음 갇힌 사람의 이름이 아닙니다. 한 번 더.');
   };
 
@@ -347,7 +346,7 @@ export function Finale() {
             {FLOOD.slice(0, flood).map(([who, text], i) => (
               <div key={i} className="flood-item">
                 <strong>{who}</strong>
-                <span>{text.replace('{name}', save.playerName ?? '방문자님')}</span>
+                <span>{save.playerName ? text.replace('{name}', save.playerName) : text.replace('{name} 씨, ', '')}</span>
               </div>
             ))}
           </div>
@@ -545,11 +544,13 @@ function VideoIcon() {
 function Reread({ id }: { id: 'r013' | 'r003' | 'r002' }) {
   const [open, setOpen] = useState(false);
   const page = ARCHIVE[id];
+  // "다시" only for what you actually read
+  const read = (getState().save.choices.archiveSeen ?? '').split(',').includes(id);
   if (!page) return null;
   return (
     <div className="reread">
       <button type="button" className="final-back" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
-        {open ? '닫기' : `${page.title.split(' — ')[0]} 다시 보기`}
+        {open ? '닫기' : `${page.title.split(' — ')[0]} ${read ? '다시 ' : ''}보기`}
       </button>
       {open && (
         <div className="reread-page">

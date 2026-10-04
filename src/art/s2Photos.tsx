@@ -115,7 +115,7 @@ export const KitchenPhoto = memo(function KitchenPhoto() {
         <rect x="300" y="244" width="70" height="6" fill="#efe7d4" opacity="0.8" />
       </g>
       <text x="22" y="398" fontFamily="IBM Plex Mono, monospace" fontSize="15" fill="#e6534b" opacity="0.85">
-        01:59
+        01:57
       </text>
     </svg>
   );

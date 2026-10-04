@@ -58,13 +58,15 @@ export function BrowserApp() {
       return;
     }
     const prevSeq = (getState().save.choices.archiveSeq ?? '').split(',').filter(Boolean);
-    const seq = [...prevSeq, id].slice(-3);
+    // only the broadcast records count: reading 002 (or anything else) in between doesn't break the order
+    const inSeq = ARCHIVE_SEQUENCE.includes(id);
+    const seq = inSeq ? [...prevSeq, id].slice(-3) : prevSeq;
     // How far into the broadcast order the last opened records were, before this one.
     const progress = (list: string[]) => {
       for (let k = Math.min(list.length, ARCHIVE_SEQUENCE.length); k > 0; k--) if (list.slice(-k).join(',') === ARCHIVE_SEQUENCE.slice(0, k).join(',')) return k;
       return 0;
     };
-    const broke = getState().save.flags.includes('self-contact') && !indexed && id !== ARCHIVE_SEQUENCE[0] && progress(prevSeq) > 0 && progress(seq) !== progress(prevSeq) + 1;
+    const broke = getState().save.flags.includes('self-contact') && !indexed && inSeq && id !== ARCHIVE_SEQUENCE[0] && progress(prevSeq) > 0 && progress(seq) !== progress(prevSeq) + 1;
     setSave((s) => ({
       choices: { ...s.choices, archiveSeq: seq.join(','), archiveSeen: Array.from(new Set([...seen, id])).join(',') },
     }));
@@ -76,7 +78,7 @@ export function BrowserApp() {
     setView({ kind: 'page', id });
     emit(`browser:${id}`);
     // Started the broadcast order and opened something else: say so right away.
-    if (broke) setTimeout(() => setNotice('순서가 섞였어요. 001부터 다시 차례로 열어야 해요.'), 700);
+    if (broke) setTimeout(() => setNotice('순서가 틀렸어요. 001부터 다시 차례로 열어야 해요.'), 700);
     // Reached the last record of the sequence, but not in broadcast order: say so, without saying the order.
     if (!indexed && id === ARCHIVE_SEQUENCE[ARCHIVE_SEQUENCE.length - 1] && seq.join(',') !== ARCHIVE_SEQUENCE.join(',') && getState().save.flags.includes('self-contact')) {
       setTimeout(() => setNotice('열람 순서가 방송 순서와 다릅니다. 기록 013은 목록에 추가되지 않았습니다.'), 900);

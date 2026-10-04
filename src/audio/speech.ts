@@ -4,6 +4,7 @@
 // silently when speech is unavailable or sound is off.
 
 import { spokenText, voiceKey, type VoiceId } from './voiceKey';
+import { isS2 } from '../content/season';
 import { audio } from './engine';
 
 export type Voice = VoiceId;
@@ -61,8 +62,11 @@ export function speak(text: string, voice: Voice): void {
   if (!enabled) return;
   const clean = spokenText(text);
   if (!clean) return;
-  if (voice === 'entity') entityLayer?.(clean);
   const file = FILES.get(voiceKey(text, voice));
+  // Season 2's new lines have no recordings yet: a browser voice would turn 엄마 into a robot.
+  // Subtitles only — except where a season-1 recording exists ("다 적어 뒀어요." is her voice).
+  if (!file && isS2()) return;
+  if (voice === 'entity') entityLayer?.(clean);
   if (file) {
     stopSpeech();
     const my = ++seq;

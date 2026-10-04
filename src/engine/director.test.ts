@@ -153,7 +153,7 @@ describe('director timing', () => {
     emit('lock:idle');
     await until(() => getState().save.threads.unknown.some((m) => m.text === '들어오세요.'));
     emit('lock:idle2');
-    await until(() => getState().save.threads.unknown.some((m) => m.text === '지금 보고 있죠?'));
+    await until(() => getState().save.threads.unknown.some((m) => m.text === '채원 씨는 세 번 만에 열었어요.'));
     // (the unlock beat sets this flag in play)
     setSave((v) => ({ unlocked: true, flags: [...v.flags, 'unlocked'] }));
     emit('photo:l1');

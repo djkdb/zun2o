@@ -128,7 +128,7 @@ await page.getByText('다른 사람이 대신 삭제 요청').click();
 await page.fill('#first', '엄마가 두시 전에는 집에 오라고 했잖아');
 await page.getByRole('button', { name: '요청' }).click();
 await wait(300);
-check('her mother\'s text (the trap) is refused, and told apart', (await page.textContent('.admin')).includes('엄마가 오늘 한 말'));
+check('her mother\'s text (the trap) is refused, and told apart', (await page.textContent('.admin')).includes('어머니가 오늘 보낸 문자'));
 await page.getByText('기록 003 (실종 신고) 다시 보기').click();
 check('record 003 can be reread right in the form', (await page.textContent('.admin')).includes('신고자: 딸'));
 // "2시" for "두 시" is fine
@@ -146,8 +146,8 @@ mark('admin');
 // 소연's recording from the gate, then the cassette she never finished
 await openApp('memos');
 await wait(400);
-check('소연\'s 22:47 recording is on the list', (await page.textContent('.memo-list')).includes('9월 27일 22:47'));
-await page.locator('.memo-list button', { hasText: '9월 27일 22:47' }).click();
+check('소연\'s 22:47 recording is on the list', (await page.textContent('.memo-list')).includes('9월 27일 22:57'));
+await page.locator('.memo-list button', { hasText: '9월 27일 22:57' }).click();
 await page.locator('.memo-play').click();
 await wait(8000);
 await snap('soyeon-memo');

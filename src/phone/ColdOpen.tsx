@@ -38,7 +38,7 @@ const TEXT = {
   },
   2: {
     stamp: '2026년 9월 27일 일요일 · 밤 11시 51분',
-    night: '1년 뒤. 또 막차가 끊겼다.',
+    night: '1년 뒤. 막차 시간은 외우고 있었다. 그런데도 놓쳤다.',
     school: '해원고 정문 앞. 1년 동안 비어 있던 선반.',
     run: '전화부스로 간다 ›',
     booth: '공중전화부스. 선반 위에 — 휴대폰.',
@@ -186,7 +186,7 @@ export function ColdOpen() {
 
       {step === 0 && (
         <div className="co-start">
-          {isS2() && <p className="co-season">시즌 2 「귀가」 · 시즌 1 엔딩 3 「기록 삭제」 1년 뒤{!sawRelease && ' (엔딩 3을 아직 못 봤다면 그 결말이 나옵니다)'}</p>}
+          {isS2() && <p className="co-season">시즌 2 「귀가」 · 시즌 1 엔딩 3 「기록 삭제」 1년 뒤{!sawRelease && ' (시즌 1 결말 스포일러 포함)'}</p>}
           <p className="co-stamp">{T.stamp}</p>
           <p className="co-ear">🎧 이어폰을 끼고, 소리를 켜 주세요.</p>
           <button type="button" className="primary co-go" onClick={() => void start(true)}>

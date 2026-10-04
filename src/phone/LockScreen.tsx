@@ -124,7 +124,7 @@ export function LockScreen() {
           <p className="lock-pad-title">암호 입력</p>
           {/* the clue stays in view while typing: her riddle, once it's been left, and the camera notice */}
           <div className="lock-pad-clues">
-            {isS2() ? <p>채원 · “언니 비번 아직 어머니 사라지신 날이죠?”</p> : <p>도현 · (지워진 메시지) “걔가 어제 학교 들어간 시간이랑 똑같아요.”</p>}
+            {isS2() ? <p>채원 · “잠겨 있으면 언니 비번 어머니 사라지신 날이에요”</p> : <p>도현 · (비번 메시지는 삭제됨) “걔가 어제 학교 들어간 시간이랑 똑같아요.”</p>}
             {isS2() ? <p>해원일보 · 1994년 3월 14일 실종된 사서, 31년 만에 귀가</p> : <p>카메라 · 01:13에 시작한 영상을 저장하지 못했습니다.</p>}
           </div>
           <div className={`lock-dots${shake ? ' shake' : ''}`}>

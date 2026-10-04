@@ -264,13 +264,13 @@ check('record 013 appears after the broadcast order', true);
 await page.locator('.archive li button.new').click();
 await wait(600);
 await snap('archive-013-key');
-check('record 013 points to where her given name was written', (await page.textContent('.arc-page-wrap')).includes('옥상에서 날씨를 적던 아이들'));
+check('record 013 points to where her given name was written', (await page.textContent('.arc-page-wrap')).includes('옥상에서 날씨를 적는 아이들'));
 // …and the students' weather notebook has it
 await tap('.back');
 await wait(300);
 await page.getByRole('button', { name: '기록 002' }).first().click();
 await wait(600);
-check('record 002: the students call the librarian by her given name', (await page.textContent('.arc-page-wrap')).includes('미령 쌤'));
+check('record 002: the students call the librarian by her given name', (await page.textContent('.arc-page-wrap')).includes('미령 샘'));
 await snap('archive-002-name');
 mark('found the key → CH4');
 
@@ -385,7 +385,7 @@ await page.fill('#fn', '서미령 씨');
 await tapText('입력');
 await waitFor('.ending-release', 10000);
 mark('ENDING 3 — 기록 삭제');
-await waitFor('.ending-card', 20000);
+await waitFor('.ending-card', 60000);
 await snap('ending-release');
 check('ending 3: at last she says her own name', (await page.textContent('.ending-scene')).includes('서미령이에요'));
 
@@ -410,7 +410,7 @@ for (const [label, cls] of [
     await tapText('서명한다');
   }
   await waitFor(`.ending-${cls}`, 10000);
-  await waitFor('.ending-card', 20000);
+  await waitFor('.ending-card', 60000);
   mark(`ENDING — ${label}`);
   await snap(`ending-${cls}`);
 }

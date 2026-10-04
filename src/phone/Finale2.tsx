@@ -15,7 +15,7 @@ const WRITTEN = '9월 28일 02:00 — 한소';
 
 function buildRecall(): string[] {
   const s = getState().save;
-  const lines = ['02:00. 식탁에서 어머니 손이 멈췄어요. 한 글자 남았어요.'];
+  const lines = ['02:00. 식탁에서 어머니 손이 멈췄어요. 한 글자 남았어요.', '버티고 계세요. 오래는 못 가요.'];
   // last year: only ending 3 called her name; anyone else just came and went
   if (s.s1?.name) lines.push(s.s1.endings.includes('release') ? `${s.s1.name} 씨. 작년엔 어머니 이름 불러 줬잖아요.` : `${s.s1.name} 씨. 작년에도 여기 있었죠.`);
   if (s.flags.includes('pretended')) lines.push('어머니한테 소연 씨인 척했죠. 어머니는 감기 걸렸냐고만 했어요.');

@@ -164,4 +164,4 @@ export const MEMO_M1 = {
   ] as MemoLine[],
 };
 
-export const MEMO_TITLES: Record<string, string> = { m1: '새 녹음 17', m2: '새 녹음 18', s2m1: '8월 28일 01:58', s2m2: '9월 27일 22:47', s2tape: '엄마 목소리' };
+export const MEMO_TITLES: Record<string, string> = { m1: '새 녹음 17', m2: '새 녹음 18', s2m1: '8월 28일 01:58', s2m2: '9월 27일 22:57', s2tape: '엄마 목소리' };

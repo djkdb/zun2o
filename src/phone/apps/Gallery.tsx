@@ -149,7 +149,7 @@ export function PhotoView({ id, brightness = 0, changed = false }: { id: string;
     case 's2-home':
       return art('s2-home') ? <SlotPhoto slot="s2-home" w={640} h={585} stamp="06:10" label="새벽빛이 드는 부엌. 식탁 의자에 1994년의 낡은 외투가 걸려 있다." /> : <HomecomingPhoto />;
     case 's2-kitchen':
-      return art('s2-kitchen') ? <SlotPhoto slot="s2-kitchen" w={640} h={585} stamp="01:59" label="문틈으로 찍은 어두운 부엌. 스탠드 불빛 아래, 단발머리 여자가 등을 보이고 앉아 무언가를 쓰고 있다." /> : <KitchenPhoto />;
+      return art('s2-kitchen') ? <SlotPhoto slot="s2-kitchen" w={640} h={585} stamp="01:57" label="문틈으로 찍은 어두운 부엌. 스탠드 불빛 아래, 단발머리 여자가 등을 보이고 앉아 무언가를 쓰고 있다." /> : <KitchenPhoto />;
     case 's2-kitchen2':
       return <KitchenTonightPhoto />;
     case 's2-sisters':
