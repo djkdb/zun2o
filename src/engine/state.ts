@@ -56,6 +56,8 @@ export interface Runtime {
   debug: boolean;
   /** The 0200 call from 23:53 that never hung up: its screen is open. */
   openLine: boolean;
+  /** Where on the home screen the open app's icon was (its zoom starts there). */
+  appOrigin: string | null;
 }
 
 export interface State {
@@ -191,6 +193,7 @@ const initialRuntime = (debug: boolean): Runtime => ({
   audioReady: false,
   debug,
   openLine: false,
+  appOrigin: null,
 });
 
 let state: State = { save: newSave(), rt: initialRuntime(false) };

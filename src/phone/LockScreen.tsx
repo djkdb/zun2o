@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useGame } from '../hooks/useGame';
 import { BoothPhoto, SlotPhoto, WallpaperPhoto } from '../art/phonePhotos';
 import { emit, sfx, vibrate } from '../engine/director';
@@ -10,6 +10,8 @@ import type { ThreadId } from '../engine/types';
 
 /** 채원's phone: the day she met 도현. 소연's: the day her mother disappeared. */
 const passcode = () => pick('0113', '0314');
+/** The letters under the digits (drawn by CSS, so a key's text stays just its digit). */
+const KEY_LETTERS: Record<string, string> = { '2': 'ABC', '3': 'DEF', '4': 'GHI', '5': 'JKL', '6': 'MNO', '7': 'PQRS', '8': 'TUV', '9': 'WXYZ' };
 /** Season 2 shows only what arrived tonight (from the 27th on). */
 const TONIGHT_AT = (9 * 31 + 27) * 1440;
 
@@ -21,6 +23,9 @@ export function LockScreen() {
   const [pad, setPad] = useState(false);
   const [code, setCode] = useState('');
   const [shake, setShake] = useState(0);
+  const [torch, setTorch] = useState(false);
+  const [nope, setNope] = useState(0);
+  const swipe = useRef<number | null>(null);
 
   // Standing still on the lock screen is noticed — twice, with a silence between:
   // first the invitation, then, if you still haven't moved, the sign that you're being watched.
@@ -76,7 +81,17 @@ export function LockScreen() {
         {isS2() ? <SlotPhoto slot="miryeong-daughter" w={390} h={844} fill label="1994년, 도서관 앞의 엄마와 열한 살 딸." /> : wallpaper === 'booth' ? <BoothPhoto fill /> : <WallpaperPhoto />}
       </div>
       {!pad ? (
-        <div className="lock-main" onClick={() => setPad(true)}>
+        <div
+          className="lock-main"
+          onClick={() => setPad(true)}
+          // or swipe up from anywhere, like a real one
+          // (a swipe on the notifications scrolls them instead)
+          onPointerDown={(e) => (swipe.current = (e.target as Element).closest('.lock-notes') ? null : e.clientY)}
+          onPointerUp={(e) => {
+            if (swipe.current !== null && swipe.current - e.clientY > 50) setPad(true);
+            swipe.current = null;
+          }}
+        >
           <div className="lock-date">
             9월 {today(clock).d}일 {today(clock).weekday}
           </div>
@@ -116,7 +131,40 @@ export function LockScreen() {
             )}
           </div>
           <button type="button" className="lock-hint" onClick={() => setPad(true)}>
-            눌러서 잠금 해제
+            위로 쓸어올려 열기
+          </button>
+          {/* the two glass buttons in the corners — the flashlight works, the camera doesn't (and never asks) */}
+          <button
+            type="button"
+            className={`lock-corner left${torch ? ' on' : ''}`}
+            aria-label="손전등"
+            aria-pressed={torch}
+            onClick={(e) => {
+              e.stopPropagation();
+              vibrate([12]);
+              setTorch((v) => !v);
+            }}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 2.5h8v3.2l-2 3V21a1 1 0 01-1 1h-2a1 1 0 01-1-1V8.7l-2-3z" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+              <circle cx="12" cy="12.5" r="1.2" fill="currentColor" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            key={nope}
+            className={`lock-corner right${nope ? ' nope' : ''}`}
+            aria-label="카메라 (사용할 수 없음)"
+            onClick={(e) => {
+              e.stopPropagation();
+              sfx('error');
+              setNope((n) => n + 1);
+            }}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 8h3l1.6-2.2h6.8L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+              <circle cx="12" cy="13" r="3.4" fill="none" stroke="currentColor" strokeWidth="1.7" />
+            </svg>
           </button>
         </div>
       ) : (
@@ -141,6 +189,7 @@ export function LockScreen() {
                   key={i}
                   type="button"
                   className={k === '⌫' ? 'key-del' : 'key'}
+                  data-sub={KEY_LETTERS[k]}
                   aria-label={k === '⌫' ? '지우기' : k}
                   onClick={() => (k === '⌫' ? setCode((c) => c.slice(0, -1)) : press(k))}
                 >

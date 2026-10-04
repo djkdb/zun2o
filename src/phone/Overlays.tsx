@@ -86,26 +86,100 @@ function CallAvatar({ from, hijacked = false }: { from: string; hijacked?: boole
   );
 }
 
+/** Locked phone, like a real one: drag the green handle across to answer (a tap on it answers too). */
+function SlideToAnswer() {
+  const track = useRef<HTMLDivElement>(null);
+  const start = useRef<number | null>(null);
+  // a drag that falls short springs back — it isn't a tap
+  const dragged = useRef(false);
+  const [x, setX] = useState(0);
+  const max = () => (track.current ? track.current.clientWidth - 70 : 220);
+  return (
+    <div className="slide-answer" ref={track}>
+      <span className="slide-text" style={{ opacity: Math.max(0, 1 - x / 120) }}>
+        밀어서 응답하기
+      </span>
+      <button
+        type="button"
+        className="accept knob"
+        style={{ transform: `translateX(${x}px)` }}
+        onClick={() => {
+          if (!dragged.current) answerCall();
+          dragged.current = false;
+        }}
+        onPointerDown={(e) => {
+          start.current = e.clientX - x;
+          dragged.current = false;
+          e.currentTarget.setPointerCapture?.(e.pointerId);
+        }}
+        onPointerMove={(e) => {
+          if (start.current === null) return;
+          const nx = Math.max(0, Math.min(max(), e.clientX - start.current));
+          if (nx > 6) dragged.current = true;
+          setX(nx);
+        }}
+        onPointerUp={() => {
+          start.current = null;
+          if (x > max() * 0.75) answerCall();
+          else setX(0);
+        }}
+        aria-label="받기"
+      >
+        <CallIcon />
+      </button>
+    </div>
+  );
+}
+
 export function IncomingCall() {
   const id = useGame((s) => s.rt.incoming);
+  const locked = useGame((s) => !s.save.unlocked);
   if (!id) return null;
   const call = CALLS[id];
   return (
-    <div className={`incoming${call.video ? ' video' : ''}`} role="dialog" aria-label="수신 전화">
+    <div className={`incoming${call.video ? ' video' : ''}${locked ? ' locked' : ''}`} role="dialog" aria-label="수신 전화">
       {!call.video && <CallBackdrop from={call.from} />}
       <div className="incoming-top">
         <CallAvatar from={call.from} />
         <small>{call.video ? '영상 통화' : '휴대전화'}</small>
         <h2>{call.label}</h2>
       </div>
-      <div className="incoming-actions">
-        <button type="button" className="decline" onClick={declineCall} aria-label="거절">
-          <CallIcon down />
-        </button>
-        <button type="button" className="accept" onClick={answerCall} aria-label="받기">
-          <CallIcon />
-        </button>
-      </div>
+      {locked ? (
+        <>
+          <div className="incoming-extras">
+            <button type="button" className="incoming-extra decline" onClick={declineCall}>
+              <span className="extra-icon" aria-hidden="true">
+                <CallIcon down />
+              </span>
+              거절
+            </button>
+            <span className="incoming-extra off" aria-hidden="true">
+              <span className="extra-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M12 4c4.7 0 8.5 3 8.5 6.8s-3.8 6.8-8.5 6.8c-.9 0-1.8-.1-2.6-.3L5 19.5l1.2-3.6C4.6 14.7 3.5 12.9 3.5 10.8 3.5 7 7.3 4 12 4z" fill="currentColor" />
+                </svg>
+              </span>
+              메시지
+            </span>
+          </div>
+          <SlideToAnswer />
+        </>
+      ) : (
+        <div className="incoming-actions">
+          <span className="incoming-act">
+            <button type="button" className="decline" onClick={declineCall} aria-label="거절">
+              <CallIcon down />
+            </button>
+            거절
+          </span>
+          <span className="incoming-act">
+            <button type="button" className="accept" onClick={answerCall} aria-label="받기">
+              <CallIcon />
+            </button>
+            응답
+          </span>
+        </div>
+      )}
     </div>
   );
 }
@@ -199,6 +273,8 @@ function ActiveCall({ id }: { id: string }) {
   const [talking, setTalking] = useState<CallLine['who'] | null>(null);
   const [noisy, setNoisy] = useState(false);
   const [speaker, setSpeaker] = useState(false);
+  // only the button: this game never touches the microphone
+  const [muted, setMuted] = useState(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const quiet = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const call = CALLS[id] ?? null;
@@ -307,7 +383,8 @@ function ActiveCall({ id }: { id: string }) {
           ))}
         </div>
       ) : (
-        <div className="call-controls">
+        // iOS's six: 스피커 · FaceTime · 소리 끔 / 더 보기 · 종료 · 키패드
+        <div className="call-controls six">
           <button type="button" className={`call-ctl${speaker ? ' on' : ''}`} aria-pressed={speaker} onClick={() => (sfx('key'), setSpeaker((v) => !v))}>
             <span className="call-ctl-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24">
@@ -320,25 +397,54 @@ function ActiveCall({ id }: { id: string }) {
           <button type="button" className="call-ctl" disabled>
             <span className="call-ctl-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24">
+                <rect x="2.5" y="6.5" width="13" height="11" rx="2.5" fill="currentColor" />
+                <path d="M16.5 10.5l5-3v9l-5-3z" fill="currentColor" />
+              </svg>
+            </span>
+            FaceTime
+          </button>
+          <button type="button" className={`call-ctl${muted ? ' on' : ''}`} aria-pressed={muted} onClick={() => (sfx('key'), setMuted((v) => !v))}>
+            <span className="call-ctl-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor" />
+                <path d="M6 11a6 6 0 0012 0M12 17v4" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+                <path d="M4 4l16 16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+            </span>
+            소리 끔
+          </button>
+          <button type="button" className="call-ctl" disabled>
+            <span className="call-ctl-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                {[6, 12, 18].map((x) => (
+                  <circle key={x} cx={x} cy="12" r="1.9" fill="currentColor" />
+                ))}
+              </svg>
+            </span>
+            더 보기
+          </button>
+          <span className="call-ctl end">
+            <button type="button" className="hangup" onClick={hangUp} aria-label="통화 종료">
+              <CallIcon down />
+            </button>
+            종료
+          </span>
+          <button type="button" className="call-ctl" disabled>
+            <span className="call-ctl-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
                 {[0, 1, 2].map((r) => [0, 1, 2].map((c) => <circle key={`${r}${c}`} cx={6 + c * 6} cy={5 + r * 6} r="1.7" fill="currentColor" />))}
                 <circle cx="12" cy="23" r="1.7" fill="currentColor" />
               </svg>
             </span>
             키패드
           </button>
-          <button type="button" className="call-ctl" disabled>
-            <span className="call-ctl-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-            </span>
-            통화 추가
-          </button>
         </div>
       )}
-      <button type="button" className="hangup" onClick={hangUp} aria-label="통화 종료">
-        <CallIcon down />
-      </button>
+      {choice && call.choice && (
+        <button type="button" className="hangup" onClick={hangUp} aria-label="통화 종료">
+          <CallIcon down />
+        </button>
+      )}
     </div>
   );
 }

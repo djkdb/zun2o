@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useGame } from '../hooks/useGame';
 import { addFlag, getState, setRt } from '../engine/state';
 import { sfx } from '../engine/director';
 import { openApp } from '../engine/director';
-import { StatusBar } from './StatusBar';
+import { Island, StatusBar } from './StatusBar';
 import { LockScreen } from './LockScreen';
 import { HomeScreen } from './HomeScreen';
 import { ColdOpen } from './ColdOpen';
@@ -126,6 +126,13 @@ export function PhoneShell() {
   const idle = useIdleDim(started && unlocked && !finale && !ending && !busy);
   const dip = useGame((s) => s.rt.dip);
   const edge = useEdgeBack();
+  // Opened from its home-screen icon: the app grows out of that spot (taken once, when it opens).
+  const appOrigin = useGame((s) => s.rt.appOrigin);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const origin = useMemo(() => appOrigin, [app]);
+  useEffect(() => {
+    if (appOrigin) setRt({ appOrigin: null });
+  }, [app, appOrigin]);
 
   if (!started) return <ColdOpen />;
   if (ending) return <EndingScreen id={ending} />;
@@ -134,6 +141,7 @@ export function PhoneShell() {
       <div className="shell">
         <StatusBar dark />
         <div className="screen">{isS2() ? <Finale2 /> : <Finale />}</div>
+        <Island />
       </div>
     );
 
@@ -141,12 +149,12 @@ export function PhoneShell() {
   const darkBar = !unlocked || app === null || (app === 'index' && !isS2());
   return (
     <div className={`shell chapter-${chapter}${idle ? ' idle' : ''}${dip ? ' dip' : ''}${unlocked && app ? ' in-app' : ''}`}>
-      <StatusBar dark={darkBar} />
+      <StatusBar dark={darkBar} lock={!unlocked} />
       <div className="screen" {...edge}>
         {!unlocked ? (
           <LockScreen />
         ) : app ? (
-          <div key={app} className="app-frame">
+          <div key={app} className={`app-frame${origin ? ' from-icon' : ''}`} style={origin ? { transformOrigin: origin } : undefined}>
             <AppView app={app} />
           </div>
         ) : (
@@ -170,6 +178,7 @@ export function PhoneShell() {
       <GlitchOverlay />
       <ScareOverlay />
       <RebootOverlay />
+      <Island />
     </div>
   );
 }

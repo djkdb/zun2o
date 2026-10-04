@@ -492,7 +492,7 @@ export function GalleryApp() {
   const recent = all.filter((p) => p.album === 'recent' && visible(p));
   return (
     <div className="gallery">
-      <AppHeader title="앨범" onBack={() => openApp(null)} backLabel="홈" />
+      <AppHeader title="앨범" onBack={() => openApp(null)} backLabel="홈" large />
       <div className="albums">
         <button type="button" className="album" onClick={() => setAlbum('recent')}>
           <span className="album-cover">

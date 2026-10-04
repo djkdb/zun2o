@@ -10,6 +10,9 @@ import { CallIcon } from '../CallIcon';
 // Fake dialer: nothing here ever places a real call.
 const SPECIAL: Record<string, string> = { '1340': 'radio', '0200': 'line0200' };
 
+/** The letters under the dial digits (CSS draws them, so a key's text stays its digit). */
+const DIAL_LETTERS: Record<string, string> = { '0': '+', '2': 'ABC', '3': 'DEF', '4': 'GHI', '5': 'JKL', '6': 'MNO', '7': 'PQRS', '8': 'TUV', '9': 'WXYZ' };
+
 export function PhoneApp() {
   const [tab, setTab] = useState<'recent' | 'keypad'>('recent');
   const [num, setNum] = useState('');
@@ -43,7 +46,7 @@ export function PhoneApp() {
 
   return (
     <div className="phone-app">
-      <AppHeader title={tab === 'recent' ? '최근 기록' : '키패드'} onBack={() => openApp(null)} backLabel="홈" />
+      <AppHeader title={tab === 'recent' ? '최근 기록' : '키패드'} onBack={() => openApp(null)} backLabel="홈" large={tab === 'recent'} />
       {tab === 'recent' ? (
         <ul className="call-list">
           {calls.map((c, i) => (
@@ -77,6 +80,7 @@ export function PhoneApp() {
                 key={k}
                 type="button"
                 className="key"
+                data-sub={DIAL_LETTERS[k]}
                 onClick={() => {
                   sfx('key');
                   setNum((x) => (x + k).slice(0, 13));
@@ -99,9 +103,17 @@ export function PhoneApp() {
       )}
       <nav className="tabbar">
         <button type="button" className={tab === 'recent' ? 'on' : ''} onClick={() => setTab('recent')}>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2" />
+            <path d="M12 7v5.5l3.5 2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
           최근 기록
         </button>
         <button type="button" className={tab === 'keypad' ? 'on' : ''} onClick={() => setTab('keypad')}>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            {[0, 1, 2].map((r) => [0, 1, 2].map((c) => <circle key={`${r}${c}`} cx={6 + c * 6} cy={4.5 + r * 6} r="2" fill="currentColor" />))}
+            <circle cx="12" cy="22.5" r="2" fill="currentColor" />
+          </svg>
           키패드
         </button>
       </nav>

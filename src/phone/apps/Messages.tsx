@@ -19,7 +19,7 @@ function ThreadList() {
   const order = [...threadOrder()].sort((a, b) => lastSent(threads[b]) - lastSent(threads[a]));
   return (
     <div className="messages">
-      <AppHeader title="메시지" onBack={() => openApp(null)} backLabel="홈" />
+      <AppHeader title="메시지" onBack={() => openApp(null)} backLabel="홈" large />
       <ul className="thread-list">
         {order.map((th) => {
           const meta = threadMeta()[th];
@@ -28,14 +28,20 @@ function ThreadList() {
           return (
             <li key={th}>
               <button type="button" className="thread-row" onClick={() => openThread(th)}>
+                {/* unread: iMessage's blue dot */}
+                <i className={`thread-dot${unread[th] > 0 || waiting ? ' on' : ''}`} aria-label={unread[th] > 0 ? `읽지 않은 메시지 ${unread[th]}개` : waiting ? '답장 대기' : undefined} />
                 <Avatar th={th} />
                 <span className="thread-mid">
-                  <strong>{meta.name}</strong>
+                  <span className="thread-head">
+                    <strong>{meta.name}</strong>
+                    <span className="thread-time">
+                      {last?.time}
+                      <svg viewBox="0 0 8 14" aria-hidden="true">
+                        <path d="M1.5 1.5L6.5 7l-5 5.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </span>
+                  </span>
                   <span className="thread-last">{typing[th] ? '입력 중…' : waiting ? '답장을 기다리고 있습니다' : last?.text}</span>
-                </span>
-                <span className="thread-right">
-                  <span className="thread-time">{last?.time}</span>
-                  {(unread[th] > 0 || waiting) && <span className="badge small">{unread[th] || '!'}</span>}
                 </span>
               </button>
             </li>
@@ -90,6 +96,9 @@ function Composer({ th }: { th: ThreadId }) {
   };
   return (
     <form className="composer" onSubmit={send}>
+      <span className="composer-plus" aria-hidden="true">
+        +
+      </span>
       <input
         value={text}
         maxLength={80}
@@ -144,6 +153,12 @@ function Chat({ th }: { th: ThreadId }) {
 
   // A date line wherever the day changes — including past midnight tonight.
   const days = timeline(msgs).map((t) => t.day);
+  // Under your last message, like iMessage: 읽음 — the number with no name reads everything at once.
+  let lastMine = -1;
+  msgs.forEach((m, i) => {
+    if (m.from === 'me' && !m.inside) lastMine = i;
+  });
+  const receipt = lastMine < 0 || msgs[lastMine].failed || th === 'self' ? null : th === 'unknown' ? `읽음 ${msgs[lastMine].time}` : '전송됨';
   const dayHeaders = days.map((d, i) => (i === 0 || d !== days[i - 1] ? dayLabel(d) : null));
   return (
     <div className="chat">
@@ -152,23 +167,28 @@ function Chat({ th }: { th: ThreadId }) {
         subtitle={th === 'self' ? '나와의 채팅' : undefined}
         onBack={() => openThread(null)}
         backLabel="메시지"
+        avatar={<Avatar th={th} size={46} />}
       />
       <div className={`chat-body${th === 'unknown' ? ' chat-unknown' : ''}`}>
         {msgs.map((m, i) => {
           // 채원 (or 소연) writing to 나에게 from inside: on the left, labelled, so it never reads as you
           const side = m.inside ? 'them inside' : m.from;
           const label = m.inside && !msgs[i - 1]?.inside;
+          // the tail goes on the last bubble of a run, like iMessage
+          const next = msgs[i + 1];
+          const tail = !next || dayHeaders[i + 1] || (next.inside ? 'them inside' : next.from) !== side;
           return (
             <div key={m.id}>
               {dayHeaders[i] && <div className="chat-day">{dayHeaders[i]}</div>}
               {label && <div className="bubble-who">{insideName} · 안에서</div>}
               <div className={`bubble-row ${side}${m.attach ? ' has-attach' : ''}`}>
-                <div className={`bubble ${side}${m.failed ? ' failed' : ''}`}>
+                <div className={`bubble ${side}${m.failed ? ' failed' : ''}${tail && !m.attach ? ' tail' : ''}`}>
                   {m.text}
                   {m.attach && <AttachCard a={m.attach} />}
                 </div>
                 <span className="bubble-time">{m.failed ? <span className="send-failed">전송 실패 !</span> : m.time}</span>
               </div>
+              {i === lastMine && receipt && <div className="bubble-receipt">{receipt}</div>}
             </div>
           );
         })}

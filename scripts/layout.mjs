@@ -149,6 +149,8 @@ for (const [w, h] of SIZES) {
   await audit(page, `${tag}-article`);
   await page.click('.homebar');
   await page.locator('.app-icon', { hasText: '설정' }).click();
+  // apps zoom out of their icon: measure the settled screen
+  await page.waitForTimeout(500);
   await audit(page, `${tag}-settings`);
   // chapter 4 index app, then 02:00 all the way to the choice
   await debugClick(page, /^CH4$/);
@@ -156,6 +158,7 @@ for (const [w, h] of SIZES) {
   await page.waitForTimeout(4500);
   await page.click('.homebar');
   await page.locator('.app-icon', { hasText: '출입 기록' }).click();
+  await page.waitForTimeout(500);
   await audit(page, `${tag}-index`);
   await debugClick(page, /^02:00$/);
   await page.locator('.dbg button', { hasText: '—' }).click();

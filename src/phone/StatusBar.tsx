@@ -10,7 +10,44 @@ export function lineTime(clock: string): string {
   return `${Math.floor(mins / 60)}:${String(mins % 60).padStart(2, '0')}:${ss}`;
 }
 
-export function StatusBar({ dark = false }: { dark?: boolean }) {
+/** On a real iPhone (a notch or Dynamic Island in the safe area) a drawn island would sit under the real one. */
+export function hasNotch(): boolean {
+  return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sat')) > 12;
+}
+
+/**
+ * The Dynamic Island: hardware, so above everything on the screen. Like a real
+ * call in the background, the line that never hung up lives in it.
+ */
+export function Island() {
+  const clock = useGame((s) => s.save.clock);
+  const openLine = useGame((s) => s.save.flags.includes('open-line') && !s.rt.finale && !s.rt.ending && !s.rt.openLine && !s.rt.activeCall && !s.rt.incoming);
+  const [, tick] = useState(0);
+  useEffect(() => {
+    if (!openLine) return;
+    const iv = setInterval(() => tick((n) => n + 1), 1000);
+    return () => clearInterval(iv);
+  }, [openLine]);
+  if (hasNotch()) return null;
+  if (!openLine) return <span className="island" aria-hidden="true" />;
+  return (
+    <button type="button" className="island live sb-call" onClick={() => setRt({ openLine: true })} aria-label={`통화 중 0200, ${lineTime(clock)}`}>
+      <span className="island-call" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 013 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z" fill="currentColor" />
+        </svg>
+        {lineTime(clock)}
+      </span>
+      <span className="island-wave" aria-hidden="true">
+        {[0, 1, 2, 3, 4].map((i) => (
+          <i key={i} style={{ animationDelay: `${i * 0.17}s` }} />
+        ))}
+      </span>
+    </button>
+  );
+}
+
+export function StatusBar({ dark = false, lock = false }: { dark?: boolean; lock?: boolean }) {
   const clock = useGame((s) => s.save.clock);
   // Chapter 4: the call that took your 38 minutes never ended. The clock becomes a green call pill.
   const openLine = useGame((s) => s.save.flags.includes('open-line') && !s.rt.finale && !s.rt.ending);
@@ -24,12 +61,14 @@ export function StatusBar({ dark = false }: { dark?: boolean }) {
   const lost = useGame((s) => s.rt.lostNonce);
   const glitch = useGame((s) => s.rt.clockGlitch);
   const chapter = useGame((s) => s.save.chapter);
-  const low = battery <= 10;
+  const low = battery <= 20;
   // Signal fades the closer it gets to 02:00; in chapter 4 there is none.
   const bars = chapter >= 4 ? 0 : chapter >= 3 ? 1 : 2;
+  const notch = hasNotch();
   return (
-    <div className={`statusbar${dark ? ' dark' : ''}`}>
-      {openLine ? (
+    // (on the lock screen the big clock is the time: the bar leaves its corner empty, like a real one)
+    <div className={`statusbar${dark ? ' dark' : ''}${lock ? ' on-lock' : ''}`}>
+      {openLine && notch ? (
         <button type="button" className="sb-time sb-call" onClick={() => setRt({ openLine: true })} aria-label={`통화 중 0200, ${lineTime(clock)}`}>
           0200 · {lineTime(clock)}
         </button>
@@ -50,10 +89,11 @@ export function StatusBar({ dark = false }: { dark?: boolean }) {
             ))}
           </span>
         )}
-        <span className={`sb-battery${low ? ' low' : ''}`} aria-label={`배터리 ${battery}%`}>
+        {/* the percentage inside the battery, like iOS with 배터리 잔량 표시 on */}
+        <span className={`sb-battery${low ? ' low' : ''}`} role="img" aria-label={`배터리 ${battery}%`}>
           <span className="sb-battery-fill" style={{ width: `${battery}%` }} />
+          <span className="sb-pct">{battery}</span>
         </span>
-        <span className="sb-pct">{battery}%</span>
       </span>
     </div>
   );

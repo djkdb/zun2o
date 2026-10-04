@@ -171,7 +171,7 @@ export function MemosApp() {
   }, []);
   return (
     <div className="memos-app">
-      <AppHeader title="녹음" onBack={() => (open ? setOpen(null) : openApp(null))} backLabel={open ? '목록' : '홈'} />
+      <AppHeader title="녹음" onBack={() => (open ? setOpen(null) : openApp(null))} backLabel={open ? '목록' : '홈'} large={!open} />
       {open ? (
         <Player memo={open} />
       ) : isS2() ? (

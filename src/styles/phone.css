@@ -2776,7 +2776,7 @@ svg {
 }
 
 .banner.in-app {
-  top: calc(max(44px, calc(env(safe-area-inset-top) + 24px)) + 58px);
+  top: calc(max(54px, calc(env(safe-area-inset-top) + 24px)) + 58px);
 }
 
 .sync-note {
@@ -3911,7 +3911,7 @@ body,
 
 .video-top {
   position: absolute;
-  top: 48px;
+  top: 58px;
   left: 20px;
   z-index: 2;
   display: flex;
@@ -5626,7 +5626,7 @@ body,
 }
 .brink-chip {
   position: absolute;
-  top: 54px;
+  top: 60px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 5;
@@ -5653,7 +5653,7 @@ body,
 }
 .brink-photo-head {
   position: absolute;
-  top: 52px;
+  top: 58px;
   left: 0;
   right: 0;
   text-align: center;
@@ -6441,4 +6441,891 @@ body,
 .admin-login .keypad {
   justify-content: center;
   margin: 10px auto 0;
+}
+
+/* ─── iOS 26: Dynamic Island, Liquid Glass, the real proportions ─────────
+   Measured against iOS 26 on a 390 × 844 iPhone: 54 pt status bar around a
+   126 × 37 island, 17 pt semibold clock, battery with the number inside,
+   round glass nav buttons, 34 pt large titles, a floating glass dock,
+   26 pt inset-grouped lists, the six-button call screen. */
+:root {
+  /* on an iPhone or a Mac: the real system font (SF Pro + Apple SD Gothic Neo) */
+  --font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Apple SD Gothic Neo', 'IBM Plex Sans KR', 'Malgun Gothic', system-ui, sans-serif;
+  --glass: rgba(120, 120, 128, 0.26);
+  --glass-strong: rgba(58, 58, 62, 0.72);
+  --glass-edge: inset 0 0.5px 0 rgba(255, 255, 255, 0.32), inset 0 0 0 0.5px rgba(255, 255, 255, 0.1);
+  --glass-blur: blur(22px) saturate(170%);
+  --sat: env(safe-area-inset-top);
+}
+
+/* status bar: time centred in the left ear, signal and battery in the right */
+.statusbar {
+  display: grid;
+  grid-template-columns: 1fr 126px 1fr;
+  height: max(54px, calc(env(safe-area-inset-top) + 24px));
+  padding: env(safe-area-inset-top) 0 0;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+.statusbar:not(.dark) {
+  background: #000;
+}
+.statusbar > .sb-time {
+  grid-column: 1;
+  justify-self: center;
+  padding-top: 4px;
+}
+.statusbar > .sb-right {
+  grid-column: 3;
+  justify-self: center;
+  padding-top: 4px;
+  gap: 5px;
+}
+.statusbar.on-lock > .sb-time:not(.sb-call) {
+  visibility: hidden;
+}
+.island {
+  position: absolute;
+  z-index: 95;
+  top: 11px;
+  left: 50%;
+  width: 126px;
+  height: 37px;
+  border-radius: 19px;
+  background: #000;
+  transform: translateX(-50%);
+  transition:
+    width 0.45s cubic-bezier(0.3, 1.3, 0.5, 1),
+    height 0.45s cubic-bezier(0.3, 1.3, 0.5, 1);
+  pointer-events: none;
+}
+/* the call that never hung up, compact like a live activity: green handset and timer, green waveform */
+.island.live {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(204px, calc(100% - 170px));
+  padding: 0 14px 0 12px;
+  color: #34c759;
+  pointer-events: auto;
+  animation: island-in 0.5s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+@keyframes island-in {
+  from {
+    width: 126px;
+  }
+}
+.island-call {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+.island-call svg {
+  width: 14px;
+  height: 14px;
+}
+.island-wave {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 14px;
+}
+.island-wave i {
+  width: 2.5px;
+  height: 40%;
+  border-radius: 2px;
+  background: currentColor;
+  animation: island-wave 0.9s ease-in-out infinite;
+}
+@keyframes island-wave {
+  50% {
+    height: 100%;
+  }
+}
+.reduce-fx .island-wave i {
+  animation: none;
+  height: 60%;
+}
+/* battery: a glass pill with the level inside it, red at 20 % and under */
+.sb-battery {
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 13px;
+  border: 0;
+  border-radius: 4.2px;
+  background: rgba(255, 255, 255, 0.36);
+  opacity: 1;
+}
+.sb-battery::after {
+  content: '';
+  position: absolute;
+  right: -3px;
+  top: 4.5px;
+  width: 1.6px;
+  height: 4px;
+  border-radius: 0 1px 1px 0;
+  background: rgba(255, 255, 255, 0.4);
+}
+.sb-battery-fill {
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 4.2px 0 0 4.2px;
+  background: #fff;
+  max-width: 100%;
+}
+.sb-battery.low .sb-battery-fill {
+  background: #ff3b30;
+}
+.sb-battery .sb-pct {
+  position: relative;
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.3px;
+  color: #fff;
+}
+.sb-signal {
+  height: 11px;
+}
+.sb-signal i {
+  width: 3px;
+  border-radius: 1px;
+}
+
+/* home: icons on the grid, the four everyday apps in a floating glass dock */
+.home {
+  padding: 74px 22px calc(var(--homebar-h) - 6px);
+}
+.home-grid {
+  gap: 24px 10px;
+}
+.app-tile {
+  border-radius: 14px;
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.28),
+    0 2px 8px rgba(0, 0, 0, 0.35);
+}
+.app-name {
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: -0.1px;
+}
+.home-dock-hint {
+  margin-bottom: 6px;
+  font-size: 11px;
+}
+.home-search {
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  margin: 2px 0 14px;
+  padding: 0 14px;
+  border-radius: 15px;
+  background: var(--glass);
+  box-shadow: var(--glass-edge);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  font-weight: 600;
+}
+.home-search svg {
+  width: 13px;
+  height: 13px;
+}
+.home-dock {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 0 -10px;
+  padding: 15px 14px;
+  border-radius: 36px;
+  background: var(--glass);
+  box-shadow: var(--glass-edge);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+/* dock icons have no labels (still read out, and still what a tap finds) */
+.home-dock .app-name {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.home-dock .app-icon {
+  position: relative;
+  gap: 0;
+}
+/* the app grows out of the icon you tapped */
+.app-frame.from-icon {
+  animation: app-zoom 0.36s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+@keyframes app-zoom {
+  from {
+    opacity: 0.2;
+    transform: scale(0.16);
+    border-radius: 40px;
+  }
+  60% {
+    opacity: 1;
+  }
+}
+.reduce-fx .app-frame.from-icon {
+  animation: app-in 0.2s ease both;
+}
+
+/* lock screen: the big clock, glass notifications, the flashlight and camera in the corners */
+.lock-main {
+  padding-top: 68px;
+}
+.lock-date {
+  font-size: 19px;
+  font-weight: 600;
+  opacity: 0.92;
+}
+.lock-clock {
+  margin: 0 0 22px;
+  font-family: ui-rounded, 'SF Pro Rounded', -apple-system, var(--font);
+  font-size: min(98px, 25cqw);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.25);
+}
+.lock-note {
+  padding: 11px 14px;
+  border-radius: 22px;
+  background: rgba(30, 30, 32, 0.52);
+  box-shadow: var(--glass-edge);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+.lock-hint {
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.lock-corner {
+  position: absolute;
+  bottom: 42px;
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(30, 30, 32, 0.5);
+  box-shadow: var(--glass-edge);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  color: #fff;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    transform 0.15s;
+}
+.lock-corner svg {
+  width: 23px;
+  height: 23px;
+}
+.lock-corner.left {
+  left: max(24px, 11cqw);
+}
+.lock-corner.right {
+  right: max(24px, 11cqw);
+}
+.lock-corner:active {
+  transform: scale(1.12);
+}
+.lock-corner.on {
+  background: #fff;
+  color: #000;
+}
+.lock-corner.nope {
+  animation: shake 0.35s;
+}
+/* passcode keys: glass circles with the letters under the digits */
+.keypad .key {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(120, 120, 128, 0.3);
+  box-shadow: var(--glass-edge);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  font-size: 34px;
+  line-height: 1;
+}
+.keypad .key::after {
+  content: attr(data-sub);
+  margin-top: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+.keypad .key:not([data-sub])::after {
+  content: none;
+}
+
+/* navigation bar: round glass back button, centred title; the large title on an app's first screen */
+.app-header {
+  grid-template-columns: 64px 1fr 64px;
+  height: 54px;
+  padding: 0 10px;
+  background: transparent;
+  border-bottom: 0;
+}
+.app-header .back {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--glass);
+  box-shadow: var(--glass-edge);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  color: #fff;
+}
+.app-header .back-chev {
+  width: 11px;
+  height: 18px;
+  margin-left: -2px;
+}
+.notes-app .app-header .back {
+  color: #e5b23a;
+}
+.app-title strong {
+  font-size: 17px;
+  font-weight: 600;
+}
+.app-header.large {
+  grid-template-rows: 54px auto;
+  height: auto;
+}
+.app-header.large .app-title {
+  opacity: 0;
+}
+.large-title {
+  grid-column: 1 / -1;
+  margin: 0 6px 6px;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  line-height: 1.2;
+}
+/* a conversation: the contact's picture, and the name in a small glass capsule under it */
+.app-header.with-avatar {
+  height: 92px;
+}
+.app-title-avatar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3px;
+}
+.app-header.with-avatar .app-title strong {
+  display: inline-block;
+  max-width: 100%;
+  padding: 3px 11px;
+  border-radius: 12px;
+  background: var(--glass);
+  box-shadow: var(--glass-edge);
+  font-size: 12.5px;
+}
+.app-header.with-avatar .app-title small {
+  display: block;
+  margin-top: 1px;
+}
+
+/* settings: the account card, coloured row icons, 26 pt rounded groups */
+.settings section {
+  margin: 0 16px 22px;
+  border-radius: 26px;
+  background: #1c1c1e;
+}
+.settings h3 {
+  padding: 13px 18px 5px;
+}
+.settings .row {
+  min-height: 52px;
+  padding: 9px 16px 9px 14px;
+  border-top: 0.5px solid rgba(84, 84, 88, 0.5);
+  font-size: 16px;
+}
+.settings .row > span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+}
+.settings .row > span:only-child {
+  color: inherit;
+}
+.settings .row.danger > span {
+  color: var(--red);
+}
+.settings .row.nav::after {
+  content: '';
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  margin-right: 4px;
+  border-top: 2px solid #5b5b60;
+  border-right: 2px solid #5b5b60;
+  transform: rotate(45deg);
+}
+.set-ico {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+}
+.set-ico svg {
+  width: 19px;
+  height: 19px;
+}
+.settings .set-account {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+}
+.set-monogram {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #a6a9b2, #7e828b);
+  color: #fff;
+  font-size: 27px;
+  font-weight: 600;
+}
+.set-account strong {
+  display: block;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.set-account small {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* messages: iMessage blue and grey, tails on the last bubble of a run, 읽음 under yours */
+.bubble {
+  position: relative;
+  border-radius: 19px;
+  font-size: 16px;
+}
+.bubble.them {
+  background: #262628;
+  border-bottom-left-radius: 19px;
+}
+.bubble.me {
+  background: #0a84ff;
+  border-bottom-right-radius: 19px;
+}
+.bubble.tail::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 14px;
+  height: 18px;
+  background: inherit;
+}
+.bubble.them.tail::before {
+  left: -5px;
+  clip-path: path('M9 0 C9 9 6 15 0 18 C6 18 11 16.5 14 13 L14 0 Z');
+}
+.bubble.me.tail::before {
+  right: -5px;
+  clip-path: path('M5 0 C5 9 8 15 14 18 C8 18 3 16.5 0 13 L0 0 Z');
+}
+.bubble-receipt {
+  margin: 1px 6px 4px 0;
+  text-align: right;
+  color: #8e8e93;
+  font-size: 11px;
+  font-weight: 500;
+}
+.chat-day {
+  background: none;
+  color: #8e8e93;
+  font-size: 11.5px;
+  font-weight: 500;
+}
+.composer {
+  padding: 6px 10px 8px;
+  background: transparent;
+  border-top: 0;
+}
+.composer-plus {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--glass);
+  box-shadow: var(--glass-edge);
+  color: #d6d6db;
+  font-size: 24px;
+  font-weight: 300;
+  line-height: 1;
+}
+.composer input {
+  height: 36px;
+  padding: 0 44px 0 14px;
+  border: 0;
+  background: var(--glass);
+  box-shadow: var(--glass-edge);
+}
+.composer input::placeholder {
+  color: #8e8e93;
+}
+.composer button[type='submit'] {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  margin-left: -46px;
+  background: #0a84ff;
+  font-size: 17px;
+}
+.composer button[type='submit']:disabled {
+  background: transparent;
+  color: transparent;
+}
+.choices {
+  background: rgba(22, 22, 24, 0.86);
+  border-top: 0.5px solid rgba(84, 84, 88, 0.5);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+.choices .choice {
+  border: 0;
+  border-radius: 20px;
+  background: rgba(10, 132, 255, 0.16);
+  box-shadow: inset 0 0 0 0.5px rgba(10, 132, 255, 0.5);
+  color: #dbe9ff;
+}
+.thread-row {
+  border-bottom: 0.5px solid rgba(84, 84, 88, 0.45);
+}
+
+/* banners: frosted glass, rounder, dropping in under the island */
+.banner {
+  top: max(calc(env(safe-area-inset-top) + 8px), 54px);
+  border-radius: 26px;
+  background: rgba(36, 36, 40, 0.66);
+  box-shadow:
+    var(--glass-edge),
+    0 12px 32px rgba(0, 0, 0, 0.45);
+  -webkit-backdrop-filter: blur(26px) saturate(180%);
+  backdrop-filter: blur(26px) saturate(180%);
+}
+
+/* calls: six glass buttons, the red one in the middle of the bottom row */
+.call-controls.six {
+  row-gap: 18px;
+  max-width: 292px;
+  margin-bottom: 0;
+}
+.call-controls.six .call-ctl-icon {
+  width: 72px;
+  height: 72px;
+  background: rgba(120, 120, 128, 0.3);
+  box-shadow: var(--glass-edge);
+}
+.call-controls.six .call-ctl {
+  font-size: 12.5px;
+  font-weight: 500;
+}
+.call-ctl.end {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+}
+.call-ctl.end .hangup {
+  width: 72px;
+  height: 72px;
+  margin: 0;
+}
+.callscreen > .hangup {
+  margin-top: 4px;
+}
+@container device (max-height: 720px) {
+  .call-controls.six {
+    row-gap: 12px;
+  }
+  .call-controls.six .call-ctl-icon,
+  .call-ctl.end .hangup {
+    width: 56px;
+    height: 56px;
+  }
+}
+/* incoming: labels under the two buttons; locked, it's "밀어서 응답하기" */
+.incoming-act {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+}
+.incoming-extras {
+  display: flex;
+  justify-content: space-between;
+  width: min(300px, 86%);
+  margin: auto 0 28px;
+}
+.incoming-extra {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  width: 64px;
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 500;
+}
+.incoming-extra.decline {
+  background: none;
+}
+.extra-icon {
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--glass);
+  box-shadow: var(--glass-edge);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+.extra-icon svg {
+  width: 24px !important;
+  height: 24px !important;
+}
+.incoming-extra.decline .extra-icon {
+  background: rgba(255, 59, 48, 0.92);
+}
+.incoming-extra.off {
+  opacity: 0.55;
+}
+.slide-answer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: min(300px, 86%);
+  height: 76px;
+  padding: 4px;
+  border-radius: 38px;
+  background: var(--glass);
+  box-shadow: var(--glass-edge);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+.slide-text {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding-left: 60px;
+  font-size: 18px;
+  font-weight: 500;
+  color: transparent;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.45) 0%, #fff 45%, rgba(255, 255, 255, 0.45) 60%) 0 0 / 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: slide-shine 2.4s linear infinite;
+  pointer-events: none;
+}
+@keyframes slide-shine {
+  from {
+    background-position: 120% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+.reduce-fx .slide-text {
+  animation: none;
+  color: rgba(255, 255, 255, 0.85);
+  background: none;
+}
+.accept.knob {
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  padding: 0;
+  border-radius: 50%;
+  animation: none;
+  touch-action: none;
+}
+@container device (max-height: 720px) {
+  .incoming-extras {
+    margin-bottom: 18px;
+  }
+  .slide-answer {
+    height: 66px;
+  }
+  .accept.knob {
+    width: 58px;
+    height: 58px;
+  }
+}
+/* phone app: the floating glass tab bar */
+.phone-app .tabbar {
+  align-self: center;
+  gap: 4px;
+  min-width: 228px;
+  margin: 4px 0 6px;
+  padding: 4px;
+  border: 0;
+  border-radius: 32px;
+  background: var(--glass);
+  box-shadow: var(--glass-edge);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+.phone-app .tabbar button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 108px;
+  height: 54px;
+  border-radius: 28px;
+  color: #e5e5ea;
+  font-size: 10.5px;
+  font-weight: 600;
+}
+.phone-app .tabbar button svg {
+  width: 22px;
+  height: 22px;
+}
+.phone-app .tabbar button.on {
+  background: rgba(255, 255, 255, 0.12);
+  color: #0a84ff;
+}
+/* messages list: blue unread dot, name and time on one line, two lines of preview, inset separators */
+.thread-row {
+  position: relative;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 16px 11px 6px;
+  border-bottom: 0;
+}
+.thread-row::after {
+  content: '';
+  position: absolute;
+  left: 80px;
+  right: 0;
+  bottom: 0;
+  height: 0.5px;
+  background: rgba(84, 84, 88, 0.6);
+}
+.thread-dot {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  margin-top: 19px;
+  border-radius: 50%;
+}
+.thread-dot.on {
+  background: #0a84ff;
+}
+.thread-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.thread-head strong {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 16px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.thread-head .thread-time {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #8e8e93;
+  font-size: 14px;
+}
+.thread-time svg {
+  width: 7px;
+  height: 12px;
+  color: #5b5b60;
+}
+.thread-last {
+  display: -webkit-box;
+  font-size: 14.5px;
+  line-height: 1.35;
+  white-space: normal;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-frame.from-icon {
+    animation: app-in 0.2s ease both;
+  }
+  .island.live {
+    animation: none;
+  }
+  .island-wave i {
+    animation: none;
+    height: 60%;
+  }
+  .slide-text {
+    animation: none;
+    color: rgba(255, 255, 255, 0.85);
+    background: none;
+  }
+}
+/* the notification stack scrolls above the flashlight / camera row instead of running under it */
+.lock-main {
+  padding-bottom: 104px;
+}
+.lock-notes {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: 6px;
+}
+.lock-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 44px;
+  margin: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
 }
