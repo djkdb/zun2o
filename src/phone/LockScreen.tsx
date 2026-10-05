@@ -5,6 +5,7 @@ import { emit, sfx, vibrate } from '../engine/director';
 import { logInput, setSave } from '../engine/state';
 import { lastSent, threadMeta, today } from '../content/threads';
 import { isS2, pick } from '../content/season';
+import { art } from '../art/photoArt';
 import { Avatar } from './Avatar';
 import type { ThreadId } from '../engine/types';
 
@@ -78,7 +79,13 @@ export function LockScreen() {
   return (
     <div className="lock">
       <div className={`lock-wall${wallpaper === 'booth' ? ' changed' : ''}`}>
-        {isS2() ? <SlotPhoto slot="miryeong-daughter" w={390} h={844} fill label="1994년, 도서관 앞의 엄마와 열한 살 딸." /> : wallpaper === 'booth' ? <BoothPhoto fill /> : <WallpaperPhoto />}
+        {isS2() ? (
+          <SlotPhoto slot={art('wall-s2') ? 'wall-s2' : 'miryeong-daughter'} w={390} h={844} fill label="1994년, 도서관 앞의 엄마와 열한 살 딸." />
+        ) : wallpaper === 'booth' ? (
+          art('wall-booth') ? <SlotPhoto slot="wall-booth" w={390} h={844} fill label="높은 창문에서 내려다본 밤거리. 불 켜진 공중전화 부스 안에 휴대폰을 든 사람이 서 있다." /> : <BoothPhoto fill />
+        ) : (
+          <WallpaperPhoto />
+        )}
       </div>
       {!pad ? (
         <div

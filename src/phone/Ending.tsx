@@ -121,7 +121,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
 };
 
 /** Season 2's last photographs, behind the words. */
-const S2_BG: Partial<Record<EndingId, ArtSlot>> = { 's2-daughter': 'reading-empty', 's2-instead': 'booth-shelf', 's2-home': art('s2-ending-home') ? 's2-ending-home' : 'ending-release' };
+const S2_BG: Partial<Record<EndingId, ArtSlot>> = { 's2-daughter': 'reading-empty', 's2-instead': art('s2-booth') ? 's2-booth' : 'booth-shelf', 's2-home': art('s2-ending-home') ? 's2-ending-home' : 'ending-release' };
 
 /** The night as you played it: who you kept out, whether she has your name. */
 function endingFor(id: EndingId, save: Save): EndingDef {

@@ -7329,3 +7329,23 @@ body,
   transform: translateX(-50%);
   white-space: nowrap;
 }
+/* app icons: one full-bleed drawing per tile, clipped to the iOS corner (≈ 22.4 % of the side) */
+.app-tile svg.icon-full,
+.banner-icon svg.icon-full,
+.avatar-badge svg.icon-full {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  clip-path: inset(0 round 22.4%);
+}
+.banner-icon {
+  position: relative;
+  overflow: hidden;
+}
+.avatar-badge {
+  overflow: hidden;
+}
+.app-tile {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}

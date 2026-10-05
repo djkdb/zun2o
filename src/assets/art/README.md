@@ -26,3 +26,5 @@ reading-empty ↔ reading-figure)은 두 칸의 어긋남을 계산해 같은 �
 
 `life-busstop-ghost`: `life-busstop`과 같은 사진에서 왼쪽 정류장 유리에 희미한 여자 형체만 더한 변형(제작자 생성, 원본 크기로 맞춤).
 4장 이전에 그 사진을 본 적이 있으면, 4장에 다시 열 때 이 사진으로 바뀐다.
+
+해상도 개선(선택): `wall-lock` · `wall-home` · `wall-s2` · `wall-booth`는 9:19.5 세로 배경화면 전용(없으면 기존 사진을 잘라 씀), `s2-booth`는 시즌 2의 1년 뒤 부스. 프롬프트는 ART_PROMPTS.md "7차".

@@ -139,7 +139,7 @@ export function ColdOpen() {
   return (
     <div className={`coldopen co-step-${step}`} onClick={tapOn ? () => setStep(step === 1 ? 2 : 4) : undefined}>
       <div className="coldopen-scene" aria-hidden="true">
-        {art('wallpaper') && <img className={`co-img${step === 2 ? ' on' : ''}`} src={art('wallpaper')} alt="" draggable={false} />}
+        {(art('wall-lock') ?? art('wallpaper')) && <img className={`co-img${step === 2 ? ' on' : ''}`} src={art('wall-lock') ?? art('wallpaper')} alt="" draggable={false} />}
         {useClip ? (
           <video
             key={s2 ? 's2' : 's1'}

@@ -83,6 +83,7 @@ export function SlotPhoto({
 /** Lock-screen wallpaper: the Annex at night, with the channel's REC overlay. */
 export const WallpaperPhoto = memo(function WallpaperPhoto() {
   const id = useSvgId();
+  if (art('wall-lock')) return <SlotPhoto slot="wall-lock" w={390} h={844} fill label="밤의 해원고등학교." />;
   if (art('wallpaper')) return <SlotPhoto slot="wallpaper" w={390} h={844} fill label="밤의 해원고등학교." />;
   return (
     <svg viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true">

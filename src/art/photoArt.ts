@@ -60,7 +60,13 @@ export type ArtSlot =
   | 's2-notebook'
   | 's2-sisters'
   | 's2-window'
-  | 'avatar-soyeon';
+  | 'avatar-soyeon'
+  | 's2-booth'
+  // full-resolution portrait wallpapers (fall back to the cropped photos)
+  | 'wall-lock'
+  | 'wall-home'
+  | 'wall-booth'
+  | 'wall-s2';
 
 const FILES = import.meta.glob('../assets/art/*.{jpg,jpeg,png,webp,avif}', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 

@@ -70,11 +70,11 @@ export function HomeScreen({ stripped = 0 }: { stripped?: number }) {
       {/* 채원's own wallpaper — until the phone picks another one for you */}
       <div className="home-wall" aria-hidden="true">
         {isS2() ? (
-          art('miryeong-daughter') && <img src={art('miryeong-daughter')} alt="" draggable={false} />
+          (art('wall-s2') ?? art('miryeong-daughter')) && <img src={art('wall-s2') ?? art('miryeong-daughter')} alt="" draggable={false} />
         ) : wallpaper === 'booth' ? (
-          <BoothPhoto fill />
+          art('wall-booth') ? <img src={art('wall-booth')} alt="" draggable={false} /> : <BoothPhoto fill />
         ) : (
-          (art('life-busstop') ?? art('avatar-self')) && <img src={art('life-busstop') ?? art('avatar-self')} alt="" draggable={false} />
+          (art('wall-home') ?? art('life-busstop') ?? art('avatar-self')) && <img src={art('wall-home') ?? art('life-busstop') ?? art('avatar-self')} alt="" draggable={false} />
         )}
       </div>
       {stripped === 0 && <CalendarWidget />}

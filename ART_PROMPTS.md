@@ -455,3 +455,61 @@ slowly lifts her head toward a wall clock off-screen, then looks back out of the
 camera. Quiet, still, realistic, grainy phone video. Audio: a wall clock ticking, distant traffic. No music,
 no voices.
 ```
+
+## 7차 — 해상도 개선 & 새 장면 (단일 이미지로 뽑기)
+
+예전 사진 상당수는 여러 장을 한 시트로 뽑아 잘라 쓴 것이라 한 장이 가로 540~860px입니다. 아이폰 화면(3배율)을 꽉 채우려면 1170px 이상이 필요합니다. 특히 **배경화면은 9:19.5 세로 화면에 맞추려고 3:4나 정사각 사진을 2.5~3.5배 확대해서** 흐립니다. 아래는 **한 번에 한 장씩** 세로로 뽑으세요.
+
+새 파일 이름으로 넣으면 그 파일이 우선 쓰이고, 없으면 지금 사진을 그대로 씁니다. 기존 파일은 지우지 마세요(갤러리 사진은 그대로 씁니다).
+
+| 우선 | 파일 이름 | 비율 · 크기 | 대신하는 것 | 참고 이미지 첨부 |
+|---|---|---|---|---|
+| 1 | `wall-lock` | 9:19.5 세로, 1170×2532 이상 | 시즌 1 잠금화면 · 첫 화면 (`wallpaper` 706px) | `wallpaper.webp` |
+| 1 | `wall-home` | 9:19.5 세로 | 시즌 1 홈 화면 (`life-busstop` 537px) | `life-busstop.webp` |
+| 1 | `wall-s2` | 9:19.5 세로 | 시즌 2 잠금·홈 화면 (`miryeong-daughter` 537px) | `miryeong-daughter.webp`, `miryeong-id.webp` |
+| 2 | `wall-booth` | 9:19.5 세로 | 3장 재부팅 뒤 바뀐 배경화면 (가로 `booth` 사진을 세로로 잘라 씀) | `booth.webp` |
+| 2 | `s2-booth` | 3:2 가로, 1536×1024 이상 | 시즌 2 사진 22:55 "여기 두고 간다" · 엔딩 5 배경 (지금은 시즌 1 부스 사진 재사용) | `booth-shelf.webp` |
+
+### wall-lock
+```
+Vertical 9:19.5 phone wallpaper, single image, full frame. A closed-down 1990s Korean concrete high school at night,
+seen from across the street through a broken chain-link gate; three storeys, rows of dark windows, one window on the
+third floor faintly lit. A single public phone booth glows by the front gate at the bottom of the frame. Keep the top
+40% mostly dark sky and building (the clock sits there). Same place and mood as the attached image.
+```
+
+### wall-home
+```
+Vertical 9:19.5 phone wallpaper, single image. A young Korean woman (early 20s, the woman in the attached photo) and a
+young man at a bus stop at golden-hour sunset, both making V signs, candid and happy, slightly blurry phone snapshot,
+warm colours. Faces in the middle third of the frame; the bottom quarter is plain pavement (the app dock sits there).
+Same two people, same clothes and place as the attached image.
+```
+(공통 스타일의 "night, harsh flash"는 빼세요. 채원의 평범한 낮 사진입니다.)
+
+### wall-s2
+```
+Vertical 9:19.5 phone wallpaper, single image. March 1994: a woman of 41 (the woman in the attached ID photo: short
+permed bob, thin round glasses, beige knit cardigan over a floral blouse) holding hands with her 11-year-old daughter
+in front of a small public library, early spring, soft overcast light, faded 1990s film-photo colours, slight grain.
+Faces in the middle third; keep the top 40% calm (building and sky) for the clock.
+```
+(공통 스타일 대신 `1990s film photograph, faded colours, slight grain`)
+
+### wall-booth
+```
+Vertical 9:19.5 phone wallpaper, single image. Looking straight down from a third-floor window of an abandoned school
+at night onto an empty street: a single lit public phone booth, and inside it a person holding a phone, seen from
+above, face not visible. Wet asphalt, one street lamp, everything else dark. The booth sits in the lower-middle of the
+frame. Same booth and street as the attached image.
+```
+
+### s2-booth
+```
+Landscape 3:2 photo, single image. The same public phone booth as the attached image, one year later, at night:
+the small metal shelf inside is empty and clean. A sun-faded "missing person" flyer taped to the inside of the glass
+(its photo and text unreadable, washed out), a small bunch of dried chrysanthemums tied to the door handle with
+string, rain spots on the glass, one street lamp. Nobody in the frame.
+```
+
+**같은 그림의 짝(귀신 있음·없음)을 다시 뽑을 때**(`stairs`↔`stairs-figure`, `reading-empty`↔`reading-figure`, `life-busstop`↔`life-busstop-ghost`): 먼저 없는 쪽을 뽑고, 그 결과를 첨부해 "같은 사진에서 ○○만 추가해 줘, 나머지는 한 픽셀도 바꾸지 말 것"으로 편집하세요. 구도가 어긋나면 게임에서 바뀌는 순간이 티 납니다.

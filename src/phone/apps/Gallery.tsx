@@ -155,7 +155,8 @@ export function PhotoView({ id, brightness = 0, changed = false }: { id: string;
     case 's2-sisters':
       return <SlotPhoto slot="s2-sisters" w={640} h={585} label="봄볕 아래 나란히 선 두 여자. 왼쪽은 마흔 남짓, 오른쪽은 조금 더 나이 들어 보인다." />;
     case 's2-booth':
-      return <BoothShelfPhoto />;
+      // a year on: the same shelf, emptied, a flyer on the glass — where 소연 is about to leave her phone
+      return art('s2-booth') ? <SlotPhoto slot="s2-booth" w={640} h={420} stamp="22:55" label="1년 뒤의 공중전화 부스. 빈 선반, 유리에 빛바랜 전단지, 문손잡이에 묶인 마른 국화." /> : <BoothShelfPhoto />;
     case 's2-n1':
       return <NotebookPage page={1} />;
     case 's2-n2':
