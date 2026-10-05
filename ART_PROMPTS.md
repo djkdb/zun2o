@@ -464,7 +464,7 @@ no voices.
 
 | 우선 | 파일 이름 | 비율 · 크기 | 대신하는 것 | 참고 이미지 첨부 |
 |---|---|---|---|---|
-| 1 | `wall-lock` | 9:19.5 세로, 1170×2532 이상 | 시즌 1 잠금화면 · 첫 화면 (`wallpaper` 706px) | `wallpaper.webp` |
+| 1 | `wall-lock` | 세로 (ChatGPT는 2:3 1024×1536까지 — 가운데만 9:19.5로 잘려 쓰임) | 시즌 1 잠금화면 · 첫 화면 (`wallpaper` 706px) | `wallpaper.webp` |
 | 1 | `wall-home` | 9:19.5 세로 | 시즌 1 홈 화면 (`life-busstop` 537px) | `life-busstop.webp` |
 | 1 | `wall-s2` | 9:19.5 세로 | 시즌 2 잠금·홈 화면 (`miryeong-daughter` 537px) | `miryeong-daughter.webp`, `miryeong-id.webp` |
 | 2 | `wall-booth` | 9:19.5 세로 | 3장 재부팅 뒤 바뀐 배경화면 (가로 `booth` 사진을 세로로 잘라 씀) | `booth.webp` |
@@ -472,7 +472,7 @@ no voices.
 
 ### wall-lock
 ```
-Vertical 9:19.5 phone wallpaper, single image, full frame. A closed-down 1990s Korean concrete high school at night,
+Tall portrait image, 2:3 (1024x1536), single image, full frame. It will be cropped to a 9:19.5 phone screen, so keep everything important inside the central 45% of the width. A closed-down 1990s Korean concrete high school at night,
 seen from across the street through a broken chain-link gate; three storeys, rows of dark windows, one window on the
 third floor faintly lit. A single public phone booth glows by the front gate at the bottom of the frame. Keep the top
 40% mostly dark sky and building (the clock sits there). Same place and mood as the attached image.
@@ -480,7 +480,7 @@ third floor faintly lit. A single public phone booth glows by the front gate at 
 
 ### wall-home
 ```
-Vertical 9:19.5 phone wallpaper, single image. A young Korean woman (early 20s, the woman in the attached photo) and a
+Tall portrait image, 2:3 (1024x1536), single image, full frame. It will be cropped to a 9:19.5 phone screen, so keep everything important inside the central 45% of the width. A young Korean woman (early 20s, the woman in the attached photo) and a
 young man at a bus stop at golden-hour sunset, both making V signs, candid and happy, slightly blurry phone snapshot,
 warm colours. Faces in the middle third of the frame; the bottom quarter is plain pavement (the app dock sits there).
 Same two people, same clothes and place as the attached image.
@@ -489,7 +489,7 @@ Same two people, same clothes and place as the attached image.
 
 ### wall-s2
 ```
-Vertical 9:19.5 phone wallpaper, single image. March 1994: a woman of 41 (the woman in the attached ID photo: short
+Tall portrait image, 2:3 (1024x1536), single image, full frame. It will be cropped to a 9:19.5 phone screen, so keep everything important inside the central 45% of the width. March 1994: a woman of 41 (the woman in the attached ID photo: short
 permed bob, thin round glasses, beige knit cardigan over a floral blouse) holding hands with her 11-year-old daughter
 in front of a small public library, early spring, soft overcast light, faded 1990s film-photo colours, slight grain.
 Faces in the middle third; keep the top 40% calm (building and sky) for the clock.
@@ -498,7 +498,7 @@ Faces in the middle third; keep the top 40% calm (building and sky) for the cloc
 
 ### wall-booth
 ```
-Vertical 9:19.5 phone wallpaper, single image. Looking straight down from a third-floor window of an abandoned school
+Tall portrait image, 2:3 (1024x1536), single image, full frame. It will be cropped to a 9:19.5 phone screen, so keep everything important inside the central 45% of the width. Looking straight down from a third-floor window of an abandoned school
 at night onto an empty street: a single lit public phone booth, and inside it a person holding a phone, seen from
 above, face not visible. Wet asphalt, one street lamp, everything else dark. The booth sits in the lower-middle of the
 frame. Same booth and street as the attached image.
@@ -506,7 +506,7 @@ frame. Same booth and street as the attached image.
 
 ### s2-booth
 ```
-Landscape 3:2 photo, single image. The same public phone booth as the attached image, one year later, at night:
+Landscape 3:2 photo (1536x1024), single image. The same public phone booth as the attached image, one year later, at night:
 the small metal shelf inside is empty and clean. A sun-faded "missing person" flyer taped to the inside of the glass
 (its photo and text unreadable, washed out), a small bunch of dried chrysanthemums tied to the door handle with
 string, rain spots on the glass, one street lamp. Nobody in the frame.
