@@ -7403,3 +7403,11 @@ body,
   color: #000;
   font-weight: 600;
 }
+/* label + value rows: the label never breaks letter by letter; the value wraps instead */
+.settings .row > span:first-child:has(+ span) {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+.settings .row > span:first-child + span {
+  min-width: 0;
+}
