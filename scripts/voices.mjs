@@ -372,6 +372,8 @@ function score(l, a, heard) {
 }
 
 async function transcribe(file) {
+  // the check needs ElevenLabs speech-to-text (free plan is enough); without it only pace/clipping are scored
+  if (!process.env.ELEVEN_API_KEY) return '';
   const form = new FormData();
   form.append('model_id', 'scribe_v1');
   form.append('language_code', 'kor');
@@ -390,12 +392,60 @@ function voiceIds() {
   };
 }
 
+// Typecast (Korean-native voices, emotion presets + context-aware "smart" emotion).
+// DIRECTION's ElevenLabs tags map onto its seven presets.
+function tcPreset(l) {
+  const d = DIRECTION[l.say] ?? '';
+  if (/whisper/.test(d)) return 'whisper';
+  if (/crying|pleading|tired|sighs|shaky|scared|terrified/.test(d)) return 'sad';
+  if (/urgent|panicked|desperate|frustrated|fast|anxious|nervous/.test(d)) return 'toneup';
+  if (/cheerful/.test(d)) return 'happy';
+  if (/calm|softly|slowly|monotone|cold|quietly/.test(d)) return 'tonedown';
+  return 'normal';
+}
+/** The lines around this one in the same scene, so "smart" emotion knows what is going on. */
+function context(l) {
+  const i = todo.indexOf(l);
+  const near = (j) => (todo[j] && todo[j].where === l.where ? todo[j].say : undefined);
+  return { previous_text: near(i - 1), next_text: near(i + 1) };
+}
+async function typecast(l, t, file) {
+  const voice = process.env[`TYPECAST_VOICE_${l.voice.toUpperCase()}`] ?? (l.voice === 'mother' ? process.env.TYPECAST_VOICE_ENTITY : undefined);
+  const style = process.env.TYPECAST_STYLE; // smart | preset | (unset: take 1 smart, takes 2–3 preset)
+  const smart = style ? style === 'smart' : t === 1;
+  const prompt = smart
+    ? { emotion_type: 'smart', ...Object.fromEntries(Object.entries(context(l)).filter(([, v]) => v)) }
+    : { emotion_type: 'preset', emotion_preset: tcPreset(l), emotion_intensity: t === 3 ? 1.6 : 1.2 };
+  for (;;) {
+    const res = await fetch('https://api.typecast.ai/v1/text-to-speech', {
+      method: 'POST',
+      headers: { 'X-API-KEY': process.env.TYPECAST_API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'ssfm-v30', voice_id: voice, text: sayKo(l.say), language: 'kor', prompt, seed: 100 + t * 7 + Number(l.n), output: { audio_format: 'mp3', target_lufs: -16 } }),
+    });
+    if (res.status === 429) {
+      await new Promise((r) => setTimeout(r, 4000));
+      continue;
+    }
+    if (!res.ok) throw new Error(`Typecast ${res.status}: ${(await res.text()).slice(0, 300)} (line ${l.n})`);
+    writeFileSync(file, Buffer.from(await res.arrayBuffer()));
+    await new Promise((r) => setTimeout(r, 1200));
+    return smart ? 'smart' : `${prompt.emotion_preset} ${prompt.emotion_intensity}`;
+  }
+}
+
 async function auto() {
-  xiKey();
-  const voices = voiceIds();
+  const tc = process.env.TTS === 'typecast';
+  if (tc && !process.env.TYPECAST_API_KEY) {
+    console.error('TYPECAST_API_KEY is not set.');
+    process.exit(1);
+  }
+  if (!tc) xiKey();
+  const voices = tc
+    ? Object.fromEntries(Object.keys(ROLES).map((k) => [k, process.env[`TYPECAST_VOICE_${k.toUpperCase()}`] ?? (k === 'mother' ? process.env.TYPECAST_VOICE_ENTITY : undefined)]))
+    : voiceIds();
   const model = process.env.ELEVEN_MODEL ?? 'eleven_v3';
-  const takes = Number(process.env.ELEVEN_TAKES ?? 3);
-  const v3 = model === 'eleven_v3';
+  const takes = Number(process.env.TAKES ?? process.env.ELEVEN_TAKES ?? 3);
+  const v3 = !tc && model === 'eleven_v3';
   mkdirSync(TAKES, { recursive: true });
   mkdirSync(RAW, { recursive: true });
   const reportFile = `${TAKES}/report.json`;
@@ -416,11 +466,14 @@ async function auto() {
           console.log(`would ask for ${file}  [${l.voice}] ${text}`);
           continue;
         }
-        // v3 takes only 0 / 0.5 / 1 for stability: one braver take among steadier ones
-        const stability = v3 ? (t === 2 ? 0 : Number(process.env.ELEVEN_STABILITY ?? 0.5)) : Number(process.env.ELEVEN_STABILITY ?? 0.45);
-        const body = { text, model_id: model, language_code: 'ko', seed: 1000 + t * 17 + Number(l.n), voice_settings: { stability, similarity_boost: 0.8 } };
-        const res = await xi(`/v1/text-to-speech/${voices[l.voice]}?output_format=mp3_44100_128`, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'audio/mpeg' }, body: JSON.stringify(body) });
-        writeFileSync(file, Buffer.from(await res.arrayBuffer()));
+        if (tc) await typecast(l, t, file);
+        else {
+          // v3 takes only 0 / 0.5 / 1 for stability: one braver take among steadier ones
+          const stability = v3 ? (t === 2 ? 0 : Number(process.env.ELEVEN_STABILITY ?? 0.5)) : Number(process.env.ELEVEN_STABILITY ?? 0.45);
+          const body = { text, model_id: model, language_code: 'ko', seed: 1000 + t * 17 + Number(l.n), voice_settings: { stability, similarity_boost: 0.8 } };
+          const res = await xi(`/v1/text-to-speech/${voices[l.voice]}?output_format=mp3_44100_128`, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'audio/mpeg' }, body: JSON.stringify(body) });
+          writeFileSync(file, Buffer.from(await res.arrayBuffer()));
+        }
       }
       if (process.env.DRY) continue;
       const a = analyse(file, l);

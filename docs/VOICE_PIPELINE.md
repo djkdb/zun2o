@@ -29,3 +29,14 @@
 ## 비용
 
 대사 55줄(시즌 1 32줄, 시즌 2 23줄)을 3번씩 뽑으면 음성 생성 165번과 받아쓰기 165번입니다. 시즌 2만 하면 69번씩입니다.
+
+## 타입캐스트 (한국어 원어민 목소리)
+
+ElevenLabs 무료 플랜은 한국어 라이브러리 목소리와 Voice Design을 API로 쓸 수 없습니다. 그래서 한국어는 타입캐스트(SSFM 3.0)로 뽑습니다. 무료 API는 월 15,000자이고, 상업적으로 쓸 수 없으며 출처 표기가 필요합니다.
+
+- 키는 환경 변수 `TYPECAST_API_KEY`에 넣고, 역할별 목소리는 `TYPECAST_VOICE_MALE` · `_FEMALE` · `_ENTITY` · `_MOTHER` · `_SOYEON`(`tc_…`)에 넣습니다. `_MOTHER`를 비우면 `_ENTITY`를 씁니다.
+- `TTS=typecast npm run voices:auto`: 대사마다 3번 뽑습니다.
+  - 1번째는 앞뒤 대사를 함께 보내 문맥으로 감정을 정하는 smart 감정입니다.
+  - 2·3번째는 연기 지시 태그를 프리셋에 맞춰 강도 1.2와 1.6으로 뽑습니다. 프리셋은 whisper, sad, toneup, happy, tonedown, normal 중 하나입니다.
+  - `TYPECAST_STYLE=smart` 또는 `preset`으로 하나만 쓰게 할 수 있습니다.
+- 채점과 듣기 페이지, `voices:pick`은 ElevenLabs와 같습니다. 받아쓰기 채점에는 `ELEVEN_API_KEY`가 있어야 하며, 무료 플랜으로 충분합니다.
