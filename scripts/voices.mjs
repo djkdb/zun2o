@@ -581,6 +581,67 @@ function script() {
  *   npm run voices:split -- path/to/dohyun.mp3 male      (one character's lines, in order)
  *   npm run voices:split -- path/to/miso.mp3 entity,mother
  */
+/** Word-level transcript of the whole file, aligned (edit distance on syllables) with the script: one [start, end] per line. */
+async function alignByWords(file, lines, dur) {
+  if (!process.env.ELEVEN_API_KEY) return null;
+  const form = new FormData();
+  form.append('model_id', 'scribe_v1');
+  form.append('language_code', 'kor');
+  form.append('file', new Blob([readFileSync(file)], { type: 'audio/mpeg' }), 'all.mp3');
+  const words = ((await (await xi('/v1/speech-to-text', { method: 'POST', body: form })).json()).words ?? []).filter((w) => w.type === 'word');
+  // heard syllables, each knowing its word; expected syllables, each knowing its line
+  const H = [];
+  const hw = [];
+  words.forEach((w, i) => [...syllables(w.text)].forEach((c) => (H.push(c), hw.push(i))));
+  const E = [];
+  const el = [];
+  lines.forEach((l, i) => [...syllables(l.say)].forEach((c) => (E.push(c), el.push(i))));
+  const n = E.length;
+  const m = H.length;
+  if (!n || !m) return null;
+  const W = m + 1;
+  const cost = new Uint32Array((n + 1) * W);
+  const move = new Uint8Array((n + 1) * W); // 1 diag, 2 up (skip expected), 3 left (skip heard)
+  for (let j = 1; j <= m; j++) (cost[j] = j), (move[j] = 3);
+  for (let i = 1; i <= n; i++) {
+    cost[i * W] = i;
+    move[i * W] = 2;
+    for (let j = 1; j <= m; j++) {
+      const d = cost[(i - 1) * W + j - 1] + (E[i - 1] === H[j - 1] ? 0 : 1);
+      const u = cost[(i - 1) * W + j] + 1;
+      const lft = cost[i * W + j - 1] + 1;
+      const best = Math.min(d, u, lft);
+      cost[i * W + j] = best;
+      move[i * W + j] = best === d ? 1 : best === u ? 2 : 3;
+    }
+  }
+  // walk back: for each expected syllable, the heard syllable it lines up with (or the nearest one before)
+  const at = new Int32Array(n).fill(-1);
+  for (let i = n, j = m; i > 0 || j > 0; ) {
+    const mv = move[i * W + j];
+    if (mv === 1) (at[i - 1] = j - 1), i--, j--;
+    else if (mv === 2) (at[i - 1] = j - 1), i--;
+    else j--;
+  }
+  const firstWord = new Array(lines.length).fill(null);
+  const lastWord = new Array(lines.length).fill(null);
+  for (let k = 0; k < n; k++) {
+    if (at[k] < 0) continue;
+    const w = hw[at[k]];
+    const li = el[k];
+    if (firstWord[li] === null) firstWord[li] = w;
+    lastWord[li] = w;
+  }
+  return lines.map((_, i) => {
+    const a = firstWord[i] === null ? 0 : words[firstWord[i]].start;
+    const b = lastWord[i] === null ? a : words[lastWord[i]].end;
+    // cut halfway into the gaps on either side
+    const prevEnd = i && lastWord[i - 1] !== null ? words[lastWord[i - 1]].end : 0;
+    const nextStart = i < lines.length - 1 && firstWord[i + 1] !== null ? words[firstWord[i + 1]].start : dur;
+    return [Math.max(0, (prevEnd + a) / 2, a - 0.25), Math.min(dur, (b + nextStart) / 2, b + 0.35)];
+  });
+}
+
 async function split() {
   const file = process.argv[3];
   const arg = process.argv[4] ?? '1';
@@ -604,8 +665,15 @@ async function split() {
   });
   if (dur - t > 0.25) pieces.push([Math.max(0, t - 0.08), dur]);
   const lines = todo.filter((l) => (voices ? voices.includes(l.voice) : Number(l.n) >= from));
-  console.log(`${pieces.length} pieces for ${lines.length} lines (${voices ? voices.join('+') : `from ${String(from).padStart(2, '0')}`})`);
-  if (pieces.length !== lines.length) console.log('⚠ counts differ — adjust SPLIT_GAP (seconds) / SPLIT_DB, or check the recording order');
+  console.log(`${pieces.length} pauses-split pieces for ${lines.length} lines (${voices ? voices.join('+') : `from ${String(from).padStart(2, '0')}`})`);
+  if (pieces.length !== lines.length) {
+    // short pauses (an editor's 0.3 s): align the transcript's words with the script instead
+    const aligned = await alignByWords(file, lines, dur);
+    if (aligned) {
+      pieces.splice(0, pieces.length, ...aligned);
+      console.log('split by aligning the transcript with the script');
+    } else console.log('⚠ counts differ — adjust SPLIT_GAP (seconds) / SPLIT_DB, or set ELEVEN_API_KEY to align by words');
+  }
   mkdirSync(RAW, { recursive: true });
   for (let i = 0; i < Math.min(pieces.length, lines.length); i++) {
     const l = lines[i];
