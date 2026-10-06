@@ -347,9 +347,10 @@ function only(l) {
 }
 
 function analyse(file, l) {
-  const dur = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file]).toString().trim());
-  // ffmpeg writes its analysis to stderr
+  // ffmpeg writes its analysis (and the duration) to stderr; no ffprobe needed
   const res = spawnSync('ffmpeg', ['-hide_banner', '-nostats', '-i', file, '-af', 'volumedetect,silencedetect=noise=-38dB:d=0.9', '-f', 'null', '-']).stderr.toString();
+  const [, hh, mm, ss] = /Duration: (\d+):(\d+):([\d.]+)/.exec(res) ?? [0, 0, 0, 0];
+  const dur = Number(hh) * 3600 + Number(mm) * 60 + Number(ss);
   const peak = Number(/max_volume: (-?[\d.]+) dB/.exec(res)?.[1] ?? -99);
   const starts = [...res.matchAll(/silence_start: ([\d.]+)/g)].map((m) => Number(m[1]));
   // a pause in the middle (not the lead-in or the tail) where the line has no "…" to justify it
@@ -478,8 +479,47 @@ function pick() {
   fx();
 }
 
+// ─── a human performance instead: the recording script ─────────────────────
+// TTS keeps the calm, flat lines (her). Anything that has to cry, panic or whisper in
+// fear is acted by a person and only re-voiced (speech-to-speech), so the breath stays real.
+const KO_TAG = {
+  whispers: '속삭이듯', slowly: '천천히', calm: '차분하게', softly: '작게', anxious: '불안하게', 'breathing heavily': '숨 가쁘게',
+  desperate: '절박하게', nervous: '긴장해서', fast: '빠르게', 'shaky voice': '목소리 떨리게', frustrated: '답답하게', quietly: '낮게',
+  urgent: '다급하게', panicked: '공황 상태로', cold: '차갑게', terrified: '겁에 질려', warm: '따뜻하게', tired: '지쳐서', worried: '걱정하며',
+  concerned: '걱정하며', scared: '무서워하며', pleading: '애원하듯', shocked: '충격받은 듯', crying: '울먹이며', cheerful: '밝게',
+  monotone: '감정 없이 단조롭게', sighs: '한숨 섞어', gasps: '숨을 훅 들이켜며',
+};
+const HOT = /crying|terrified|panicked|desperate|shaky|anxious|scared|gasps|pleading|frustrated|nervous|urgent/;
+function script() {
+  const rows = todo.map((l) => {
+    const tags = [...(DIRECTION[l.say] ?? '').matchAll(/\[([^\]]+)\]/g)].map((m) => KO_TAG[m[1]] ?? m[1]);
+    const human = l.voice === 'male' || l.voice === 'female' || l.voice === 'soyeon' || HOT.test(DIRECTION[l.say] ?? '');
+    return { ...l, how: tags.join(', ') || '자연스럽게', human };
+  });
+  const people = rows.filter((r) => r.human);
+  const where = { call: '전화 통화', memo: '폰 녹음', tape: '1994년 자동응답기 테이프', video: '영상통화' };
+  writeFileSync(
+    'docs/RECORDING_SCRIPT.md',
+    `# 녹음 대본 (사람 연기 → 목소리 변환)\n\n\`npm run voices:script\`가 만듭니다. 번호는 docs/VOICE_LINES.md와 같습니다.\n\n` +
+      `**사람이 연기할 줄 ${people.length}개** — 울음·공황·겁에 질린 속삭임, 그리고 도현·채원·소연의 모든 대사. 나머지 ${rows.length - people.length}줄(서미령·엄마의 차분한 대사)은 TTS로 둡니다. 차분하고 단조로운 귀신 목소리는 TTS가 오히려 잘 맞습니다.\n\n` +
+      `## 녹음하는 법\n` +
+      `- 조용하고 울리지 않는 방(옷장 앞, 이불 속도 좋음). 폰 음성 메모 앱, 입에서 한 뼘.\n` +
+      `- **한 줄을 2~3번씩**, 줄 앞에 번호를 말하고("삼십삼 번") 2초 쉬고 대사. 한 파일에 여러 줄을 넣어도 됩니다. 제가 받아쓰기로 번호를 찾아 자릅니다.\n` +
+      `- 성별·나이는 신경 쓰지 마세요. 음색은 변환이 바꿉니다. 바뀌지 않는 건 **숨, 떨림, 멈춤, 감정**입니다. 그것만 진짜로.\n` +
+      `- 도현(20대 남자) 줄은 남자가 녹음하면 변환이 더 자연스럽습니다.\n` +
+      `- 원본 녹음은 저장소에 올리지 않습니다(voice-raw는 커밋 제외). 변환된 소리만 게임에 들어가고, 게임은 여전히 마이크를 쓰지 않습니다.\n\n` +
+      `| # | 인물 | 장면 | 어떻게 | 대사 |\n|---|---|---|---|---|\n` +
+      people.map((r) => `| ${r.n} | ${WHO[r.voice]} | ${where[r.where]} | ${r.how} | ${r.say} |`).join('\n') +
+      `\n\n## TTS로 두는 줄\n\n| # | 인물 | 어떻게 | 대사 |\n|---|---|---|---|\n` +
+      rows.filter((r) => !r.human).map((r) => `| ${r.n} | ${WHO[r.voice]} | ${r.how} | ${r.say} |`).join('\n') +
+      '\n',
+  );
+  console.log(`${people.length} lines to act, ${rows.length - people.length} stay TTS → docs/RECORDING_SCRIPT.md`);
+}
+
 const mode = process.argv[2] ?? 'fish';
 if (mode === 'list') list();
+else if (mode === 'script') script();
 else if (mode === 'fx') fx();
 else if (mode === 'eleven') await eleven();
 else if (mode === 'audition') await audition();
