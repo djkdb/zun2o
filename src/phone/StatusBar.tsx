@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useGame } from '../hooks/useGame';
 import { setRt } from '../engine/state';
 
@@ -10,9 +10,23 @@ export function lineTime(clock: string): string {
   return `${Math.floor(mins / 60)}:${String(mins % 60).padStart(2, '0')}:${ss}`;
 }
 
-/** On a real iPhone (a notch or Dynamic Island in the safe area) a drawn island would sit under the real one. */
-export function hasNotch(): boolean {
-  return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sat')) > 12;
+/**
+ * The drawn Dynamic Island belongs to the desktop phone frame only. On a real phone the
+ * hardware island is already there — above the browser bar, or in the safe area when
+ * installed — and a second one would just sit on top of the screen's own content.
+ */
+const FRAME = '(min-width: 700px) and (min-height: 600px)';
+function islandShown(): boolean {
+  const notch = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sat')) > 12;
+  return !notch && window.matchMedia(FRAME).matches;
+}
+function onFrameChange(cb: () => void) {
+  const mq = window.matchMedia(FRAME);
+  mq.addEventListener('change', cb);
+  return () => mq.removeEventListener('change', cb);
+}
+export function useIsland(): boolean {
+  return useSyncExternalStore(onFrameChange, islandShown, () => false);
 }
 
 /**
@@ -28,7 +42,8 @@ export function Island() {
     const iv = setInterval(() => tick((n) => n + 1), 1000);
     return () => clearInterval(iv);
   }, [openLine]);
-  if (hasNotch()) return null;
+  const shown = useIsland();
+  if (!shown) return null;
   if (!openLine) return <span className="island" aria-hidden="true" />;
   return (
     <button type="button" className="island live sb-call" onClick={() => setRt({ openLine: true })} aria-label={`통화 중 0200, ${lineTime(clock)}`}>
@@ -64,7 +79,7 @@ export function StatusBar({ dark = false, lock = false }: { dark?: boolean; lock
   const low = battery <= 20;
   // Signal fades the closer it gets to 02:00; in chapter 4 there is none.
   const bars = chapter >= 4 ? 0 : chapter >= 3 ? 1 : 2;
-  const notch = hasNotch();
+  const notch = !useIsland();
   return (
     // (on the lock screen the big clock is the time: the bar leaves its corner empty, like a real one)
     <div className={`statusbar${dark ? ' dark' : ''}${lock ? ' on-lock' : ''}`}>

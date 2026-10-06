@@ -7349,3 +7349,10 @@ body,
 .app-tile {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
+/* the drawn island is only in the desktop frame: full-screen call screens start below it there */
+@media (min-width: 700px) and (min-height: 600px) {
+  .device .callscreen,
+  .device .incoming {
+    padding-top: max(62px, calc(env(safe-area-inset-top) + 24px));
+  }
+}
