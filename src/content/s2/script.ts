@@ -233,7 +233,7 @@ export const BEATS_S2: Beat[] = [
       { t: 'notify', app: 'index', title: '보관소 관리', body: '관리자 한소연 · 다시 로그인하세요' },
       { t: 'wait', ms: 1800 },
       { t: 'msg', th: 'unknown', text: '소연 씨가 왜 폰 두고 갔는지 알아요?', typing: 1300 },
-      { t: 'msg', th: 'unknown', text: '자기가 못 하는 거 시키려고요.', typing: 1100 },
+      { t: 'msg', th: 'unknown', text: '소연 씨가 못 하는 걸 그쪽한테 시키려고요.', typing: 1100 },
       { t: 'wait', ms: 2400 },
       { t: 'memo', id: 's2m2' },
       { t: 'msg', th: 'unknown', text: '부스 앞에서 녹음한 거예요. 안 지웠더라고요.', typing: 1500, attach: { kind: 'memo', id: 's2m2' } },

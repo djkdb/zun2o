@@ -897,7 +897,8 @@ export function onReturn(awayMs: number): void {
   if (!s.started || !s.unlocked || rt.finale || rt.ending || rt.activeCall || rt.incoming || awayMs < 20000) return;
   setSave({ unlocked: false });
   setRt({ app: null, thread: null });
-  void perform({ t: 'msg', th: 'unknown', text: '어디 갔었어요?' }, epoch);
+  // the phone locked itself while you were gone — she says so
+  void perform({ t: 'msg', th: 'unknown', text: '다시 왔네요. 잠가 뒀어요.' }, epoch);
 }
 
 export { hasFlag, fromMinutes, toMinutes };

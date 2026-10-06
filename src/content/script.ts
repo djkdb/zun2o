@@ -77,7 +77,7 @@ export const BEATS: Beat[] = [
       { t: 'wait', ms: 1800 },
       // 채원 walked in at 01:13 on purpose: her passcode, the day she met 도현 (her script note says so). (One message: nothing can land between.)
       { t: 'msg', th: 'unknown', text: '들어왔네요. 채원 씨도 1시 13분에 들어왔어요.', typing: 1800 },
-      { t: 'msg', th: 'unknown', text: '비번은 제가 지웠어요. 자기 손으로 열어야 돼서요.', typing: 1600 },
+      { t: 'msg', th: 'unknown', text: '도현 씨가 보낸 비밀번호는 제가 지웠어요. 직접 알아내서 들어와야 하거든요.', typing: 1600 },
     ],
   },
   {
@@ -281,7 +281,7 @@ export const BEATS: Beat[] = [
       // after the chapter card and the hidden-album messages
       { t: 'wait', ms: 14000 },
       { t: 'photo', id: 'v01' },
-      { t: 'msg', th: 'unknown', text: '채원 씨 영상 다 날아간 거 아니에요.', typing: 1600, attach: { kind: 'photo', id: 'v01' } },
+      { t: 'msg', th: 'unknown', text: '다 지워진 줄 알았죠. 아직 남은 게 있어요.', typing: 1600, attach: { kind: 'photo', id: 'v01' } },
     ],
   },
   {
@@ -349,7 +349,7 @@ export const BEATS: Beat[] = [
         hint: '메모 앱 “비번들 (보지 마)”에 힌트가 있습니다. 그 방송의 주파수는 메모 “괴담 정리”나 브라우저의 기록 001에 나와요.',
         nudge: { th: 'dohyun', text: '채원이 비번은 다 메모에 적어 두는 애예요. 보지 말라고 써 놓고' },
       },
-      { t: 'msg', th: 'unknown', text: '채원 씨가 저한테만 보여 준 사진 있어요.', typing: 1800, attach: { kind: 'album' } },
+      { t: 'msg', th: 'unknown', text: '채원 씨가 숨겨 둔 사진이 있어요. 저는 다 봤어요.', typing: 1800, attach: { kind: 'album' } },
       // Found the code early? The album has finished syncing now.
       { t: 'emit', ev: 'album:recheck' },
       { t: 'wait', ms: 26000 },
@@ -687,7 +687,7 @@ export const BEATS: Beat[] = [
       { t: 'msg', th: 'self', from: 'me', text: '근데 그럼 두시에 여기 나밖에 없어', typing: 2200 },
       { t: 'wait', ms: 1800 },
       { t: 'msg', th: 'unknown', text: '착하네요.', typing: 500 },
-      { t: 'msg', th: 'unknown', text: '그럼 채원 씨는 계속 여기 있어야 돼요. 그쪽이 대신 오든가요.', typing: 1900 },
+      { t: 'msg', th: 'unknown', text: '그럼 채원 씨는 여기 계속 있어야 해요. 아니면 그쪽이 대신 오면 되고요.', typing: 1900 },
     ],
   },
   { id: 'dohyun-call', on: 'dohyun:call', forbids: ['kept-out'], actions: [{ t: 'call', id: 'dohyun2' }] },
@@ -799,13 +799,15 @@ export const BEATS: Beat[] = [
   {
     id: 'sees-notes',
     on: 'app:notes',
-    requires: ['unlocked'],
+    // only once she has asked who you are — she doesn't talk past her own first question
+    requires: ['asked-photo'],
     forbids: ['ch3'],
     actions: [
       { t: 'wait', ms: 7000 },
-      { t: 'msg', th: 'unknown', text: '채원 씨 메모 읽고 있죠. 어머니 생신 거는 넘겨요.', typing: 1800 },
-      { t: 'wait', ms: 2200 },
-      { t: 'msg', th: 'unknown', text: '저도 그날 딸 저녁 차려 놓고 나왔어요.', typing: 1600 },
+      { t: 'msg', th: 'unknown', text: '메모 보고 있네요.', typing: 900 },
+      { t: 'wait', ms: 2400 },
+      // 채원 skipped her mother's birthday dinner tonight to film — and the woman writing this knows what waiting at home is
+      { t: 'msg', th: 'unknown', text: '어머니 생신상은 아직 그대로예요. 안 치우고 기다리세요.', typing: 2000 },
     ],
   },
   {

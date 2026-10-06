@@ -573,8 +573,50 @@ function script() {
   console.log(`${people.length} lines to act, ${rows.length - people.length} stay TTS → docs/RECORDING_SCRIPT.md`);
 }
 
+/**
+ * One long recording (e.g. a Typecast web project with a pause between lines, in
+ * docs/VOICE_LINES.md order) → one file per line. Splits on the pauses, then checks
+ * each piece against its line with speech-to-text when ELEVEN_API_KEY is there.
+ *   npm run voices:split -- path/to/all.mp3 [first line number, default 01]
+ */
+async function split() {
+  const file = process.argv[3];
+  const from = Number(process.argv[4] ?? 1);
+  if (!file || !existsSync(file)) {
+    console.error('usage: npm run voices:split -- <file.mp3> [first line number]');
+    process.exit(1);
+  }
+  const log = spawnSync('ffmpeg', ['-hide_banner', '-nostats', '-i', file, '-af', `silencedetect=noise=${process.env.SPLIT_DB ?? -40}dB:d=${process.env.SPLIT_GAP ?? 0.6}`, '-f', 'null', '-']).stderr.toString();
+  const [, hh, mm, ss] = /Duration: (\d+):(\d+):([\d.]+)/.exec(log) ?? [0, 0, 0, 0];
+  const dur = Number(hh) * 3600 + Number(mm) * 60 + Number(ss);
+  const starts = [...log.matchAll(/silence_start: ([\d.]+)/g)].map((m) => Number(m[1]));
+  const ends = [...log.matchAll(/silence_end: ([\d.]+)/g)].map((m) => Number(m[1]));
+  // speech runs between silences
+  const pieces = [];
+  let t = 0;
+  starts.forEach((s, i) => {
+    if (s - t > 0.25) pieces.push([Math.max(0, t - 0.08), s + 0.12]);
+    t = ends[i] ?? dur;
+  });
+  if (dur - t > 0.25) pieces.push([Math.max(0, t - 0.08), dur]);
+  const lines = todo.filter((l) => Number(l.n) >= from);
+  console.log(`${pieces.length} pieces for ${lines.length} lines from ${String(from).padStart(2, '0')}`);
+  if (pieces.length !== lines.length) console.log('⚠ counts differ — adjust SPLIT_GAP (seconds) / SPLIT_DB, or check the recording order');
+  mkdirSync(RAW, { recursive: true });
+  for (let i = 0; i < Math.min(pieces.length, lines.length); i++) {
+    const l = lines[i];
+    const out = `${RAW}/${l.n}.mp3`;
+    const [a, b] = pieces[i];
+    execFileSync('ffmpeg', ['-loglevel', 'error', '-y', '-ss', String(a), '-to', String(b), '-i', file, '-ac', '1', '-codec:a', 'libmp3lame', '-b:a', '128k', out]);
+    const heard = await transcribe(out);
+    const e = heard ? cer(l.say, heard) : null;
+    console.log(`${l.n} ${(b - a).toFixed(1)}s ${e === null ? '' : `cer ${e.toFixed(2)}${e > 0.25 ? ' ⚠' : ''}`}  ${l.say}${heard ? `  | heard: ${heard}` : ''}`);
+  }
+}
+
 const mode = process.argv[2] ?? 'fish';
 if (mode === 'list') list();
+else if (mode === 'split') await split();
 else if (mode === 'script') script();
 else if (mode === 'fx') fx();
 else if (mode === 'eleven') await eleven();
