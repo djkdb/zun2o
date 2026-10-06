@@ -411,24 +411,27 @@ function context(l) {
 }
 async function typecast(l, t, file) {
   const voice = process.env[`TYPECAST_VOICE_${l.voice.toUpperCase()}`] ?? (l.voice === 'mother' ? process.env.TYPECAST_VOICE_ENTITY : undefined);
-  const style = process.env.TYPECAST_STYLE; // smart | preset | (unset: take 1 smart, takes 2–3 preset)
-  const smart = style ? style === 'smart' : t === 1;
+  // smart | preset | auto (whispered lines as a whisper preset, the rest smart) | unset: take 1 smart, takes 2–3 preset
+  const style = process.env.TYPECAST_STYLE;
+  const smart = style === 'auto' ? tcPreset(l) !== 'whisper' : style ? style === 'smart' : t === 1;
   const prompt = smart
     ? { emotion_type: 'smart', ...Object.fromEntries(Object.entries(context(l)).filter(([, v]) => v)) }
     : { emotion_type: 'preset', emotion_preset: tcPreset(l), emotion_intensity: t === 3 ? 1.6 : 1.2 };
+  let tries;
   for (;;) {
     const res = await fetch('https://api.typecast.ai/v1/text-to-speech', {
       method: 'POST',
       headers: { 'X-API-KEY': process.env.TYPECAST_API_KEY, 'Content-Type': 'application/json' },
       body: JSON.stringify({ model: 'ssfm-v30', voice_id: voice, text: sayKo(l.say), language: 'kor', prompt, seed: 100 + t * 7 + Number(l.n), output: { audio_format: 'mp3', target_lufs: -16 } }),
     });
-    if (res.status === 429) {
-      await new Promise((r) => setTimeout(r, 4000));
+    // a free account that asks too fast gets flagged: back off hard on 429, and stop at once on a 403
+    if (res.status === 429 && (tries = (tries ?? 0) + 1) <= 3) {
+      await new Promise((r) => setTimeout(r, 30000 * tries));
       continue;
     }
-    if (!res.ok) throw new Error(`Typecast ${res.status}: ${(await res.text()).slice(0, 300)} (line ${l.n})`);
+    if (!res.ok) throw new Error(`Typecast ${res.status}: ${(await res.text()).slice(0, 300)} (line ${l.n}) — stopped; finished takes are kept, run again later to resume`);
     writeFileSync(file, Buffer.from(await res.arrayBuffer()));
-    await new Promise((r) => setTimeout(r, 1200));
+    await new Promise((r) => setTimeout(r, Number(process.env.TC_DELAY_MS ?? 15000)));
     return smart ? 'smart' : `${prompt.emotion_preset} ${prompt.emotion_intensity}`;
   }
 }

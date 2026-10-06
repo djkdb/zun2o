@@ -38,5 +38,6 @@ ElevenLabs 무료 플랜은 한국어 라이브러리 목소리와 Voice Design�
 - `TTS=typecast npm run voices:auto`: 대사마다 3번 뽑습니다.
   - 1번째는 앞뒤 대사를 함께 보내 문맥으로 감정을 정하는 smart 감정입니다.
   - 2·3번째는 연기 지시 태그를 프리셋에 맞춰 강도 1.2와 1.6으로 뽑습니다. 프리셋은 whisper, sad, toneup, happy, tonedown, normal 중 하나입니다.
-  - `TYPECAST_STYLE=smart` 또는 `preset`으로 하나만 쓰게 할 수 있습니다.
+  - `TYPECAST_STYLE=smart` 또는 `preset`으로 하나만 쓰게 할 수 있습니다. `auto`로 두면 속삭이는 줄만 whisper 프리셋을 쓰고 나머지는 smart로 뽑습니다.
+- **무료 계정은 천천히:** 요청 사이에 기본 15초를 쉽니다(`TC_DELAY_MS`). 429가 오면 30초, 60초, 90초 기다리고, 403(이상 활동 감지)이 오면 바로 멈춥니다. 다 만든 테이크는 남아 있어서 다시 실행하면 이어서 합니다. 오디션 때 32개를 몰아서 요청했더니 무료 계정이 이상 활동으로 막혔습니다.
 - 채점과 듣기 페이지, `voices:pick`은 ElevenLabs와 같습니다. 받아쓰기 채점에는 `ELEVEN_API_KEY`가 있어야 하며, 무료 플랜으로 충분합니다.
