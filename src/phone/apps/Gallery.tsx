@@ -4,7 +4,7 @@ import { applyChapterMix, emit, markPhoto, mix, openApp, sfx, vibrate } from '..
 import { addFlag, getState, hasFlag, logInput, setRt } from '../../engine/state';
 import { HIDDEN_ALBUM_CODE, photos, type PhotoItem } from '../../content/media';
 import { isS2 } from '../../content/season';
-import { HomecomingPhoto, KitchenPhoto, KitchenTonightPhoto, NotebookPage } from '../../art/s2Photos';
+import { HomecomingPhoto, KitchenPhoto, NotebookPage } from '../../art/s2Photos';
 import { VIDEO } from '../../art/videos';
 import { AppHeader } from '../AppHeader';
 import { AnnexPhoto, FloorPlan, ReadingRoomPhoto, Room02Photo } from '../../art/scenes';
@@ -24,6 +24,8 @@ const DWELL_PHOTOS = ['p03', 'p05', 'p08'];
 const CLIPS = {
   v01: { mp4: VIDEO.recovered, webm: VIDEO.recoveredWebm, poster: VIDEO.recoveredPoster, alt: '복구된 동영상. 어두운 계단.', tag: 'REC 01:25 · 복구됨' },
   v02: { mp4: VIDEO.booth, webm: VIDEO.boothWebm, poster: VIDEO.boothPoster, alt: '도현이 보낸 동영상. 비 오는 길 건너편의 공중전화 부스.', tag: '도현 · 01:53' },
+  // season 2, 01:52: the phone in the booth films the kitchen — she stops writing and starts to turn
+  's2-kitchen2': { mp4: VIDEO.s2kitchen, webm: VIDEO.s2kitchenWebm, poster: VIDEO.s2kitchenPoster, alt: '이 폰으로 찍힌 동영상. 어두운 부엌, 스탠드 아래에서 무언가를 쓰던 여자가 펜을 멈추고 천천히 고개를 돌린다.', tag: '이 폰 · 집 · 01:52' },
 } as const;
 type ClipId = keyof typeof CLIPS;
 const clipOf = (id: string) => CLIPS[(id in CLIPS ? id : 'v01') as ClipId];
@@ -89,6 +91,7 @@ export function PhotoView({ id, brightness = 0, changed = false }: { id: string;
   switch (id) {
     case 'v01':
     case 'v02':
+    case 's2-kitchen2':
       return <VideoStill id={id} />;
     case 'l1':
       return <SlotPhoto slot="life-cafe" label="카페에서 아이스커피를 들고 웃는 채원의 셀카." />;
@@ -150,8 +153,7 @@ export function PhotoView({ id, brightness = 0, changed = false }: { id: string;
       return art('s2-home') ? <SlotPhoto slot="s2-home" w={640} h={585} stamp="06:10" label="새벽빛이 드는 부엌. 식탁 의자에 1994년의 낡은 외투가 걸려 있다." /> : <HomecomingPhoto />;
     case 's2-kitchen':
       return art('s2-kitchen') ? <SlotPhoto slot="s2-kitchen" w={640} h={585} stamp="01:57" label="문틈으로 찍은 어두운 부엌. 스탠드 불빛 아래, 단발머리 여자가 등을 보이고 앉아 무언가를 쓰고 있다." /> : <KitchenPhoto />;
-    case 's2-kitchen2':
-      return <KitchenTonightPhoto />;
+
     case 's2-sisters':
       return <SlotPhoto slot="s2-sisters" w={640} h={585} label="봄볕 아래 나란히 선 두 여자. 왼쪽은 마흔 남짓, 오른쪽은 조금 더 나이 들어 보인다." />;
     case 's2-booth':

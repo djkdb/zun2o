@@ -421,7 +421,7 @@ no watermark, vertical 9:16.
 
 | # | 파일 | 첫 장면 | 비율 | 쓰이는 곳 |
 |---|---|---|---|---|
-| 1 | `s2-kitchen` | `src/assets/art/s2-kitchen-close.webp` | 16:9 | 01:52 "방금 찍혔어요." 사진 → 영상 (시즌 2의 최고점) |
+| 1 | `s2-kitchen` ✅ | `src/assets/art/s2-kitchen-close.webp` (16:9로 잘라서) | 16:9 | 01:52 "방금 찍혔어요." 사진 → 영상 (시즌 2의 최고점) |
 | 2 | `s2-opening` | `src/assets/art/booth-shelf.webp` | 9:16 | 시즌 2 첫 화면: 문이 닫히다가 멈춘다 |
 | 3 | `s2-window` | `src/assets/art/s2-window.webp` | 9:16 | 엔딩 4 「딸」 배경: 창가에서 기다리는 엄마 |
 

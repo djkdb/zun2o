@@ -10,7 +10,7 @@ export const PHOTOS_S2: PhotoItem[] = [
   { id: 's2-kitchen', time: '01:57', caption: '8월 28일. 엄마. (몰래 찍음)', album: 'recent', date: '8월 28일' },
   { id: 's2-booth', time: '22:55', caption: '여기 두고 간다. 누군가 주울 때까지.', album: 'recent', date: '9월 27일' },
   // 01:52 tonight: taken by this phone — which is in the booth. Location: home.
-  { id: 's2-kitchen2', time: '01:52', caption: '(이 폰으로 촬영됨 · 촬영 위치: 집)', album: 'recent', extra: true, date: '9월 28일' },
+  { id: 's2-kitchen2', time: '01:52', caption: '(이 폰으로 촬영됨 · 촬영 위치: 집)', album: 'recent', extra: true, video: true, date: '9월 28일' },
   { id: 's2-n1', time: '01:21', caption: '노트 첫 장. 맨 위 줄은 엄마가 1994년에 쓴 것과 같은 글씨.', album: 'hidden', portrait: true, date: '9월 2일' },
   { id: 's2-n2', time: '01:22', caption: '둘째 장. 8월 28일 — 강도현.', album: 'hidden', portrait: true, date: '9월 2일' },
   { id: 's2-n3', time: '22:31', caption: '오늘 밤 페이지. 연필로 먼저 적혀 있다. 엄마는 두 시에 그 위를 볼펜으로 덧쓴다.', album: 'hidden', portrait: true, date: '9월 27일' },

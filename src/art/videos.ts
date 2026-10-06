@@ -23,6 +23,9 @@ import s2openingWebm from '../assets/video/s2-opening.webm';
 import s2window from '../assets/video/s2-window.mp4';
 import s2windowWebm from '../assets/video/s2-window.webm';
 import s2windowPoster from '../assets/video/s2-window-poster.jpg';
+import s2kitchen from '../assets/video/s2-kitchen.mp4';
+import s2kitchenWebm from '../assets/video/s2-kitchen.webm';
+import s2kitchenPoster from '../assets/video/s2-kitchen-poster.jpg';
 
 export const VIDEO = {
   recovered,
@@ -43,4 +46,7 @@ export const VIDEO = {
   s2window,
   s2windowWebm,
   s2windowPoster,
+  s2kitchen,
+  s2kitchenWebm,
+  s2kitchenPoster,
 };
