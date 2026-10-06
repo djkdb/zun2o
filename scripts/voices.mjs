@@ -578,10 +578,14 @@ function script() {
  * docs/VOICE_LINES.md order) → one file per line. Splits on the pauses, then checks
  * each piece against its line with speech-to-text when ELEVEN_API_KEY is there.
  *   npm run voices:split -- path/to/all.mp3 [first line number, default 01]
+ *   npm run voices:split -- path/to/dohyun.mp3 male      (one character's lines, in order)
+ *   npm run voices:split -- path/to/miso.mp3 entity,mother
  */
 async function split() {
   const file = process.argv[3];
-  const from = Number(process.argv[4] ?? 1);
+  const arg = process.argv[4] ?? '1';
+  const voices = /^\d+$/.test(arg) ? null : arg.split(',');
+  const from = voices ? 1 : Number(arg);
   if (!file || !existsSync(file)) {
     console.error('usage: npm run voices:split -- <file.mp3> [first line number]');
     process.exit(1);
@@ -599,8 +603,8 @@ async function split() {
     t = ends[i] ?? dur;
   });
   if (dur - t > 0.25) pieces.push([Math.max(0, t - 0.08), dur]);
-  const lines = todo.filter((l) => Number(l.n) >= from);
-  console.log(`${pieces.length} pieces for ${lines.length} lines from ${String(from).padStart(2, '0')}`);
+  const lines = todo.filter((l) => (voices ? voices.includes(l.voice) : Number(l.n) >= from));
+  console.log(`${pieces.length} pieces for ${lines.length} lines (${voices ? voices.join('+') : `from ${String(from).padStart(2, '0')}`})`);
   if (pieces.length !== lines.length) console.log('⚠ counts differ — adjust SPLIT_GAP (seconds) / SPLIT_DB, or check the recording order');
   mkdirSync(RAW, { recursive: true });
   for (let i = 0; i < Math.min(pieces.length, lines.length); i++) {
