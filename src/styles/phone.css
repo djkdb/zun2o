@@ -7356,3 +7356,16 @@ body,
     padding-top: max(62px, calc(env(safe-area-inset-top) + 24px));
   }
 }
+/* settings scrolls as one page: its groups keep their height instead of being squeezed (and clipped) to fit */
+.settings > * {
+  flex-shrink: 0;
+}
+.settings {
+  padding-bottom: 24px;
+}
+.settings > .app-header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: #000;
+}
