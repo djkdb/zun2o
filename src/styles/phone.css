@@ -7369,3 +7369,37 @@ body,
   z-index: 3;
   background: #000;
 }
+/* something threw: a dead phone, not a blank page */
+.crash {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  background: #000;
+  text-align: center;
+}
+.crash p {
+  margin: 0;
+}
+.crash-pct {
+  font-family: var(--mono);
+  font-size: 44px;
+  color: #ff3b30;
+}
+.crash-fine {
+  max-width: 260px;
+  color: #a9abb2;
+  font-size: 13px;
+}
+.crash button {
+  margin-top: 12px;
+  padding: 12px 28px;
+  border-radius: 24px;
+  background: #f2f2f4;
+  color: #000;
+  font-weight: 600;
+}

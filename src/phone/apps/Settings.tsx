@@ -167,6 +167,23 @@ export function SettingsApp() {
         )}
         <p className="settings-note">이름·진행 기록은 이 기기에만 저장되며 어디로도 전송되지 않습니다. 이 게임은 카메라·마이크·위치를 사용하지 않습니다.</p>
       </section>
+      {/* credits: where the voices, pictures and type come from */}
+      <section className="set-credits">
+        <h3>만든 것</h3>
+        <div className="row">
+          <span>음성 · 효과음</span>
+          <span>ElevenLabs</span>
+        </div>
+        <div className="row">
+          <span>사진 · 영상</span>
+          <span>생성 AI로 제작</span>
+        </div>
+        <div className="row">
+          <span>글꼴</span>
+          <span>IBM Plex Sans KR · IBM Plex Mono · 나눔손글씨 펜 (SIL OFL)</span>
+        </div>
+        <p className="settings-note">이 이야기의 인물·학교·사건은 모두 지어낸 것입니다. 실제와 비슷한 이름이 있더라도 관계가 없습니다.</p>
+      </section>
     </div>
   );
 }

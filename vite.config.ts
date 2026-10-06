@@ -32,8 +32,16 @@ export default defineConfig({
       workbox: {
         // Korean fonts ship as ~100 unicode-range slices: cache the ones the
         // game actually uses, on demand, instead of precaching all of them.
-        globPatterns: ['**/*.{js,css,html,svg,png,jpg,jpeg,webp,avif,mp3,mp4}'],
+        // The app, its pictures and voices are installed up front (it works offline);
+        // the clips (~5 MB) are cached the first time each one plays instead.
+        globPatterns: ['**/*.{js,css,html,svg,png,jpg,jpeg,webp,avif,mp3}'],
+        globIgnores: ['og.jpg'],
         runtimeCaching: [
+          {
+            urlPattern: ({ url }) => /\.(mp4|webm)$/.test(url.pathname),
+            handler: 'CacheFirst',
+            options: { cacheName: 'clips', expiration: { maxEntries: 30 }, rangeRequests: true, cacheableResponse: { statuses: [0, 200] } },
+          },
           {
             urlPattern: ({ url }) => /\.woff2?$/.test(url.pathname),
             handler: 'CacheFirst',

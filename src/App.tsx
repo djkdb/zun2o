@@ -1,4 +1,5 @@
 import { PhoneShell } from './phone/PhoneShell';
+import { CrashScreen } from './phone/CrashScreen';
 import { DebugPanel } from './DebugPanel';
 import { useGame } from './hooks/useGame';
 
@@ -8,7 +9,9 @@ export function App() {
   return (
     <div className={`stage${reduce ? ' reduce-fx' : ''}`}>
       <div className="device">
-        <PhoneShell />
+        <CrashScreen>
+          <PhoneShell />
+        </CrashScreen>
       </div>
       <aside className="stage-note" aria-hidden="true">
         <p>12%</p>
