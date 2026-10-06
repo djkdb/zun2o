@@ -9,14 +9,23 @@
 //                           (FISH_API_KEY=… required; keys never go into the repo)
 //   npm run voices:fx       effects only: voice-raw/NN.<mp3|wav|m4a|…> → src/assets/voice
 //
+//   Hands-off ElevenLabs (docs/VOICE_PIPELINE.md):
+//   npm run voices:audition  Korean voice candidates per role from the voice library → voice-takes/audition.html
+//   npm run voices:auto      several takes per line, each checked by speech-to-text (did it say the line?),
+//                            pace, clipping and dead air; the best goes to voice-raw/NN.mp3, then effects.
+//                            voice-takes/index.html lets you listen to the top two and pick.
+//   npm run voices:pick -- 33:2,40:1   use those takes instead, then effects
+//                            (ELEVEN_TAKES=3, ONLY=33-55 or ONLY=11,22, ELEVEN_STABILITY=0.5)
+//
 // Any other TTS tool or a real recording works too: save each line as
 // voice-raw/<number>.<ext> (numbers from docs/VOICE_LINES.md) and run voices:fx.
 // The effects need `ffmpeg` on PATH.
 //
 // Env: FISH_VOICE_MALE / _FEMALE / _ENTITY override the voices below, FISH_MODEL
 // (default s1), FORCE=1 to remake existing files, DRY=1 to only print.
-import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { cer, sayKo, syllables } from '../src/audio/sayKo.ts';
 import { CALLS, VIDEO_CALL_LINES } from '../src/content/calls.ts';
 import { CALLS_S2 } from '../src/content/s2/calls.ts';
 import { MEMO_M1 } from '../src/content/media.ts';
@@ -260,8 +269,221 @@ async function eleven() {
   fx();
 }
 
+// ─── hands-off ElevenLabs: audition, takes, automatic checking ─────────────
+
+const TAKES = 'voice-takes';
+const XI = 'https://api.elevenlabs.io';
+// Who each voice is, for finding Korean candidates in the voice library.
+const ROLES = {
+  male: { who: '도현 (20대 남성, 불안하고 다급함)', gender: 'male', age: 'young' },
+  female: { who: '채원 (20대 여성, 겁에 질린 속삭임)', gender: 'female', age: 'young' },
+  entity: { who: '서미령 (41세 사서, 차분하고 낮게 — 귀신)', gender: 'female', age: 'middle_aged' },
+  mother: { who: '엄마 (서미령, 시즌 2 — 따뜻하게)', gender: 'female', age: 'middle_aged' },
+  soyeon: { who: '소연 (43세, 지치고 버티는 목소리)', gender: 'female', age: 'middle_aged' },
+};
+
+function xiKey() {
+  const key = process.env.ELEVEN_API_KEY;
+  if (!key) {
+    console.error('ELEVEN_API_KEY is not set (cloud environment settings → environment variables; never in the repo).');
+    process.exit(1);
+  }
+  return key;
+}
+
+async function xi(path, init = {}) {
+  const res = await fetch(`${XI}${path}`, { ...init, headers: { 'xi-api-key': xiKey(), ...(init.headers ?? {}) } });
+  if (!res.ok) throw new Error(`ElevenLabs ${res.status} ${path}: ${(await res.text()).slice(0, 400)}`);
+  return res;
+}
+
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const page = (title, body) =>
+  `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title>` +
+  `<style>body{font:15px/1.5 -apple-system,sans-serif;background:#111;color:#eee;margin:0;padding:16px;max-width:760px}h2{font-size:16px;margin:26px 0 6px}` +
+  `.row{background:#1c1c1e;border-radius:14px;padding:12px;margin:8px 0}.row small{color:#999}audio{width:100%;margin:6px 0}label{display:block;margin:4px 0}` +
+  `textarea{width:100%;height:60px;background:#000;color:#9f9;border:1px solid #333;border-radius:8px}button{font:inherit;padding:8px 14px;border-radius:10px;border:0;background:#0a84ff;color:#fff}</style>` +
+  `<h1 style="font-size:20px">${esc(title)}</h1>${body}`;
+
+/** Korean voices from the shared library for each role, with their own preview clips (no credits used, nothing added to the account). */
+async function audition() {
+  mkdirSync(TAKES, { recursive: true });
+  const mine = (await (await xi('/v1/voices')).json()).voices ?? [];
+  const out = {};
+  for (const [role, r] of Object.entries(ROLES)) {
+    const q = new URLSearchParams({ page_size: '12', language: 'ko', gender: r.gender, age: r.age, sort: 'trending' });
+    const found = (await (await xi(`/v1/shared-voices?${q}`)).json()).voices ?? [];
+    out[role] = found.map((v) => ({ id: v.voice_id, owner: v.public_owner_id, name: v.name, desc: [v.accent, v.descriptive, v.use_case].filter(Boolean).join(' · '), preview: v.preview_url }));
+    console.log(`${role}: ${out[role].length} candidates`);
+  }
+  writeFileSync(`${TAKES}/audition.json`, JSON.stringify({ mine: mine.map((v) => ({ id: v.voice_id, name: v.name, preview: v.preview_url })), roles: out }, null, 2));
+  const body =
+    `<p>역할마다 마음에 드는 목소리의 <b>id</b>를 골라 주세요. (미리듣기는 목소리 주인이 녹음한 샘플이라 대사와 다릅니다.)</p>` +
+    `<h2>내 계정의 목소리</h2>${mine.map((v) => `<div class="row"><b>${esc(v.name)}</b> <small>${esc(v.voice_id)}</small>${v.preview_url ? `<audio controls preload="none" src="${esc(v.preview_url)}"></audio>` : ''}</div>`).join('')}` +
+    Object.entries(out)
+      .map(([role, vs]) => `<h2>${esc(ROLES[role].who)}</h2>${vs.map((v) => `<div class="row"><b>${esc(v.name)}</b> <small>${esc(v.desc)}<br>id ${esc(v.id)}</small><audio controls preload="none" src="${esc(v.preview)}"></audio></div>`).join('')}`)
+      .join('');
+  writeFileSync(`${TAKES}/audition.html`, page('목소리 오디션', body));
+  console.log(`\n→ ${TAKES}/audition.html (pick a voice per role, then set ELEVEN_VOICE_MALE / _FEMALE / _ENTITY / _MOTHER / _SOYEON)`);
+}
+
+/** Add a library voice to the account so text-to-speech can use it: ADOPT=<owner id>:<voice id>[,…] */
+async function adopt() {
+  for (const pair of (process.env.ADOPT ?? '').split(',').filter(Boolean)) {
+    const [owner, id] = pair.split(':');
+    const res = await xi(`/v1/voices/add/${owner}/${id}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ new_name: `12pct-${id.slice(0, 6)}` }) });
+    console.log(`added ${id} →`, (await res.json()).voice_id);
+  }
+}
+
+function only(l) {
+  const spec = process.env.ONLY;
+  if (!spec) return true;
+  const n = Number(l.n);
+  return spec.split(',').some((part) => {
+    const [a, b] = part.split('-').map(Number);
+    return b ? n >= a && n <= b : n === a;
+  });
+}
+
+function analyse(file, l) {
+  const dur = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file]).toString().trim());
+  // ffmpeg writes its analysis to stderr
+  const res = spawnSync('ffmpeg', ['-hide_banner', '-nostats', '-i', file, '-af', 'volumedetect,silencedetect=noise=-38dB:d=0.9', '-f', 'null', '-']).stderr.toString();
+  const peak = Number(/max_volume: (-?[\d.]+) dB/.exec(res)?.[1] ?? -99);
+  const starts = [...res.matchAll(/silence_start: ([\d.]+)/g)].map((m) => Number(m[1]));
+  // a pause in the middle (not the lead-in or the tail) where the line has no "…" to justify it
+  const gaps = starts.filter((s) => s > 0.3 && s < dur - 1.0).length;
+  const syl = syllables(l.say).length;
+  const pace = syl / Math.max(0.3, dur);
+  return { dur, peak, gaps, pace };
+}
+
+/** Lower is better: wrong or missing words weigh most, then pace, clipping, dead air, a read-out tag. */
+function score(l, a, heard) {
+  const quiet = /whisper|slowly|softly|monotone/.test(DIRECTION[l.say] ?? '');
+  const [lo, hi] = quiet ? [2.2, 5.5] : [3.2, 7.2];
+  const e = cer(l.say, heard);
+  const pacePen = a.pace < lo ? (lo - a.pace) * 10 : a.pace > hi ? (a.pace - hi) * 10 : 0;
+  const tagRead = /[a-z]{3,}/i.test(heard) ? 30 : 0;
+  const gapPen = /…|\.\.\./.test(l.text) ? 0 : a.gaps * 6;
+  return { total: Math.round((e * 100 + pacePen + (a.peak > -0.3 ? 15 : 0) + gapPen + tagRead) * 10) / 10, cer: Math.round(e * 1000) / 1000, pacePen: Math.round(pacePen * 10) / 10 };
+}
+
+async function transcribe(file) {
+  const form = new FormData();
+  form.append('model_id', 'scribe_v1');
+  form.append('language_code', 'kor');
+  form.append('file', new Blob([readFileSync(file)], { type: 'audio/mpeg' }), 'take.mp3');
+  const res = await xi('/v1/speech-to-text', { method: 'POST', body: form });
+  return (await res.json()).text ?? '';
+}
+
+function voiceIds() {
+  return {
+    male: process.env.ELEVEN_VOICE_MALE,
+    female: process.env.ELEVEN_VOICE_FEMALE,
+    entity: process.env.ELEVEN_VOICE_ENTITY,
+    mother: process.env.ELEVEN_VOICE_MOTHER ?? process.env.ELEVEN_VOICE_ENTITY,
+    soyeon: process.env.ELEVEN_VOICE_SOYEON,
+  };
+}
+
+async function auto() {
+  xiKey();
+  const voices = voiceIds();
+  const model = process.env.ELEVEN_MODEL ?? 'eleven_v3';
+  const takes = Number(process.env.ELEVEN_TAKES ?? 3);
+  const v3 = model === 'eleven_v3';
+  mkdirSync(TAKES, { recursive: true });
+  mkdirSync(RAW, { recursive: true });
+  const reportFile = `${TAKES}/report.json`;
+  const report = existsSync(reportFile) ? JSON.parse(readFileSync(reportFile, 'utf8')) : {};
+  const work = todo.filter((l) => only(l) && voices[l.voice]);
+  if (!work.length) {
+    console.error('Nothing to do: set ELEVEN_VOICE_* for the roles you want (npm run voices:audition helps pick).');
+    process.exit(1);
+  }
+  for (const l of work) {
+    const said = sayKo(l.say);
+    const text = v3 && DIRECTION[l.say] ? `${DIRECTION[l.say]} ${said}` : said;
+    const rows = [];
+    for (let t = 1; t <= takes; t++) {
+      const file = `${TAKES}/${l.n}-t${t}.mp3`;
+      if (!existsSync(file) || process.env.FORCE) {
+        if (process.env.DRY) {
+          console.log(`would ask for ${file}  [${l.voice}] ${text}`);
+          continue;
+        }
+        // v3 takes only 0 / 0.5 / 1 for stability: one braver take among steadier ones
+        const stability = v3 ? (t === 2 ? 0 : Number(process.env.ELEVEN_STABILITY ?? 0.5)) : Number(process.env.ELEVEN_STABILITY ?? 0.45);
+        const body = { text, model_id: model, language_code: 'ko', seed: 1000 + t * 17 + Number(l.n), voice_settings: { stability, similarity_boost: 0.8 } };
+        const res = await xi(`/v1/text-to-speech/${voices[l.voice]}?output_format=mp3_44100_128`, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'audio/mpeg' }, body: JSON.stringify(body) });
+        writeFileSync(file, Buffer.from(await res.arrayBuffer()));
+      }
+      if (process.env.DRY) continue;
+      const a = analyse(file, l);
+      const heard = await transcribe(file);
+      rows.push({ take: t, file, heard, ...a, ...score(l, a, heard) });
+    }
+    if (process.env.DRY) continue;
+    rows.sort((x, y) => x.total - y.total);
+    report[l.n] = { line: l.say, said: text, voice: l.voice, where: l.where, takes: rows };
+    writeFileSync(reportFile, JSON.stringify(report, null, 2));
+    const best = rows[0];
+    copyFileSync(best.file, `${RAW}/${l.n}.mp3`);
+    const flag = best.cer > 0.15 ? '  ⚠ check: still misread' : '';
+    console.log(`${l.n} best t${best.take} score ${best.total} (cer ${best.cer}, ${best.pace.toFixed(1)} syl/s)  heard: ${best.heard}${flag}`);
+  }
+  if (process.env.DRY) return;
+  listenPage(report);
+  process.env.FORCE = '1';
+  fx();
+}
+
+function listenPage(report) {
+  const body =
+    `<p>대사마다 자동 채점 1·2위입니다. 더 나은 쪽을 고르고 아래 칸의 글자를 복사해 보내 주세요. 고르지 않은 줄은 1위가 쓰입니다.</p>` +
+    Object.entries(report)
+      .sort(([a], [b]) => Number(a) - Number(b))
+      .map(
+        ([n, r]) =>
+          `<h2>${n}. ${esc(r.line)}</h2><small>${esc(WHO[r.voice])} · ${esc(r.where)} · 보낸 문장: ${esc(r.said)}</small>` +
+          r.takes
+            .slice(0, 2)
+            .map((t, i) => `<div class="row"><label><input type="radio" name="n${n}" value="${t.take}" data-top="${i ? 0 : 1}" ${i ? '' : 'checked'}> ${i ? '2위' : '1위'} · take ${t.take} · 점수 ${t.total} · ${t.dur.toFixed(1)}초<br><small>받아쓰기: ${esc(t.heard)}</small></label><audio controls preload="none" src="${esc(t.file.replace(`${TAKES}/`, ''))}"></audio></div>`)
+            .join(''),
+      )
+      .join('') +
+    `<h2>고른 결과</h2><textarea id="out" readonly></textarea><p><button onclick="pick()">결과 만들기</button></p>` +
+    `<script>function pick(){const o=[];document.querySelectorAll('input[type=radio]:checked').forEach(r=>{if(r.dataset.top==='0')o.push(r.name.slice(1)+':'+r.value)});document.getElementById('out').value=o.join(',')||'(모두 1위)'}</script>`;
+  writeFileSync(`${TAKES}/index.html`, page('음성 후보 듣기', body));
+  console.log(`\n→ ${TAKES}/index.html`);
+}
+
+/** npm run voices:pick -- 33:2,40:1 */
+function pick() {
+  const spec = process.argv[3] ?? '';
+  for (const part of spec.split(',').filter(Boolean)) {
+    const [n, t] = part.split(':');
+    const src = `${TAKES}/${n.padStart(2, '0')}-t${t}.mp3`;
+    if (!existsSync(src)) {
+      console.error(`no ${src}`);
+      process.exit(1);
+    }
+    copyFileSync(src, `${RAW}/${n.padStart(2, '0')}.mp3`);
+    console.log(`${n}: take ${t}`);
+  }
+  process.env.FORCE = '1';
+  fx();
+}
+
 const mode = process.argv[2] ?? 'fish';
 if (mode === 'list') list();
 else if (mode === 'fx') fx();
 else if (mode === 'eleven') await eleven();
+else if (mode === 'audition') await audition();
+else if (mode === 'adopt') await adopt();
+else if (mode === 'auto') await auto();
+else if (mode === 'pick') pick();
 else await fish();

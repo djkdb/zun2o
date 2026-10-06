@@ -19,7 +19,11 @@
     "voices:list": "node --experimental-strip-types --no-warnings --import ./scripts/ts-resolve.mjs scripts/voices.mjs list",
     "voices:fx": "node --experimental-strip-types --no-warnings --import ./scripts/ts-resolve.mjs scripts/voices.mjs fx",
     "voices:eleven": "node --experimental-strip-types --no-warnings --import ./scripts/ts-resolve.mjs scripts/voices.mjs eleven",
-    "sfx": "node scripts/sfx.mjs"
+    "sfx": "node scripts/sfx.mjs",
+    "voices:audition": "node --experimental-strip-types --no-warnings --import ./scripts/ts-resolve.mjs scripts/voices.mjs audition",
+    "voices:adopt": "node --experimental-strip-types --no-warnings --import ./scripts/ts-resolve.mjs scripts/voices.mjs adopt",
+    "voices:auto": "node --experimental-strip-types --no-warnings --import ./scripts/ts-resolve.mjs scripts/voices.mjs auto",
+    "voices:pick": "node --experimental-strip-types --no-warnings --import ./scripts/ts-resolve.mjs scripts/voices.mjs pick"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.3.0",
