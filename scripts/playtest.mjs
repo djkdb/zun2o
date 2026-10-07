@@ -377,7 +377,8 @@ await wait(2600);
 await snap('finale-flood');
 await wait(3500);
 await snap('finale-strip');
-await waitFor('.finale-ring .incoming, .finale .incoming', 15000);
+// (02:00:00 holds a 4.5 s silence before the flood)
+await waitFor('.finale-ring .incoming, .finale .incoming', 20000);
 await snap('finale-ring');
 await waitFor('.video-call', 12000);
 await wait(4500);
