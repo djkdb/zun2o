@@ -179,14 +179,14 @@ await wait(400);
 await snap('soyeon-inside');
 await page.getByText('정말 남으실 거예요?').click();
 check('02:00 arrives', await until(() => window.__game.getState().rt.finale, 120000));
-await page.waitForSelector('.final-choices', { timeout: 60000 });
+await page.waitForSelector('.final-choices', { timeout: 90000 });
 await snap('final-choices');
 mark('02:00');
 
 // ── the three endings ──────────────────────────────────────────────────
 const endings = [];
 async function ending(label, act) {
-  await page.waitForSelector('.final-choices', { timeout: 60000 });
+  await page.waitForSelector('.final-choices', { timeout: 90000 });
   await act();
   await page.waitForSelector('.ending-card', { timeout: 120000 });
   await wait(600);

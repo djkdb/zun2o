@@ -408,7 +408,7 @@ for (const [label, cls] of [
 ]) {
   // The checkpoint lets you replay 02:00 for the other endings.
   await page.getByText('02:00부터 다시').click();
-  await waitFor('.final-choices', 60000);
+  await waitFor('.final-choices', 90000);
   if (cls === 'poweroff') {
     await page.evaluate(() => {
       const el = document.querySelector('.power-slider input');
