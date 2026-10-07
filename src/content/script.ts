@@ -115,6 +115,8 @@ export const BEATS: Beat[] = [
   {
     id: 'c1-yes',
     on: 'choice:c1:yes',
+    // (already told at 00:47, if this was left unanswered until after the photo)
+    forbids: ['told-inside'],
     actions: [
       { t: 'flag', f: 'told-inside' },
       { t: 'msg', th: 'unknown', text: '주워 줘서 고마워요.', typing: 1200 },
@@ -122,6 +124,12 @@ export const BEATS: Beat[] = [
       { t: 'msg', th: 'unknown', text: '이제 그쪽도 안이에요.', typing: 1100 },
       { t: 'emit', ev: 'c1:done' },
     ],
+  },
+  {
+    id: 'c1-yes-late',
+    on: 'choice:c1:yes',
+    requires: ['told-inside'],
+    actions: [{ t: 'msg', th: 'unknown', text: '주워 줘서 고마워요.', typing: 1200 }, { t: 'emit', ev: 'c1:done' }],
   },
   {
     id: 'c1-silent',
@@ -272,7 +280,7 @@ export const BEATS: Beat[] = [
     id: 'inside-rule',
     on: 'inside-rule',
     forbids: ['told-inside'],
-    actions: [{ t: 'wait', ms: 1200 }, { t: 'flag', f: 'told-inside' }, { t: 'msg', th: 'unknown', text: '그 폰 들고 있는 동안은 그쪽도 안이에요.', typing: 1300 }],
+    actions: [{ t: 'wait', ms: 1200 }, { t: 'flag', f: 'told-inside' }, { t: 'msg', th: 'unknown', text: '그 전화기 들고 있는 동안은 그쪽도 안이에요.', typing: 1300 }],
   },
   // The camera recording that "failed to save": ten seconds of it come back. Found by looking at the
   // stairs photo it was taken with — or, at the latest, handed over when the hidden album is.
@@ -373,8 +381,7 @@ export const BEATS: Beat[] = [
       { t: 'msg', th: 'dohyun', text: '택시 기다리는 중', typing: 500 },
       { t: 'msg', th: 'dohyun', text: '폰 끄라는 거 제보 메일 마지막 줄이었어요', typing: 1100 },
       { t: 'msg', th: 'dohyun', text: '그때 가지 말라고 더 말렸어야 했는데', typing: 1600 },
-      { t: 'wait', ms: 17000 },
-      { t: 'wait', ms: 35000 },
+      { t: 'wait', ms: 52000 },
       { t: 'emit', ev: 'album:added' },
     ],
   },
@@ -600,7 +607,7 @@ export const BEATS: Beat[] = [
       { t: 'note', id: 'n4' },
       { t: 'memo', id: 'm2' },
       { t: 'notify', app: 'memos', title: '녹음', body: '새 녹음 18이 저장되었습니다.' },
-      { t: 'msg', th: 'unknown', text: '그쪽이 오늘 이 폰으로 한 거, 다 녹음돼 있어요.', typing: 1800, attach: { kind: 'memo', id: 'm2' } },
+      { t: 'msg', th: 'unknown', text: '그쪽이 오늘 이 전화기로 한 거, 다 녹음돼 있어요.', typing: 1800, attach: { kind: 'memo', id: 'm2' } },
       // time to actually listen to recording 18 (up to ~37 s) before the last minutes pile up
       { t: 'wait', ms: 32000 },
       { t: 'time', hm: '01:52' },
@@ -618,9 +625,9 @@ export const BEATS: Beat[] = [
       { t: 'wait', ms: 4000 },
       { t: 'msg', th: 'dohyun', text: '근데 그쪽 뒤에 서 있는 사람 누구예요?', typing: 1400 },
       { t: 'wait', ms: 2600 },
-      // he filmed it: the clip is just the booth in the rain. Only his eyes saw her.
+      // he filmed it: the clip is just you in the booth, alone. Only his eyes saw her.
       { t: 'photo', id: 'v02' },
-      { t: 'msg', th: 'dohyun', text: '찍었는데 영상엔 아무도 없어요', typing: 1300, attach: { kind: 'photo', id: 'v02' } },
+      { t: 'msg', th: 'dohyun', text: '찍었는데 영상엔 그쪽밖에 없어요', typing: 1300, attach: { kind: 'photo', id: 'v02' } },
       { t: 'wait', ms: 4000 },
       { t: 'time', hm: '01:54' },
       { t: 'msg', th: 'dohyun', text: '뒤돌아보지 마요.', typing: 500 },
@@ -771,7 +778,7 @@ export const BEATS: Beat[] = [
     actions: [
       { t: 'wait', ms: 1500 },
       { t: 'msg', th: 'unknown', text: '{start}.', typing: 600 },
-      { t: 'msg', th: 'unknown', text: '이 폰 처음 집었을 때요. 그쪽 시계로.', typing: 1600 },
+      { t: 'msg', th: 'unknown', text: '이 전화기 처음 집었을 때요. 그쪽 시계로.', typing: 1600 },
     ],
   },
   {

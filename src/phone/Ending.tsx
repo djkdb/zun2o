@@ -65,7 +65,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
       { who: '발신자 정보 없음', text: '그때 쓰지 말라고 한 거', side: 'left' },
       { who: '발신자 정보 없음', text: '제 말 아니었어요', side: 'left' },
       // 채원 wrote "← 왜??" next to the tip email's last line. This is why.
-      { who: '발신자 정보 없음', text: '제보 메일에 폰 꺼 두라고 쓴 거', side: 'left' },
+      { who: '발신자 정보 없음', text: '제보 메일에 전화기 꺼 두라고 쓴 거', side: 'left' },
       { who: '발신자 정보 없음', text: '그건 제 말이었어요', side: 'left' },
       { who: '발신자 정보 없음', text: '불러 줘서 고마워요', side: 'left' },
       { who: '발신자 정보 없음', text: '이제 집에 갈게요', side: 'left' },
@@ -174,7 +174,7 @@ function endingFor(id: EndingId, save: Save): EndingDef {
     scene.splice(at, 0, { text: radio });
   }
   // You answered her mother as 소연. So the promise she waits on was yours.
-  if (id === 's2-daughter' && flags.includes('pretended')) scene[scene.length - 1] = { who: '엄마', text: '소연이가 두 시 전에는 온다고 했어요. 전화로 그랬어요. 목소리가 좀 이상했는데. 감기 걸렸나 봐요.', side: 'left' };
+  if (id === 's2-daughter' && flags.includes('pretended')) scene[scene.length - 1] = { ...scene[scene.length - 1], text: '소연이가 두 시 전에는 온다고 했어요. 전화로 그랬어요. 목소리가 좀 이상했는데. 감기 걸렸나 봐요.', side: 'left' };
   // You told her mother the truth, and she asked you for her daughter. You stayed instead.
   if (id === 's2-instead' && flags.includes('told-truth')) {
     const i = scene.findIndex((l) => l.text.startsWith('새벽 여섯 시 반'));

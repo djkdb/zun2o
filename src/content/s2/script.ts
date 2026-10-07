@@ -297,8 +297,9 @@ export const BEATS_S2: Beat[] = [
     requires: ['mom-site'],
     forbids: ['mom-knew'],
     actions: [
-      { t: 'wait', ms: 6000 },
+      // claimed at once, so arming the deletion meanwhile can't bring the other set of texts too
       { t: 'flag', f: 'mom-knew' },
+      { t: 'wait', ms: 6000 },
       // slow thumbs: the typing indicator is her acting
       { t: 'msg', th: 'mom', text: '소연아 엄마 다 봤다', typing: 3200 },
       { t: 'msg', th: 'mom', text: '지워도 된다', typing: 2200 },
@@ -312,8 +313,9 @@ export const BEATS_S2: Beat[] = [
     requires: ['copy-armed'],
     forbids: ['mom-knew'],
     actions: [
-      { t: 'wait', ms: 5000 },
+      // claimed at once, so arming the deletion meanwhile can't bring the other set of texts too
       { t: 'flag', f: 'mom-knew' },
+      { t: 'wait', ms: 5000 },
       // slow thumbs: the typing indicator is her acting
       { t: 'msg', th: 'mom', text: '소연아 엄마 다 봤다', typing: 3200 },
       { t: 'msg', th: 'mom', text: '지워도 된다', typing: 2200 },
@@ -327,8 +329,9 @@ export const BEATS_S2: Beat[] = [
     on: 's2:mom-site',
     forbids: ['copy-armed', 'mom-knew'],
     actions: [
-      { t: 'wait', ms: 5000 },
+      // claimed at once, so arming the deletion meanwhile can't bring the other set of texts too
       { t: 'flag', f: 'mom-knew' },
+      { t: 'wait', ms: 5000 },
       { t: 'msg', th: 'mom', text: '소연아 엄마 다 봤다', typing: 3200 },
       { t: 'msg', th: 'mom', text: '그거 지우면 엄마도 가는 거지', typing: 2800 },
       { t: 'msg', th: 'mom', text: '손이 그렇게 말한다', typing: 2200 },

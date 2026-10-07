@@ -133,7 +133,7 @@ export function Finale2() {
             {`${WRITTEN}연`.slice(0, total - erased)}
           </text>
           <text ref={inkRef} x="44" y="74" fontFamily={HAND} fontSize="27" fill="#24252e">
-            {outcome === 'watch' && progress ? `${WRITTEN}연` : WRITTEN.slice(0, Math.min(ink, total - 1 - erased))}
+            {outcome === 'watch' && progress ? `${WRITTEN}연` : WRITTEN.slice(0, Math.max(0, Math.min(ink, total - 1 - erased)))}
           </text>
           {outcome === 'sign' && strike && <line x1={strike[0] - 2} x2={strike[1] + 2} y1="64" y2="62" stroke="#24252e" strokeWidth="2" strokeLinecap="round" />}
           {outcome === 'sign' && (
