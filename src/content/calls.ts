@@ -10,10 +10,11 @@ export const CALLS: Record<string, CallScript> = {
     duration: 0,
     lines: [
       { at: 500, who: 'sfx', text: '(숨소리)' },
-      { at: 2200, who: 'other', text: '…들려요?', voice: 'entity' },
-      { at: 4600, who: 'other', text: '문은 열어 뒀어요.', voice: 'entity' },
-      { at: 7000, who: 'other', text: '채원 씨도 어젯밤 이 전화를 받았어요.', voice: 'entity' },
-      { at: 10400, who: 'sfx', text: '(통화 종료)' },
+      // breathing long enough that you think of saying hello — then she answers that
+      { at: 3400, who: 'other', text: '…들려요?', voice: 'entity' },
+      { at: 5800, who: 'other', text: '문은 열어 뒀어요.', voice: 'entity' },
+      { at: 8200, who: 'other', text: '채원 씨도 어젯밤 이 전화를 받았어요.', voice: 'entity' },
+      { at: 11600, who: 'sfx', text: '(통화 종료)' },
     ],
   },
   dohyun1: {
@@ -52,7 +53,6 @@ export const CALLS: Record<string, CallScript> = {
       { at: 700, who: 'caller', text: '(숨소리) …들려요? 저 제2서고 안이에요.', voice: 'male' },
       { at: 4000, who: 'caller', text: '서랍이 끝이 없어요. 채원이 목소리가 계속 저 안쪽에서—', voice: 'male' },
       { at: 7800, who: 'sfx', text: '(서랍 수백 개가 한꺼번에 열리는 소리)' },
-      { at: 9400, who: 'other', text: '끄지 마세요.', voice: 'entity' },
       { at: 11600, who: 'other', text: '도현 씨 목소리, 비슷했죠?', voice: 'entity' },
       { at: 14600, who: 'sfx', text: '(통화 종료)' },
     ],

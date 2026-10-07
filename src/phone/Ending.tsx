@@ -11,7 +11,8 @@ interface EndingDef {
   n: number;
   title: string;
   line: string;
-  scene: { who?: string; text: string; side?: 'left' | 'right'; img?: ArtSlot }[];
+  /** `pause`: extra quiet (ms) before this line — the last sentence doesn't come on the same beat as the rest. */
+  scene: { who?: string; text: string; side?: 'left' | 'right'; img?: ArtSlot; pause?: number }[];
 }
 
 const ENDINGS: Record<EndingId, EndingDef> = {
@@ -21,14 +22,16 @@ const ENDINGS: Record<EndingId, EndingDef> = {
     line: '당신은 도망쳤다. 02:00, 출입 기록에는 도현의 이름이 적혔다.',
     scene: [
       { text: '폰은 다시 켜지지 않았다.' },
+      // 00:47, his call: "두 시 전에는 그 폰 꺼요. 꼭이요."
+      { text: '그 폰을 끄라고 한 건 도현이었다.' },
       { text: '02:00. 해원고등학교 도서관 3층, 제2서고.' },
       { text: '방문자 #0027 — 도주. 방문자 #0028 강도현 — 안에 있음' },
       { text: '새벽 여섯 시, 전화부스 안에서 채원이 깨어났다. 도현의 이름을 부르면서.' },
       { text: '그날 저녁 채원은 집에 갔다. 엄마는 미역국을 데웠다. 채원은 한 숟가락도 뜨지 못했다.' },
       { text: '다음 날 밤, 같은 공중전화 부스. 선반 위에 휴대폰 한 대가 놓여 있다. 도현의 폰이다.' },
       { text: '화면이 켜진다. 배터리 12%.' },
-      { text: '방문자 #0029 — 대기' },
-      { who: '발신자 정보 없음', text: '들어오세요.', side: 'left' },
+      { text: '방문자 #0029 — 대기', pause: 1500 },
+      { who: '발신자 정보 없음', text: '들어오세요.', side: 'left', pause: 2400 },
     ],
   },
   shift: {
@@ -39,11 +42,14 @@ const ENDINGS: Record<EndingId, EndingDef> = {
       { who: '나에게', text: '…나왔어. 해가 떠', side: 'right' },
       { who: '도현', text: '채원이랑 같이 전화부스 안에서 깼어요. 둘 다 무사해요', side: 'left' },
       { who: '도현', text: '근데 그쪽은 어디 있어요? 이 폰만 선반에 있어요', side: 'left' },
-      { text: '이름을 적는 사람 — {name}. 처음 적힌 사람의 이름은 31년 만에 지워졌다.' },
+      { text: '이름을 적는 사람 — {name}. 처음 적힌 사람은 31년 만에 풀려났다.' },
       { text: '열람실 의자에 외투 하나가 걸렸다. 31년 동안 걸려 있던 것과 자리만 같다.', img: 'chair-coat' },
       { text: '같은 새벽, 해원시의 한 아파트. 현관 센서등이 혼자 켜졌다가 꺼졌다.' },
-      { text: '1년 뒤. 해원고 정문 앞 공중전화 부스.' },
-      { who: '발신자 정보 없음', text: '들어오세요. 저는 {name}{이에요}. 오래 기다렸어요.', side: 'left' },
+      { text: '1년 뒤. 해원고 정문 앞 공중전화 부스.', pause: 2000 },
+      // record 013: "여기 묶이면 자기 이름은 입 밖으로 안 나옵니다." Now it's you who needs someone to ask.
+      { who: '발신자 정보 없음', text: '들어오세요.', side: 'left' },
+      { who: '발신자 정보 없음', text: '저는', side: 'left' },
+      { who: '발신자 정보 없음', text: '…이상하네요. 분명히 아는데, 안 나와요.', side: 'left', pause: 1800 },
     ],
   },
   release: {
@@ -53,17 +59,20 @@ const ENDINGS: Record<EndingId, EndingDef> = {
     scene: [
       { who: '도현', text: '채원이랑 나왔어요!!! 둘 다 살아 있어요', side: 'left' },
       { who: '도현', text: '서랍 다 비어 있었어요 카드 한 장도 없어요', side: 'left' },
-      { who: '도현', text: '(채원) 엄마한테 전화했어요 미역국 아직 있대요 ㅠㅠ', side: 'left' },
+      { who: '도현', text: '채원이가 엄마한테 전화했어요 그쪽 얘기도 했대요 미역국 아직 있대요 ㅠㅠ', side: 'left' },
       { who: '엄마', text: '누구신지는 모르지만 정말 감사합니다 복받으실거에요', side: 'left' },
       { who: '발신자 정보 없음', text: '서미령이에요.', side: 'left' },
       { who: '발신자 정보 없음', text: '그때 쓰지 말라고 한 거', side: 'left' },
       { who: '발신자 정보 없음', text: '제 말 아니었어요', side: 'left' },
+      // 채원 wrote "← 왜??" next to the tip email's last line. This is why.
+      { who: '발신자 정보 없음', text: '제보 메일에 폰 꺼 두라고 쓴 거', side: 'left' },
+      { who: '발신자 정보 없음', text: '그건 제 말이었어요', side: 'left' },
       { who: '발신자 정보 없음', text: '불러 줘서 고마워요', side: 'left' },
       { who: '발신자 정보 없음', text: '이제 집에 갈게요', side: 'left' },
-      { text: '(대화 상대를 찾을 수 없습니다)' },
+      { text: '(대화 상대를 찾을 수 없습니다)', pause: 2400 },
       { text: '열람실 의자에 31년 동안 걸려 있던 외투가 없어졌다.', img: 'chair-empty' },
       { text: '같은 새벽, 해원시의 한 아파트. 마흔두 살 여자가 잠에서 깼다. 현관에서 누가 “엄마 왔다” 하고 말한 것 같았다.', img: 'miryeong-daughter' },
-      { text: '다음 날 아침, 비가 그쳤다. 공중전화 부스의 선반은 비어 있다.' },
+      { text: '다음 날 아침, 비가 그쳤다. 공중전화 부스의 선반은 비어 있다.', pause: 2000 },
     ],
   },
   // ── 시즌 2 「귀가」 ──
@@ -74,13 +83,13 @@ const ENDINGS: Record<EndingId, EndingDef> = {
     scene: [
       { who: '채원', text: '도현이 나왔어요!! 전화부스에서 자고 있었어요', side: 'left' },
       { who: '채원', text: '근데 언니가 안 나와요', side: 'left' },
-      { who: '채원', text: '(도현) 안에서 소연 씨가 저 깨웠어요. 문까지 데려다주고 다시 들어갔어요', side: 'left' },
+      { who: '채원', text: '도현이가 그러는데 안에서 언니가 자기 깨웠대요. 문까지 데려다주고 다시 들어갔대요', side: 'left' },
       { text: '02:00. 노트의 마지막 줄: 9월 28일 02:00 — 한소연.' },
       { text: '그 뒤로 엄마 손에 잉크가 묻는 일은 없었다.' },
-      { text: '10월 28일 02:00. 제2서고 서랍에 카드가 한 장 늘었다. {name}. 글씨는 소연의 것이었다.', img: art('s2-card') ? 's2-card' : 'index-card' },
       { text: '10월 2일, 해원경찰서. 실종 신고서 신고자 칸: 서미령(41). 관계: 어머니.' },
       { text: '엄마는 매일 밤 창가에 앉아 있다. 마흔한 살의 얼굴로.' },
-      { who: '엄마', text: '소연이가 두 시 전에는 온다고 했어요.', side: 'left' },
+      { text: '10월 28일 02:00. 제2서고 서랍에 카드가 한 장 늘었다. {name}. 글씨는 소연의 것이었다.', img: art('s2-card') ? 's2-card' : 'index-card' },
+      { who: '엄마', text: '소연이가 두 시 전에는 온다고 했어요.', side: 'left', pause: 2400 },
     ],
   },
   's2-instead': {
@@ -92,13 +101,12 @@ const ENDINGS: Record<EndingId, EndingDef> = {
       { who: '나에게', text: '왜 그랬어요', side: 'right' },
       { who: '나에게', text: '엄마한테 갔다 올게요. 다음 달 28일 전에는 와요. 꼭', side: 'right' },
       { who: '채원', text: '도현이랑 언니 둘 다 전화부스에서 깼어요. 이 폰만 선반에 있어요', side: 'left' },
-      { who: '채원', text: '(도현) 작년엔 제가 입구에서 기다리기만 했거든요. 이번엔 정문에서 기다릴게요. 그쪽 나올 때까지', side: 'left' },
+      { who: '채원', text: '도현이가 전해 달래요. 작년엔 너무 늦게 들어갔대요. 이번엔 정문에서 기다린대요. 그쪽 나올 때까지', side: 'left' },
       { text: '02:00. 노트의 마지막 줄: “한소” 위에 줄. 그 아래 — {name}.' },
       { text: '새벽 여섯 시 반. 현관문이 열리자 엄마가 식탁에서 일어났다. 엄마는 아무것도 묻지 않고 국을 데웠다.' },
       { text: '엄마 손은 그날 이후 다시는 볼펜을 쥐지 않았다.' },
       { text: '1년 뒤. 해원고 정문 앞 공중전화 부스. 선반 위에 휴대폰 한 대.', img: 'booth-shelf' },
-      { text: '메모 앱 맨 위 — “이 폰을 주운 사람에게. {name}{이에요}. 부탁이 하나 있어요. 두 시 전에”' },
-      { text: '(동기화 오류: 이후 내용이 손상되었습니다)' },
+      { text: '메모 앱 맨 위 — “이 폰을 주운 사람에게. {name}{이에요}. 부탁이 하나 있어요. 두 시 전에”', pause: 1800 },
     ],
   },
   's2-home': {
@@ -108,14 +116,13 @@ const ENDINGS: Record<EndingId, EndingDef> = {
     scene: [
       { text: '기록 013 (사본) — 삭제되었습니다. 이 기록을 보는 사람: 0' },
       { who: '채원', text: '도현이 나왔어요. 언니도요!!!', side: 'left' },
-      { who: '채원', text: '(도현) 깨 보니까 소연 씨가 제 손 잡고 있었어요. 문 열리자마자 뛰어가셨어요. 신발도 한 짝 놓고요', side: 'left' },
+      { who: '채원', text: '도현이가 그러는데 깨 보니까 언니가 손 잡고 있었대요. 문 열리자마자 뛰어가셨대요. 신발도 한 짝 놓고요', side: 'left' },
       { who: '나에게', text: '엄마한테 전화가 안 돼요', side: 'right' },
       { text: '새벽 여섯 시 십 분, 소연은 집 현관문을 열었다. 학교에 들고 갔던 노트가 식탁 위에 펼쳐져 있었다.' },
       { text: '열한 개의 이름 위에 줄이 그어져 있었다. 마지막 장, “9월 28일 02:00 — 한소” 위에도. 그 아래, 같은 볼펜으로.' },
       { text: '“소연아 엄마 왔다 간다 / 국 끓여 놨다 데워 먹어라 / 두 시 전에는 자라”', img: 'miryeong-daughter' },
       { text: '의자에 걸려 있던 외투가 없었다.' },
-      { text: '가스레인지 위 냄비가 아직 따뜻했다.' },
-      { text: '공중전화 부스 선반은 그 뒤로 쭉 비어 있었다.' },
+      { text: '가스레인지 위 냄비가 아직 따뜻했다.', pause: 2000 },
     ],
   },
 };
@@ -140,8 +147,8 @@ function endingFor(id: EndingId, save: Save): EndingDef {
       { text: '채원 엄마는 그 주 내내 미역국을 버리지 못했다.' },
       { text: '다음 날 밤, 같은 공중전화 부스. 선반 위에 휴대폰 한 대가 놓여 있다. 채원의 폰이다.' },
       { text: '화면이 켜진다. 배터리 12%.' },
-      { text: '방문자 #0028 — 대기' },
-      { who: '발신자 정보 없음', text: '들어오세요.', side: 'left' },
+      { text: '방문자 #0028 — 대기', pause: 1500 },
+      { who: '발신자 정보 없음', text: '들어오세요.', side: 'left', pause: 2400 },
     ];
   }
   if (keptOut && id === 'shift') scene[1] = { who: '도현', text: '채원이 정문으로 걸어 나왔어요. 저는 밖에서 기다렸어요. 둘 다 무사해요', side: 'left' };
@@ -152,7 +159,7 @@ function endingFor(id: EndingId, save: Save): EndingDef {
   // Her name, at last — answering the first thing you said to her.
   if (id === 'release') {
     const i = scene.findIndex((l) => l.text === '서미령이에요.');
-    const said = { who: '처음에 누구냐고 물었죠. 서미령이에요.', yes: '서미령이에요. 그 폰, 이제 내려놔도 돼요.', silent: '서미령이에요. 처음에 대답 안 했죠. 저도 31년 동안 이 말을 못 했어요.' }[choices.c1 ?? ''];
+    const said = { who: '처음에 누구냐고 물었죠. 서미령이에요.', yes: '서미령이에요. 그 전화기, 이제 내려놔도 돼요.', silent: '서미령이에요. 처음에 대답 안 했죠. 저도 31년 동안 이 말을 못 했어요.' }[choices.c1 ?? ''];
     if (i >= 0 && said) scene[i] = { ...scene[i], text: said };
   }
   // You called 1340 and heard her count. The radio goes on counting — or stops.
@@ -163,7 +170,8 @@ function endingFor(id: EndingId, save: Save): EndingDef {
       release: '그날 이후로 1340에 전화를 걸면, 신호만 가다 끊긴다.',
     }[id as 'poweroff' | 'shift' | 'release'];
     // (in ending 2 it happens before "1년 뒤")
-    scene.splice(scene.length - (id === 'shift' ? 2 : 1), 0, { text: radio });
+    const at = id === 'shift' ? scene.findIndex((l) => l.text.startsWith('1년 뒤')) : scene.length - 1;
+    scene.splice(at, 0, { text: radio });
   }
   // You answered her mother as 소연. So the promise she waits on was yours.
   if (id === 's2-daughter' && flags.includes('pretended')) scene[scene.length - 1] = { who: '엄마', text: '소연이가 두 시 전에는 온다고 했어요. 전화로 그랬어요. 목소리가 좀 이상했는데. 감기 걸렸나 봐요.', side: 'left' };
@@ -175,7 +183,13 @@ function endingFor(id: EndingId, save: Save): EndingDef {
   }
   // She has your name. Running doesn't take it back.
   if (id === 'poweroff' && flags.includes('gave-name')) {
-    scene.splice(scene.length - 1, 1, { text: '그날부터 당신의 휴대폰은 새벽 두 시가 되면 12%에서 멈춘다.' }, { who: '발신자 정보 없음', text: '이름은 적어 뒀어요, {name} 씨. 들어오세요.', side: 'left' });
+    scene.splice(
+      scene.length - 1,
+      1,
+      { text: '그날부터 당신의 휴대폰은 새벽 두 시가 되면 12%에서 멈춘다.' },
+      { who: '발신자 정보 없음', text: '{name} 씨 이름은 적어 뒀어요.', side: 'left', pause: 1500 },
+      { who: '발신자 정보 없음', text: '들어오세요.', side: 'left', pause: 1200 },
+    );
   }
   return { ...base, line, scene };
 }
@@ -194,24 +208,31 @@ export function EndingScreen({ id }: { id: EndingId }) {
   const found = endings.filter((e) => e.startsWith('s2-') === s2).length;
   const bg: ArtSlot | null = s2 ? (id === 's2-daughter' && art('s2-window') ? 's2-window' : (S2_BG[id] ?? null)) : (`ending-${id}` as ArtSlot);
   const [shown, setShown] = useState(0);
+  const [cardIn, setCardIn] = useState(false);
   const [windowClip, setWindowClip] = useState(() => !(typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches));
 
   useEffect(() => {
     sfx('ending');
     // each line stays long enough to be read (aloud, too): a long line holds longer than "(대화 상대를 찾을 수 없습니다)"
     let at = 1400;
+    const last = def.scene.length - 1;
     const ts = def.scene.map((l, i) => {
+      at += l.pause ?? 0;
       const t = setTimeout(() => {
         setShown(i + 1);
-        sfx(i === def.scene.length - 1 ? 'thud' : 'ding');
+        // a chat bubble chimes; a line of narration is read in silence
+        if (i === last) sfx('thud');
+        else if (l.who) sfx('ding');
       }, at);
-      at += Math.max(1700, 900 + l.text.length * 60);
+      if (i < last) at += Math.max(1800, 1000 + l.text.length * 70);
       return t;
     });
+    // the card (and the way out of the story) only after the last line has had its quiet
+    ts.push(setTimeout(() => setCardIn(true), at + (id === 'release' || id === 's2-home' ? 5000 : 3500)));
     return () => ts.forEach(clearTimeout);
-  }, [def]);
+  }, [def, id]);
 
-  const done = shown >= def.scene.length;
+  const done = shown >= def.scene.length && cardIn;
   // each new line (and the card at the end) comes into view, like a chat scrolling on its own
   const box = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -254,7 +275,7 @@ export function EndingScreen({ id }: { id: EndingId }) {
           <h2>{def.title}</h2>
           <p>{def.line}</p>
           {id === 'release' && new Date().getHours() === 2 && <p className="badge-real">★ 진짜 새벽 2시에 기록을 지웠습니다</p>}
-          {found < 3 && <p className="ending-more">다른 선택도 있습니다. 결말은 세 가지.</p>}
+          {found < 3 && <p className="ending-more">다른 선택도 있습니다.</p>}
           {found < 3 && (
             <button type="button" onClick={() => replayFinale() || newGame()}>
               02:00부터 다시 (다른 선택)

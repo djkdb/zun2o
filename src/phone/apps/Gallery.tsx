@@ -18,7 +18,8 @@ function shownTime(p: PhotoItem): string {
 }
 
 /** Photos that change if you stare at them zoomed in. */
-const DWELL_PHOTOS = ['p03', 'p05', 'p08'];
+// p08 stays as it is: someone photographed you from the 3rd floor, and that is the whole fear.
+const DWELL_PHOTOS = ['p03', 'p05'];
 
 /** The clips in the gallery: 채원's recovered stairs video, and the one 도현 sends from across the street. */
 const CLIPS = {

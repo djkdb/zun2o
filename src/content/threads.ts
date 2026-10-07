@@ -83,7 +83,7 @@ export const INITIAL_THREADS: Record<ThreadId, ChatMsg[]> = {
   dohyun: [
     m('me', '20:31', '오늘 밤 해원고 폐교 간다 🔦', D26),
     m('them', '20:32', '거기 진짜 가? 새벽 2시 괴담 있는 데?'),
-    m('me', '20:33', 'ㅇㅇ 제보 메일 왔거든. 정문 앞 공중전화 부스에 누가 폰을 두고 갔대'),
+    m('me', '20:33', 'ㅇㅇ 제보 메일 왔거든 정문 앞 공중전화 부스에 누가 폰 두고 갔대'),
     m('me', '20:33', '작년에 거기서 실종된 대학생 폰이래 ㄷㄷ 그거 줍는 게 오프닝'),
     m('them', '20:35', '그걸 왜 주워… 나 안에는 안 들어간다. 입구까지만'),
     m('me', '00:58', '헐 전화부스에 진짜 폰 있음 ㅋㅋㅋ 배터리 12%', D27),
@@ -144,7 +144,7 @@ export const INITIAL_THREADS: Record<ThreadId, ChatMsg[]> = {
     m('me', '15:31', '괴담 요약 → 메모 앱에 정리함'),
     m('me', '15:40', '숨김 앨범 비번 바꿈. 힌트는 메모에'),
   ],
-  unknown: [m('them', '02:00', '방문해 주셔서 감사합니다.', D27)],
+  unknown: [m('them', '02:00', '방문자 #0026 윤채원 님. 방문해 주셔서 감사합니다.', D27)],
 };
 
 export const INITIAL_UNREAD: Record<ThreadId, number> = { dohyun: 18, mom: 9, self: 0, unknown: 1 };

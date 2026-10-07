@@ -131,7 +131,7 @@ export const NOTES: Record<string, NoteItem> = {
 들어옴: {start} (폰을 주운 시각)
 열람: 사진 {photos}장, 녹음 {memos}개
 
-02:00까지 얼마 남지 않았습니다.`,
+다음 기록: 02:00`,
   },
   // 시즌 2
   ...NOTES_S2,

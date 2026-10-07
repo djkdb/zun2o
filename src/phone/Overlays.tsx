@@ -301,15 +301,11 @@ function ActiveCall({ id }: { id: string }) {
             },
             l.who === 'sfx' ? 1600 : Math.min(4200, 600 + l.text.length * 95),
           );
-          // When *she* speaks on the line, her face flickers on the screen.
-          // …and the speaker turns itself on: she wants to be heard in the room.
+          // When *she* speaks on 도현's line the speaker turns itself on: she wants to be heard
+          // in the room. No face — the voice is enough.
           if (l.who === 'other' && call.from === 'dohyun') {
             setHijacked(true);
             setSpeaker(true);
-          }
-          if (l.who === 'other' && call.from === 'dohyun') {
-            setRt({ scare: { kind: 'reflect', nonce: Date.now() } });
-            setTimeout(() => setRt({ scare: null }), 320);
           }
         }, l.at),
       ),

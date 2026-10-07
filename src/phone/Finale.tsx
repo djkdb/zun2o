@@ -4,7 +4,6 @@ import { mix, reachEnding, sfx, vibrate } from '../engine/director';
 import { getState } from '../engine/state';
 import { HomeScreen } from './HomeScreen';
 import { VideoFeed } from '../art/phonePhotos';
-import { GhostVisual } from '../art/Ghost';
 import { speak } from '../audio/speech';
 import { ARCHIVE, CONTINUATION_KEY, FIRST_KEEPER, plain } from '../content/archive';
 import { ASKS_NAME } from '../content/replies';
@@ -29,7 +28,7 @@ const FLOOD = [
   ['도현', '채원아 제발'],
   ['발신자 정보 없음', '{name} 씨, 시간 됐어요'],
   ['나에게', '살려줘'],
-  ['발신자 정보 없음', '두 시예요. 이름을 적을 시간이에요'],
+  ['발신자 정보 없음', '앉으세요.'],
 ];
 
 /** When the choices (or an input) appear under the long recall text, bring them on screen:
@@ -42,9 +41,16 @@ function reveal(el: HTMLElement | null): void {
   setTimeout(() => box?.scrollTo({ top: box.scrollHeight, behavior: smooth ? 'smooth' : 'auto' }), 80);
 }
 
-function useTyped(lines: string[], active: boolean, speed = 38): string[] {
+/** A line of the 02:00 recall; `pause` (ms) is extra silence before it — the confession isn't typed at the speed of a statistic. */
+interface RecallLine {
+  text: string;
+  pause?: number;
+}
+
+function useTyped(lines: RecallLine[], active: boolean, speed = 38): string[] {
   const [n, setN] = useState(0);
-  const total = lines.reduce((a, l) => a + l.length + 8, 0);
+  const gap = (l: RecallLine, i: number) => (i ? 8 : 0) + Math.round((l.pause ?? 0) / speed);
+  const total = lines.reduce((a, l, i) => a + gap(l, i) + l.text.length, 0);
   useEffect(() => {
     if (!active) return;
     const iv = setInterval(() => setN((x) => (x >= total ? x : x + 1)), speed);
@@ -52,22 +58,22 @@ function useTyped(lines: string[], active: boolean, speed = 38): string[] {
   }, [active, total, speed]);
   const out: string[] = [];
   let left = n;
-  for (const l of lines) {
-    if (left <= 0) break;
-    out.push(l.slice(0, left));
-    left -= l.length + 8;
-  }
+  lines.forEach((l, i) => {
+    left -= gap(l, i);
+    if (left <= 0) return;
+    out.push(l.text.slice(0, left));
+    left -= l.text.length;
+  });
   return out;
 }
 
 /** What the index says about you. Written once, when it speaks. */
-function buildRecall(): string[] {
+function buildRecall(): RecallLine[] {
   const s = getState().save;
-  const lines = [
+  const lines: string[] = [
     '야간 출입 기록 — 02:00:00',
     `방문자 #0027  ${s.playerName ?? '(이름을 알려 주지 않음)'}`,
-    `그 폰 집은 지 ${Math.max(1, Math.round((Date.now() - s.startedAtReal) / 60000))}분. 그쪽 시계로요.`,
-    `사진 ${s.seenPhotos.length}장 봤죠.`,
+    `그 전화기 집은 지 ${Math.max(1, Math.round((Date.now() - s.startedAtReal) / 60000))}분. 그쪽 시계로요.`,
     s.flags.includes('read-mom') ? '채원 씨 어머니 문자도 읽었죠.' : '채원 씨 어머니 문자는 끝까지 안 읽었죠.',
   ];
   // What you did tonight, the most telling first. Never more than two:
@@ -79,13 +85,13 @@ function buildRecall(): string[] {
     [s.flags.includes('heard-line'), '통화, 안 끊겼죠. 23시 53분부터 계속 듣고 있었어요.'],
     [s.flags.includes('turned'), '1시 54분에 돌아봤죠. 저도 같이 돌았어요.'],
     [s.flags.includes('held'), '끝까지 안 돌아봤죠. 저 계속 뒤에 있었는데.'],
-    [s.flags.includes('kept-out'), '도현 씨를 밖에 세워 뒀죠. 1994년 그날 밤엔 아무도 저를 밖에 세워 주지 않았어요.'],
+    [s.flags.includes('kept-out'), '도현 씨한테 밖에 있으라고 했죠. 1994년 그날 밤엔 저한테 그렇게 말해 준 사람이 없었어요.'],
     [s.flags.includes('named-her'), '그 이름 보냈죠. …한참 아무 말도 못 했어요.'],
     [!!typed, `“${typed}”라고 보냈죠. 다 적어 뒀어요.`],
     [toMom, '채원 씨 어머니한테 답장하려고 했죠. 제가 안 보냈어요.'],
     [s.choices.c3 === 'chaewon', '채원 씨 이름을 먼저 불러 줬죠. 그 애가 울었어요.'],
     [s.flags.includes('dwelt'), '사진 오래 봤죠. 저도 그쪽 보고 있었어요.'],
-    [s.flags.includes('zoomed-booth'), '부스 안에 있는 자기 사진, 확대해 봤죠.'],
+    [s.flags.includes('zoomed-booth'), '부스 안에 있는 그쪽 사진, 확대해 봤죠.'],
     [s.flags.includes('hung-once') || (s.flags.includes('declined-once') && !s.flags.includes('missed-dohyun')), '도현 씨 전화를 끊었죠. 그래도 그 사람은 왔어요.'],
     [s.flags.includes('missed-dohyun') && !s.flags.includes('hung-once'), '도현 씨 전화, 받지 않았죠. 그래도 그 사람은 왔어요.'],
     [s.choices.c1 === 'silent', '처음부터 대답하지 않았죠. 그래도 전부 읽었잖아요.'],
@@ -101,15 +107,17 @@ function buildRecall(): string[] {
   lines.push('#0025 박현우. #0026 윤채원. 그리고 #0027, 그쪽.');
   lines.push(
     s.flags.includes('kept-out')
-      ? '도현 씨는 밖에 있어요. 그쪽 말 들었죠. 그럼 그쪽이 안 남으면 채원 씨가 계속 남아요.'
+      ? '도현 씨는 그쪽 말 듣고 밖에 있어요. 그쪽이 안 남으면 채원 씨가 계속 여기 있어요.'
       : '도현 씨 지금 제2서고에 있어요. 그쪽이 안 남으면 도현 씨가 남아요.',
   );
-  lines.push('이름 계속 물어본 거요. 적어야 해서.');
   // the one question nobody asks her — unless you did
   const askedName = toHer.some((t) => ASKS_NAME.test(t) && !/내 이름|제 이름/.test(t));
-  lines.push(askedName ? '…제 이름 물어본 사람은 그쪽이 처음이었어요.' : s.choices.c1 === 'who' ? '누구냐고는 물었죠. 이름은 아무도 안 물어봤어요.' : '…근데 제 이름 물어본 사람은 없었어요.');
-  lines.push('이제 한 명은 남아야 돼요.');
-  return lines;
+  return [
+    ...lines.map((text) => ({ text })),
+    { text: '이름 계속 물어본 거요. 적어야 해서.', pause: 1500 },
+    { text: askedName ? '…제 이름 물어본 사람은 그쪽이 처음이었어요.' : s.choices.c1 === 'who' ? '누구냐고는 물었죠. 이름은 아무도 안 물어봤어요.' : '…근데 제 이름 물어본 사람은 없었어요.', pause: 1200 },
+    { text: '이제 한 명은 남아야 돼요.', pause: 1800 },
+  ];
 }
 
 export function Finale() {
@@ -124,8 +132,14 @@ export function Finale() {
   const [input, setInput] = useState('');
   const [err, setErr] = useState('');
   const [tries, setTries] = useState(0);
-  const [scare, setScare] = useState(false);
-  const [recall, setRecall] = useState<string[]>([]);
+  const [recall, setRecall] = useState<RecallLine[]>([]);
+  // 02:00 video call: 채원's picture stops, then your own camera goes black — something behind you covered it
+  const [frozen, setFrozen] = useState(false);
+  const [covered, setCovered] = useState(false);
+  const [ended, setEnded] = useState(false);
+  const clipRef = useRef<HTMLVideoElement>(null);
+  // the true name: the screen holds still before anything else happens
+  const [released, setReleased] = useState(false);
   const [pip, setPip] = useState(0);
   const [slide, setSlide] = useState(0);
   const [blackout, setBlackout] = useState(false);
@@ -141,14 +155,15 @@ export function Finale() {
     const at = (ms: number, f: () => void) => setTimeout(f, ms);
     const ts = [
       at(1400, () => setBrink(1)), // messages stop going out
-      at(2900, () => (setBrink(2), sfx('ding'))), // 도현 calls — and can't get through
+      at(2900, () => (setBrink(2), sfx('buzz'))), // 도현 calls — and can't get through
       at(4600, () => setBrink(3)),
       at(5400, () => (setBrink(4), sfx('zoom'))), // the gallery opens by itself: a photo taken just now
       at(7000, () => setBrink(5)), // home
       at(7900, () => setBrink(6)), // the camera-in-use dot
       // 02:00:00 — everything stops. Silence first, then the night lands.
       at(8900, () => (setBrink(7), mix(0, 0, 0.25), setSave({ clock: '02:00' }))),
-      at(12000, () => setStep('freeze')),
+      // the night's one real silence — the 01:59 hush was dropped so this one is whole
+      at(13400, () => setStep('freeze')),
     ];
     return () => ts.forEach(clearTimeout);
   }, [step]);
@@ -177,10 +192,12 @@ export function Finale() {
     landed.current = ts;
   }, [step]);
 
-  // Ringing: auto-answers after 6 s — she does not wait.
+  // Ringing: no chime after the flood of dings — just the phone shaking in your hand. Auto-answers after 6 s.
   useEffect(() => {
     if (step !== 'ring') return;
-    const iv = setInterval(() => sfx('ding'), 900);
+    sfx('buzz');
+    vibrate([400, 200, 400]);
+    const iv = setInterval(() => vibrate([400, 200, 400]), 1800);
     const t = setTimeout(() => setStep('video'), 6000);
     return () => {
       clearInterval(iv);
@@ -196,7 +213,7 @@ export function Finale() {
       if (sound) speak(t, 'female');
     };
     const start = performance.now();
-    const iv = setInterval(() => setClose(Math.min(1, (performance.now() - start) / 9500)), 80);
+    const iv = setInterval(() => setClose((c) => (c >= 0.97 ? c : Math.min(0.97, (performance.now() - start) / 9500))), 80);
     const pipStart = performance.now() + 6500;
     const pipIv = setInterval(() => setPip(Math.max(0, Math.min(1, (performance.now() - pipStart) / 2600))), 80);
     const ts = [
@@ -207,15 +224,26 @@ export function Finale() {
         sfx('whisper');
         setUnstable(true);
       }, 6500),
+      // No second lunge. 채원's picture stops where it is; the sound goes; nothing happens.
       setTimeout(() => {
-        setScare(true);
-        sfx('scream');
-        vibrate([300, 60, 600]);
+        clipRef.current?.pause();
+        setFrozen(true);
+        setSub('');
+        mix(0, 0, 0.08);
       }, 9200),
+      // …then your own little window goes black. Whatever was behind you is covering the lens.
       setTimeout(() => {
-        setScare(false);
-        setStep('dark');
+        setCovered(true);
+        sfx('breath');
+        vibrate([30]);
+        if (!sound) setSub('(바로 뒤에서 숨소리)');
       }, 10600),
+      setTimeout(() => {
+        setSub('');
+        setEnded(true);
+        sfx('hangup');
+      }, 11800),
+      setTimeout(() => setStep('dark'), 12600),
     ];
     return () => {
       clearInterval(iv);
@@ -225,7 +253,7 @@ export function Finale() {
     };
   }, [step]);
 
-  // After the scare: two seconds of black, then the index speaks.
+  // After the call: two seconds of black, then the index speaks.
   useEffect(() => {
     if (step !== 'dark') return;
     const t = setTimeout(() => {
@@ -236,7 +264,7 @@ export function Finale() {
   }, [step]);
 
   const typed = useTyped(recall, step === 'recall');
-  const doneTyping = recall.length > 0 && typed.length === recall.length && typed[typed.length - 1] === recall[recall.length - 1];
+  const doneTyping = recall.length > 0 && typed.length === recall.length && typed[typed.length - 1] === recall[recall.length - 1].text;
   useEffect(() => {
     if (step === 'recall' && doneTyping) {
       const t = setTimeout(() => setStep('choice'), 900);
@@ -273,8 +301,13 @@ export function Finale() {
     // "서미령 씨", "미령 쌤 서미령", "서미령 선생님" — the name is what counts, not the honorific
     const typedName = input.replace(/\s/g, '').replace(/(씨|쌤|샘|선생님|님|사서님?)$/, '');
     if (typedName === FIRST_KEEPER) {
-      sfx('ending');
-      reachEnding('release');
+      // 31 years: the name lands in silence, the index signs her out, and only then the morning
+      setReleased(true);
+      mix(0, 0, 0.1);
+      setTimeout(() => {
+        sfx('ending');
+        reachEnding('release');
+      }, 3600);
       return;
     }
     const n = tries + 1;
@@ -379,13 +412,13 @@ export function Finale() {
       {step === 'video' && (
         <div className={`video-call${unstable ? ' unstable' : ''}`}>
           {clipOk && (
-            <video className="video-clip" autoPlay muted playsInline preload="auto">
+            <video ref={clipRef} className="video-clip" autoPlay muted playsInline preload="auto">
               <source src={VIDEO.videocall} type="video/mp4" />
               {/* the last source failing means nothing could play: fall back to the drawn feed */}
               <source src={VIDEO.videocallWebm} type="video/webm" onError={() => setClipOk(false)} />
             </video>
           )}
-          <VideoFeed close={Math.min(close, 0.3)} pip={pip} clip={clipOk} />
+          <VideoFeed close={Math.min(close, 0.3)} pip={pip} clip={clipOk} covered={covered} />
           <div className="video-top">
             <strong>채원</strong>
             <span className="video-status">
@@ -394,15 +427,16 @@ export function Finale() {
                 <i />
                 <i />
               </span>
-              {unstable ? '연결 상태 불안정' : `0:${String(Math.floor(close * 9.5)).padStart(2, '0')}`}
+              {frozen ? '0:09' : unstable ? '연결 상태 불안정' : `0:${String(Math.floor(close * 9.5)).padStart(2, '0')}`}
             </span>
           </div>
           {sub && (
             <p className="video-sub" aria-live="polite">
-              <span className="sub-who">채원</span>
+              {!covered && <span className="sub-who">채원</span>}
               <span>{sub}</span>
             </p>
           )}
+          {ended && <p className="video-toast">통화가 종료되었습니다</p>}
           {noHangup && <p className="video-toast">통화를 종료할 수 없습니다</p>}
           <div className="video-controls">
             <button type="button" className="call-ctl" disabled>
@@ -441,7 +475,7 @@ export function Finale() {
       )}
       {(step === 'recall' || step === 'choice' || step === 'key' || step === 'name' || step === 'sign') && (
         <div className="index-final">
-          {(step === 'recall' ? typed : recall).map((l, i) => (
+          {(step === 'recall' ? typed : recall.map((l) => l.text)).map((l, i) => (
             <p key={i}>{l}</p>
           ))}
           {step === 'choice' && (
@@ -504,7 +538,8 @@ export function Finale() {
               </button>
             </form>
           )}
-          {step === 'name' && (
+          {released && <p className="final-signed">02:00 — 서미령 · 퇴실</p>}
+          {step === 'name' && !released && (
             <form className="final-form" onSubmit={submitName} ref={reveal}>
               <label htmlFor="fn">처음 갇힌 사람의 이름</label>
               <input id="fn" autoFocus value={input} onChange={(e) => setInput(e.target.value)} autoComplete="off" />
@@ -523,12 +558,6 @@ export function Finale() {
       )}
       {step === 'off' && <div className="power-off" />}
       {blackout && <div className="blackout" />}
-      {scare && (
-        <div className={`scare scare-lunge${step === 'video' ? ' from-pip' : ''}${save.reduceFx ? ' scare-reduced' : ''}`}>
-          <GhostVisual className="ghost" look="face" />
-          <div className="scare-grain" />
-        </div>
-      )}
     </div>
   );
 }

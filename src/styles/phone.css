@@ -7411,3 +7411,18 @@ body,
 .settings .row > span:first-child + span {
   min-width: 0;
 }
+
+/* 02:00, the true name: the index signs her out before the morning comes */
+.final-signed {
+  margin-top: 18px;
+  color: #e9e3d6;
+  letter-spacing: 0.04em;
+  animation: final-signed 1.6s ease-out both;
+}
+@keyframes final-signed {
+  from { opacity: 0; filter: blur(2px); }
+  to { opacity: 1; filter: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .final-signed { animation: none; }
+}

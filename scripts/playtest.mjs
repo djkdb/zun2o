@@ -395,7 +395,7 @@ await page.fill('#fn', '서미령 씨');
 await tapText('입력');
 await waitFor('.ending-release', 10000);
 mark('ENDING 3 — 기록 삭제');
-await waitFor('.ending-card', 60000);
+await waitFor('.ending-card', 120000);
 await snap('ending-release');
 check('ending 3: at last she says her own name', (await page.textContent('.ending-scene')).includes('서미령이에요'));
 
@@ -420,7 +420,7 @@ for (const [label, cls] of [
     await tapText('서명한다');
   }
   await waitFor(`.ending-${cls}`, 10000);
-  await waitFor('.ending-card', 60000);
+  await waitFor('.ending-card', 120000);
   mark(`ENDING — ${label}`);
   await snap(`ending-${cls}`);
 }

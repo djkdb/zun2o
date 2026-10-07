@@ -118,6 +118,8 @@ export type Action =
   | { t: 'glitch'; ms: number }
   /** `caption`: shown as a "소리 인식" notice when the player has sound off. */
   | { t: 'sound'; id: SoundId; caption?: string }
+  /** Stop (or restart) a repeating sound — a stretch with no heartbeat is a breath before the last minute. */
+  | { t: 'loop'; id: 'heartbeat'; on: boolean }
   | { t: 'install'; app: AppId }
   | { t: 'note'; id: string }
   | { t: 'shuffle' }

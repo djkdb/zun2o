@@ -526,7 +526,8 @@ export const BoothShelfPhoto = memo(function BoothShelfPhoto() {
  * 0.35 something rises behind her shoulder and keeps coming.
  */
 /** `clip`: a real video plays underneath — draw only the overlay (your camera, top right). */
-export const VideoFeed = memo(function VideoFeed({ close = 0, pip = 0, clip = false }: { close?: number; pip?: number; clip?: boolean }) {
+/** `covered`: something behind you has put a hand over your camera — the little window goes black, still "on". */
+export const VideoFeed = memo(function VideoFeed({ close = 0, pip = 0, clip = false, covered = false }: { close?: number; pip?: number; clip?: boolean; covered?: boolean }) {
   const id = useSvgId();
   const her = Math.max(0, (close - 0.35) / 0.65);
   const photo = !!art('video-chaewon');
@@ -583,6 +584,7 @@ export const VideoFeed = memo(function VideoFeed({ close = 0, pip = 0, clip = fa
               </g>
             )}
           </g>
+          {covered && <rect x="272" y="96" width="96" height="140" rx="10" fill="#000" />}
           <text x="320" y="110" textAnchor="middle" fontFamily="IBM Plex Sans KR, sans-serif" fontSize="9" fill="#9a9">
             카메라 켜짐
           </text>

@@ -23,6 +23,8 @@ export const BEATS_S2: Beat[] = [
     actions: [
       { t: 'time', hm: '23:51' },
       { t: 'battery', v: 12 },
+      // nothing said: just six missed calls from 엄마, before you ever picked the phone up
+      { t: 'calllog', entry: { who: '엄마', time: '23:48', kind: 'missed', count: 6 } },
       {
         t: 'objective',
         text: '소연의 폰 잠금을 풀자',
@@ -60,7 +62,7 @@ export const BEATS_S2: Beat[] = [
     id: 's2-remembers',
     on: 'unlock',
     requires: ['s1-name'],
-    actions: [{ t: 'wait', ms: 30000 }, { t: 'msg', th: 'unknown', text: '작년에도 왔었죠, {s1name} 씨. 그때도 이 시간이었어요.', typing: 1800 }],
+    actions: [{ t: 'wait', ms: 30000 }, { t: 'msg', th: 'unknown', text: '{s1name} 씨. 작년에도 이 시간이었죠.', typing: 1500 }],
   },
   {
     id: 's2-remembers-typed',
@@ -110,14 +112,14 @@ export const BEATS_S2: Beat[] = [
     on: 'choice:s2c1:find',
     actions: [{ t: 'msg', th: 'unknown', text: '어디 있는지 알잖아요.', typing: 1000 }, { t: 'msg', th: 'unknown', text: '두 시에 거기 있을 거예요.', typing: 1200 }, { t: 'emit', ev: 's2c1:done' }],
   },
-  { id: 's2-c1-silent', on: 'choice:s2c1:silent', actions: [{ t: 'wait', ms: 2400 }, { t: 'msg', th: 'unknown', text: '말이 없네요. 다들 처음엔 그래요.', typing: 900 }, { t: 'emit', ev: 's2c1:done' }] },
+  { id: 's2-c1-silent', on: 'choice:s2c1:silent', actions: [{ t: 'wait', ms: 2400 }, { t: 'msg', th: 'unknown', text: '읽기만 하네요.', typing: 800 }, { t: 'emit', ev: 's2c1:done' }] },
   {
     id: 's2-letter',
     on: 'note:s2n1',
     actions: [
       { t: 'flag', f: 'read-letter' },
       { t: 'wait', ms: 2600 },
-      { t: 'msg', th: 'unknown', text: '뒤가 지워졌죠. 제가 지웠어요.', typing: 1300 },
+      { t: 'msg', th: 'unknown', text: '뒤는 안 읽는 게 나아요.', typing: 1300 },
       {
         t: 'objective',
         app: 'gallery',
@@ -132,7 +134,7 @@ export const BEATS_S2: Beat[] = [
     id: 's2-n3-more',
     on: 'photo:s2-n3:dwell',
     actions: [
-      { t: 'hush', ms: 2200, still: true },
+      { t: 'wait', ms: 1200 },
       { t: 'flag', f: 's2-n3-more' },
       { t: 'sound', id: 'key', caption: '종이를 긁는 소리가 감지되었습니다.' },
       { t: 'vibrate', ms: [30] },
@@ -232,8 +234,8 @@ export const BEATS_S2: Beat[] = [
       { t: 'install', app: 'index' },
       { t: 'notify', app: 'index', title: '보관소 관리', body: '관리자 한소연 · 다시 로그인하세요' },
       { t: 'wait', ms: 1800 },
-      { t: 'msg', th: 'unknown', text: '소연 씨가 왜 폰 두고 갔는지 알아요?', typing: 1300 },
-      { t: 'msg', th: 'unknown', text: '소연 씨가 못 하는 걸 그쪽한테 시키려고요.', typing: 1100 },
+      { t: 'msg', th: 'unknown', text: '소연 씨가 왜 폰을 두고 갔을까요.', typing: 1300 },
+      { t: 'msg', th: 'unknown', text: '자기 손으로는 못 하는 게 있어서요.', typing: 1100 },
       { t: 'wait', ms: 2400 },
       { t: 'memo', id: 's2m2' },
       { t: 'msg', th: 'unknown', text: '부스 앞에서 녹음한 거예요. 안 지웠더라고요.', typing: 1500, attach: { kind: 'memo', id: 's2m2' } },
@@ -247,7 +249,10 @@ export const BEATS_S2: Beat[] = [
         nudge: { th: CHAEWON, text: '언니 비번은 다 어머니 날짜예요. 사라지신 날 아니면 돌아오신 날' },
       },
       // The night doesn't wait for the password (but leaves time for two recordings).
-      { t: 'wait', ms: 210000 },
+      // A minute in, past one in the morning, 엄마 — who should be asleep — starts typing. And sends nothing.
+      { t: 'wait', ms: 60000 },
+      { t: 'typing', th: 'mom', ms: 4200 },
+      { t: 'wait', ms: 150000 },
       { t: 'emit', ev: 'ch4' },
     ],
   },
@@ -281,7 +286,7 @@ export const BEATS_S2: Beat[] = [
       { t: 'flag', f: 'copy-armed' },
       { t: 'wait', ms: 1400 },
       { t: 'msg', th: 'unknown', text: '…지우는 건 그쪽 손이에요. 어머니 손 말고.', typing: 1600 },
-      { t: 'msg', th: 'unknown', text: '두 시까지 기다려 봐요. 마음 바뀔걸요.', typing: 1600 },
+      { t: 'msg', th: 'unknown', text: '어머니 얼굴 보고도 지울 수 있겠어요?', typing: 1600 },
     ],
   },
   // 엄마 has been reading the site. She knows what deleting it means — and says so,
@@ -294,10 +299,11 @@ export const BEATS_S2: Beat[] = [
     actions: [
       { t: 'wait', ms: 6000 },
       { t: 'flag', f: 'mom-knew' },
-      { t: 'msg', th: 'mom', text: '소연아 엄마 다 봤다', typing: 2000 },
-      { t: 'msg', th: 'mom', text: '지워도 된다', typing: 1400 },
-      { t: 'msg', th: 'mom', text: '엄마 너랑 일년 살았다', typing: 1800 },
-      { t: 'msg', th: 'mom', text: '그럼 됐다', typing: 1000 },
+      // slow thumbs: the typing indicator is her acting
+      { t: 'msg', th: 'mom', text: '소연아 엄마 다 봤다', typing: 3200 },
+      { t: 'msg', th: 'mom', text: '지워도 된다', typing: 2200 },
+      { t: 'msg', th: 'mom', text: '엄마 너랑 일년 살았다', typing: 3000 },
+      { t: 'msg', th: 'mom', text: '그럼 됐다', typing: 1600 },
     ],
   },
   {
@@ -308,10 +314,25 @@ export const BEATS_S2: Beat[] = [
     actions: [
       { t: 'wait', ms: 5000 },
       { t: 'flag', f: 'mom-knew' },
-      { t: 'msg', th: 'mom', text: '소연아 엄마 다 봤다', typing: 2000 },
-      { t: 'msg', th: 'mom', text: '지워도 된다', typing: 1400 },
-      { t: 'msg', th: 'mom', text: '엄마 너랑 일년 살았다', typing: 1800 },
-      { t: 'msg', th: 'mom', text: '그럼 됐다', typing: 1000 },
+      // slow thumbs: the typing indicator is her acting
+      { t: 'msg', th: 'mom', text: '소연아 엄마 다 봤다', typing: 3200 },
+      { t: 'msg', th: 'mom', text: '지워도 된다', typing: 2200 },
+      { t: 'msg', th: 'mom', text: '엄마 너랑 일년 살았다', typing: 3000 },
+      { t: 'msg', th: 'mom', text: '그럼 됐다', typing: 1600 },
+    ],
+  },
+  // …and to those who haven't: she found the site, so she knows what it costs. Her hand told her.
+  {
+    id: 's2-mom-asks',
+    on: 's2:mom-site',
+    forbids: ['copy-armed', 'mom-knew'],
+    actions: [
+      { t: 'wait', ms: 5000 },
+      { t: 'flag', f: 'mom-knew' },
+      { t: 'msg', th: 'mom', text: '소연아 엄마 다 봤다', typing: 3200 },
+      { t: 'msg', th: 'mom', text: '그거 지우면 엄마도 가는 거지', typing: 2800 },
+      { t: 'msg', th: 'mom', text: '손이 그렇게 말한다', typing: 2200 },
+      { t: 'msg', th: 'mom', text: '괜찮다 엄마 너랑 일년 살았다', typing: 3000 },
     ],
   },
   // 소연 at the gate → the cassette she never played to the end opens
@@ -326,8 +347,8 @@ export const BEATS_S2: Beat[] = [
     on: 's2:pw-hint',
     forbids: ['admin'],
     actions: [
-      { t: 'msg', th: 'mom', text: '작년 오늘 새벽에 엄마 집에 왔지', typing: 1800 },
-      { t: 'msg', th: 'mom', text: '니가 현관에서 한참 울었다', typing: 1600 },
+      { t: 'msg', th: 'mom', text: '작년 오늘 새벽에 엄마 집에 왔지', typing: 2800 },
+      { t: 'msg', th: 'mom', text: '니가 현관에서 한참 울었다', typing: 2400 },
     ],
   },
   {
@@ -353,8 +374,8 @@ export const BEATS_S2: Beat[] = [
     on: 'admin:wrong',
     actions: [
       { t: 'wait', ms: 1400 },
-      { t: 'msg', th: CHAEWON, text: '언니가 그랬어요', typing: 800 },
-      { t: 'msg', th: CHAEWON, text: '경찰서에서 자기가 한 말이 아직 서류에 그대로 있다고', typing: 1600 },
+      { t: 'msg', th: CHAEWON, text: '갑자기 생각났는데', typing: 700 },
+      { t: 'msg', th: CHAEWON, text: '언니가 전에 그랬어요 경찰서에서 자기가 한 말이 아직 서류에 그대로 있다고', typing: 1900 },
     ],
   },
 
@@ -383,7 +404,7 @@ export const BEATS_S2: Beat[] = [
       { t: 'unsend', th: CHAEWON, match: '저 오면서 누구든' },
       { t: 'wait', ms: 7000 },
       { t: 'time', hm: '01:51' },
-      { t: 'msg', th: 'mom', text: '소연아 엄마 지금 그 사이트 보고 있다', typing: 1800 },
+      { t: 'msg', th: 'mom', text: '소연아 엄마 지금 인터넷 보고 있다', typing: 2600 },
       { t: 'msg', th: 'mom', text: '엄마 얘기가 왜 거기있니', typing: 1600 },
       { t: 'wait', ms: 3000 },
       { t: 'msg', th: 'mom', text: '니가 만들었니', typing: 1200 },
@@ -393,12 +414,17 @@ export const BEATS_S2: Beat[] = [
       { t: 'emit', ev: 's2:mom-site' },
       { t: 'wait', ms: 8000 },
       { t: 'time', hm: '01:52' },
-      { t: 'msg', th: 'unknown', text: '어머니 지금 식탁이에요.', typing: 1500 },
-      { t: 'msg', th: 'unknown', text: '볼펜 쥐고.', typing: 700 },
+      // the phone filmed it by itself: the notice says so, the clip says the rest
       { t: 'photo', id: 's2-kitchen2' },
+      { t: 'notify', app: 'gallery', title: '사진', body: '동영상 1개 · 이 기기에서 촬영됨' },
+      { t: 'wait', ms: 3000 },
       { t: 'msg', th: 'unknown', text: '방금 찍혔어요.', typing: 900, attach: { kind: 'photo', id: 's2-kitchen2' } },
+      // season 1: "거기 앉아 있던 건 제가 아니에요." — this is who was sitting there
+      { t: 'wait', ms: 1500 },
+      { t: 'msg', th: 'unknown', text: '작년까진 열람실 의자에 앉아 있었어요.', typing: 1500 },
+      { t: 'msg', th: 'unknown', text: '요즘은 식탁 의자예요.', typing: 1000 },
       { t: 'msg', th: 'unknown', text: '소연 씨가 들고 간 노트, 식탁에 와 있어요.', typing: 1400 },
-      { t: 'wait', ms: 7000 },
+      { t: 'wait', ms: 3500 },
       { t: 'time', hm: '01:53' },
       { t: 'call', id: 'eomma' },
       { t: 'wait', ms: 24000 },
@@ -407,7 +433,7 @@ export const BEATS_S2: Beat[] = [
       { t: 'notify', app: 'notes', title: '메모', body: '새 메모: 9월 28일' },
       { t: 'write', text: '02:00 — 한', ms: 480 },
       { t: 'msg', th: 'unknown', text: '어머니 글씨 예쁘죠.', typing: 1200 },
-      { t: 'msg', th: 'unknown', text: '반대로도 돼요. 여기 쓰면 저기도 써져요.', typing: 1600 },
+      { t: 'msg', th: 'unknown', text: '그 메모에 그쪽이 써도, 식탁 노트에 써져요.', typing: 1600 },
       { t: 'wait', ms: 8000 },
       { t: 'time', hm: '01:56' },
       { t: 'msg', th: CHAEWON, text: '부스 앞이에요 문 열려 있네요', typing: 900 },
@@ -417,9 +443,10 @@ export const BEATS_S2: Beat[] = [
       { t: 'time', hm: '01:57' },
       // Inside, phones only reach 나에게 (채원 learned that last year).
       { t: 'flag', f: 'soyeon-contact' },
-      { t: 'msg', th: 'self', from: 'me', text: '주운 거 맞죠? 제 폰', typing: 1400 },
-      { t: 'msg', th: 'self', from: 'me', text: '도현 씨 폰이 서랍 앞에 있어요 12%에서 안 움직여요 이걸로 보내요', typing: 1900 },
-      { t: 'msg', th: 'self', from: 'me', text: '진짜 나에게로밖에 안 가네 채원이 말대로', typing: 1300 },
+      // (whether or not she reached you at 01:13 — this works either way)
+      { t: 'msg', th: 'self', from: 'me', text: '아직 거기 있죠? 제 폰', typing: 1200 },
+      { t: 'msg', th: 'self', from: 'me', text: '도현 씨 폰으로 보내요', typing: 900 },
+      { t: 'msg', th: 'self', from: 'me', text: '배터리가 12%에서 안 내려가요', typing: 1100 },
       { t: 'msg', th: 'self', from: 'me', text: '도현 씨 제 옆에서 자요. 안 깨요', typing: 1300 },
       { t: 'msg', th: 'self', from: 'me', text: '지웠어요?', typing: 900 },
       {
@@ -435,15 +462,18 @@ export const BEATS_S2: Beat[] = [
       { t: 'unchoice', id: 's2c5' },
       { t: 'time', hm: '01:58' },
       { t: 'battery', v: 3 },
-      // for a moment her pen writes your name instead — then scratches it out
+      // for a moment her pen writes your name instead — then scratches it out.
+      // Most players are in Messages talking to 소연: call them over first, and let the letter stay long enough to read.
+      { t: 'notify', app: 'notes', title: '메모', body: '“9월 28일” · 지금 수정 중' },
+      { t: 'wait', ms: 3000 },
       { t: 'write', text: '\b{initial}', ms: 1400 },
       { t: 'vibrate', ms: [40, 30, 40] },
-      { t: 'wait', ms: 900 },
+      { t: 'wait', ms: 2600 },
       { t: 'write', text: '\b한소', ms: 900 },
       { t: 'msg', th: 'unknown', text: '소연 씨 이름은 짧아서 좋아요.', typing: 1200 },
-      { t: 'wait', ms: 8000 },
+      { t: 'wait', ms: 5000 },
       { t: 'time', hm: '01:59' },
-      { t: 'hush', ms: 3000 },
+      { t: 'hush', ms: 3000, still: true },
       { t: 'wait', ms: 2000 },
       { t: 'finale' },
     ],
@@ -457,7 +487,7 @@ export const BEATS_S2: Beat[] = [
     actions: [
       { t: 'flag', f: 'promised' },
       { t: 'msg', th: 'self', from: 'me', text: '고마워요.', typing: 1000 },
-      { t: 'msg', th: 'self', from: 'me', text: '엄마한테는 내가 말할게요', typing: 1200 },
+      { t: 'msg', th: 'self', from: 'me', text: '엄마한테는 제가 말할게요', typing: 1200 },
       { t: 'msg', th: 'self', from: 'me', text: '아니 못 하겠다', typing: 800 },
     ],
   },
@@ -467,7 +497,7 @@ export const BEATS_S2: Beat[] = [
     actions: [
       { t: 'flag', f: 'asked-her' },
       { t: 'msg', th: 'self', from: 'me', text: '엄마 여기 31년 있었어요 혼자', typing: 1400 },
-      { t: 'msg', th: 'self', from: 'me', text: '나는 엄마 딸이잖아요', typing: 1000 },
+      { t: 'msg', th: 'self', from: 'me', text: '저는 엄마 딸이잖아요', typing: 1000 },
       { t: 'msg', th: 'self', from: 'me', text: '…근데 무서워요', typing: 1200 },
     ],
   },

@@ -146,9 +146,22 @@ function isViewing(th: ThreadId): boolean {
   return rt.app === 'messages' && rt.thread === th;
 }
 
-export function showBanner(app: AppId, title: string, body: string, thread?: ThreadId): void {
+/** Until when a silence is held: nothing drops over it, it waits until the silence is over. */
+let hushUntil = 0;
+
+/** `urgent`: a question you can still answer — it comes through even over a playing recording. */
+export function showBanner(app: AppId, title: string, body: string, thread?: ThreadId, urgent = false): void {
   // Nothing drops over a recording that is playing; the unread badge is enough.
-  if (getState().rt.memoPlaying) return;
+  if (getState().rt.memoPlaying && !urgent) return;
+  // …nor over a held silence: it comes in right after
+  if (Date.now() < hushUntil) {
+    const t = setTimeout(() => {
+      timers.delete(t);
+      showBanner(app, title, body, thread, urgent);
+    }, hushUntil - Date.now() + 300);
+    timers.add(t);
+    return;
+  }
   const id = bannerSeq++;
   setRt({ banner: { id, app, title, body, thread } });
   sfx('ding');
@@ -226,6 +239,8 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
     }
     case 'choice':
       setSave({ choice: { thread: a.th, id: a.id, options: a.options } });
+      // listening to a recording when the night asks you something: you still get to answer
+      if (getState().rt.memoPlaying) showBanner('messages', threadMeta()[a.th].name, a.options.map((o) => o.label).join(' · '), a.th, true);
       return;
     case 'unchoice':
       if (getState().save.choice?.id === a.id) setSave({ choice: null });
@@ -310,6 +325,9 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
       // Playing silently? The phone's own sound recognition tells you what it heard.
       if (a.caption && !getState().save.sound) showBanner('settings', '소리 인식', a.caption);
       return;
+    case 'loop':
+      loop(a.id, a.on);
+      return;
     case 'install':
       setSave((s) => ({ installed: s.installed.includes(a.app) ? s.installed : [...s.installed, a.app] }));
       return;
@@ -376,6 +394,7 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
     }
     case 'hush': {
       await whenFree(myEpoch);
+      hushUntil = Date.now() + a.ms;
       if (a.still) {
         // You're looking at her. Everything stops. Nothing warns you.
         setMix(0.003, 0, 0.08, 120);
@@ -476,11 +495,12 @@ export function openApp(app: AppId | null): void {
 /**
  * The black-mirror trope: going back to the dark home screen, for a quarter
  * of a second, a face that is not yours is reflected in the glass.
- * Twice per playthrough: after the selfie, and during chapter 4.
+ * Once per playthrough, after the selfie. (Chapter 4 has the 01:54 look-behind,
+ * the same picture — chosen, not chanced — so it isn't spent here first.)
  */
 function maybeReflect(): void {
   const s = getState().save;
-  const slot = s.flags.includes('selfie-scare') && !s.flags.includes('refl1') ? 'refl1' : s.flags.includes('ch4') && !s.flags.includes('refl2') ? 'refl2' : null;
+  const slot = s.flags.includes('selfie-scare') && !s.flags.includes('refl1') ? 'refl1' : null;
   if (!slot || getState().rt.finale) return;
   addFlag(slot);
   const t = setTimeout(() => {
