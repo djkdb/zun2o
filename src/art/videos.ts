@@ -13,6 +13,7 @@ import boothWebm from '../assets/video/booth.webm';
 import boothPoster from '../assets/video/booth-poster.jpg';
 import opening from '../assets/video/opening.mp4';
 import openingWebm from '../assets/video/opening.webm';
+import openingPoster from '../assets/video/opening-poster.jpg';
 import dawn from '../assets/video/dawn.mp4';
 import dawnWebm from '../assets/video/dawn.webm';
 import dawnPoster from '../assets/video/dawn-poster.jpg';
@@ -38,6 +39,7 @@ export const VIDEO = {
   boothPoster,
   opening,
   openingWebm,
+  openingPoster,
   dawn,
   dawnWebm,
   dawnPoster,

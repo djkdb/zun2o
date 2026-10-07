@@ -25,7 +25,7 @@ slightly green color cast, amateur framing, realistic photograph, no text, no wa
 | `selfie-alone` | 3:4 세로 | 숨김 앨범 5번째, 스케어 전: 채원만 (selfie-far를 잘라 만듦 — 생성 불필요) |
 | `booth` | 3:2 가로 | 3장 자동 백업: 3층 창문에서 내려다본 공중전화 부스 안의 "당신" |
 | `booth-behind` | 3:2 가로 | 4장 도현이 보낸 사진: 길 건너에서 찍은 부스, 당신 뒤에 누가 서 있음 |
-| `booth-shelf` | 3:2 가로 | 1장 사진 앱 첫 사진(00:58): 부스 선반 위에 놓인 화면 켜진 폰 |
+| `booth-shelf` | 3:2 가로 | 1장 사진 앱 첫 사진(00:58): 부스 선반 위에 놓인 폰. **지금은 첫 화면 영상(`opening`)의 첫 장면을 잘라 씀** — 유리에 비친 귀신 얼굴이 첫인상부터 드러나 싸 보여서 뺐습니다 |
 | `video-chaewon` | 9:16 세로 | 02:00 영상통화: 채원 얼굴 |
 | `video-behind` | 9:16 세로 | 02:00 영상통화: 같은 화면, 채원 어깨 뒤에 그것 (서서히 겹쳐짐) |
 | `scare-hang` | 9:16 세로 | 점프스케어 1 (검은 사진) |

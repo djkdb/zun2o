@@ -148,8 +148,8 @@ export function ColdOpen() {
             muted
             playsInline
             preload="auto"
-            // season 2's own clip starts on the dark phone; season 1's still has her face in the glass
-            poster={s2 ? undefined : art('booth-shelf')}
+            // the clip's own first frame: the dark phone on the shelf, nothing in the glass yet
+            poster={s2 ? undefined : VIDEO.openingPoster}
             // the screen lights and holds — until, in season 2, the door swings in behind you (step 6)
             onTimeUpdate={(e) => e.currentTarget.currentTime > 3.6 && !(s2 && step === 6) && e.currentTarget.pause()}
             // a failing <source> also reaches here through React; only the video's own error counts
@@ -159,7 +159,7 @@ export function ColdOpen() {
             <source src={s2 ? VIDEO.s2openingWebm : VIDEO.openingWebm} type="video/webm" onError={() => setClipOk(false)} />
           </video>
         ) : (
-          art('booth-shelf') && <img className={`co-img co-booth${step >= 3 ? ' on' : ''}${step >= 4 ? ' lit' : ''}`} src={art('booth-shelf')} alt="" draggable={false} />
+          <img className={`co-img co-booth${step >= 3 ? ' on' : ''}${step >= 4 ? ' lit' : ''}`} src={VIDEO.openingPoster} alt="" draggable={false} />
         )}
         {step >= 4 && !useClip && <span className="co-glow" />}
       </div>

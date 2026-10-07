@@ -2,6 +2,7 @@ import type { ThreadId } from '../engine/types';
 import { AppGlyph, APP_META } from './icons';
 import { art, type ArtSlot } from '../art/photoArt';
 import { isS2 } from '../content/season';
+import { useGame } from '../hooks/useGame';
 
 /** Season 2's faces: 엄마 is 서미령 (her ID photo), the 'dohyun' slot is 채원, 나에게 is 소연's plain initial. */
 const S2_PHOTO: Record<ThreadId, ArtSlot | null> = { mom: 'miryeong-id', dohyun: 'avatar-self', unknown: 'avatar-unknown', self: 'avatar-soyeon' };
@@ -12,8 +13,11 @@ const S2_PHOTO: Record<ThreadId, ArtSlot | null> = { mom: 'miryeong-id', dohyun:
 // except the hair is too long.
 
 function Portrait({ th }: { th: ThreadId }) {
+  // The number with no name starts as the plain default silhouette (with hair a little too
+  // long). Only in chapter 4 does it have a picture — a profile photo that changed overnight.
+  const late = useGame((s) => s.save.chapter >= 4);
   // A real profile photo, if one was provided (src/assets/art/avatar-<thread>).
-  const slot = isS2() ? S2_PHOTO[th] : (`avatar-${th}` as const);
+  const slot = th === 'unknown' && !late ? null : isS2() ? S2_PHOTO[th] : (`avatar-${th}` as const);
   const photo = slot ? art(slot) : undefined;
   if (photo) return <img src={photo} alt="" draggable={false} />;
   if (isS2() && th === 'self')
