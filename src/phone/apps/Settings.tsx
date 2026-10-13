@@ -172,7 +172,7 @@ export function SettingsApp() {
         <h3>만든 것</h3>
         <div className="row">
           <span>음성 · 효과음</span>
-          <span>ElevenLabs</span>
+          <span>VoxCPM2 (OpenBMB · Apache-2.0)</span>
         </div>
         <div className="row">
           <span>사진 · 영상</span>
