@@ -17,6 +17,12 @@
 //   npm run voices:pick -- 33:2,40:1   use those takes instead, then effects
 //                            (ELEVEN_TAKES=3, ONLY=33-55 or ONLY=11,22, ELEVEN_STABILITY=0.5)
 //
+//   Local, free, no account — VoxCPM2 (OpenBMB, Apache-2.0; scripts/voxcpm.py, Python + torch):
+//   npm run voices:cast      designed voices: 3 candidates per role → voice-takes/voxcpm/cast/index.html
+//   CAST=male:2,entity:1 npm run voices:cast   keep those as the role voices (voice-refs/<role>.wav)
+//   TTS=voxcpm npm run voices:auto   every line in the kept voices, with its delivery style, scored as above
+//                            (VOXCPM_PY = python with voxcpm installed, VOXCPM_MODEL = model folder)
+//
 // Any other TTS tool or a real recording works too: save each line as
 // voice-raw/<number>.<ext> (numbers from docs/VOICE_LINES.md) and run voices:fx.
 // The effects need `ffmpeg` on PATH.
@@ -24,7 +30,7 @@
 // Env: FISH_VOICE_MALE / _FEMALE / _ENTITY override the voices below, FISH_MODEL
 // (default s1), FORCE=1 to remake existing files, DRY=1 to only print.
 import { execFileSync, spawnSync } from 'node:child_process';
-import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import { cer, sayKo, syllables } from '../src/audio/sayKo.ts';
 import { CALLS, VIDEO_CALL_LINES } from '../src/content/calls.ts';
 import { CALLS_S2 } from '../src/content/s2/calls.ts';
@@ -271,7 +277,63 @@ async function eleven() {
 
 // ─── hands-off ElevenLabs: audition, takes, automatic checking ─────────────
 
-const TAKES = 'voice-takes';
+const VOX = process.env.TTS === 'voxcpm';
+const TAKES = VOX ? 'voice-takes/voxcpm' : 'voice-takes';
+const REFS = 'voice-refs';
+
+// VoxCPM2 voice design: who each role is, said in words, and a line to hear it on.
+// 엄마 (season 2) is 서미령's own voice — she uses the entity reference with a warm delivery.
+const DESIGN = {
+  male: { design: 'A Korean man in his mid-twenties, ordinary natural voice, slightly hoarse, anxious', line: '여보세요? 저 지금 학교 앞이에요. 금방 갈게요.' },
+  female: { design: 'A Korean woman in her mid-twenties, natural young voice, a little breathy, frightened', line: '여기 너무 어두워. 누가 있는 것 같아.' },
+  entity: { design: 'A Korean woman in her early forties, low, calm, soft-spoken old-fashioned librarian, very still and polite', line: '조용히 해 줘요. 여기는 도서관이에요.' },
+  soyeon: { design: 'A Korean woman in her early forties, tired, steady, slightly husky voice, holding back her emotions', line: '녹음 되나. 됐다. 엄마, 나 두 시 전에는 와.' },
+};
+const STYLE = {
+  whispers: 'whispering', slowly: 'slowly', calm: 'calm', softly: 'softly', anxious: 'anxious', 'breathing heavily': 'out of breath',
+  desperate: 'desperate', nervous: 'nervous', fast: 'speaking fast', 'shaky voice': 'trembling voice', frustrated: 'frustrated', quietly: 'quietly',
+  urgent: 'urgent', panicked: 'panicked', cold: 'cold and flat', terrified: 'terrified', warm: 'warm', tired: 'tired', worried: 'worried',
+  concerned: 'concerned', scared: 'scared', pleading: 'pleading', shocked: 'shocked', crying: 'crying', cheerful: 'cheerful',
+  monotone: 'flat monotone', sighs: 'with a sigh', gasps: 'gasping',
+};
+/** The delivery for a line, from its direction tags ("[whispers] [slowly]" → "whispering, slowly"). */
+function voxStyle(l) {
+  const tags = [...(DIRECTION[l.say] ?? '').matchAll(/\[([^\]]+)\]/g)].map((m) => STYLE[m[1]] ?? m[1]);
+  if (l.voice === 'mother' && !tags.includes('warm')) tags.unshift('warm');
+  return tags.join(', ');
+}
+function voxRun(args) {
+  const py = process.env.VOXCPM_PY ?? 'python3';
+  const r = spawnSync(py, ['-I', 'scripts/voxcpm.py', ...args], { stdio: 'inherit' });
+  if (r.status !== 0) {
+    console.error(`VoxCPM failed (${py}). Install it: pip install voxcpm (torch ≥ 2.5), set VOXCPM_PY and VOXCPM_MODEL.`);
+    process.exit(1);
+  }
+}
+const toMp3 = (wav, mp3) => execFileSync('ffmpeg', ['-loglevel', 'error', '-y', '-i', wav, '-codec:a', 'libmp3lame', '-b:a', '160k', mp3]);
+
+/** npm run voices:cast — candidates per role; CAST=male:2,… keeps the chosen ones as voice-refs/<role>.wav */
+async function voxCast() {
+  const dir = 'voice-takes/voxcpm/cast';
+  if (process.env.CAST) {
+    mkdirSync(REFS, { recursive: true });
+    for (const pair of process.env.CAST.split(',')) {
+      const [role, k] = pair.split(':');
+      copyFileSync(`${dir}/${role}-${k}.wav`, `${REFS}/${role}.wav`);
+      console.log(`${REFS}/${role}.wav ← ${role}-${k}`);
+    }
+    return;
+  }
+  mkdirSync(dir, { recursive: true });
+  const roles = DESIGN;
+  writeFileSync(`${dir}/roles.json`, JSON.stringify(roles));
+  voxRun(['cast', dir, `${dir}/roles.json`]);
+  const body = Object.entries(roles)
+    .map(([r, d]) => `<h2>${esc(WHO[r])}</h2><small>${esc(d.design)}</small>` + [1, 2, 3].map((k) => `<div class="row">${r}:${k} <audio controls preload="none" src="${r}-${k}.wav"></audio></div>`).join(''))
+    .join('');
+  writeFileSync(`${dir}/index.html`, page('목소리 후보', `<p>역할마다 하나씩 골라 <code>CAST=male:2,female:1,entity:3,soyeon:1 npm run voices:cast</code>로 정하세요.</p>${body}`));
+  console.log(`\n→ ${dir}/index.html`);
+}
 const XI = 'https://api.elevenlabs.io';
 // Who each voice is, for finding Korean candidates in the voice library.
 const ROLES = {
@@ -438,6 +500,7 @@ async function typecast(l, t, file) {
 
 async function auto() {
   const tc = process.env.TTS === 'typecast';
+  if (VOX) return voxAuto();
   if (tc && !process.env.TYPECAST_API_KEY) {
     console.error('TYPECAST_API_KEY is not set.');
     process.exit(1);
@@ -493,6 +556,48 @@ async function auto() {
     console.log(`${l.n} best t${best.take} score ${best.total} (cer ${best.cer}, ${best.pace.toFixed(1)} syl/s)  heard: ${best.heard}${flag}`);
   }
   if (process.env.DRY) return;
+  listenPage(report);
+  process.env.FORCE = '1';
+  fx();
+}
+
+/** TTS=voxcpm: every take in one model run, then the same checks and listening page as the services. */
+async function voxAuto() {
+  const takes = Number(process.env.TAKES ?? 2);
+  const refFor = (v) => (existsSync(`${REFS}/${v === 'mother' ? 'entity' : v}.wav`) ? `${REFS}/${v === 'mother' ? 'entity' : v}.wav` : null);
+  const work = todo.filter((l) => only(l) && refFor(l.voice));
+  if (!work.length) {
+    console.error(`No voices chosen yet: npm run voices:cast, then CAST=male:1,… npm run voices:cast (→ ${REFS}/).`);
+    process.exit(1);
+  }
+  mkdirSync(`${TAKES}/wav`, { recursive: true });
+  mkdirSync(RAW, { recursive: true });
+  const jobs = [];
+  for (const l of work)
+    for (let t = 1; t <= takes; t++)
+      if (!existsSync(`${TAKES}/${l.n}-t${t}.mp3`) || process.env.FORCE)
+        jobs.push({ text: sayKo(l.say), style: voxStyle(l), ref: refFor(l.voice), out: `${TAKES}/wav/${l.n}-t${t}.wav`, seed: 1000 + t * 17 + Number(l.n) });
+  if (process.env.DRY) return jobs.forEach((j) => console.log(`would make ${j.out}  (${j.style}) ${j.text}`));
+  if (process.env.FORCE) jobs.forEach((j) => existsSync(j.out) && unlinkSync(j.out));
+  writeFileSync(`${TAKES}/jobs.json`, JSON.stringify(jobs));
+  if (jobs.length) voxRun(['jobs', `${TAKES}/jobs.json`]);
+  const reportFile = `${TAKES}/report.json`;
+  const report = existsSync(reportFile) ? JSON.parse(readFileSync(reportFile, 'utf8')) : {};
+  for (const l of work) {
+    const rows = [];
+    for (let t = 1; t <= takes; t++) {
+      const file = `${TAKES}/${l.n}-t${t}.mp3`;
+      if (!existsSync(file) || process.env.FORCE) toMp3(`${TAKES}/wav/${l.n}-t${t}.wav`, file);
+      const a = analyse(file, l);
+      const heard = await transcribe(file);
+      rows.push({ take: t, file, heard, ...a, ...score(l, a, heard) });
+    }
+    rows.sort((x, y) => x.total - y.total);
+    report[l.n] = { line: l.say, said: `(${voxStyle(l)}) ${sayKo(l.say)}`, voice: l.voice, where: l.where, takes: rows };
+    writeFileSync(reportFile, JSON.stringify(report, null, 2));
+    copyFileSync(rows[0].file, `${RAW}/${l.n}.mp3`);
+    console.log(`${l.n} best t${rows[0].take} score ${rows[0].total} (cer ${rows[0].cer})  heard: ${rows[0].heard}${rows[0].cer > 0.15 ? '  ⚠ check' : ''}`);
+  }
   listenPage(report);
   process.env.FORCE = '1';
   fx();
@@ -696,4 +801,5 @@ else if (mode === 'audition') await audition();
 else if (mode === 'adopt') await adopt();
 else if (mode === 'auto') await auto();
 else if (mode === 'pick') pick();
+else if (mode === 'cast') await voxCast();
 else await fish();

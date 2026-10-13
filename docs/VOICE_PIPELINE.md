@@ -41,3 +41,14 @@ ElevenLabs 무료 플랜은 한국어 라이브러리 목소리와 Voice Design�
   - `TYPECAST_STYLE=smart` 또는 `preset`으로 하나만 쓰게 할 수 있습니다. `auto`로 두면 속삭이는 줄만 whisper 프리셋을 쓰고 나머지는 smart로 뽑습니다.
 - **무료 계정은 천천히:** 요청 사이에 기본 15초를 쉽니다(`TC_DELAY_MS`). 429가 오면 30초, 60초, 90초 기다리고, 403(이상 활동 감지)이 오면 바로 멈춥니다. 다 만든 테이크는 남아 있어서 다시 실행하면 이어서 합니다. 오디션 때 32개를 몰아서 요청했더니 무료 계정이 이상 활동으로 막혔습니다.
 - 채점과 듣기 페이지, `voices:pick`은 ElevenLabs와 같습니다. 받아쓰기 채점에는 `ELEVEN_API_KEY`가 있어야 하며, 무료 플랜으로 충분합니다.
+
+## VoxCPM2 (로컬, 무료, 상업적 사용 가능)
+
+OpenBMB의 VoxCPM2(2B, 한국어 포함 30개 언어, Apache-2.0)를 이 컴퓨터에서 직접 돌립니다. API 키도 계정도 필요 없고, 만든 음성은 상업적으로 써도 됩니다. GPU가 없어도 되며, CPU 4코어에서 대사 3초에 약 20초가 걸립니다.
+
+1. 설치: `pip install voxcpm` (torch 2.5 이상). 모델은 처음 실행할 때 받거나, 미리 받아 둔 폴더를 `VOXCPM_MODEL`로 지정합니다(약 5GB).
+2. **`npm run voices:cast`** — 역할마다 설명(나이, 성별, 말투)으로 목소리를 3개씩 디자인합니다. `voice-takes/voxcpm/cast/index.html`에서 듣고 고릅니다.
+3. **`CAST=male:2,female:2,entity:3,soyeon:2 npm run voices:cast`** — 고른 목소리를 `voice-refs/<역할>.wav`로 저장합니다. 이 파일이 그 인물의 목소리가 됩니다. 엄마(시즌 2)는 서미령의 목소리를 따뜻한 말투로 씁니다.
+4. **`TTS=voxcpm npm run voices:auto`** — 대사마다 2번(`TAKES`) 뽑습니다. 연기 지시 태그(`[whispers] [slowly]`)는 "(whispering, slowly)" 같은 말투 지시로 바뀌어 함께 들어가고, 목소리는 `voice-refs`를 따라 합니다. 채점과 듣기 페이지(`voice-takes/voxcpm/index.html`), `voices:pick`은 위와 같습니다.
+
+`VOXCPM_PY`에는 voxcpm을 설치한 파이썬을 지정합니다(기본 `python3`).
