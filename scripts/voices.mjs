@@ -287,7 +287,7 @@ const DESIGN = {
   male: { design: '20대 초반 한국 남자 대학생, 앳되고 가벼운 젊은 목소리, 맑은 톤, 불안해함. A young Korean man in his early twenties, youthful light voice, clear, anxious', candidates: 4, line: '여보세요? 저 지금 학교 앞이에요. 금방 갈게요.' },
   female: { design: '20대 초반 한국 여자 대학생, 앳되고 맑은 젊은 목소리, 겁먹음. A young Korean woman in her early twenties, youthful bright clear voice, frightened', candidates: 4, line: '여기 너무 어두워. 누가 있는 것 같아.' },
   entity: { design: 'A Korean woman in her early forties, low, calm, soft-spoken old-fashioned librarian, very still and polite', line: '조용히 해 줘요. 여기는 도서관이에요.' },
-  soyeon: { design: '나이보다 훨씬 젊게 들리는 한국 여자, 맑고 가벼운 목소리, 지쳤지만 담담함. A Korean woman who sounds much younger than her age, around thirty, clear light voice, tired but steady', candidates: 4, line: '녹음 되나. 됐다. 엄마, 나 두 시 전에는 와.' },
+  soyeon: { design: 'A Korean woman in her early forties, tired, steady, slightly husky voice, holding back her emotions', line: '녹음 되나. 됐다. 엄마, 나 두 시 전에는 와.' },
 };
 const STYLE = {
   whispers: 'whispering', slowly: 'slowly', calm: 'calm', softly: 'softly', anxious: 'anxious', 'breathing heavily': 'out of breath',
