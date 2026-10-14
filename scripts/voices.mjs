@@ -284,10 +284,10 @@ const REFS = 'voice-refs';
 // VoxCPM2 voice design: who each role is, said in words, and a line to hear it on.
 // 엄마 (season 2) is 서미령's own voice — she uses the entity reference with a warm delivery.
 const DESIGN = {
-  male: { design: 'A Korean man in his mid-twenties, ordinary natural voice, slightly hoarse, anxious', line: '여보세요? 저 지금 학교 앞이에요. 금방 갈게요.' },
-  female: { design: 'A Korean woman in her mid-twenties, natural young voice, a little breathy, frightened', line: '여기 너무 어두워. 누가 있는 것 같아.' },
+  male: { design: '20대 초반 한국 남자 대학생, 앳되고 가벼운 젊은 목소리, 맑은 톤, 불안해함. A young Korean man in his early twenties, youthful light voice, clear, anxious', candidates: 4, line: '여보세요? 저 지금 학교 앞이에요. 금방 갈게요.' },
+  female: { design: '20대 초반 한국 여자 대학생, 앳되고 맑은 젊은 목소리, 겁먹음. A young Korean woman in her early twenties, youthful bright clear voice, frightened', candidates: 4, line: '여기 너무 어두워. 누가 있는 것 같아.' },
   entity: { design: 'A Korean woman in her early forties, low, calm, soft-spoken old-fashioned librarian, very still and polite', line: '조용히 해 줘요. 여기는 도서관이에요.' },
-  soyeon: { design: 'A Korean woman in her early forties, tired, steady, slightly husky voice, holding back her emotions', line: '녹음 되나. 됐다. 엄마, 나 두 시 전에는 와.' },
+  soyeon: { design: '나이보다 훨씬 젊게 들리는 한국 여자, 맑고 가벼운 목소리, 지쳤지만 담담함. A Korean woman who sounds much younger than her age, around thirty, clear light voice, tired but steady', candidates: 4, line: '녹음 되나. 됐다. 엄마, 나 두 시 전에는 와.' },
 };
 const STYLE = {
   whispers: 'whispering', slowly: 'slowly', calm: 'calm', softly: 'softly', anxious: 'anxious', 'breathing heavily': 'out of breath',
@@ -329,7 +329,7 @@ async function voxCast() {
   writeFileSync(`${dir}/roles.json`, JSON.stringify(roles));
   voxRun(['cast', dir, `${dir}/roles.json`]);
   const body = Object.entries(roles)
-    .map(([r, d]) => `<h2>${esc(WHO[r])}</h2><small>${esc(d.design)}</small>` + [1, 2, 3].map((k) => `<div class="row">${r}:${k} <audio controls preload="none" src="${r}-${k}.wav"></audio></div>`).join(''))
+    .map(([r, d]) => `<h2>${esc(WHO[r])}</h2><small>${esc(d.design)}</small>` + Array.from({ length: d.candidates ?? 3 }, (_, i) => i + 1).map((k) => `<div class="row">${r}:${k} <audio controls preload="none" src="${r}-${k}.wav"></audio></div>`).join(''))
     .join('');
   writeFileSync(`${dir}/index.html`, page('목소리 후보', `<p>역할마다 하나씩 골라 <code>CAST=male:2,female:1,entity:3,soyeon:1 npm run voices:cast</code>로 정하세요.</p>${body}`));
   console.log(`\n→ ${dir}/index.html`);
