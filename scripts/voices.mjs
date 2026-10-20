@@ -278,7 +278,8 @@ async function eleven() {
 // ─── hands-off ElevenLabs: audition, takes, automatic checking ─────────────
 
 const VOX = process.env.TTS === 'voxcpm';
-const TAKES = VOX ? 'voice-takes/voxcpm' : 'voice-takes';
+const FISH = process.env.TTS === 'fish';
+const TAKES = VOX ? 'voice-takes/voxcpm' : FISH ? `voice-takes/fish-${MODEL}` : 'voice-takes';
 const REFS = 'voice-refs';
 
 // VoxCPM2 voice design: who each role is, said in words, and a line to hear it on.
@@ -498,15 +499,52 @@ async function typecast(l, t, file) {
   }
 }
 
+/** One Fish Audio take. Drama 3 / S2 read "[whispers] [slowly]" as delivery directions. A 402 means the model isn't free for this account: stop, nothing is charged. */
+async function fishTake(l, t, file) {
+  const said = sayKo(l.say);
+  const text = DIRECTION[l.say] ? `${DIRECTION[l.say]} ${said}` : said;
+  const res = await fetch('https://api.fish.audio/v1/tts', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json', model: MODEL },
+    body: JSON.stringify({ text, reference_id: VOICES[l.voice], format: 'mp3', mp3_bitrate: 128, normalize: true, language: 'ko', temperature: t === 1 ? 0.7 : 0.9 }),
+  });
+  if (!res.ok) throw new Error(`Fish Audio ${res.status} (${MODEL}): ${(await res.text()).slice(0, 300)} (line ${l.n}) — stopped; finished takes are kept`);
+  writeFileSync(file, Buffer.from(await res.arrayBuffer()));
+  await new Promise((r) => setTimeout(r, Number(process.env.FISH_DELAY_MS ?? 3000)));
+}
+
+/** npm run voices:fish-probe — one short line, to see whether this account may use FISH_MODEL (e.g. drama-3) before anything else. */
+async function fishProbe() {
+  if (!KEY) {
+    console.error('FISH_API_KEY is not set.');
+    process.exit(1);
+  }
+  const res = await fetch('https://api.fish.audio/v1/tts', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json', model: MODEL },
+    body: JSON.stringify({ text: '[whispers] 들려요?', reference_id: VOICES.entity, format: 'mp3', language: 'ko' }),
+  });
+  if (!res.ok) return console.log(`${MODEL}: ${res.status} ${(await res.text()).slice(0, 300)}`);
+  mkdirSync(TAKES, { recursive: true });
+  writeFileSync(`${TAKES}/probe.mp3`, Buffer.from(await res.arrayBuffer()));
+  console.log(`${MODEL}: OK → ${TAKES}/probe.mp3`);
+}
+
 async function auto() {
   const tc = process.env.TTS === 'typecast';
   if (VOX) return voxAuto();
+  if (FISH && !KEY) {
+    console.error('FISH_API_KEY is not set.');
+    process.exit(1);
+  }
   if (tc && !process.env.TYPECAST_API_KEY) {
     console.error('TYPECAST_API_KEY is not set.');
     process.exit(1);
   }
-  if (!tc) xiKey();
-  const voices = tc
+  if (!tc && !FISH) xiKey();
+  const voices = FISH
+    ? VOICES
+    : tc
     ? Object.fromEntries(Object.keys(ROLES).map((k) => [k, process.env[`TYPECAST_VOICE_${k.toUpperCase()}`] ?? (k === 'mother' ? process.env.TYPECAST_VOICE_ENTITY : undefined)]))
     : voiceIds();
   const model = process.env.ELEVEN_MODEL ?? 'eleven_v3';
@@ -532,7 +570,8 @@ async function auto() {
           console.log(`would ask for ${file}  [${l.voice}] ${text}`);
           continue;
         }
-        if (tc) await typecast(l, t, file);
+        if (FISH) await fishTake(l, t, file);
+        else if (tc) await typecast(l, t, file);
         else {
           // v3 takes only 0 / 0.5 / 1 for stability: one braver take among steadier ones
           const stability = v3 ? (t === 2 ? 0 : Number(process.env.ELEVEN_STABILITY ?? 0.5)) : Number(process.env.ELEVEN_STABILITY ?? 0.45);
@@ -802,4 +841,5 @@ else if (mode === 'adopt') await adopt();
 else if (mode === 'auto') await auto();
 else if (mode === 'pick') pick();
 else if (mode === 'cast') await voxCast();
+else if (mode === 'fish-probe') await fishProbe();
 else await fish();
