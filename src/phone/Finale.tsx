@@ -366,7 +366,7 @@ export function Finale() {
                 <small>01:59 · 자동 저장</small>
               </div>
               {/* nobody in the booth: the phone you're holding is on the shelf now */}
-              <BoothShelfPhoto />
+              <BoothShelfPhoto stamp="01:59" />
             </div>
           )}
           {brink >= 6 && <span className="brink-cam" aria-label="카메라 사용 중 표시" />}

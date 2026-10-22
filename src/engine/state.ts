@@ -225,6 +225,14 @@ export function setSave(patch: Partial<Save> | ((s: Save) => Partial<Save>)): vo
   schedulePersist();
 }
 
+/** A new game: the whole save is replaced, not merged — nothing of the old season (s1, liveNote, season) leaks in. */
+export function replaceSave(next: Save): void {
+  state = { ...state, save: next };
+  syncSeason(state.save.season);
+  notify();
+  schedulePersist();
+}
+
 export function setRt(patch: Partial<Runtime> | ((r: Runtime) => Partial<Runtime>)): void {
   const p = typeof patch === 'function' ? patch(state.rt) : patch;
   state = { ...state, rt: { ...state.rt, ...p } };

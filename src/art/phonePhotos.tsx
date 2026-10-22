@@ -472,7 +472,7 @@ export const BoothPhoto = memo(function BoothPhoto({ behind = false, fill = fals
 });
 
 /** 00:58, 채원's photo: a phone left on the booth's shelf. The same phone. The same shelf. */
-export const BoothShelfPhoto = memo(function BoothShelfPhoto() {
+export const BoothShelfPhoto = memo(function BoothShelfPhoto({ stamp = '00:58' }: { stamp?: string }) {
   const photo = !!art('booth-shelf');
   const id = useSvgId();
   return (
@@ -516,7 +516,7 @@ export const BoothShelfPhoto = memo(function BoothShelfPhoto() {
         )}
         {!photo && <rect width="640" height="420" fill={`url(#${id}-flash)`} />}
       </g>
-      <Stamp text="00:58" />
+      <Stamp text={stamp} />
     </svg>
   );
 });

@@ -1,7 +1,8 @@
 // 시즌 2 — what 발신자 정보 없음 (the record, keeperless) and 소연 (from inside,
 // via 나에게) say back to free text. Same shape as season 1's rules.
 
-import { ASKS_NAME, type ReplyContext } from '../replies';
+import { ASKS_NAME } from '../asks';
+import type { ReplyContext } from '../replies';
 
 export interface Rule2 {
   id: string;

@@ -26,7 +26,8 @@ export interface Reply {
 }
 
 /** Asking her — or it — for a name (not "what's my name": callers check that first). */
-export const ASKS_NAME = /이름(이|은)?\s*(뭐|머|알려|말해|있)|성함/;
+import { ASKS_NAME } from './asks';
+export { ASKS_NAME };
 
 interface Rule {
   id: string;

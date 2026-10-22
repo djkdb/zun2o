@@ -309,7 +309,8 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
   return (
     <div
       className="viewer"
-      onTouchStart={(e) => (touch.current = e.touches[0].clientX)}
+      // dragging the brightness slider (or anything in the editor) is not a swipe to the next photo
+      onTouchStart={(e) => (touch.current = edit || (e.target as HTMLElement).closest('input, .edit-panel') ? null : e.touches[0].clientX)}
       onTouchEnd={(e) => {
         if (touch.current === null || zoom) return;
         const dx = e.changedTouches[0].clientX - touch.current;

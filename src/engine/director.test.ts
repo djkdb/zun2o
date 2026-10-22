@@ -241,4 +241,15 @@ describe('director timing', () => {
     await vi.advanceTimersByTimeAsync(4000);
     expect(getState().save.threads.unknown.filter((m) => m.text === '…제 것도.')).toHaveLength(1);
   });
+  it('starting season 1 again after season 2 really is season 1 (nothing of season 2 is merged in)', () => {
+    newGame(2);
+    setSave({ liveNote: '02:00 — 한소' });
+    expect(getState().save.season).toBe(2);
+    newGame(1);
+    expect(getState().save.season).toBeUndefined();
+    expect(getState().save.s1).toBeUndefined();
+    expect(getState().save.liveNote).toBeUndefined();
+    newGame(2);
+    expect(getState().save.liveNote).toBeUndefined();
+  });
 });

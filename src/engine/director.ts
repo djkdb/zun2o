@@ -1,7 +1,7 @@
 import type { Action, AppId, Attach, Beat, EndingId, SoundId, ThreadId } from './types';
 import { BEATS } from '../content/script';
 import { BEATS_S2 } from '../content/s2/script';
-import { addFlag, appendMessage, clearCheckpoint, fill, flush, getState, hasFlag, loadCheckpoint, logInput, newSave, newSave2, saveCheckpoint, setRt, setSave, summarizeS1, wipeSave } from './state';
+import { addFlag, appendMessage, clearCheckpoint, fill, flush, getState, hasFlag, loadCheckpoint, logInput, newSave, newSave2, replaceSave, saveCheckpoint, setRt, setSave, summarizeS1, wipeSave } from './state';
 import { threadMeta } from '../content/threads';
 import { isS2, pick } from '../content/season';
 import { CALLS } from '../content/calls';
@@ -704,7 +704,7 @@ export function newGame(season?: 1 | 2): void {
   const keep = { endings: s.endings, sound: s.sound, reduceFx: s.reduceFx, startedAtReal: Date.now() };
   // Starting over stays in the season you are in (or the one asked for).
   const to = season ?? (s.season === 2 ? 2 : 1);
-  setSave(to === 2 ? newSave2(s.season === 2 ? s.s1 : summarizeS1(s), keep) : newSave(keep));
+  replaceSave(to === 2 ? newSave2(s.season === 2 ? s.s1 : summarizeS1(s), keep) : newSave(keep));
   flush();
   setRt({
     app: null,
