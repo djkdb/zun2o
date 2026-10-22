@@ -40,6 +40,8 @@ const ENDINGS: Record<EndingId, EndingDef> = {
     line: '누군가는 안에 남아야 한다. 오늘부터는 당신이다.',
     scene: [
       { who: '나에게', text: '…나왔어. 해가 떠', side: 'right' },
+      // 01:44 she said "그럼 다음 너야 / …미안". It came true.
+      { who: '나에게', text: '…미안', side: 'right' },
       { who: '도현', text: '채원이랑 같이 전화부스 안에서 깼어요. 둘 다 무사해요', side: 'left' },
       { who: '도현', text: '근데 그쪽은 어디 있어요? 이 폰만 선반에 있어요', side: 'left' },
       { text: '이름을 적는 사람 — {name}. 처음 적힌 사람은 31년 만에 풀려났다.' },
@@ -105,8 +107,10 @@ const ENDINGS: Record<EndingId, EndingDef> = {
       { text: '02:00. 노트의 마지막 줄: “한소” 위에 줄. 그 아래 — {name}.' },
       { text: '새벽 여섯 시 반. 현관문이 열리자 엄마가 식탁에서 일어났다. 엄마는 아무것도 묻지 않고 국을 데웠다.' },
       { text: '엄마 손은 그날 이후 다시는 볼펜을 쥐지 않았다.' },
+      { text: '다음 달 28일, 노트는 식탁에 돌아오지 않았다. 볼펜은 제2서고 책상 위에 있었다.' },
       { text: '1년 뒤. 해원고 정문 앞 공중전화 부스. 선반 위에 휴대폰 한 대.', img: 'booth-shelf' },
-      { text: '메모 앱 맨 위 — “이 폰을 주운 사람에게. {name}{이에요}. 부탁이 하나 있어요. 두 시 전에”', pause: 1800 },
+      // the one who writes the names can't write their own (record 013)
+      { text: '메모 앱 맨 위 — “이 폰을 주운 사람에게. ……이에요. 부탁이 하나 있어요. 두 시 전에”', pause: 1800 },
     ],
   },
   's2-home': {
@@ -151,7 +155,7 @@ function endingFor(id: EndingId, save: Save): EndingDef {
       { who: '발신자 정보 없음', text: '들어오세요.', side: 'left', pause: 2400 },
     ];
   }
-  if (keptOut && id === 'shift') scene[1] = { who: '도현', text: '채원이 정문으로 걸어 나왔어요. 저는 밖에서 기다렸어요. 둘 다 무사해요', side: 'left' };
+  if (keptOut && id === 'shift') scene[2] = { who: '도현', text: '채원이 정문으로 걸어 나왔어요. 저는 밖에서 기다렸어요. 둘 다 무사해요', side: 'left' };
   if (keptOut && id === 'release') {
     scene[0] = { who: '도현', text: '채원이 나왔어요!!! 정문으로 걸어 나왔어요', side: 'left' };
     scene[1] = { who: '도현', text: '채원이가 그러는데 서랍이 전부 비었대요. 카드가 한 장도 없었대요', side: 'left' };
@@ -172,6 +176,11 @@ function endingFor(id: EndingId, save: Save): EndingDef {
     // (in ending 2 it happens before "1년 뒤")
     const at = id === 'shift' ? scene.findIndex((l) => l.text.startsWith('1년 뒤')) : scene.length - 1;
     scene.splice(at, 0, { text: radio });
+  }
+  // You told her you'd erase it, and you watched instead. She forgives you.
+  if (id === 's2-daughter' && flags.includes('promised')) {
+    const i = scene.findIndex((l) => l.text.startsWith('02:00. 노트의 마지막 줄'));
+    if (i >= 0) scene.splice(i, 0, { who: '나에게', text: '괜찮아요', side: 'right' }, { who: '나에게', text: '저도 못 지웠을 거예요', side: 'right' });
   }
   // You answered her mother as 소연. So the promise she waits on was yours.
   if (id === 's2-daughter' && flags.includes('pretended')) scene[scene.length - 1] = { ...scene[scene.length - 1], text: '소연이가 두 시 전에는 온다고 했어요. 전화로 그랬어요. 목소리가 좀 이상했는데. 감기 걸렸나 봐요.', side: 'left' };

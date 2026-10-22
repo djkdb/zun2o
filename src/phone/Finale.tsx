@@ -3,7 +3,7 @@ import { useGame } from '../hooks/useGame';
 import { mix, reachEnding, sfx, vibrate } from '../engine/director';
 import { getState } from '../engine/state';
 import { HomeScreen } from './HomeScreen';
-import { VideoFeed } from '../art/phonePhotos';
+import { BoothShelfPhoto, VideoFeed } from '../art/phonePhotos';
 import { speak } from '../audio/speech';
 import { ARCHIVE, CONTINUATION_KEY, FIRST_KEEPER, plain } from '../content/archive';
 import { ASKS_NAME } from '../content/replies';
@@ -12,7 +12,6 @@ import { VIDEO_CALL_LINES } from '../content/calls';
 import { setSave } from '../engine/state';
 import { art } from '../art/photoArt';
 import { VIDEO } from '../art/videos';
-import { PhotoView } from './apps/Gallery';
 
 // ─────────────────────────────────────────────────────────────────────────
 // 02:00. The clock stops, the phone floods, the home screen empties, 채원
@@ -26,7 +25,8 @@ const FLOOD = [
   ['도현', '채원아'],
   ['엄마', '우리 딸 어디 있니'],
   ['도현', '채원아 제발'],
-  ['발신자 정보 없음', '{name} 씨, 시간 됐어요'],
+  // just your name, the way she took it down at c2 (no name given: your number)
+  ['발신자 정보 없음', '{name} 씨.'],
   ['나에게', '살려줘'],
   ['발신자 정보 없음', '앉으세요.'],
 ];
@@ -87,10 +87,10 @@ function buildRecall(): RecallLine[] {
     [s.flags.includes('held'), '끝까지 안 돌아봤죠. 저 계속 뒤에 있었는데.'],
     [s.flags.includes('kept-out'), '도현 씨한테 밖에 있으라고 했죠. 1994년 그날 밤엔 저한테 그렇게 말해 준 사람이 없었어요.'],
     [s.flags.includes('named-her'), '그 이름 보냈죠. …한참 아무 말도 못 했어요.'],
-    [!!typed, `“${typed}”라고 보냈죠. 다 적어 뒀어요.`],
+    [!!typed, `“${typed}”라고 보냈죠.`],
     [toMom, '채원 씨 어머니한테 답장하려고 했죠. 제가 안 보냈어요.'],
     [s.choices.c3 === 'chaewon', '채원 씨 이름을 먼저 불러 줬죠. 그 애가 울었어요.'],
-    [s.flags.includes('dwelt'), '사진 오래 봤죠. 저도 그쪽 보고 있었어요.'],
+    [s.flags.includes('dwelt'), '사진 오래 봤죠. 그동안 눈 한 번도 안 깜박였어요.'],
     [s.flags.includes('zoomed-booth'), '부스 안에 있는 그쪽 사진, 확대해 봤죠.'],
     [s.flags.includes('hung-once') || (s.flags.includes('declined-once') && !s.flags.includes('missed-dohyun')), '도현 씨 전화를 끊었죠. 그래도 그 사람은 왔어요.'],
     [s.flags.includes('missed-dohyun') && !s.flags.includes('hung-once'), '도현 씨 전화, 받지 않았죠. 그래도 그 사람은 왔어요.'],
@@ -99,15 +99,15 @@ function buildRecall(): RecallLine[] {
     [s.flags.includes('heard-radio'), '1340에 전화도 걸었죠. 제 목소리 들었잖아요.'],
     [s.flags.includes('read-hyunwoo'), '박현우 씨 기사 읽었죠. 그럼 끝이 어떻게 되는지도 알겠네요.'],
   ];
-  personal
-    .filter(([on]) => on)
-    .slice(0, 2)
-    .forEach(([, line]) => lines.push(line));
+  const picked = personal.filter(([on]) => on).slice(0, 2);
+  picked.forEach(([, line]) => lines.push(line));
+  // already told him to stay out: don't say it twice right before the confession
+  const saidKeptOut = picked.some(([, l]) => l.startsWith('도현 씨한테 밖에'));
   if (new Date().getHours() === 2) lines.push('그리고… 지금은 진짜로 새벽 두 시네요.');
   lines.push('#0025 박현우. #0026 윤채원. 그리고 #0027, 그쪽.');
   lines.push(
     s.flags.includes('kept-out')
-      ? '도현 씨는 그쪽 말 듣고 밖에 있어요. 그쪽이 안 남으면 채원 씨가 계속 여기 있어요.'
+      ? `${saidKeptOut ? '' : '도현 씨는 그쪽 말 듣고 밖에 있어요. '}그쪽이 안 남으면 채원 씨가 계속 여기 있어요.`
       : '도현 씨 지금 제2서고에 있어요. 그쪽이 안 남으면 도현 씨가 남아요.',
   );
   // the one question nobody asks her — unless you did
@@ -365,7 +365,8 @@ export function Finale() {
                 <b>방금</b>
                 <small>01:59 · 자동 저장</small>
               </div>
-              <PhotoView id="p08" />
+              {/* nobody in the booth: the phone you're holding is on the shelf now */}
+              <BoothShelfPhoto />
             </div>
           )}
           {brink >= 6 && <span className="brink-cam" aria-label="카메라 사용 중 표시" />}
@@ -380,7 +381,7 @@ export function Finale() {
             {FLOOD.slice(0, flood).map(([who, text], i) => (
               <div key={i} className="flood-item">
                 <strong>{who}</strong>
-                <span>{save.playerName ? text.replace('{name}', save.playerName) : text.replace('{name} 씨, ', '')}</span>
+                <span>{save.playerName ? text.replace('{name}', save.playerName) : text.replace('{name}', '#0027')}</span>
               </div>
             ))}
           </div>

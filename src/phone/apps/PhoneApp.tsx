@@ -51,7 +51,7 @@ export function PhoneApp() {
         <ul className="call-list">
           {calls.map((c, i) => (
             <li key={i}>
-              <button type="button" className="call-row" onClick={() => (c.who === '도현' || c.who === '엄마' ? callContact(c.who) : undefined)}>
+              <button type="button" className="call-row" onClick={() => (SPECIAL[c.who] ? (emit(`dial:${c.who}`), startOutgoing(SPECIAL[c.who])) : c.who === '도현' || c.who === '엄마' ? callContact(c.who) : undefined)}>
                 <CallerPic who={c.who} />
                 <span className="call-row-text">
                   <strong className={c.kind === 'missed' ? 'missed' : undefined}>

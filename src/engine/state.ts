@@ -303,8 +303,10 @@ export function fill(text: string): string {
     clock: s.clock,
     toDohyun: s.choices.toDohyun ?? '',
     s1name: s.s1?.name ?? '(이름 없음)',
-    // the first letter of your name (or of "당신")
-    initial: (s.playerName ?? s.s1?.name ?? '당신').slice(0, 1),
+    // the first letter of your name — no name given, then your number's mark: her hand writes without one
+    initial: (s.playerName ?? s.s1?.name ?? '#').slice(0, 1),
+    // season 2 memo about last year's visitor: thanks only if you called her name (ending 3)
+    s1called: s.s1?.endings.includes('release') ? '엄마 이름을 불러 준 사람.\n\n연락처는 모른다. 고맙다는 말을 못 했다.' : '그 시각에 그 부스에 있던 사람.\n\n연락처는 모른다. 그날 밤 거기서 무슨 일이 있었는지 묻고 싶다.',
     typed1: s.s1?.typed ?? '',
   };
   return text.replace(/\{(\w+)\}/g, (m, k: string) => values[k] ?? m);

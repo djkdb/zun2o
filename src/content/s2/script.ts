@@ -23,13 +23,18 @@ export const BEATS_S2: Beat[] = [
     actions: [
       { t: 'time', hm: '23:51' },
       { t: 'battery', v: 12 },
-      // nothing said: just six missed calls from 엄마, before you ever picked the phone up
-      { t: 'calllog', entry: { who: '엄마', time: '23:48', kind: 'missed', count: 6 } },
       {
         t: 'objective',
         text: '소연의 폰 잠금을 풀자',
         hint: '채원의 문자: “어머니 사라지신 날”. 잠금 화면의 해원일보 알림에 그 날짜가 있어요. 월과 일, 네 자리로.',
       },
+      // her mother calls the phone in your hand — locked, you can't answer, and shouldn't
+      { t: 'wait', ms: 7000 },
+      { t: 'sound', id: 'buzz', caption: '휴대폰이 진동합니다 · 엄마' },
+      { t: 'vibrate', ms: [400, 200, 400, 200, 400] },
+      { t: 'wait', ms: 2600 },
+      { t: 'calllog', entry: { who: '엄마', time: '23:51', kind: 'missed' } },
+      { t: 'notify', app: 'phone', title: '부재중 전화', body: '엄마' },
     ],
   },
   { id: 's2-hello', on: 'start', requires: ['s1-name'], actions: [{ t: 'wait', ms: 2600 }, { t: 'msg', th: 'unknown', text: '1년 만이네요.', typing: 1200 }] },
@@ -104,7 +109,8 @@ export const BEATS_S2: Beat[] = [
     actions: [
       { t: 'wait', ms: 1200 },
       { t: 'msg', th: 'unknown', text: '쓰던 사람은 집에 갔어요.', typing: 1300 },
-      { t: 'msg', th: 'unknown', text: '요즘은 그 손 빌려 써요.', typing: 1300 },
+      // season 1, record 013: "누가 제 귀에 대고 규칙을 읽어 줍니다" — that someone
+      { t: 'msg', th: 'unknown', text: '31년 동안 그 사람 귀에 대고 읽어 줬는데, 요즘은 손에 대고 읽어요.', typing: 1600 },
     ],
   },
   {
@@ -153,10 +159,13 @@ export const BEATS_S2: Beat[] = [
       { t: 'flag', f: 'ch2' },
       { t: 'chapter', n: 2, title: '노트' },
       { t: 'time', hm: '00:40' },
+      // an empty memo "9월 28일 · 지금 작성 중" sits in the list from now on, waiting
+      { t: 'write', text: '', ms: 0 },
       { t: 'memo', id: 's2m1' },
       { t: 'notify', app: 'memos', title: '녹음', body: '“8월 28일 01:58” 녹음을 클라우드에서 복원했습니다.' },
       { t: 'msg', th: CHAEWON, text: '언니 클라우드에 녹음 하나 방금 올라왔어요', typing: 1300, attach: { kind: 'memo', id: 's2m1' } },
       { t: 'msg', th: CHAEWON, text: '언니가 어머니 몰래 녹음한 거', typing: 900 },
+      { t: 'msg', th: CHAEWON, text: '저도 아직 못 들어 봤어요', typing: 1100 },
       {
         t: 'objective',
         app: 'memos',
@@ -173,7 +182,7 @@ export const BEATS_S2: Beat[] = [
       { t: 'flag', f: 'memo-done' },
       { t: 'wait', ms: 1800 },
       { t: 'msg', th: CHAEWON, text: '도현이 이름이에요', typing: 800 },
-      { t: 'msg', th: CHAEWON, text: '어머니가 쓰신 거', typing: 800 },
+      { t: 'msg', th: CHAEWON, text: '어머니가 쓰신 거였어요', typing: 1200 },
       { t: 'msg', th: CHAEWON, text: '오늘 누가 적히면 도현이 나와요', typing: 1300 },
       { t: 'msg', th: CHAEWON, text: '근데 그게 언니면', typing: 700 },
       { t: 'wait', ms: 1600 },
@@ -219,8 +228,34 @@ export const BEATS_S2: Beat[] = [
       { t: 'objective', app: 'messages', text: '“발신자 정보 없음”이 이름을 묻는다', hint: '메시지 앱 → 발신자 정보 없음. (이름은 이 기기에만 저장됩니다)', nudge: { th: 'unknown', text: '대답해요.' } },
     ],
   },
-  { id: 's2-c2-same', on: 'choice:s2c2:same', actions: [{ t: 'flag', f: 'gave-name' }, { t: 'msg', th: 'unknown', text: '{name}. 작년 거 옆에 적어 둘게요.', typing: 2200 }, { t: 'emit', ev: 's2c2:done' }] },
-  { id: 's2-c2-name', on: 'choice:s2c2:name', actions: [{ t: 'flag', f: 'gave-name' }, { t: 'msg', th: 'unknown', text: '{name}. 적어 둘게요.', typing: 1800 }, { t: 'emit', ev: 's2c2:done' }] },
+  { id: 's2-c2-same', on: 'choice:s2c2:same', actions: [{ t: 'flag', f: 'gave-name' }, { t: 'msg', th: 'unknown', text: '{name}. 작년 거 옆에 적어 둘게요.', typing: 2200 }, { t: 'emit', ev: 's2:named' }] },
+  { id: 's2-c2-name', on: 'choice:s2c2:name', actions: [{ t: 'flag', f: 'gave-name' }, { t: 'msg', th: 'unknown', text: '{name}. 적어 둘게요.', typing: 1800 }, { t: 'emit', ev: 's2:named' }] },
+  // seven seconds after you give it: the notebook photo has changed — next month's line has your name
+  {
+    id: 's2-named',
+    on: 's2:named',
+    actions: [
+      { t: 'flag', f: 's2-n3-more' },
+      { t: 'wait', ms: 7000 },
+      { t: 'notify', app: 'gallery', title: '사진', body: '“노트” 앨범의 항목 1개가 수정되었습니다' },
+      { t: 'wait', ms: 2500 },
+      { t: 'emit', ev: 's2c2:done' },
+    ],
+  },
+  // 엄마 doesn't use full stops or 존댓말. Her hand does.
+  {
+    id: 's2-hand-text',
+    on: 's2:hand-text',
+    forbids: ['ch4'],
+    actions: [
+      { t: 'msg', th: 'mom', text: '앉으세요.', typing: 3400 },
+      { t: 'wait', ms: 9000 },
+      { t: 'msg', th: 'mom', text: '소연아', typing: 2200 },
+      { t: 'msg', th: 'mom', text: '엄마가 방금 뭐 보냈니', typing: 2600 },
+      { t: 'wait', ms: 2400 },
+      { t: 'msg', th: 'mom', text: '엄마는 안 눌렀다', typing: 2000 },
+    ],
+  },
   { id: 's2-c2-no', on: 'choice:s2c2:no', actions: [{ t: 'flag', f: 'refused-name' }, { t: 'msg', th: 'unknown', text: '괜찮아요. 어머니 손은 이름을 몰라도 써요.', typing: 2000 }, { t: 'emit', ev: 's2c2:done' }] },
 
   // ── 3. 관리자 ──────────────────────────────────────────────────────────
@@ -234,9 +269,9 @@ export const BEATS_S2: Beat[] = [
       { t: 'install', app: 'index' },
       { t: 'notify', app: 'index', title: '보관소 관리', body: '관리자 한소연 · 다시 로그인하세요' },
       { t: 'wait', ms: 1800 },
+      // the question, and no answer
       { t: 'msg', th: 'unknown', text: '소연 씨가 왜 폰을 두고 갔을까요.', typing: 1300 },
-      { t: 'msg', th: 'unknown', text: '자기 손으로는 못 하는 게 있어서요.', typing: 1100 },
-      { t: 'wait', ms: 2400 },
+      { t: 'wait', ms: 4000 },
       { t: 'memo', id: 's2m2' },
       { t: 'msg', th: 'unknown', text: '부스 앞에서 녹음한 거예요. 안 지웠더라고요.', typing: 1500, attach: { kind: 'memo', id: 's2m2' } },
       // the admin password: if it stalls, 엄마 remembers the day she came home
@@ -252,7 +287,9 @@ export const BEATS_S2: Beat[] = [
       // A minute in, past one in the morning, 엄마 — who should be asleep — starts typing. And sends nothing.
       { t: 'wait', ms: 60000 },
       { t: 'typing', th: 'mom', ms: 4200 },
-      { t: 'wait', ms: 150000 },
+      { t: 'wait', ms: 70000 },
+      { t: 'emit', ev: 's2:hand-text' },
+      { t: 'wait', ms: 80000 },
       { t: 'emit', ev: 'ch4' },
     ],
   },
@@ -286,6 +323,9 @@ export const BEATS_S2: Beat[] = [
       { t: 'flag', f: 'copy-armed' },
       { t: 'wait', ms: 1400 },
       { t: 'msg', th: 'unknown', text: '…지우는 건 그쪽 손이에요. 어머니 손 말고.', typing: 1600 },
+      { t: 'wait', ms: 1200 },
+      // why erasing the first sentence sends her home: while the promise is on file, she is still on her way
+      { t: 'msg', th: 'unknown', text: '그 말이 남아 있는 동안은, 어머니가 아직 오는 중이에요.', typing: 1500 },
       { t: 'msg', th: 'unknown', text: '어머니 얼굴 보고도 지울 수 있겠어요?', typing: 1600 },
     ],
   },
@@ -422,21 +462,25 @@ export const BEATS_S2: Beat[] = [
       { t: 'notify', app: 'gallery', title: '사진', body: '동영상 1개 · 이 기기에서 촬영됨' },
       { t: 'wait', ms: 3000 },
       { t: 'msg', th: 'unknown', text: '방금 찍혔어요.', typing: 900, attach: { kind: 'photo', id: 's2-kitchen2' } },
+      // time to open the clip and watch her turn
+      { t: 'wait', ms: 9000 },
       // season 1: "거기 앉아 있던 건 제가 아니에요." — this is who was sitting there
-      { t: 'wait', ms: 1500 },
       { t: 'msg', th: 'unknown', text: '작년까진 열람실 의자에 앉아 있었어요.', typing: 1500 },
       { t: 'msg', th: 'unknown', text: '요즘은 식탁 의자예요.', typing: 1000 },
+      { t: 'wait', ms: 2500 },
       { t: 'msg', th: 'unknown', text: '소연 씨가 들고 간 노트, 식탁에 와 있어요.', typing: 1400 },
-      { t: 'wait', ms: 3500 },
+      // quiet, and then the woman in the clip calls
+      { t: 'wait', ms: 6000 },
       { t: 'time', hm: '01:53' },
       { t: 'call', id: 'eomma' },
       { t: 'wait', ms: 24000 },
       { t: 'time', hm: '01:55' },
       { t: 'battery', v: 4 },
-      { t: 'notify', app: 'notes', title: '메모', body: '새 메모: 9월 28일' },
+      { t: 'notify', app: 'notes', title: '메모', body: '“9월 28일” 메모가 수정되었습니다' },
+      // time to get there before the first stroke
+      { t: 'wait', ms: 2500 },
       { t: 'write', text: '02:00 — 한', ms: 480 },
       { t: 'msg', th: 'unknown', text: '어머니 글씨 예쁘죠.', typing: 1200 },
-      { t: 'msg', th: 'unknown', text: '그 메모에 그쪽이 써도, 식탁 노트에 써져요.', typing: 1600 },
       { t: 'wait', ms: 8000 },
       { t: 'time', hm: '01:56' },
       { t: 'msg', th: CHAEWON, text: '부스 앞이에요 문 열려 있네요', typing: 900 },
