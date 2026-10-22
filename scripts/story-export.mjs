@@ -21,7 +21,8 @@ for (const d of ['02_characters', '05_scenes', 'refs', 'notes']) mkdirSync(`${OU
 const write = (p, s) => writeFileSync(`${OUT}/${p}`, s.trimEnd() + '\n');
 const sec = (ms) => `${(ms / 1000).toFixed(ms % 1000 ? 1 : 0)}s`;
 
-const who = (th, from, meta) => (from === 'me' ? (th === 'self' ? '나에게(채원이 안에서 보냄)' : '플레이어') : (meta[th]?.name ?? th));
+// 나에게: season 1 is 채원 writing from inside, season 2 is 소연
+const who = (th, from, meta) => (from === 'me' ? (th === 'self' ? `나에게(${meta.__self} — 안에서 보냄)` : '플레이어') : (meta[th]?.name ?? th));
 
 /** One action as a line a reader can follow. */
 function line(a, meta) {
@@ -124,7 +125,7 @@ write('02_characters/index.md', idx.join('\n'));
 // ── outline + scenes ─────────────────────────────────────────────────────
 write(
   '03_outline.md',
-  `# 개요 — 장면(beat) 순서\n\n각 줄은 이벤트가 일어나면 한 번 실행되는 장면입니다(조건은 장면 파일에). 실제 재생 순서는 이벤트에 따라 갈립니다.\n\n${scenes(BEATS, THREAD_META, 1)}\n\n${scenes(BEATS_S2, { ...THREAD_META, ...THREAD_META_S2 }, 2)}`,
+  `# 개요 — 장면(beat) 순서\n\n각 줄은 이벤트가 일어나면 한 번 실행되는 장면입니다(조건은 장면 파일에). 실제 재생 순서는 이벤트에 따라 갈립니다.\n\n${scenes(BEATS, { ...THREAD_META, __self: '채원' }, 1)}\n\n${scenes(BEATS_S2, { ...THREAD_META, ...THREAD_META_S2, __self: '소연' }, 2)}`,
 );
 
 // ── refs ─────────────────────────────────────────────────────────────────
