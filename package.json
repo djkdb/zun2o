@@ -27,6 +27,7 @@
     "voices:script": "node --experimental-strip-types --no-warnings --import ./scripts/ts-resolve.mjs scripts/voices.mjs script",
     "voices:cast": "node --experimental-strip-types --no-warnings --import ./scripts/ts-resolve.mjs scripts/voices.mjs cast",
     "voices:fish-probe": "node --experimental-strip-types --no-warnings --import ./scripts/ts-resolve.mjs scripts/voices.mjs fish-probe",
+    "story:export": "node --experimental-strip-types --no-warnings --import ./scripts/ts-resolve.mjs scripts/story-export.mjs",
     "voices:split": "node --experimental-strip-types --no-warnings --import ./scripts/ts-resolve.mjs scripts/voices.mjs split"
   },
   "dependencies": {
