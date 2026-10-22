@@ -50,14 +50,15 @@ export const BEATS: Beat[] = [
   {
     id: 'lock-idle2',
     on: 'lock:idle2',
-    forbids: ['unlocked'],
+    // (if 도현 has already sent the hint, "안 와요" would be wrong)
+    forbids: ['unlocked', 'hint-sent'],
     actions: [{ t: 'msg', th: 'unknown', text: '도현 씨가 다시 보낸다고 했죠. 안 와요.' }],
   },
   {
     id: 'lock-fail3',
     on: 'lock:fail3',
     forbids: ['unlocked'],
-    actions: [{ t: 'msg', th: 'dohyun', text: '숫자로 보내면 자꾸 지워져요', typing: 900 }, { t: 'msg', th: 'dohyun', text: '한시 십삼분이요 걔 들어간 시간', typing: 1200 }],
+    actions: [{ t: 'flag', f: 'hint-sent' }, { t: 'msg', th: 'dohyun', text: '숫자로 보내면 자꾸 지워져요', typing: 900 }, { t: 'msg', th: 'dohyun', text: '한시 십삼분이요 걔 들어간 시간', typing: 1200 }],
   },
 
   // ── 1. 채원의 폰 ───────────────────────────────────────────────────────
@@ -540,8 +541,8 @@ export const BEATS: Beat[] = [
       { t: 'wait', ms: 7000 },
       { t: 'reboot', wallpaper: 'booth' },
       { t: 'wait', ms: 2500 },
-      // the lock screen already shows which photo; she only echoes what she said about it
-      { t: 'msg', th: 'unknown', text: '잘 나왔잖아요.' },
+      // the lock screen already shows which photo; she says only this
+      { t: 'msg', th: 'unknown', text: '잘 나왔네요.' },
     ],
   },
   // the students' weather notebook: the one place her given name was written down
@@ -568,7 +569,12 @@ export const BEATS: Beat[] = [
     on: 'browser:r013',
     requires: ['self-contact'],
     // time to read record 013 to the end before chapter 4 lands on it
-    actions: [{ t: 'flag', f: 'found-key' }, { t: 'wait', ms: 25000 }, { t: 'emit', ev: 'ch4' }],
+    actions: [
+      { t: 'flag', f: 'found-key' },
+      { t: 'objective', app: 'browser', text: '기록 013을 끝까지 읽자', hint: '브라우저 → 심야 기록보관소 → 기록 013. 맨 아래까지.' },
+      { t: 'wait', ms: 25000 },
+      { t: 'emit', ev: 'ch4' },
+    ],
   },
 
   // ── 4. 두 시 전 ────────────────────────────────────────────────────────
@@ -593,6 +599,7 @@ export const BEATS: Beat[] = [
       { t: 'wait', ms: 2200 },
       { t: 'msg', th: 'unknown', text: '그거 찾았네요.', typing: 1400 },
       { t: 'msg', th: 'unknown', text: '그건 쓰면 안 돼요.', typing: 1200 },
+      { t: 'flag', f: 'slip' },
       { t: 'msg', th: 'unknown', text: '…써요. 두 시에. 제 이름이랑 같이.', typing: 900 },
       // taken back while you're looking at it (ch4-unsay), or at 01:53 at the latest
       {
@@ -692,7 +699,22 @@ export const BEATS: Beat[] = [
   {
     id: 'ch4-unsay',
     on: 'thread:unknown',
-    requires: ['ch4'],
+    requires: ['slip'],
+    forbids: ['unsaid'],
+    actions: [
+      { t: 'flag', f: 'unsaid' },
+      { t: 'wait', ms: 4500 },
+      { t: 'unsend', th: 'unknown', match: '…써요. 두 시에' },
+      { t: 'wait', ms: 1200 },
+      { t: 'msg', th: 'unknown', text: '그거 쓰면 다 지워져요.', typing: 1500 },
+      { t: 'msg', th: 'unknown', text: '…제 것도.', typing: 500 },
+    ],
+  },
+  // already in the conversation when it arrived
+  {
+    id: 'ch4-unsay-seen',
+    on: 'seen:unknown',
+    requires: ['slip'],
     forbids: ['unsaid'],
     actions: [
       { t: 'flag', f: 'unsaid' },
@@ -726,6 +748,7 @@ export const BEATS: Beat[] = [
       { t: 'sound', id: 'buzz', caption: '휴대폰이 진동합니다.' },
       { t: 'vibrate', ms: [400, 200, 400] },
       { t: 'wait', ms: 3000 },
+      // 01:13 on purpose: the minute 채원 walked in
       { t: 'calllog', entry: { who: '1340', time: '01:13', kind: 'missed' } },
       { t: 'notify', app: 'phone', title: '부재중 전화', body: '1340' },
     ],

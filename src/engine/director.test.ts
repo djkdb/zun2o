@@ -228,4 +228,17 @@ describe('director timing', () => {
     sendText('self', '어디야');
     expect(getState().save.threads.self.at(-1)?.inside).toBeUndefined();
   });
+  it('01:50: the slip is taken back while you are looking at it — once, and only after it exists', async () => {
+    const slip = '…써요. 두 시에. 제 이름이랑 같이.';
+    setSave((v) => ({ flags: [...v.flags, 'slip'], threads: { ...v.threads, unknown: [...v.threads.unknown, { id: 'slip', from: 'them', text: slip, time: '01:50' }] } }));
+    emit('thread:unknown');
+    await vi.advanceTimersByTimeAsync(3000);
+    expect(getState().save.threads.unknown.some((m) => m.text === slip)).toBe(true);
+    await until(() => getState().save.threads.unknown.some((m) => m.text === '…제 것도.'), 20000);
+    expect(getState().save.threads.unknown.some((m) => m.text === slip)).toBe(false);
+    // the 01:53 fallback does nothing now
+    emit('ch4:unsay');
+    await vi.advanceTimersByTimeAsync(4000);
+    expect(getState().save.threads.unknown.filter((m) => m.text === '…제 것도.')).toHaveLength(1);
+  });
 });

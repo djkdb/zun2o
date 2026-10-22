@@ -230,6 +230,8 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
       });
       if (isViewing(a.th)) {
         sfx('key');
+        // a beat can answer "it arrived while you were looking at it"
+        emit(`seen:${a.th}`);
       } else {
         setSave((s) => ({ unread: { ...s.unread, [a.th]: s.unread[a.th] + 1 } }));
         showBanner('messages', threadMeta()[a.th].name, text, a.th);

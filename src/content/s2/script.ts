@@ -228,7 +228,7 @@ export const BEATS_S2: Beat[] = [
       { t: 'objective', app: 'messages', text: '“발신자 정보 없음”이 이름을 묻는다', hint: '메시지 앱 → 발신자 정보 없음. (이름은 이 기기에만 저장됩니다)', nudge: { th: 'unknown', text: '대답해요.' } },
     ],
   },
-  { id: 's2-c2-same', on: 'choice:s2c2:same', actions: [{ t: 'flag', f: 'gave-name' }, { t: 'msg', th: 'unknown', text: '{name}. 작년 거 옆에 적어 둘게요.', typing: 2200 }, { t: 'emit', ev: 's2:named' }] },
+  { id: 's2-c2-same', on: 'choice:s2c2:same', actions: [{ t: 'flag', f: 'gave-name' }, { t: 'msg', th: 'unknown', text: '{name}. 작년 거 옆에 적어 둘게요.', typing: 2200 }, { t: 'emit', ev: 's2:named-same' }] },
   { id: 's2-c2-name', on: 'choice:s2c2:name', actions: [{ t: 'flag', f: 'gave-name' }, { t: 'msg', th: 'unknown', text: '{name}. 적어 둘게요.', typing: 1800 }, { t: 'emit', ev: 's2:named' }] },
   // seven seconds after you give it: the notebook photo has changed — next month's line has your name
   {
@@ -242,6 +242,20 @@ export const BEATS_S2: Beat[] = [
       { t: 'emit', ev: 's2c2:done' },
     ],
   },
+  // last year's name: if you already watched it appear on the page, nothing new to announce
+  {
+    id: 's2-named-same',
+    on: 's2:named-same',
+    forbids: ['s2-n3-more'],
+    actions: [
+      { t: 'flag', f: 's2-n3-more' },
+      { t: 'wait', ms: 7000 },
+      { t: 'notify', app: 'gallery', title: '사진', body: '“노트” 앨범의 항목 1개가 수정되었습니다' },
+      { t: 'wait', ms: 2500 },
+      { t: 'emit', ev: 's2c2:done' },
+    ],
+  },
+  { id: 's2-named-same-seen', on: 's2:named-same', requires: ['s2-n3-more'], actions: [{ t: 'wait', ms: 1500 }, { t: 'emit', ev: 's2c2:done' }] },
   // 엄마 doesn't use full stops or 존댓말. Her hand does.
   {
     id: 's2-hand-text',

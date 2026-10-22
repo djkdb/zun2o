@@ -103,7 +103,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
       { who: '나에게', text: '왜 그랬어요', side: 'right' },
       { who: '나에게', text: '엄마한테 갔다 올게요. 다음 달 28일 전에는 와요. 꼭', side: 'right' },
       { who: '채원', text: '도현이랑 언니 둘 다 전화부스에서 깼어요. 이 폰만 선반에 있어요', side: 'left' },
-      { who: '채원', text: '도현이가 전해 달래요. 작년엔 너무 늦게 들어갔대요. 이번엔 정문에서 기다린대요. 그쪽 나올 때까지', side: 'left' },
+      { who: '채원', text: '도현이가 전해 달래요. 작년엔 두 시 넘어서 들어갔대요. 이번엔 정문에서 기다린대요. 그쪽 나올 때까지', side: 'left' },
       { text: '02:00. 노트의 마지막 줄: “한소” 위에 줄. 그 아래 — {name}.' },
       { text: '새벽 여섯 시 반. 현관문이 열리자 엄마가 식탁에서 일어났다. 엄마는 아무것도 묻지 않고 국을 데웠다.' },
       { text: '엄마 손은 그날 이후 다시는 볼펜을 쥐지 않았다.' },
@@ -188,7 +188,7 @@ function endingFor(id: EndingId, save: Save): EndingDef {
   if (id === 's2-instead' && flags.includes('told-truth')) {
     const i = scene.findIndex((l) => l.text.startsWith('새벽 여섯 시 반'));
     if (i >= 0)
-      scene.splice(i + 1, 0, { who: '엄마', text: '전화 받으셨던 분이지요', side: 'left' }, { who: '엄마', text: '노트에 그 이름 안 지울게요', side: 'left' }, { who: '엄마', text: '매일 불러 드릴게요', side: 'left' });
+      scene.splice(i + 1, 0, { who: '엄마', text: '전화 받으셨던 분이지요', side: 'left' }, { who: '엄마', text: '그 이름 안 잊을게요', side: 'left' }, { who: '엄마', text: '매일 불러 드릴게요', side: 'left' });
   }
   // She has your name. Running doesn't take it back.
   if (id === 'poweroff' && flags.includes('gave-name')) {
