@@ -76,13 +76,21 @@ function useIdleDim(active: boolean): boolean {
       }, 25000);
     };
     arm();
+    // scrolling a long record counts as being there, not as leaving the phone alone
+    const opts = { capture: true, passive: true } as const;
     window.addEventListener('pointerdown', arm);
     window.addEventListener('keydown', arm);
+    window.addEventListener('scroll', arm, opts);
+    window.addEventListener('wheel', arm, opts);
+    window.addEventListener('touchmove', arm, opts);
     return () => {
       clearTimeout(t);
       inner.forEach(clearTimeout);
       window.removeEventListener('pointerdown', arm);
       window.removeEventListener('keydown', arm);
+      window.removeEventListener('scroll', arm, opts);
+      window.removeEventListener('wheel', arm, opts);
+      window.removeEventListener('touchmove', arm, opts);
     };
   }, [active]);
   return idle && active;

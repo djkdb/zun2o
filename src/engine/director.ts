@@ -178,7 +178,17 @@ export function vibrate(pattern: number[]): void {
   try {
     // Browsers refuse (and log) vibration before the first tap on the page.
     const active = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation?.hasBeenActive ?? true;
-    if (!getState().save.reduceFx && active) navigator.vibrate?.(pattern);
+    if (getState().save.reduceFx || !active) return;
+    if (typeof navigator.vibrate === 'function') navigator.vibrate(pattern);
+    else {
+      // no vibration on iPhone: the screen shudders for as long as the phone would have buzzed
+      const shell = document.querySelector('.shell');
+      const ms = pattern.reduce((a, b) => a + b, 0);
+      shell?.classList.remove('buzz');
+      void (shell as HTMLElement | null)?.offsetWidth;
+      shell?.classList.add('buzz');
+      setTimeout(() => shell?.classList.remove('buzz'), Math.min(1600, ms));
+    }
   } catch {
     /* unsupported */
   }

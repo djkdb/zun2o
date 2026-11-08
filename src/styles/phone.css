@@ -7426,3 +7426,25 @@ body,
 @media (prefers-reduced-motion: reduce) {
   .final-signed { animation: none; }
 }
+
+/* lock screen: a vertical swipe opens the keypad (the browser would otherwise take it as a scroll);
+   the notification stack keeps scrolling on its own */
+.lock-main {
+  touch-action: none;
+}
+.lock-main .lock-notes {
+  touch-action: pan-y;
+}
+
+/* iPhone has no vibration API: a small shudder of the screen instead (not with reduced motion) */
+.shell.buzz .screen {
+  animation: phone-buzz 90ms linear infinite;
+}
+@keyframes phone-buzz {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-1.5px); }
+  75% { transform: translateX(1.5px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shell.buzz .screen { animation: none; }
+}

@@ -11,6 +11,7 @@ tools: Read, Grep, Glob, Write
 `npm run story:export`로 만든 `story/` 폴더(계약서·인물·개요·장면·refs)를 읽고, 아래 스킬의 `.claude/skills/<이름>/SKILL.md`와 references를 읽어 그 방법대로 검토합니다. 스킬의 파일 쓰기·Story CLI 단계는 건너뛰고(`.claude/skills/THIRD_PARTY.md`), 결과는 보고서에만 씁니다.
 - `genre-craft (references/horror.md 필수)`
 - `scene-craft (scene-sequel, openings, exposition)`
+- `game-narrative-craft` (화면 종류별 글 분량: 알림·배너·말풍선)
 
 ## 보는 것
 - **긴장 곡선.** 23:51부터 02:00까지 장별로 긴장 0~10을 매기고 그래프로 그립니다(텍스트 표). 평평한 구간, 같은 높이가 반복되는 구간.

@@ -7,6 +7,7 @@
 | interactive-fiction, genre-craft, reader-panel, scene-craft, revision-continuity | [danjdewhurst/story-skills](https://github.com/danjdewhurst/story-skills) | MIT | 57121ee |
 | fiction-pressure, fiction-plausibility, fiction-gaps, fiction-relationships | [robskidmore/fiction-skills](https://github.com/robskidmore/fiction-skills) | MIT | 321f179 |
 | character-sim, reader-sim, story-review | [haowjy/creative-writing-skills](https://github.com/haowjy/creative-writing-skills) | Apache-2.0 | fec5020 |
+| game-narrative-craft, game-story-structure | [LocalGore/Game-Narrative-Skills](https://github.com/LocalGore/Game-Narrative-Skills) | Apache-2.0 (README에 명시. 저장소에 LICENSE 파일은 아직 없음) | 9075dd9 |
 
 ## 이 게임에서 쓰는 법
 

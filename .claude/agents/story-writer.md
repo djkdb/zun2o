@@ -14,6 +14,7 @@ tools: Read, Grep, Glob, Write
 - `fiction-plausibility`
 - `fiction-relationships`
 - `interactive-fiction`
+- `game-story-structure` (플래그 장부, 분기 비용)
 
 ## 보는 것
 - **한 문장으로 말할 수 있는가.** 각 시즌의 질문(dramatic question)과 답이 처음 5분 안에 심어지는가.
