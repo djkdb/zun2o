@@ -5,6 +5,7 @@
 // Env: QA_URL (default http://localhost:4173/), CHROMIUM
 import { chromium } from 'playwright-core';
 import { mkdirSync } from 'node:fs';
+import { CHROMIUM } from './chromium.mjs';
 
 const BASE = process.env.QA_URL ?? 'http://localhost:4173/';
 const OUT = 'qa-output/layout';
@@ -18,7 +19,7 @@ const SIZES = [
   [1280, 720],
 ];
 
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM ?? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+const browser = await chromium.launch({ executablePath: CHROMIUM });
 const problems = [];
 
 async function audit(page, label) {
