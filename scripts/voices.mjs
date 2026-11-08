@@ -279,7 +279,8 @@ async function eleven() {
 
 const VOX = process.env.TTS === 'voxcpm';
 const FISH = process.env.TTS === 'fish';
-const TAKES = VOX ? 'voice-takes/voxcpm' : FISH ? `voice-takes/fish-${MODEL}` : 'voice-takes';
+const QWEN = process.env.TTS === 'qwen3';
+const TAKES = VOX ? 'voice-takes/voxcpm' : QWEN ? 'voice-takes/qwen3' : FISH ? `voice-takes/fish-${MODEL}` : 'voice-takes';
 const REFS = 'voice-refs';
 
 // VoxCPM2 voice design: who each role is, said in words, and a line to hear it on.
@@ -303,6 +304,90 @@ function voxStyle(l) {
   if (l.voice === 'mother' && !tags.includes('warm')) tags.unshift('warm');
   return tags.join(', ');
 }
+// Qwen3-TTS VoiceDesign: who each role is, in words (the delivery is added per line).
+// 엄마 (season 2) is 서미령 at home: the same woman, warm instead of eerie.
+const QWEN_ROLE = {
+  male: 'A young Korean man in his early twenties, youthful light clear voice',
+  female: 'A young Korean woman in her early twenties, youthful bright clear voice',
+  entity: 'A Korean woman in her early forties, low, calm, soft-spoken old-fashioned librarian ghost, eerie and still',
+  mother: 'A Korean woman in her early forties, low warm motherly voice, an old-fashioned way of speaking',
+  soyeon: 'A Korean woman in her early forties, tired, steady, slightly husky voice',
+};
+const QWEN_ANCHOR = {
+  male: '여보세요? 저 지금 학교 앞이에요. 금방 갈게요.',
+  female: '여기 너무 어두워. 누가 있는 것 같아.',
+  entity: '조용히 해 줘요. 여기는 도서관이에요.',
+  mother: '소연아, 밥은 먹었니. 엄마 금방 간다.',
+  soyeon: '녹음 되나. 됐다. 엄마, 나 두 시 전에는 와.',
+};
+function qwenRun(args) {
+  const py = process.env.QWEN3_PY ?? 'python3';
+  const r = spawnSync(py, ['-I', 'scripts/qwen3tts.py', ...args], { stdio: 'inherit' });
+  if (r.status !== 0) {
+    console.error(`Qwen3-TTS failed (${py}). pip install qwen-tts (torch ≥ 2.5); set QWEN3_PY, QWEN3_MODEL and SPK_ONNX.`);
+    process.exit(1);
+  }
+}
+
+/** TTS=qwen3: anchors per role, several designed takes per line, keep the one most like the anchor that also says the line. */
+async function qwenAuto() {
+  const takes = Number(process.env.TAKES ?? 3);
+  const work = todo.filter((l) => only(l));
+  mkdirSync(`${TAKES}/wav`, { recursive: true });
+  mkdirSync(RAW, { recursive: true });
+  const anchor = (v) => `${REFS}/qwen3-${v}.wav`;
+  // 1. one anchor voice per role (kept in voice-refs/, so a re-run sounds like the same people)
+  const anchorJobs = [...new Set(work.map((l) => l.voice))]
+    .filter((v) => !existsSync(anchor(v)))
+    .map((v) => ({ text: QWEN_ANCHOR[v], instruct: `${QWEN_ROLE[v]}. Natural, calm delivery.`, out: anchor(v), seed: 7 }));
+  if (anchorJobs.length && !process.env.DRY) {
+    mkdirSync(REFS, { recursive: true });
+    writeFileSync(`${TAKES}/anchors.json`, JSON.stringify(anchorJobs));
+    qwenRun(['jobs', `${TAKES}/anchors.json`]);
+  }
+  // 2. the takes
+  const jobs = [];
+  for (const l of work)
+    for (let t = 1; t <= takes; t++)
+      if (!existsSync(`${TAKES}/${l.n}-t${t}.mp3`) || process.env.FORCE) {
+        const style = voxStyle(l).replace(/^warm, /, '');
+        jobs.push({ text: sayKo(l.say), instruct: `${QWEN_ROLE[l.voice]}.${style ? ` Speaking ${style}.` : ''}`, out: `${TAKES}/wav/${l.n}-t${t}.wav`, seed: 1000 + t * 17 + Number(l.n) });
+      }
+  if (process.env.DRY) return jobs.forEach((j) => console.log(`would make ${j.out}  (${j.instruct}) ${j.text}`));
+  if (process.env.FORCE) jobs.forEach((j) => existsSync(j.out) && unlinkSync(j.out));
+  writeFileSync(`${TAKES}/jobs.json`, JSON.stringify(jobs));
+  if (jobs.length) qwenRun(['jobs', `${TAKES}/jobs.json`]);
+  // 3. how much each take sounds like its role
+  const pairs = work.flatMap((l) => Array.from({ length: takes }, (_, i) => ({ wav: `${TAKES}/wav/${l.n}-t${i + 1}.wav`, anchor: anchor(l.voice) })));
+  writeFileSync(`${TAKES}/sim.json`, JSON.stringify(pairs));
+  qwenRun(['sim', `${TAKES}/sim.json`]);
+  const simOf = Object.fromEntries(JSON.parse(readFileSync(`${TAKES}/sim.json`, 'utf8')).map((p) => [p.wav, p.sim]));
+  const reportFile = `${TAKES}/report.json`;
+  const report = existsSync(reportFile) ? JSON.parse(readFileSync(reportFile, 'utf8')) : {};
+  for (const l of work) {
+    const rows = [];
+    for (let t = 1; t <= takes; t++) {
+      const wav = `${TAKES}/wav/${l.n}-t${t}.wav`;
+      const file = `${TAKES}/${l.n}-t${t}.mp3`;
+      if (!existsSync(file) || process.env.FORCE) toMp3(wav, file);
+      const a = analyse(file, l);
+      const heard = await transcribe(file);
+      const s = score(l, a, heard);
+      // a different-sounding person costs as much as a misread word or two
+      const sim = simOf[wav] ?? 0;
+      rows.push({ take: t, file, heard, sim, ...a, ...s, total: Math.round((s.total + Math.max(0, 0.75 - sim) * 120) * 10) / 10 });
+    }
+    rows.sort((x, y) => x.total - y.total);
+    report[l.n] = { line: l.say, said: `(${QWEN_ROLE[l.voice]}; ${voxStyle(l)}) ${sayKo(l.say)}`, voice: l.voice, where: l.where, takes: rows };
+    writeFileSync(reportFile, JSON.stringify(report, null, 2));
+    copyFileSync(rows[0].file, `${RAW}/${l.n}.mp3`);
+    console.log(`${l.n} best t${rows[0].take} score ${rows[0].total} (cer ${rows[0].cer}, like ${rows[0].sim})  heard: ${rows[0].heard}${rows[0].cer > 0.15 ? '  ⚠ check' : ''}`);
+  }
+  listenPage(report);
+  process.env.FORCE = '1';
+  fx();
+}
+
 function voxRun(args) {
   const py = process.env.VOXCPM_PY ?? 'python3';
   const r = spawnSync(py, ['-I', 'scripts/voxcpm.py', ...args], { stdio: 'inherit' });
@@ -533,6 +618,7 @@ async function fishProbe() {
 async function auto() {
   const tc = process.env.TTS === 'typecast';
   if (VOX) return voxAuto();
+  if (QWEN) return qwenAuto();
   if (FISH && !KEY) {
     console.error('FISH_API_KEY is not set.');
     process.exit(1);
