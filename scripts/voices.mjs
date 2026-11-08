@@ -30,7 +30,7 @@
 // Env: FISH_VOICE_MALE / _FEMALE / _ENTITY override the voices below, FISH_MODEL
 // (default s1), FORCE=1 to remake existing files, DRY=1 to only print.
 import { execFileSync, spawnSync } from 'node:child_process';
-import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
 import { cer, sayKo, syllables } from '../src/audio/sayKo.ts';
 import { CALLS, VIDEO_CALL_LINES } from '../src/content/calls.ts';
 import { CALLS_S2 } from '../src/content/s2/calls.ts';
@@ -153,9 +153,10 @@ function chain(l) {
   const her = l.voice === 'entity';
   const fx = l.where === 'call' ? PHONE : l.where === 'memo' ? MEMO : l.where === 'tape' ? TAPE : VIDEO;
   const noise = l.where === 'video' ? 0.002 : l.where === 'tape' ? 0.012 : 0.005;
-  const voice = [TRIM, 'aresample=44100', her ? LOWER : null, fx, her ? ROOM : null, 'loudnorm=I=-18:TP=-2:LRA=9'].filter(Boolean).join(',');
+  // loudnorm hands back 192 kHz: bring it to the noise bed's rate and layout, or amix waits forever (empty file)
+  const voice = [TRIM, 'aresample=44100', her ? LOWER : null, fx, her ? ROOM : null, 'loudnorm=I=-18:TP=-2:LRA=9', 'aresample=44100', 'aformat=sample_fmts=fltp:channel_layouts=mono'].filter(Boolean).join(',');
   // a bed of line noise under every line, so it never sounds like a studio
-  return `[0:a]${voice}[v];anoisesrc=color=pink:amplitude=${noise}:sample_rate=44100[n];[v][n]amix=inputs=2:duration=first:weights=1 1[o]`;
+  return `[0:a]${voice}[v];anoisesrc=color=pink:amplitude=${noise}:sample_rate=44100,aformat=sample_fmts=fltp:channel_layouts=mono[n];[v][n]amix=inputs=2:duration=first:weights=1 1[o]`;
 }
 
 function list() {
@@ -195,6 +196,11 @@ function fx() {
       continue;
     }
     execFileSync('ffmpeg', ['-loglevel', 'error', '-y', '-i', `${RAW}/${src}`, '-filter_complex', chain(l), '-map', '[o]', '-ac', '1', '-codec:a', 'libmp3lame', '-b:a', '96k', out]);
+    // ffmpeg can "succeed" with an empty file (a header and no audio): never ship one
+    if (statSync(out).size < 2000) {
+      console.error(`${out} came out empty (${statSync(out).size} bytes) from ${RAW}/${src} — check the effects chain`);
+      process.exit(1);
+    }
     made++;
     console.log(`made ${out}  [${l.voice}/${l.where}] ${l.say}`);
   }
