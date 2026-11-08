@@ -52,3 +52,16 @@ OpenBMB의 VoxCPM2(2B, 한국어 포함 30개 언어, Apache-2.0)를 이 컴퓨�
 4. **`TTS=voxcpm npm run voices:auto`** — 대사마다 2번(`TAKES`) 뽑습니다. 연기 지시 태그(`[whispers] [slowly]`)는 "(whispering, slowly)" 같은 말투 지시로 바뀌어 함께 들어가고, 목소리는 `voice-refs`를 따라 합니다. 채점과 듣기 페이지(`voice-takes/voxcpm/index.html`), `voices:pick`은 위와 같습니다.
 
 `VOXCPM_PY`에는 voxcpm을 설치한 파이썬을 지정합니다(기본 `python3`).
+
+## Qwen3-TTS VoiceDesign (지금 게임에 들어간 목소리)
+
+Qwen의 Qwen3-TTS(1.7B VoiceDesign, Apache-2.0, 상업적 사용 가능)로 만들었습니다. 목소리와 말투를 모두 글로 지시하는 모델이라 감정 지시가 가장 잘 먹습니다. 대신 줄마다 목소리가 새로 만들어지므로, 같은 사람처럼 들리도록 고르는 단계가 있습니다.
+
+1. 설치: `pip install qwen-tts` (torch 2.5 이상). 모델은 `Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign`(약 4GB, `QWEN3_MODEL`), 화자 비교용 `campplus.onnx`(inclusionAI/Ming-3.0-tts-0.5B, MIT, `SPK_ONNX`). `QWEN3_PY`에 그 파이썬을 지정합니다.
+2. **`TTS=qwen3 npm run voices:auto`**
+   - 인물마다 기준 목소리를 한 번 만들어 `voice-refs/qwen3-<역할>.wav`에 둡니다. 다시 돌려도 같은 사람들로 들립니다.
+   - 대사마다 인물 설명과 연기 지시를 함께 넣어 3번(`TAKES`) 뽑고, 기준 목소리와 닮은 정도(CAM++ 화자 임베딩)와 받아쓰기 정확도로 채점해 1위를 씁니다.
+   - 약한 줄만 다시: `ONLY=9,25 TAKES=6 TTS=qwen3 npm run voices:auto`.
+3. CPU 4코어에서 대사 3초당 약 20초. 55줄 × 3번에 약 1시간.
+
+인물 설명은 `scripts/voices.mjs`의 `QWEN_ROLE`, 기준 목소리용 대사는 `QWEN_ANCHOR`에 있습니다.
