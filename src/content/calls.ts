@@ -14,7 +14,9 @@ export const CALLS: Record<string, CallScript> = {
       { at: 3400, who: 'other', text: '…들려요?', voice: 'entity' },
       { at: 5800, who: 'other', text: '문은 열어 뒀어요.', voice: 'entity' },
       { at: 8200, who: 'other', text: '채원 씨도 어젯밤 이 전화를 받았어요.', voice: 'entity' },
-      { at: 11600, who: 'sfx', text: '(통화 종료)' },
+      // a breath after the last line, so it can be read before the line goes dead
+      { at: 11600, who: 'sfx', text: '(숨소리)' },
+      { at: 13400, who: 'sfx', text: '(통화 종료)' },
     ],
   },
   dohyun1: {

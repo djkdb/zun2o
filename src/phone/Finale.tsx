@@ -49,7 +49,8 @@ interface RecallLine {
 
 function useTyped(lines: RecallLine[], active: boolean, speed = 38): string[] {
   const [n, setN] = useState(0);
-  const gap = (l: RecallLine, i: number) => (i ? 8 : 0) + Math.round((l.pause ?? 0) / speed);
+  // at least 1.4 s between lines: each one is read before the next starts
+  const gap = (l: RecallLine, i: number) => (i ? Math.round(1400 / speed) : 0) + Math.round((l.pause ?? 0) / speed);
   const total = lines.reduce((a, l, i) => a + gap(l, i) + l.text.length, 0);
   useEffect(() => {
     if (!active) return;
@@ -121,7 +122,7 @@ function buildRecall(): RecallLine[] {
     ...lines.map((text) => ({ text })),
     { text: '이름 계속 물어본 거요. 적어야 해서.', pause: 1500 },
     { text: askedName ? '…제 이름 물어본 사람은 그쪽이 처음이었어요.' : s.choices.c1 === 'who' ? '누구냐고는 물었죠. 이름은 아무도 안 물어봤어요.' : '…근데 제 이름 물어본 사람은 없었어요.', pause: 1200 },
-    { text: '이제 한 명은 남아야 돼요.', pause: 1800 },
+    { text: '이제 한 명은 남아야 돼요.', pause: 2500 },
   ];
 }
 
@@ -164,7 +165,7 @@ export function Finale() {
       at(4600, () => setBrink(3)),
       at(5400, () => (setBrink(4), sfx('zoom'))), // the gallery opens by itself: a photo taken just now
       at(8600, () => setBrink(5)), // home — the empty booth photo stays long enough to see whose phone is on the shelf
-      at(9500, () => setBrink(6)), // the camera-in-use dot
+      at(9500, () => setBrink(6)), // the night log's recording dot (not a camera light)
       // 02:00:00 — everything stops. Silence first, then the night lands.
       at(10500, () => (setBrink(7), mix(0, 0, 0.25), setSave({ clock: '02:00' }))),
       // the night's one real silence — the 01:59 hush was dropped so this one is whole
@@ -374,7 +375,7 @@ export function Finale() {
               <BoothShelfPhoto stamp="01:59" />
             </div>
           )}
-          {brink >= 6 && <span className="brink-cam" aria-label="카메라 사용 중 표시" />}
+          {brink >= 6 && <span className="brink-cam" aria-label="야간 출입 기록 · 기록 중" />}
           {brink === 7 && <div className="brink-still" aria-hidden="true" />}
         </div>
       )}

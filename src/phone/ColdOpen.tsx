@@ -125,7 +125,7 @@ export function ColdOpen() {
     setPushed(true);
     sfx(isS2() ? 'creak' : 'thud');
     vibrate([40, 30, 40]);
-    setTimeout(begin, 2300);
+    setTimeout(begin, 3400);
   };
 
   const begin = () => {

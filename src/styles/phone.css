@@ -5700,8 +5700,19 @@ body,
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #34c759;
-  box-shadow: 0 0 6px rgba(52, 199, 89, 0.8);
+  /* not the camera light (this game never uses the camera): the night log, writing */
+  background: #ff3b30;
+  box-shadow: 0 0 6px rgba(255, 59, 48, 0.8);
+}
+.brink-cam::after {
+  content: '야간 출입 기록 · 기록 중';
+  position: absolute;
+  top: -3px;
+  right: 12px;
+  white-space: nowrap;
+  font-size: 9px;
+  line-height: 13px;
+  color: #ff6b61;
 }
 /* 02:00:00 — nothing moves */
 .brink-7 .home {

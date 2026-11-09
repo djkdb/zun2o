@@ -228,7 +228,7 @@ export const BEATS_S2: Beat[] = [
       { t: 'objective', app: 'messages', text: '“발신자 정보 없음”이 이름을 묻는다', hint: '메시지 앱 → 발신자 정보 없음. (이름은 이 기기에만 저장됩니다)', nudge: { th: 'unknown', text: '대답해요.' } },
     ],
   },
-  { id: 's2-c2-same', on: 'choice:s2c2:same', actions: [{ t: 'flag', f: 'gave-name' }, { t: 'msg', th: 'unknown', text: '{name}. 작년 거 옆에 적어 둘게요.', typing: 2200 }, { t: 'emit', ev: 's2:named-same' }] },
+  { id: 's2-c2-same', on: 'choice:s2c2:same', actions: [{ t: 'flag', f: 'gave-name' }, { t: 'name', from: 's1' }, { t: 'msg', th: 'unknown', text: '{name}. 작년 거 옆에 적어 둘게요.', typing: 2200 }, { t: 'emit', ev: 's2:named-same' }] },
   { id: 's2-c2-name', on: 'choice:s2c2:name', actions: [{ t: 'flag', f: 'gave-name' }, { t: 'msg', th: 'unknown', text: '{name}. 적어 둘게요.', typing: 1800 }, { t: 'emit', ev: 's2:named' }] },
   // seven seconds after you give it: the notebook photo has changed — next month's line has your name
   {
@@ -524,7 +524,8 @@ export const BEATS_S2: Beat[] = [
           { id: 'ask', label: '정말 남으실 거예요?' },
         ],
       },
-      { t: 'wait', ms: 13000 },
+      // long enough to answer her whether you were watching the note or the messages
+      { t: 'wait', ms: 20000 },
       { t: 'unchoice', id: 's2c5' },
       { t: 'time', hm: '01:58' },
       { t: 'battery', v: 3 },

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { choose, emit, newGame, sendText, setSpeed, showBanner } from './director';
+import { choose, emit, newGame, resume, sendText, setSpeed, showBanner } from './director';
 import { getState, initState, setRt, setSave } from './state';
 
 // The director's timing rules, checked on the real story script with fake
@@ -121,6 +121,14 @@ describe('director timing', () => {
     setRt({ memoPlaying: true });
     await vi.advanceTimersByTimeAsync(5000);
     expect(getState().rt.banner?.body).not.toBe('둘');
+  });
+
+  it('a reload after an ending comes back to that ending, not to the 02:00 phone', () => {
+    setSave({ flags: ['finale'], lastEnding: 'release' });
+    setRt({ finale: false, ending: null });
+    resume();
+    expect(getState().rt.ending).toBe('release');
+    expect(getState().rt.finale).toBeFalsy();
   });
 
   it('every banner stays up long enough to read: the next one waits its turn', async () => {

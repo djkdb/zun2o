@@ -133,6 +133,8 @@ export type Action =
   | { t: 'reboot'; wallpaper: 'annex' | 'booth'; /** only the wallpaper changes, no restart */ quiet?: boolean }
   /** `still`: no warning breath — just silence, then it happens. */
   | { t: 'hush'; ms: number; still?: boolean }
+  /** keep last year's name as this year's (season 2, "네. 그 이름이에요.") */
+  | { t: 'name'; from: 's1' }
   | { t: 'photo'; id: string }
   | { t: 'memo'; id: string }
   | { t: 'calllog'; entry: CallLogEntry }
@@ -237,4 +239,6 @@ export interface Save {
   s1?: S1Summary;
   /** Season 2 only: the note that writes itself before 02:00. */
   liveNote?: string;
+  /** what the note said when the hand started writing (so a reload continues instead of writing it twice) */
+  writeBase?: string;
 }

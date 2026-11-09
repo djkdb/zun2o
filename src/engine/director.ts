@@ -122,6 +122,8 @@ export function resume(): void {
   }
   const s = getState().save;
   if (s.flags.includes('finale') && !s.lastEnding && !getState().rt.finale) setRt({ finale: true });
+  // the night already ended: a reload comes back to that ending, not to the 02:00 phone
+  else if (s.flags.includes('finale') && s.lastEnding && !getState().rt.ending) setRt({ ending: s.lastEnding });
   // A story call was ringing or in progress when the page went away: ring again.
   // (Also rescues saves stuck after 도현's first call was cut off.)
   const callBeats = ['reveal', 'call1-decline', 'call1-hangup'];
@@ -343,12 +345,23 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
       // Someone else's hand, in your notes app: one character at a time.
       setSave((s) => ({ notes: s.notes.includes('live') ? s.notes : [...s.notes, 'live'] }));
       // '\b' scratches out the last character
-      for (const ch of fill(a.text)) {
+      const chars = [...fill(a.text)];
+      const now = getState().save.liveNote ?? '';
+      const base = getState().save.writeBase ?? now;
+      if (getState().save.writeBase === undefined) setSave({ writeBase: base });
+      // after a reload: carry on from where the hand stopped
+      let from = 0;
+      for (let i = 0, t = base; i < chars.length; i++) {
+        t = chars[i] === '\b' ? t.slice(0, -1) : t + chars[i];
+        if (t === now) from = i + 1;
+      }
+      for (const ch of chars.slice(from)) {
         if (myEpoch !== epoch) return;
         setSave((s) => ({ liveNote: ch === '\b' ? (s.liveNote ?? '').slice(0, -1) : (s.liveNote ?? '') + ch }));
         if (getState().rt.app === 'notes' && ch.trim()) sfx(ch === '\b' ? 'glitch' : 'key');
         await sleepReal(ch === '\b' ? a.ms * 2 : a.ms);
       }
+      if (myEpoch === epoch) setSave({ writeBase: undefined });
       return;
     }
     case 'notify':
@@ -358,6 +371,11 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
     case 'flag':
       addFlag(a.f);
       return;
+    case 'name': {
+      const n = getState().save.s1?.name;
+      if (n) setSave({ playerName: n });
+      return;
+    }
     case 'objective':
       setSave({ objective: { text: a.text, hint: a.hint, since: Date.now(), nudge: a.nudge, app: a.app } });
       setRt({ hintOpen: false });
