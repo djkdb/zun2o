@@ -531,10 +531,12 @@ string, rain spots on the glass, one street lamp. Nobody in the frame.
 
 | 우선 | 파일 이름 | 비율 · 크기 | 쓰이는 곳 | 참고 이미지 첨부 |
 |---|---|---|---|---|
-| 1 | `video-frozen` | 9:16 세로, 1080×1920 근처 | 02:00 영상통화가 멈춘 순간(9.2초)부터 끝날 때까지 약 4초. 영상 위로 0.6초에 걸쳐 떠오름. 오른쪽 위 작은 내 화면 창은 그 위에 그대로 그려짐 | `video-chaewon.webp`, `video-behind.webp` |
+| 선택 (없어도 됨) | `video-frozen` | 9:16 세로, 1080×1920 근처 | 02:00 영상통화가 멈춘 순간(9.2초)부터 끝날 때까지 약 4초. 영상 위로 0.6초에 걸쳐 떠오름. 오른쪽 위 작은 내 화면 창은 그 위에 그대로 그려짐 | `video-chaewon.webp`, `video-behind.webp` |
 | 2 | `ending-home-phone` | 3:2 가로, 1536×1024 | 엔딩 1(이름을 알려 준 경우) 글 "같은 시각, 당신의 집." 위의 사진 | `ending-poweroff.webp` |
 
 ### video-frozen
+> **없어도 됩니다.** 게임은 재생 중이던 영상 그 프레임을 멈추고 0.6초에 걸쳐 어둡게 합니다(같은 영상이라 얼굴이 이어짐). 새로 뽑으면 다른 사람처럼 보이기 쉽고, 멈추는 순간 그림이 바뀌는 게 티 납니다. 꼭 넣는다면 **새로 생성하지 말고 `video-chaewon.webp`를 편집**하세요: "이 사진을 그대로 두고, 얼굴 대부분을 어둠에 잠기게, 두 눈에만 빛이 남게, 영상 압축 깨짐 추가. 얼굴·머리·옷·배경은 바꾸지 말 것."
+
 ```
 Front-camera video call frame, vertical 9:16, single image. The call has just frozen on one frame: the same young
 Korean woman as the attached image, face close to the camera, mid-word, lit only from below by her phone. The frame is
