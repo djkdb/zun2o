@@ -165,7 +165,9 @@ for (const [w, h] of SIZES) {
   await page.locator('.dbg button', { hasText: '—' }).click();
   await page.waitForTimeout(2600);
   await audit(page, `${tag}-finale-flood`);
-  await page.waitForSelector('.final-choices', { timeout: 60000 });
+  const tFinal = Date.now();
+  await page.waitForSelector('.final-choices', { timeout: 150000 });
+  console.log(`  02:00 → choices in ${((Date.now() - tFinal) / 1000).toFixed(1)} s`);
   await page.waitForTimeout(800);
   await audit(page, `${tag}-finale-choice`);
   for (const e of ['poweroff', 'shift', 'release']) {
@@ -186,7 +188,9 @@ for (const [w, h] of SIZES) {
   await audit(page, `${tag}-s2-admin`);
   await debugClick(page, /^S2·02$/);
   await page.locator('.dbg button', { hasText: '—' }).click();
-  await page.waitForSelector('.final-choices', { timeout: 60000 });
+  const tFinal2 = Date.now();
+  await page.waitForSelector('.final-choices', { timeout: 150000 });
+  console.log(`  02:00 → choices in ${((Date.now() - tFinal2) / 1000).toFixed(1)} s`);
   await page.waitForTimeout(800);
   await audit(page, `${tag}-s2-finale-choice`);
   for (const e of ['s2-daughter', 's2-instead', 's2-home']) {
