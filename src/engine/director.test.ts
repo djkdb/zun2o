@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { choose, emit, newGame, sendText, setSpeed } from './director';
+import { choose, emit, newGame, sendText, setSpeed, showBanner } from './director';
 import { getState, initState, setRt, setSave } from './state';
 
 // The director's timing rules, checked on the real story script with fake
@@ -101,6 +101,21 @@ describe('director timing', () => {
     await vi.advanceTimersByTimeAsync(5000);
     sendText('unknown', '누구냐니까');
     await until(() => getState().save.threads.unknown.some((m) => m.text.includes('이름을 적는 사람이요')), 30000);
+  });
+
+  it('every banner stays up long enough to read: the next one waits its turn', async () => {
+    showBanner('messages', '도현', '하나');
+    await vi.advanceTimersByTimeAsync(400);
+    showBanner('messages', '엄마', '둘');
+    await vi.advanceTimersByTimeAsync(1600);
+    expect(getState().rt.banner?.body).toBe('하나');
+    await vi.advanceTimersByTimeAsync(600);
+    expect(getState().rt.banner?.body).toBe('둘');
+    // the same thread piling up while one is shown folds into a count
+    showBanner('messages', '도현', '셋');
+    showBanner('messages', '도현', '넷');
+    await vi.advanceTimersByTimeAsync(2500);
+    expect(getState().rt.banner?.body).toBe('새 메시지 2개');
   });
 
   it('silent players are told about story sounds (소리 인식)', async () => {

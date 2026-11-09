@@ -33,7 +33,11 @@ function buildM2(): Memo {
     at += 4;
   }
   lines.push({ at, who: '???', text: '다 적어 뒀어요.', sfx: 'whisper' });
-  lines.push({ at: at + 4, who: '???', text: s.playerName ? `${s.playerName} 씨. 두 시에 봐요.` : '이름은 몰라도 괜찮아요. 두 시에 봐요.' });
+  if (s.playerName) {
+    // your name can't have been recorded: it is only breath under the subtitle, then her voice again
+    lines.push({ at: at + 4, who: '???', text: `${s.playerName} 씨.`, sfx: 'whisper', quiet: true });
+    lines.push({ at: at + 6, who: '???', text: '두 시에 봐요.' });
+  } else lines.push({ at: at + 4, who: '???', text: '이름은 몰라도 괜찮아요. 두 시에 봐요.' });
   return { id: 'm2', title: '새 녹음 18', date: '오늘 01:51', duration: at + 9, lines };
 }
 
@@ -64,6 +68,7 @@ function Player({ memo }: { memo: Memo }) {
           else if (l.text.startsWith('(키패드')) sfx('key');
           // (a stage direction in parentheses is shown, not said)
           const said = l.text.replace(/^\([^)]*\)\s*/, '');
+          if (l.quiet) return;
           if (sound && l.who === '채원') speak(said, 'female');
           if (sound && l.who === '소연') speak(said, 'soyeon');
           if (sound && l.who === '???') speak(said, 'entity');

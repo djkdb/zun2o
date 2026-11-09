@@ -584,10 +584,13 @@ export const VideoFeed = memo(function VideoFeed({ close = 0, pip = 0, clip = fa
               </g>
             )}
           </g>
+          {/* covered: just black — not "off"; something is on the lens */}
           {covered && <rect x="272" y="96" width="96" height="140" rx="10" fill="#000" />}
-          <text x="320" y="110" textAnchor="middle" fontFamily="IBM Plex Sans KR, sans-serif" fontSize="9" fill="#9a9">
-            카메라 켜짐
-          </text>
+          {!covered && (
+            <text x="320" y="110" textAnchor="middle" fontFamily="IBM Plex Sans KR, sans-serif" fontSize="9" fill="#9a9">
+              카메라 켜짐
+            </text>
+          )}
         </g>
       )}
     </svg>

@@ -149,6 +149,55 @@ function isViewing(th: ThreadId): boolean {
 /** Until when a silence is held: nothing drops over it, it waits until the silence is over. */
 let hushUntil = 0;
 
+/** A banner stays up at least this long before the next one may replace it. */
+const BANNER_MIN = 2400;
+type Pending = { app: AppId; title: string; body: string; thread?: ThreadId; urgent: boolean; n: number };
+let bannerQueue: Pending[] = [];
+let bannerShownAt = 0;
+let bannerDrain: ReturnType<typeof setTimeout> | null = null;
+
+function resetBanners(): void {
+  // a silence held from the night before isn't held over into a new one
+  hushUntil = 0;
+  bannerQueue = [];
+  bannerShownAt = 0;
+  bannerDrain = null;
+}
+
+function drainBanners(): void {
+  bannerDrain = null;
+  const next = bannerQueue.shift();
+  if (!next) return;
+  // read already: the thread is open now
+  if (next.thread && next.app === 'messages' && !next.urgent && isViewing(next.thread)) return drainBanners();
+  putBanner(next);
+}
+
+function putBanner(p: Pending): void {
+  const id = bannerSeq++;
+  bannerShownAt = Date.now();
+  setRt({ banner: { id, app: p.app, title: p.title, body: p.n > 1 ? `새 메시지 ${p.n}개` : p.body, thread: p.thread } });
+  sfx('ding');
+  vibrate([60]);
+  // what the phone heard (sound off) stays up longer than a message
+  const t = setTimeout(() => {
+    timers.delete(t);
+    if (getState().rt.banner?.id === id) setRt({ banner: null });
+  }, p.title === '소리 인식' ? 6000 : 3200);
+  timers.add(t);
+  if (bannerQueue.length) scheduleDrain();
+}
+
+function scheduleDrain(): void {
+  if (bannerDrain) return;
+  const t = setTimeout(() => {
+    timers.delete(t);
+    drainBanners();
+  }, Math.max(0, bannerShownAt + BANNER_MIN / speed - Date.now()));
+  bannerDrain = t;
+  timers.add(t);
+}
+
 /** `urgent`: a question you can still answer — it comes through even over a playing recording. */
 export function showBanner(app: AppId, title: string, body: string, thread?: ThreadId, urgent = false): void {
   // Nothing drops over a recording that is playing; the unread badge is enough.
@@ -162,16 +211,30 @@ export function showBanner(app: AppId, title: string, body: string, thread?: Thr
     timers.add(t);
     return;
   }
-  const id = bannerSeq++;
-  setRt({ banner: { id, app, title, body, thread } });
-  sfx('ding');
-  vibrate([60]);
-  // what the phone heard (sound off) stays up longer than a message
-  const t = setTimeout(() => {
-    timers.delete(t);
-    if (getState().rt.banner?.id === id) setRt({ banner: null });
-  }, title === '소리 인식' ? 6000 : 3200);
-  timers.add(t);
+  const p: Pending = { app, title, body, thread, urgent, n: 1 };
+  const up = getState().rt.banner !== null && Date.now() - bannerShownAt < BANNER_MIN / speed;
+  if (!up && !bannerQueue.length) return putBanner(p);
+  // Every banner gets its time on screen: the rest wait their turn.
+  const same = bannerQueue.find((q) => q.app === app && q.thread === thread && q.title === title && !q.urgent && !urgent);
+  if (same) {
+    same.n += 1;
+    same.body = body;
+  } else if (urgent || title === '소리 인식') {
+    bannerQueue.unshift(p);
+  } else {
+    bannerQueue.push(p);
+    if (bannerQueue.length > 2) {
+      // too many waiting: the oldest plain message folds into its thread's count, or goes
+      const drop = bannerQueue.findIndex((q) => !q.urgent && q.title !== '소리 인식');
+      if (drop >= 0 && drop < bannerQueue.length - 1) {
+        const [old] = bannerQueue.splice(drop, 1);
+        const keep = bannerQueue.find((q) => q.thread === old.thread && q.title === old.title);
+        if (keep) keep.n += old.n;
+      }
+    }
+  }
+  if (up) scheduleDrain();
+  else drainBanners();
 }
 
 export function vibrate(pattern: number[]): void {
@@ -436,8 +499,13 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
       setSave((s) => ({ memos: s.memos.includes(a.id) ? s.memos : [...s.memos, a.id] }));
       return;
     case 'reboot':
+      if (a.quiet) {
+        setSave({ wallpaper: a.wallpaper });
+        return;
+      }
       // The screen dies, a boot logo that isn't the phone's, then the lock screen — with a new wallpaper.
       await whenFree(myEpoch);
+      resetBanners();
       setRt({ rebooting: true, app: null, thread: null, banner: null, dialog: null });
       loop('heartbeat', false);
       sfx('glitch');
@@ -706,6 +774,7 @@ export function newGame(season?: 1 | 2): void {
   lastAnomaly = Date.now();
   timers.forEach((t) => clearTimeout(t));
   timers.clear();
+  resetBanners();
   loop('ring', false);
   loop('heartbeat', false);
   const s = getState().save;
@@ -741,6 +810,7 @@ export function replayFinale(): boolean {
   epoch++;
   timers.forEach((t) => clearTimeout(t));
   timers.clear();
+  resetBanners();
   setSave({ ...cp, endings: getState().save.endings, lastEnding: null, running: [], flags: [...cp.flags.filter((f) => f !== 'finale'), 'finale'] });
   flush();
   setRt({ ending: null, finale: true, app: null, thread: null, scare: null, dialog: null, incoming: null, activeCall: null });
@@ -768,6 +838,8 @@ function playerBusy(): boolean {
     r.chapterCard !== null ||
     r.rebooting ||
     r.finale ||
+    r.banner !== null ||
+    Date.now() < hushUntil ||
     Object.values(r.typing).some(Boolean)
   );
 }
@@ -784,7 +856,7 @@ const ANOMALY_POOL: Record<number, Anomaly[]> = {
   1: ['clock', 'typing', 'buzz'],
   2: ['clock', 'typing', 'buzz', 'dim', 'phantom'],
   3: ['clock', 'typing', 'dim', 'phantom', 'stamp', 'buzz', 'rebadge'],
-  4: ['clock', 'dim', 'phantom', 'typing', 'rebadge', 'rename', 'vanish'],
+  4: ['clock', 'dim', 'typing', 'rebadge', 'rename', 'vanish'],
 };
 const anomalyCount: Partial<Record<Anomaly, number>> = {};
 let lastAnomaly = Date.now();

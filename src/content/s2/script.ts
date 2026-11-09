@@ -307,6 +307,8 @@ export const BEATS_S2: Beat[] = [
       { t: 'emit', ev: 'ch4' },
     ],
   },
+  // in early through the admin page: the hand still gets its line before chapter 4 (s2-hand-text runs once)
+  { id: 's2-hand-text-admin', on: 'admin:unlock', actions: [{ t: 'wait', ms: 56000 }, { t: 'emit', ev: 's2:hand-text' }] },
   {
     id: 's2-admin',
     on: 'admin:unlock',
@@ -353,7 +355,7 @@ export const BEATS_S2: Beat[] = [
     actions: [
       // claimed at once, so arming the deletion meanwhile can't bring the other set of texts too
       { t: 'flag', f: 'mom-knew' },
-      { t: 'wait', ms: 6000 },
+      { t: 'wait', ms: 1500 },
       // slow thumbs: the typing indicator is her acting
       { t: 'msg', th: 'mom', text: '소연아 엄마 다 봤다', typing: 3200 },
       { t: 'msg', th: 'mom', text: '지워도 된다', typing: 2200 },
@@ -369,7 +371,7 @@ export const BEATS_S2: Beat[] = [
     actions: [
       // claimed at once, so arming the deletion meanwhile can't bring the other set of texts too
       { t: 'flag', f: 'mom-knew' },
-      { t: 'wait', ms: 5000 },
+      { t: 'wait', ms: 1500 },
       // slow thumbs: the typing indicator is her acting
       { t: 'msg', th: 'mom', text: '소연아 엄마 다 봤다', typing: 3200 },
       { t: 'msg', th: 'mom', text: '지워도 된다', typing: 2200 },
@@ -385,7 +387,7 @@ export const BEATS_S2: Beat[] = [
     actions: [
       // claimed at once, so arming the deletion meanwhile can't bring the other set of texts too
       { t: 'flag', f: 'mom-knew' },
-      { t: 'wait', ms: 5000 },
+      { t: 'wait', ms: 1500 },
       { t: 'msg', th: 'mom', text: '소연아 엄마 다 봤다', typing: 3200 },
       { t: 'msg', th: 'mom', text: '그거 지우면 엄마도 가는 거지', typing: 2800 },
       { t: 'msg', th: 'mom', text: '손이 그렇게 말한다', typing: 2200 },
@@ -432,7 +434,9 @@ export const BEATS_S2: Beat[] = [
     actions: [
       { t: 'wait', ms: 1400 },
       { t: 'msg', th: CHAEWON, text: '갑자기 생각났는데', typing: 700 },
-      { t: 'msg', th: CHAEWON, text: '언니가 전에 그랬어요 경찰서에서 자기가 한 말이 아직 서류에 그대로 있다고', typing: 1900 },
+      { t: 'msg', th: CHAEWON, text: '언니가 전에 그랬어요', typing: 900 },
+      { t: 'msg', th: CHAEWON, text: '경찰서에서 자기가 한 말', typing: 1000 },
+      { t: 'msg', th: CHAEWON, text: '그거 아직 서류에 그대로 있대요', typing: 1300 },
     ],
   },
 
@@ -453,8 +457,8 @@ export const BEATS_S2: Beat[] = [
       },
       { t: 'msg', th: CHAEWON, text: '저 학교 앞이에요', typing: 600 },
       { t: 'msg', th: CHAEWON, text: '도현이 나오나 보려고', typing: 800 },
-      { t: 'msg', th: CHAEWON, text: '작년엔 도현이가 여기서 저 기다렸대요', typing: 1100 },
-      { t: 'msg', th: CHAEWON, text: '입구까지만 온다더니 아침까지 있었대요', typing: 1200 },
+      { t: 'msg', th: CHAEWON, text: '작년엔 도현이가 저 길 건너에서 3층만 올려다보고 있었대요', typing: 1500 },
+      { t: 'msg', th: CHAEWON, text: '입구까지만 온다더니 맨날 끝까지 있어요', typing: 1200 },
       { t: 'wait', ms: 2000 },
       { t: 'msg', th: CHAEWON, text: '저 오면서 누구든 적히라고 빌었어요', typing: 1400 },
       { t: 'wait', ms: 2600 },
@@ -469,7 +473,8 @@ export const BEATS_S2: Beat[] = [
       { t: 'msg', th: 'mom', text: '혼자서', typing: 800 },
       { t: 'flag', f: 'mom-site' },
       { t: 'emit', ev: 's2:mom-site' },
-      { t: 'wait', ms: 8000 },
+      // her texts land first, and get a breath, before the clip
+      { t: 'wait', ms: 17000 },
       { t: 'time', hm: '01:52' },
       // the phone filmed it by itself: the notice says so, the clip says the rest
       { t: 'photo', id: 's2-kitchen2' },
@@ -477,7 +482,7 @@ export const BEATS_S2: Beat[] = [
       { t: 'wait', ms: 3000 },
       { t: 'msg', th: 'unknown', text: '방금 찍혔어요.', typing: 900, attach: { kind: 'photo', id: 's2-kitchen2' } },
       // time to open the clip and watch her turn
-      { t: 'wait', ms: 9000 },
+      { t: 'wait', ms: 15000 },
       // season 1: "거기 앉아 있던 건 제가 아니에요." — this is who was sitting there
       { t: 'msg', th: 'unknown', text: '작년까진 열람실 의자에 앉아 있었어요.', typing: 1500 },
       { t: 'msg', th: 'unknown', text: '요즘은 식탁 의자예요.', typing: 1000 },
@@ -497,9 +502,9 @@ export const BEATS_S2: Beat[] = [
       { t: 'msg', th: 'unknown', text: '어머니 글씨 예쁘죠.', typing: 1200 },
       { t: 'wait', ms: 8000 },
       { t: 'time', hm: '01:56' },
-      { t: 'msg', th: CHAEWON, text: '부스 앞이에요 문 열려 있네요', typing: 900 },
-      { t: 'msg', th: CHAEWON, text: '근데 그쪽 안 보여요', typing: 700 },
-      { t: 'msg', th: CHAEWON, text: '선반에 폰 불빛만 있어요', typing: 1000 },
+      { t: 'msg', th: CHAEWON, text: '부스 앞이에요 문 열려 있네요', typing: 1400 },
+      { t: 'wait', ms: 1800 },
+      { t: 'msg', th: CHAEWON, text: '근데 그쪽은 안 보이고 선반에 폰 불빛만 있어요', typing: 2200 },
       { t: 'wait', ms: 4000 },
       { t: 'time', hm: '01:57' },
       // Inside, phones only reach 나에게 (채원 learned that last year).
@@ -575,7 +580,7 @@ export const BEATS_S2: Beat[] = [
     actions: [{ t: 'wait', ms: 5000 }, { t: 'typing', th: 'unknown', ms: 2400 }, { t: 'wait', ms: 3000 }, { t: 'msg', th: 'unknown', text: '94년 사진 봤어요? 그땐 딸보다 서른 살 많았어요. 지금은 두 살 어리고요.' }] },
   { id: 's2-sees-index', on: 'app:index', requires: ['admin', 'mom-site'], actions: [{ t: 'wait', ms: 6000 }, { t: 'msg', th: 'unknown', text: '보는 사람 하나 늘었죠. 어머니예요.', typing: 1400 }] },
   { id: 's2-dont-send', on: 'typing:unknown', requires: ['ch3'], actions: [{ t: 'wait', ms: 900 }, { t: 'msg', th: 'unknown', text: '지운다는 얘기면 보내지 마요.', typing: 800 }] },
-  { id: 's2-ready-ch4', on: 'app:messages', requires: ['ch4'], actions: [{ t: 'msg', th: 'mom', text: '소연아 거기 춥니' }] },
+  { id: 's2-ready-ch4', on: 'app:messages', requires: ['ch4'], forbids: ['mom-site'], actions: [{ t: 'msg', th: 'mom', text: '소연아 거기 춥니' }] },
   { id: 's2-old-photo', on: 'photo:s2-old', actions: [{ t: 'flag', f: 'saw-old' }] },
-  { id: 's2-kitchen2-seen', on: 'photo:s2-kitchen2', actions: [{ t: 'wait', ms: 2400 }, { t: 'msg', th: 'unknown', text: '8월 거보다 가깝죠.', typing: 1000 }] },
+  { id: 's2-kitchen2-seen', on: 'photo:s2-kitchen2', actions: [{ t: 'wait', ms: 11500 }, { t: 'msg', th: 'unknown', text: '8월 거보다 가깝죠.', typing: 1000 }] },
 ];

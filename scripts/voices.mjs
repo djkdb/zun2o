@@ -61,19 +61,19 @@ const DIRECTION = {
   '채원 씨도 어젯밤 이 전화를 받았어요.': '[calm] [softly] [slowly]',
   '여보세요? 채원아?': '[anxious] [breathing heavily]',
   '채원이야? 말 좀 해 봐.': '[desperate]',
-  '학교 앞 전화부스에서 주운 거죠? 지금 전화부스 안이에요? 문 열려요?': '[nervous] [fast]',
+  '학교 앞 전화부스에서 주운 거죠? 지금 부스 안에 있어요? 문 열려요?': '[nervous] [fast]',
   '채원이 녹음 앱 켜 놓고 들어갔어요. 마지막 녹음이 클라우드에 올라와 있어요. 보내 드릴게요.': '[shaky voice]',
   '경찰은 장난이래요. 근데 그 녹음 들어 보면 알 거예요.': '[frustrated] [quietly]',
   '두 시 전에는 그 폰 꺼요. 꼭이요. 두 시 전에': '[urgent] [panicked]',
   '끄지 마세요.': '[whispers] [cold]',
-  '들려요? 저 제2서고 안이에요.': '[whispers] [terrified] [breathing heavily]',
+  '들려요? 저 제2서고 들어왔어요.': '[whispers] [terrified] [breathing heavily]',
   '서랍이 끝이 없어요. 채원이 목소리가 계속 저 안쪽에서': '[terrified] [shaky voice]',
   '도현 씨 목소리, 비슷했죠?': '[calm] [softly] [slowly]',
   // season 2 — 엄마: 1994 words, warm, a little slow; 소연: 43, tired, holding it together
   '소연이니?': '[warm] [tired] [softly]',
   '엄마야. 왜 대답을 안 해.': '[warm] [worried]',
   '목소리가 왜 그러니. 감기 걸렸니.': '[warm] [concerned] [softly]',
-  '소연아, 엄마 손이 또 볼펜을 쥐었다. 안 놓아져.': '[scared] [shaky voice]',
+  '소연아, 엄마가 또 볼펜을 쥐었다. 손이 안 펴진다.': '[scared] [shaky voice]',
   '오늘은 자지도 않았는데 손이 먼저 일어났다.': '[scared] [whispers]',
   '엄마가 쓰기 전에 집에 와. 두 시 전에는 와.': '[pleading] [softly]',
   '그럼 우리 소연이는요.': '[quietly] [shocked]',
@@ -94,12 +94,15 @@ const DIRECTION = {
   '방문자세요?': '[whispers] [calm]',
   '네?': '[scared] [gasps]',
   '앉으세요. 두 시에 이름을 적어요.': '[calm] [softly] [slowly]',
-  '도현아': '[crying] [terrified]',
+  '도현아': '[shaky breath] [saying the name clearly, syllable by syllable] [trailing off]',
+  '강 도 현.': '[whispers] [very slowly, a long pause between each syllable]',
   '다 적어 뒀어요.': '[whispers] [slowly]',
   '이름은 몰라도 괜찮아요. 두 시에 봐요.': '[softly] [slowly]',
+  '두 시에 봐요.': '[softly] [slowly]',
+  '채원이 아니죠. 채원이면 벌써 뭐라고 했어요.': '[quietly] [shaky voice]',
   '들려?': '[whispers] [scared]',
   '여기 너무 어두워. 서랍 소리가 멈추질 않아': '[scared] [shaky voice]',
-  '잠깐. 네 카메라 네 뒤에도': '[terrified] [gasps]',
+  '잠깐. 니 카메라 니 뒤에도': '[terrified] [gasps]',
 };
 
 const WHO = { male: '도현', female: '채원', entity: '서미령 (발신자 정보 없음)', mother: '엄마 (서미령, 시즌 2)', soyeon: '소연 (시즌 2)' };
@@ -130,6 +133,10 @@ for (const [memo, where] of [[MEMO_S2M1, 'memo'], [MEMO_S2M2, 'memo'], [MEMO_S2T
     if (l.who === '엄마') s2.push({ text: said, voice: s1Keys.has(voiceKey(said, 'entity')) ? 'entity' : 'mother', where });
   }
 lines.push(...s2.filter((l) => !s1Keys.has(voiceKey(l.text, l.voice))));
+// added later (round 3), numbered last so every earlier number stays put: 도현 hearing your silence,
+// and 새 녹음 18's last words after a name that can't be recorded
+for (const l of Object.values(CALLS.dohyun1.afterBy ?? {}).flat().slice(0, 2)) if (l.voice && l.who !== 'sfx') lines.push({ text: l.text, voice: l.voice, where: 'call' });
+lines.push({ text: '두 시에 봐요.', voice: 'entity', where: 'memo' });
 
 const todo = [...new Map(lines.filter((l) => spokenText(l.text)).map((l) => [voiceKey(l.text, l.voice), l])).values()].map((l, i) => ({
   ...l,

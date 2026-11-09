@@ -34,14 +34,14 @@ export const CALLS: Record<string, CallScript> = {
       ],
     },
     after: [
-      { at: 500, who: 'caller', text: '…학교 앞 전화부스에서 주운 거죠? 지금 전화부스 안이에요? 문… 열려요?', voice: 'male' },
-      { at: 4600, who: 'caller', text: '채원이 녹음 앱 켜 놓고 들어갔어요. 마지막 녹음이 클라우드에 올라와 있어요. 보내 드릴게요.', voice: 'male' },
-      { at: 9800, who: 'caller', text: '경찰은 장난이래요. 근데 그 녹음 들어 보면… 알 거예요.', voice: 'male' },
-      { at: 14200, who: 'sfx', text: '(지지직—)' },
-      { at: 15400, who: 'caller', text: '두 시 전에는 그 폰 꺼요. 꼭이요. 두 시 전에—', voice: 'male' },
-      { at: 19000, who: 'sfx', text: '(잡음)' },
-      { at: 20600, who: 'other', text: '끄지 마세요.', voice: 'entity' },
-      { at: 23000, who: 'sfx', text: '(통화 종료)' },
+      { at: 500, who: 'caller', text: '…학교 앞 전화부스에서 주운 거죠? 지금 부스 안에 있어요? 문… 열려요?', voice: 'male' },
+      { at: 7000, who: 'caller', text: '채원이 녹음 앱 켜 놓고 들어갔어요. 마지막 녹음이 클라우드에 올라와 있어요. 보내 드릴게요.', voice: 'male' },
+      { at: 15000, who: 'caller', text: '경찰은 장난이래요. 근데 그 녹음 들어 보면… 알 거예요.', voice: 'male' },
+      { at: 19400, who: 'sfx', text: '(지지직—)' },
+      { at: 20400, who: 'caller', text: '두 시 전에는 그 폰 꺼요. 꼭이요. 두 시 전에—', voice: 'male' },
+      { at: 24600, who: 'sfx', text: '(잡음)' },
+      { at: 26000, who: 'other', text: '끄지 마세요.', voice: 'entity' },
+      { at: 28400, who: 'sfx', text: '(통화 종료)' },
     ],
   },
   dohyun2: {
@@ -50,7 +50,7 @@ export const CALLS: Record<string, CallScript> = {
     label: '도현',
     duration: 0,
     lines: [
-      { at: 700, who: 'caller', text: '(숨소리) …들려요? 저 제2서고 안이에요.', voice: 'male' },
+      { at: 700, who: 'caller', text: '(숨소리) …들려요? 저 제2서고 들어왔어요.', voice: 'male' },
       { at: 4000, who: 'caller', text: '서랍이 끝이 없어요. 채원이 목소리가 계속 저 안쪽에서—', voice: 'male' },
       { at: 7800, who: 'sfx', text: '(서랍 수백 개가 한꺼번에 열리는 소리)' },
       { at: 11600, who: 'other', text: '도현 씨 목소리, 비슷했죠?', voice: 'entity' },
@@ -89,4 +89,13 @@ export const CALLS: Record<string, CallScript> = {
 };
 
 /** 02:00, 채원's video call (Finale): what she says, in order. */
-export const VIDEO_CALL_LINES = ['…들려?', '여기 너무 어두워. 서랍 소리가 멈추질 않아', '잠깐. 네 카메라… 네 뒤에도—'] as const;
+export const VIDEO_CALL_LINES = ['…들려?', '여기 너무 어두워. 서랍 소리가 멈추질 않아', '잠깐. 니 카메라… 니 뒤에도—'] as const;
+
+// Say nothing to 도현 and he hears it: the call goes on, but he knows who isn't there.
+CALLS.dohyun1.afterBy = {
+  silent: [
+    { at: 500, who: 'sfx', text: '(숨소리)' },
+    { at: 1600, who: 'caller', text: '…채원이 아니죠. 채원이면 벌써 뭐라고 했어요.', voice: 'male' },
+    ...(CALLS.dohyun1.after ?? []).map((l) => ({ ...l, at: l.at + 5400 })),
+  ],
+};

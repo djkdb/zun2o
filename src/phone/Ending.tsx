@@ -103,7 +103,7 @@ const ENDINGS: Record<EndingId, EndingDef> = {
       { who: '나에게', text: '왜 그랬어요', side: 'right' },
       { who: '나에게', text: '엄마한테 갔다 올게요. 다음 달 28일 전에는 와요. 꼭', side: 'right' },
       { who: '채원', text: '도현이랑 언니 둘 다 전화부스에서 깼어요. 이 폰만 선반에 있어요', side: 'left' },
-      { who: '채원', text: '도현이가 전해 달래요. 작년엔 두 시 넘어서 들어갔대요. 이번엔 정문에서 기다린대요. 그쪽 나올 때까지', side: 'left' },
+      { who: '채원', text: '도현이가 전해 달래요. 이번엔 정문에서 기다린대요. 그쪽 나올 때까지', side: 'left' },
       { text: '02:00. 노트의 마지막 줄: “한소” 위에 줄. 그 아래 — {name}.' },
       { text: '새벽 여섯 시 반. 현관문이 열리자 엄마가 식탁에서 일어났다. 엄마는 아무것도 묻지 않고 국을 데웠다.' },
       { text: '엄마 손은 그날 이후 다시는 볼펜을 쥐지 않았다.' },
@@ -160,6 +160,12 @@ function endingFor(id: EndingId, save: Save): EndingDef {
     scene[0] = { who: '도현', text: '채원이 나왔어요!!! 정문으로 걸어 나왔어요', side: 'left' };
     scene[1] = { who: '도현', text: '채원이가 그러는데 서랍이 전부 비었대요. 카드가 한 장도 없었대요', side: 'left' };
   }
+  // what you said at 00:58 comes back with her
+  if (id === 'release' && (choices.c3 === 'chaewon' || choices.c3 === 'finder')) {
+    const i = scene.findIndex((l) => l.text.startsWith('채원이가 엄마한테 전화했어요'));
+    const msg = choices.c3 === 'chaewon' ? '채원이가 그쪽한테 전해 달래요. 거기서 이름 불러 준 사람 그쪽밖에 없었대요' : '채원이가 그쪽한테 전해 달래요. 그 폰 다음엔 줍지 말래요';
+    if (i >= 0) scene.splice(i, 0, { who: '도현', text: msg, side: 'left' });
+  }
   // Her name, at last — answering the first thing you said to her.
   if (id === 'release') {
     const i = scene.findIndex((l) => l.text === '서미령이에요.');
@@ -195,6 +201,7 @@ function endingFor(id: EndingId, save: Save): EndingDef {
     scene.splice(
       scene.length - 1,
       1,
+      { text: '같은 시각, 당신의 집.' },
       { text: '그날부터 당신의 휴대폰은 새벽 두 시가 되면 12%에서 멈춘다.' },
       { who: '발신자 정보 없음', text: '{name} 씨 이름은 적어 뒀어요.', side: 'left', pause: 1500 },
       { who: '발신자 정보 없음', text: '들어오세요.', side: 'left', pause: 1200 },

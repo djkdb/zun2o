@@ -81,25 +81,28 @@ function buildRecall(): RecallLine[] {
   const typed = [...s.inputs].reverse().map((e) => /(?:(?:발신자 정보 없음|발신자 표시제한|모르는 번호)에게|나에게(?:에게)?) 보낸 메시지 "(.+)"$/.exec(e)?.[1]).find(Boolean);
   const toHer = s.inputs.map((e) => /(?:발신자 정보 없음|발신자 표시제한|모르는 번호)에게 보낸 메시지 "(.+)"$/.exec(e)?.[1]).filter((t): t is string => !!t);
   const toMom = s.inputs.some((e) => /^엄마.*에게 보낸 메시지/.test(e));
+  // what you chose to do comes before what you happened to do
   const personal: [boolean, string][] = [
     [s.flags.includes('heard-line'), '통화, 안 끊겼죠. 23시 53분부터 계속 듣고 있었어요.'],
     [s.flags.includes('turned'), '1시 54분에 돌아봤죠. 저도 같이 돌았어요.'],
     [s.flags.includes('held'), '끝까지 안 돌아봤죠. 저 계속 뒤에 있었는데.'],
     [s.flags.includes('kept-out'), '도현 씨한테 밖에 있으라고 했죠. 1994년 그날 밤엔 저한테 그렇게 말해 준 사람이 없었어요.'],
+    [s.flags.includes('refused-name'), '이름은 끝까지 안 알려 줬죠. 괜찮아요. 직접 쓰게 될 거예요.'],
     [s.flags.includes('named-her'), '그 이름 보냈죠. …한참 아무 말도 못 했어요.'],
+    [s.choices.c3 === 'chaewon', '채원 씨 이름을 먼저 불러 줬죠. 그 애가 울었어요.'],
+    [s.choices.c1 === 'silent', '처음부터 대답하지 않았죠. 그래도 전부 읽었잖아요.'],
+    [s.flags.includes('heard-radio'), '1340에 전화도 걸었죠. 제 목소리 들었잖아요.'],
+    [s.flags.includes('call-silent'), '도현 씨 전화에 아무 말도 안 했죠. 저도 그 사람 목소리 듣고 있었어요.'],
     [!!typed, `“${typed}”라고 보냈죠.`],
     [toMom, '채원 씨 어머니한테 답장하려고 했죠. 제가 안 보냈어요.'],
-    [s.choices.c3 === 'chaewon', '채원 씨 이름을 먼저 불러 줬죠. 그 애가 울었어요.'],
-    [s.flags.includes('dwelt'), '사진 오래 봤죠. 그동안 눈 한 번도 안 깜박였어요.'],
-    [s.flags.includes('zoomed-booth'), '부스 안에 있는 그쪽 사진, 확대해 봤죠.'],
     [s.flags.includes('hung-once') || (s.flags.includes('declined-once') && !s.flags.includes('missed-dohyun')), '도현 씨 전화를 끊었죠. 그래도 그 사람은 왔어요.'],
     [s.flags.includes('missed-dohyun') && !s.flags.includes('hung-once'), '도현 씨 전화, 받지 않았죠. 그래도 그 사람은 왔어요.'],
-    [s.choices.c1 === 'silent', '처음부터 대답하지 않았죠. 그래도 전부 읽었잖아요.'],
-    [s.flags.includes('refused-name'), '이름은 끝까지 안 알려 줬죠. 괜찮아요. 직접 쓰게 될 거예요.'],
-    [s.flags.includes('heard-radio'), '1340에 전화도 걸었죠. 제 목소리 들었잖아요.'],
+    [s.flags.includes('dwelt'), '사진 오래 봤죠. 그동안 눈 한 번도 안 깜박였어요.'],
+    [s.flags.includes('zoomed-booth'), '부스 안에 있는 그쪽 사진, 확대해 봤죠.'],
     [s.flags.includes('read-hyunwoo'), '박현우 씨 기사 읽었죠. 그럼 끝이 어떻게 되는지도 알겠네요.'],
   ];
-  const picked = personal.filter(([on]) => on).slice(0, 2);
+  // the line that sets up the signature in ending 2 always gets its turn
+  const picked = personal.filter(([on]) => on).slice(0, s.flags.includes('refused-name') ? 3 : 2);
   picked.forEach(([, line]) => lines.push(line));
   // already told him to stay out: don't say it twice right before the confession
   const saidKeptOut = picked.some(([, l]) => l.startsWith('도현 씨한테 밖에'));
@@ -158,12 +161,12 @@ export function Finale() {
       at(2900, () => (setBrink(2), sfx('buzz'))), // 도현 calls — and can't get through
       at(4600, () => setBrink(3)),
       at(5400, () => (setBrink(4), sfx('zoom'))), // the gallery opens by itself: a photo taken just now
-      at(7000, () => setBrink(5)), // home
-      at(7900, () => setBrink(6)), // the camera-in-use dot
+      at(8600, () => setBrink(5)), // home — the empty booth photo stays long enough to see whose phone is on the shelf
+      at(9500, () => setBrink(6)), // the camera-in-use dot
       // 02:00:00 — everything stops. Silence first, then the night lands.
-      at(8900, () => (setBrink(7), mix(0, 0, 0.25), setSave({ clock: '02:00' }))),
+      at(10500, () => (setBrink(7), mix(0, 0, 0.25), setSave({ clock: '02:00' }))),
       // the night's one real silence — the 01:59 hush was dropped so this one is whole
-      at(13400, () => setStep('freeze')),
+      at(15000, () => setStep('freeze')),
     ];
     return () => ts.forEach(clearTimeout);
   }, [step]);
@@ -242,8 +245,8 @@ export function Finale() {
         setSub('');
         setEnded(true);
         sfx('hangup');
-      }, 11800),
-      setTimeout(() => setStep('dark'), 12600),
+      }, 13200),
+      setTimeout(() => setStep('dark'), 14000),
     ];
     return () => {
       clearInterval(iv);
@@ -411,7 +414,7 @@ export function Finale() {
         </div>
       )}
       {step === 'video' && (
-        <div className={`video-call${unstable ? ' unstable' : ''}`}>
+        <div className={`video-call${unstable ? ' unstable' : ''}${frozen ? ' frozen' : ''}`}>
           {clipOk && (
             <video ref={clipRef} className="video-clip" autoPlay muted playsInline preload="auto">
               <source src={VIDEO.videocall} type="video/mp4" />

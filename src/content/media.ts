@@ -142,6 +142,8 @@ export interface MemoLine {
   who: '채원' | '???' | '소연' | '엄마' | '';
   text: string;
   sfx?: 'footsteps' | 'drawer' | 'whisper' | 'scream' | 'static' | 'key';
+  /** shown, not said (a name nobody could record) */
+  quiet?: boolean;
 }
 
 export const MEMO_M1 = {

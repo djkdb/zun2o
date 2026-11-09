@@ -130,7 +130,7 @@ export type Action =
   | { t: 'dialog'; title: string; body: string }
   | { t: 'draft'; th: ThreadId; text: string }
   /** The phone restarts by itself and comes back locked, with a new wallpaper. */
-  | { t: 'reboot'; wallpaper: 'annex' | 'booth' }
+  | { t: 'reboot'; wallpaper: 'annex' | 'booth'; /** only the wallpaper changes, no restart */ quiet?: boolean }
   /** `still`: no warning breath — just silence, then it happens. */
   | { t: 'hush'; ms: number; still?: boolean }
   | { t: 'photo'; id: string }

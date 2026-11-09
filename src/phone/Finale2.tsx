@@ -69,7 +69,15 @@ export function Finale2() {
     const start = Math.max(0, WRITTEN.length - 6);
     const last = 600 + (WRITTEN.length - start) * 520;
     const ts: ReturnType<typeof setTimeout>[] = [];
-    for (let i = start + 1; i <= WRITTEN.length; i++) ts.push(setTimeout(() => (setInk(i), sfx('key')), 600 + (i - start) * 520));
+    for (let i = start + 1; i <= WRITTEN.length; i++)
+      ts.push(
+        setTimeout(() => {
+          setInk(i);
+          sfx('key');
+          // the last stroke is 02:00: the status bar stops with the clock on the page
+          if (i === WRITTEN.length) setSave({ clock: '02:00', battery: 2 });
+        }, 600 + (i - start) * 520),
+      );
     ts.push(setTimeout(() => (setPull(true), sfx('key'), vibrate([30])), last + 2000));
     ts.push(setTimeout(() => setPull(false), last + 2400));
     ts.push(setTimeout(() => (vibrate([40]), setStep('recall')), last + 4200));

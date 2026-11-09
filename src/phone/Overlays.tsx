@@ -299,7 +299,7 @@ function ActiveCall({ id }: { id: string }) {
               setTalking(null);
               setNoisy(false);
             },
-            l.who === 'sfx' ? 1600 : Math.min(4200, 600 + l.text.length * 95),
+            l.who === 'sfx' ? 1600 : Math.min(7500, 600 + l.text.length * 95),
           );
           // When *she* speaks on 도현's line the speaker turns itself on: she wants to be heard
           // in the room. No face — the voice is enough.
