@@ -1,5 +1,5 @@
 import { memo, useId } from 'react';
-import { GhostCurtain, GhostHanging, GhostProfile } from './Ghost';
+import { GhostCurtain, GhostProfile } from './Ghost';
 import { art, type ArtSlot } from './photoArt';
 
 // Photos taken on 채원's phone inside the Annex. Phone-camera look: flash
@@ -355,9 +355,8 @@ export const REVEAL_AT = 0.97;
  * slider (0..1) slowly reveals who took it.
  */
 /**
- * `revealed`: she only appears in the photo *after* the scare. Brightened all
- * the way, the room is empty — then she's in your face — then she was in the
- * photo all along.
+ * `revealed`: brightened all the way, the room is empty; let go and a chair
+ * scrapes — and the photo has changed: the chair is out, a coat on it. No face.
  */
 export const BlackPhoto = memo(function BlackPhoto({ brightness = 0, revealed = false }: { brightness?: number; revealed?: boolean }) {
   const b = Math.max(0, Math.min(1, brightness));
@@ -365,7 +364,9 @@ export const BlackPhoto = memo(function BlackPhoto({ brightness = 0, revealed = 
     <svg viewBox="0 0 420 560" role="img" aria-label="거의 완전히 검은 사진.">
       <rect width="420" height="560" fill="#030303" />
       <g opacity={Math.min(1, Math.max(0, (b - 0.2) * 1.4))} style={{ filter: `brightness(${0.25 + b * 0.75}) contrast(${1.6 - b * 0.6})` }}>
-        {art('black-empty') ? (
+        {revealed && art('black-coat') ? (
+          <ArtImage slot="black-coat" w={420} h={560} />
+        ) : art('black-empty') ? (
           <ArtImage slot="black-empty" w={420} h={560} />
         ) : (
           <>
@@ -373,21 +374,12 @@ export const BlackPhoto = memo(function BlackPhoto({ brightness = 0, revealed = 
             {Array.from({ length: 8 }).map((_, r) =>
               Array.from({ length: 6 }).map((__, c) => <rect key={`${r}${c}`} x={10 + c * 70} y={10 + r * 46} width="62" height="38" fill="#2a241c" />),
             )}
-            {/* an empty chair, a desk… nothing else. Until there is. */}
+            {/* a desk, and a chair pulled out from it — further once she has been here */}
             <rect x="150" y="400" width="120" height="14" fill="#1d1812" />
-            <rect x="186" y="330" width="48" height="70" rx="4" fill="#120f0b" />
+            <rect x={revealed ? 268 : 186} y="330" width="48" height="70" rx="4" fill="#120f0b" />
           </>
         )}
       </g>
-      {/* she was on the ceiling, right above the lens — outside the brightness boost, so she stays grey */}
-      {b >= REVEAL_AT && revealed &&
-        (art('black-reveal') ? (
-          <ArtImage slot="black-reveal" w={420} h={560} />
-        ) : (
-          <g transform="translate(222 150) scale(0.85)" style={{ filter: 'brightness(0.8) contrast(1.15)' }}>
-            <GhostHanging distort={false} />
-          </g>
-        ))}
       <text x="14" y="30" fontFamily="IBM Plex Mono, monospace" fontSize="15" fill="#ff5a3c" opacity={0.25 + b * 0.5}>
         01:59
       </text>

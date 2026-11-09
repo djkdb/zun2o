@@ -181,10 +181,15 @@ export const BEATS: Beat[] = [
     actions: [
       // The empty room and the silence were the photo app's (Gallery): this fires when you let go.
       { t: 'flag', f: 'reveal-scare' },
-      // Behind the scare, the photo changes: when the black lifts, she was there all along.
+      // No face. In the silence after you let go, a chair scrapes right in front of the lens —
+      // and the photo changes while you look: the chair is out from the desk (with a coat on it, if there's art).
+      { t: 'wait', ms: 900 },
+      { t: 'sound', id: 'creak', caption: '바로 앞에서 의자 끄는 소리가 감지되었습니다.' },
       { t: 'emit', ev: 'p07:swap' },
-      { t: 'scare', kind: 'lunge', look: 'hang' },
-      { t: 'wait', ms: 1700 },
+      { t: 'vibrate', ms: [40] },
+      { t: 'wait', ms: 1200 },
+      { t: 'msg', th: 'unknown', text: '앉으라고 빼 둔 거예요.', typing: 1400 },
+      { t: 'wait', ms: 1800 },
       { t: 'glitch', ms: 1000 },
       { t: 'time', hm: '00:31', lost: true },
       { t: 'calllog', entry: { who: '0200', time: '23:53', kind: 'out', duration: '38:12' } },

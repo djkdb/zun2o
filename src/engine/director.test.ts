@@ -158,18 +158,16 @@ describe('director timing', () => {
     expect(seen).toBe(true);
   });
 
-  it('the dark photo: she drops in at once (the empty room was the photo app\'s), and the photo changes under the scare', async () => {
+  it('the dark photo: no face — a chair scrapes, the photo changes, and she says why', async () => {
     expect(getState().save.flags).not.toContain('p07-revealed');
     emit('photo:p07:reveal');
     await vi.advanceTimersByTimeAsync(100);
-    expect(getState().rt.scare?.kind).toBe('lunge');
-    expect(getState().rt.scare?.look).toBe('hang');
+    expect(getState().rt.scare).toBeNull();
     expect(getState().save.flags).not.toContain('p07-revealed');
-    await vi.advanceTimersByTimeAsync(500);
-    // still under the scare when the photo changes: when it lifts, she was there all along
-    expect(getState().rt.scare?.kind).toBe('lunge');
-    expect(getState().save.flags).toContain('p07-revealed');
     await vi.advanceTimersByTimeAsync(1600);
+    // the photo has changed by the time the chair has scraped
+    expect(getState().save.flags).toContain('p07-revealed');
+    await until(() => getState().save.threads.unknown.some((m) => m.text === '앉으라고 빼 둔 거예요.'), 10000);
     expect(getState().rt.scare).toBeNull();
   });
 

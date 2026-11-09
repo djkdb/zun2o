@@ -156,9 +156,10 @@ await page.evaluate(() => {
   setter.call(el, '1');
   el.dispatchEvent(new Event('input', { bubbles: true }));
 });
-await waitFor('.scare-lunge', 5000);
+// no face: a chair scrapes, the photo changes under your eyes, and she tells you why
+await page.waitForFunction(() => window.__game.getState().save.threads.unknown.some((m) => m.text === '앉으라고 빼 둔 거예요.'), null, { timeout: 8000 });
 mark('SCARE 1 — the black photo');
-await wait(250);
+check('01:59 photo: no face lunge — the chair was pulled out for you', (await page.locator('.scare-lunge').count()) === 0 && (await page.textContent('.viewer-caption')).includes('의자'));
 await snap('scare-photo');
 
 // ── CH2: 도현 calls ─────────────────────────────────────────────────────

@@ -557,3 +557,69 @@ glow through the curtains. Quiet, ordinary, a little too still. Phone snapshot, 
 - 이유: 엔딩 1은 부스의 폰에서 "당신의 휴대폰"으로 장소가 바뀝니다. 그 집이 평범할수록 마지막 "들어오세요."가 차갑습니다. 사람·귀신을 넣지 마세요(화면 안 숫자가 잘 안 나오면 숫자 없이 화면 불빛만이어도 됩니다).
 
 넣는 곳: `src/assets/art/video-frozen.webp`, `src/assets/art/ending-home-phone.webp` (webp, 품질 80 정도).
+
+## 10차 — 01:59 사진 교체 & 해상도 올리기 (한 장씩)
+
+01:59 까만 사진의 놀래킴(화면 가득 거꾸로 매달린 얼굴)을 뺐습니다. 이제 밝기를 끝까지 올리고 손을 놓으면, 의자 끄는 소리가 나고 사진 속 의자가 바뀌어 있습니다. 이어서 "앉으라고 빼 둔 거예요." 문자가 옵니다. 그 바뀐 사진이 `black-coat`입니다. 없으면 지금 사진이 그대로 쓰이고, 설명 문구만 바뀝니다.
+
+| 우선 | 파일 이름 | 붙일 이미지 | 비율 · 크기 | 이유 |
+|---|---|---|---|---|
+| 1 | `black-coat` | `black-empty.webp` | 3:4 세로, 1024×1365 | 새 장면. **반드시 편집으로** (같은 사진이어야 바뀐 게 보임) |
+| 1 | `black-empty` (교체) | `black-empty.webp` | 3:4 세로, 1024×1365 | 596px라 흐림. `black-coat`와 같은 구도로 다시 뽑을 때 같이 |
+| 2 | `selfie-alone` (교체) | `selfie-alone.webp` | 3:4 세로, 1024×1365 | 420px, 게임에서 가장 작음. 숨김 앨범에서 화면을 꽉 채움 |
+| 2 | `chair-empty` → `chair-coat` (교체) | `chair-coat.webp` | 3:4 세로, 1024×1365 | 536px. 엔딩 2·3의 짝 사진 |
+| 3 | `life-busstop` → `life-busstop-ghost` (교체) | `life-busstop.webp` | 3:4 세로, 1024×1365 | 537px. 홈 화면과 사진 앱 첫 사진 |
+
+**짝 사진 순서:** `black-empty`↔`black-coat`, `chair-empty`↔`chair-coat`, `life-busstop`↔`life-busstop-ghost`는 먼저 앞의 것을 뽑습니다. 그 결과를 붙여 넣고 "이 사진에서 ○○만 바꿔 줘, 나머지는 그대로"로 편집하세요. 구도가 어긋나면 바뀌는 순간 티가 납니다.
+
+### black-empty (먼저, 해상도만)
+```
+Edit the attached photo: keep it exactly the same scene, framing, objects and darkness — the closed stacks of an old
+school library at night, rows of wooden card-catalogue drawers, a wooden desk on the right and a wooden chair pulled a
+little out from it, fluorescent fitting on the ceiling, debris on the floor. Re-render it sharper and cleaner at
+1024x1365 portrait, like a phone photo taken in near-darkness and brightened: heavy noise, crushed blacks, no added
+light sources, nobody in the frame.
+```
+
+### black-coat (위 결과를 붙여 넣고)
+```
+Edit the attached photo. Change only this: the wooden chair is now pulled about one metre further away from the desk,
+turned slightly toward the camera, as if someone has just stood up — or set it out for someone to sit. Over its back
+hangs a woman's dark wool coat, old-fashioned (1990s), slightly damp at the hem. Everything else — framing, drawers,
+desk, ceiling light, darkness, noise — stays pixel for pixel the same. Nobody in the frame, no face anywhere.
+```
+- 이유: 귀신을 보여 주는 대신 "누가 방금까지 있었다 / 나를 위해 의자를 빼 뒀다". 이 외투는 엔딩 2의 "열람실 의자에 외투 하나가 걸렸다"와 엔딩 3의 "31년 동안 걸려 있던 외투가 없어졌다"의 복선이 됩니다.
+
+### selfie-alone (해상도만)
+```
+Edit the attached photo: keep the same young Korean woman, the same face, hair, clothes, pose, framing, lighting and
+background exactly. Re-render it sharper at 1024x1365 portrait, like a front-camera phone selfie in a dark room lit by
+the screen: natural skin texture, slight noise. Do not add anyone or anything.
+```
+- 주의: `selfie-far`·`selfie-close`(뒤에 그녀가 나타나는 판)와 바뀌는 순간 얼굴이 같아야 합니다. 이 결과가 얼굴·머리 모양을 바꾸면 쓰지 마세요.
+
+### chair-empty (먼저) → chair-coat
+```
+Edit the attached photo: remove the coat from the chair in the foreground — the chair is empty, pushed in to the desk.
+Keep everything else the same: the old school reading room at night, the desk lamp, the wall clock, the shelves, the
+sheets over furniture. Re-render sharper at 1024x1365 portrait.
+```
+그 결과를 붙여 넣고:
+```
+Edit the attached photo. Change only this: a woman's dark wool coat, old-fashioned (1990s), hangs over the back of the
+chair in the foreground. Everything else stays exactly the same.
+```
+
+### life-busstop (해상도만) → life-busstop-ghost
+```
+Edit the attached photo: keep the same two people (a young Korean woman and a young man), the same V signs, clothes,
+bus stop, sunset light and framing exactly. Re-render it sharper at 1024x1365 portrait, like a slightly blurry happy
+phone snapshot. Do not change their faces.
+```
+그 결과와 지금 `life-busstop-ghost.webp`를 함께 붙여 넣고:
+```
+Edit the first photo: add only the faint reflection from the second photo — a long-haired woman, barely visible in
+the bus-shelter glass on the left, behind them. Everything else stays exactly the same as the first photo.
+```
+
+넣는 곳: `src/assets/art/<파일 이름>.webp` (webp, 품질 80 정도). 이전 파일은 덮어쓰면 됩니다.

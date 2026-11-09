@@ -176,6 +176,7 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
   const [i, setI] = useState(index);
   const [edit, setEdit] = useState(false);
   const [brightness, setBrightness] = useState(0);
+  const p07Revealed = useGame((s) => s.save.flags.includes('p07-revealed'));
   const touch = useRef<number | null>(null);
   // Double-tap to zoom 2.5×, drag to look around.
   const [zoom, setZoom] = useState<{ x: number; y: number } | null>(null);
@@ -232,6 +233,8 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
     if (topAt.current === null || hasFlag('reveal-scare')) return;
     topAt.current = null;
     emit('photo:p07:reveal');
+    // the room's sound comes back after the chair has scraped
+    setTimeout(() => mix(0.16, 0, 0.2, 1800), 3200);
   };
   useEffect(
     () => () => {
@@ -335,7 +338,7 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
         )}
       </div>
       <p className="viewer-caption">
-        {photo.caption || ' '}
+        {photo.id === 'p07' && p07Revealed && brightness >= REVEAL_AT ? (art('black-coat') ? '의자에 외투가 걸려 있다. 아까는 없었다.' : '의자 하나가 책상에서 빠져 있다. 아까보다 멀리.') : photo.caption || ' '}
         {!edit && !photo.video && <small className="viewer-zoomhint">{zoom ? '두 번 탭: 원래대로' : '두 번 탭: 확대'}</small>}
       </p>
       {edit && photo.id === 'p07' ? (
