@@ -103,6 +103,26 @@ describe('director timing', () => {
     await until(() => getState().save.threads.unknown.some((m) => m.text.includes('이름을 적는 사람이요')), 30000);
   });
 
+  it('whoever found record 013 first is not restarted out of it: only the wallpaper changes', async () => {
+    setSave({ flags: ['self-contact', 'found-key'] });
+    setSpeed(40);
+    emit('booth-reboot');
+    await vi.advanceTimersByTimeAsync(3000);
+    expect(getState().rt.rebooting).toBeFalsy();
+    expect(getState().save.unlocked).toBe(true);
+    emit('ch4');
+    await until(() => getState().save.wallpaper === 'booth', 20000);
+    expect(getState().save.unlocked).toBe(true);
+  });
+
+  it('nothing queued drops over a recording that started meanwhile', async () => {
+    showBanner('messages', '도현', '하나');
+    showBanner('messages', '엄마', '둘');
+    setRt({ memoPlaying: true });
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(getState().rt.banner?.body).not.toBe('둘');
+  });
+
   it('every banner stays up long enough to read: the next one waits its turn', async () => {
     showBanner('messages', '도현', '하나');
     await vi.advanceTimersByTimeAsync(400);

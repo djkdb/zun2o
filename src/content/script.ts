@@ -670,6 +670,7 @@ export const BEATS: Beat[] = [
       },
       { t: 'wait', ms: 15000 },
       { t: 'unchoice', id: 'c5' },
+      { t: 'emit', ev: 'c5:none' },
       // the answer to where you looked comes in first
       { t: 'wait', ms: 3500 },
       { t: 'loop', id: 'heartbeat', on: false },
@@ -703,10 +704,10 @@ export const BEATS: Beat[] = [
       { t: 'unchoice', id: 'c4' },
       { t: 'time', hm: '01:56' },
       { t: 'emit', ev: 'dohyun:door' },
-      { t: 'wait', ms: 9500 },
-      // over the silence after the door, not over the door
+      { t: 'wait', ms: 11500 },
+      // over the silence after the door (and after "서랍에 제 이름이 있어요"), not over the door
       { t: 'dialog', title: '배터리 부족', body: '배터리가 4% 남았습니다. 저전력 모드를 켤 수 없습니다: 야간 출입 기록이 사용 중.' },
-      { t: 'wait', ms: 3000 },
+      { t: 'wait', ms: 1000 },
       { t: 'time', hm: '01:57' },
       { t: 'emit', ev: 'dohyun:call' },
       { t: 'wait', ms: 16000 },
@@ -803,6 +804,13 @@ export const BEATS: Beat[] = [
       { t: 'msg', th: 'dohyun', text: '아직 있어요 바로 뒤에', typing: 1000 },
       { t: 'msg', th: 'unknown', text: '괜찮아요. 두 시엔 제가 눈 가려 줄게요.', typing: 1500 },
     ],
+  },
+  // neither: he still says it wasn't him
+  {
+    id: 'c5-none',
+    on: 'c5:none',
+    forbids: ['turned', 'held'],
+    actions: [{ t: 'msg', th: 'dohyun', text: '방금 돌아봐도 된다고 한 거 저 아니에요', typing: 1200 }],
   },
   // ── 01:55, the door: he goes in — or, because you told him to, he doesn't ──
   {
@@ -1018,9 +1026,15 @@ export const BEATS: Beat[] = [
     id: 'ready-ch4',
     on: 'app:messages',
     requires: ['ch4'],
-    // only on its own, 01:50–01:51: not under the slip, not between the two voices at 01:54
+    actions: [{ t: 'wait', ms: 6500 }, { t: 'emit', ev: 'ready-ch4-say' }],
+  },
+  {
+    // only on its own, 01:50–01:51: after the slip was taken back, before the open line at 01:52
+    id: 'ready-ch4-say',
+    on: 'ready-ch4-say',
+    requires: ['unsaid'],
     forbids: ['open-line'],
-    actions: [{ t: 'wait', ms: 6500 }, { t: 'msg', th: 'unknown', text: '열 줄 알았어요.' }],
+    actions: [{ t: 'msg', th: 'unknown', text: '열 줄 알았어요.' }],
   },
   // 채원's ordinary days: close one and go home — someone remembers that smile.
   { id: 'saw-life', on: 'photo:l*', actions: [{ t: 'flag', f: 'saw-life' }] },

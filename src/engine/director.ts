@@ -161,13 +161,32 @@ function resetBanners(): void {
   hushUntil = 0;
   bannerQueue = [];
   bannerShownAt = 0;
+  if (bannerDrain) {
+    clearTimeout(bannerDrain);
+    timers.delete(bannerDrain);
+  }
   bannerDrain = null;
 }
 
 function drainBanners(): void {
   bannerDrain = null;
+  const rt = getState().rt;
+  // 02:00 has its own screen: whatever was still waiting is gone
+  if (rt.finale) return void (bannerQueue = []);
+  // a silence started while these waited: they come in right after it
+  if (Date.now() < hushUntil) {
+    const t = setTimeout(() => {
+      timers.delete(t);
+      drainBanners();
+    }, hushUntil - Date.now() + 300);
+    bannerDrain = t;
+    timers.add(t);
+    return;
+  }
   const next = bannerQueue.shift();
   if (!next) return;
+  // a recording started while it waited: nothing drops over it (a question still may)
+  if (rt.memoPlaying && !next.urgent) return drainBanners();
   // read already: the thread is open now
   if (next.thread && next.app === 'messages' && !next.urgent && isViewing(next.thread)) return drainBanners();
   putBanner(next);
@@ -215,7 +234,7 @@ export function showBanner(app: AppId, title: string, body: string, thread?: Thr
   const up = getState().rt.banner !== null && Date.now() - bannerShownAt < BANNER_MIN / speed;
   if (!up && !bannerQueue.length) return putBanner(p);
   // Every banner gets its time on screen: the rest wait their turn.
-  const same = bannerQueue.find((q) => q.app === app && q.thread === thread && q.title === title && !q.urgent && !urgent);
+  const same = app === 'messages' ? bannerQueue.find((q) => q.app === app && q.thread === thread && q.title === title && !q.urgent && !urgent) : undefined;
   if (same) {
     same.n += 1;
     same.body = body;

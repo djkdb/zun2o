@@ -80,7 +80,7 @@ describe('story data', () => {
     expect(PHOTOS.slice(0, night).every((p) => p.date && p.date < '9월 27일')).toBe(true);
     expect(PHOTOS[night].id).toBe('p00');
     expect(ARCHIVE.news2.lines.join(' ')).toContain('다음 사람이 왔다');
-    expect(BEATS.some((b) => b.actions.some((a) => a.t === 'reboot'))).toBe(true);
+    expect(BEATS.some((b) => b.actions.some((a) => a.t === 'reboot' && !a.quiet))).toBe(true);
   });
 
   it('the message list puts the newest conversation first, across midnight', () => {

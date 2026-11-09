@@ -163,7 +163,7 @@ function endingFor(id: EndingId, save: Save): EndingDef {
   // what you said at 00:58 comes back with her
   if (id === 'release' && (choices.c3 === 'chaewon' || choices.c3 === 'finder')) {
     const i = scene.findIndex((l) => l.text.startsWith('채원이가 엄마한테 전화했어요'));
-    const msg = choices.c3 === 'chaewon' ? '채원이가 그쪽한테 전해 달래요. 거기서 이름 불러 준 사람 그쪽밖에 없었대요' : '채원이가 그쪽한테 전해 달래요. 그 폰 다음엔 줍지 말래요';
+    const msg = choices.c3 === 'chaewon' ? '채원이가 그쪽한테 전해 달래요. 거기서 이름 불러 준 사람 그쪽이 처음이었대요' : '채원이가 그쪽한테 전해 달래요. 그 폰 다음엔 줍지 말래요';
     if (i >= 0) scene.splice(i, 0, { who: '도현', text: msg, side: 'left' });
   }
   // Her name, at last — answering the first thing you said to her.

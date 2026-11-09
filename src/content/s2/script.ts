@@ -457,7 +457,7 @@ export const BEATS_S2: Beat[] = [
       },
       { t: 'msg', th: CHAEWON, text: '저 학교 앞이에요', typing: 600 },
       { t: 'msg', th: CHAEWON, text: '도현이 나오나 보려고', typing: 800 },
-      { t: 'msg', th: CHAEWON, text: '작년엔 도현이가 저 길 건너에서 3층만 올려다보고 있었대요', typing: 1500 },
+      { t: 'msg', th: CHAEWON, text: '작년엔 도현이가 저 길 건너에서 3층을 한참 올려다보고 있었대요', typing: 1500 },
       { t: 'msg', th: CHAEWON, text: '입구까지만 온다더니 맨날 끝까지 있어요', typing: 1200 },
       { t: 'wait', ms: 2000 },
       { t: 'msg', th: CHAEWON, text: '저 오면서 누구든 적히라고 빌었어요', typing: 1400 },

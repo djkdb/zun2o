@@ -101,8 +101,10 @@ function buildRecall(): RecallLine[] {
     [s.flags.includes('zoomed-booth'), '부스 안에 있는 그쪽 사진, 확대해 봤죠.'],
     [s.flags.includes('read-hyunwoo'), '박현우 씨 기사 읽었죠. 그럼 끝이 어떻게 되는지도 알겠네요.'],
   ];
-  // the line that sets up the signature in ending 2 always gets its turn
-  const picked = personal.filter(([on]) => on).slice(0, s.flags.includes('refused-name') ? 3 : 2);
+  // the line that sets up the signature in ending 2 always gets its turn, as a third line if need be
+  const picked = personal.filter(([on]) => on).slice(0, 2);
+  const refused = personal.find(([on, line]) => on && line.startsWith('이름은 끝까지'));
+  if (refused && !picked.includes(refused)) picked.push(refused);
   picked.forEach(([, line]) => lines.push(line));
   // already told him to stay out: don't say it twice right before the confession
   const saidKeptOut = picked.some(([, l]) => l.startsWith('도현 씨한테 밖에'));
