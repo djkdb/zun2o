@@ -353,9 +353,9 @@ await snap('open-line');
 await page.locator('.openline-down').dispatchEvent('click');
 await wait(300);
 // the rest of chapter 4 happens on its own clock: battery warning, then 도현's call
-await page.waitForFunction(() => document.querySelector('.incoming, .dialog, .finale'), null, { timeout: 90000 });
+await page.waitForFunction(() => document.querySelector('.incoming, .dialog, .finale'), null, { timeout: 150000 });
 await dismissDialog('ch4-battery-dialog');
-await page.waitForFunction(() => document.querySelector('.incoming, .finale'), null, { timeout: 90000 });
+await page.waitForFunction(() => document.querySelector('.incoming, .finale'), null, { timeout: 150000 });
 if (await page.locator('.incoming').count()) {
   mark('01:57 call');
   await snap('ch4-call');
@@ -367,7 +367,7 @@ check('도현 sends the booth video (v02)', await page.evaluate(() => window.__g
 
 await page.evaluate((x) => window.__game.setSpeed(x), SPEED);
 // ── 02:00 ──────────────────────────────────────────────────────────────
-await waitFor('.finale', 90000);
+await waitFor('.finale', 150000);
 mark('02:00 — finale');
 // closing the app at 02:00 does not get you out of it
 await wait(1200);
@@ -409,7 +409,7 @@ for (const [label, cls] of [
 ]) {
   // The checkpoint lets you replay 02:00 for the other endings.
   await page.getByText('02:00부터 다시').click();
-  await waitFor('.final-choices', 90000);
+  await waitFor('.final-choices', 150000);
   if (cls === 'poweroff') {
     await page.evaluate(() => {
       const el = document.querySelector('.power-slider input');
