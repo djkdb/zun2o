@@ -358,14 +358,24 @@ async function qwenAuto() {
     writeFileSync(`${TAKES}/anchors.json`, JSON.stringify(anchorJobs));
     qwenRun(['jobs', `${TAKES}/anchors.json`]);
   }
-  // 2. the takes
+  // 2. the takes. They are kept by line number, so a line whose words or direction changed
+  // must not reuse takes of what it used to say: each line's takes carry a signature.
+  const instructOf = (l) => {
+    const style = voxStyle(l).replace(/^warm, /, '');
+    return `${QWEN_ROLE[l.voice]}.${style ? ` Speaking ${style}.` : ''}`;
+  };
+  for (const l of work) {
+    const sig = `${instructOf(l)}|${sayKo(l.say)}`;
+    const sigFile = `${TAKES}/wav/${l.n}.sig`;
+    if (existsSync(sigFile) && readFileSync(sigFile, 'utf8') !== sig)
+      for (let t = 1; t <= 12; t++) for (const f of [`${TAKES}/${l.n}-t${t}.mp3`, `${TAKES}/wav/${l.n}-t${t}.wav`]) if (existsSync(f)) unlinkSync(f);
+    if (!process.env.DRY) writeFileSync(sigFile, sig);
+  }
   const jobs = [];
   for (const l of work)
     for (let t = 1; t <= takes; t++)
-      if (!existsSync(`${TAKES}/${l.n}-t${t}.mp3`) || process.env.FORCE) {
-        const style = voxStyle(l).replace(/^warm, /, '');
-        jobs.push({ text: sayKo(l.say), instruct: `${QWEN_ROLE[l.voice]}.${style ? ` Speaking ${style}.` : ''}`, out: `${TAKES}/wav/${l.n}-t${t}.wav`, seed: 1000 + t * 17 + Number(l.n) });
-      }
+      if (!existsSync(`${TAKES}/${l.n}-t${t}.mp3`) || process.env.FORCE)
+        jobs.push({ text: sayKo(l.say), instruct: instructOf(l), out: `${TAKES}/wav/${l.n}-t${t}.wav`, seed: 1000 + t * 17 + Number(l.n) });
   if (process.env.DRY) return jobs.forEach((j) => console.log(`would make ${j.out}  (${j.instruct}) ${j.text}`));
   if (process.env.FORCE) jobs.forEach((j) => existsSync(j.out) && unlinkSync(j.out));
   writeFileSync(`${TAKES}/jobs.json`, JSON.stringify(jobs));

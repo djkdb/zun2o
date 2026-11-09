@@ -47,6 +47,9 @@ export type ArtSlot =
   | 'ending-poweroff'
   | 'ending-shift'
   | 'ending-release'
+  // round 3 (optional): the stopped 02:00 video-call frame; ending 1's "같은 시각, 당신의 집."
+  | 'video-frozen'
+  | 'ending-home-phone'
   | 'avatar-dohyun'
   | 'avatar-mom'
   | 'avatar-self'

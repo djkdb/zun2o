@@ -201,7 +201,7 @@ function endingFor(id: EndingId, save: Save): EndingDef {
     scene.splice(
       scene.length - 1,
       1,
-      { text: '같은 시각, 당신의 집.' },
+      { text: '같은 시각, 당신의 집.', img: 'ending-home-phone' },
       { text: '그날부터 당신의 휴대폰은 새벽 두 시가 되면 12%에서 멈춘다.' },
       { who: '발신자 정보 없음', text: '{name} 씨 이름은 적어 뒀어요.', side: 'left', pause: 1500 },
       { who: '발신자 정보 없음', text: '들어오세요.', side: 'left', pause: 1200 },

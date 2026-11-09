@@ -4346,6 +4346,22 @@ body,
   animation: video-drop 1.8s steps(1) both;
 }
 
+/* …or a still made for that moment, fading in over it */
+.video-call > .video-frozen {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: video-frozen-in 0.6s ease-out both;
+}
+
+@keyframes video-frozen-in {
+  from {
+    opacity: 0;
+  }
+}
+
 /* the picture stops: her face sinks into the dark, and only the eyes are left */
 .video-call.frozen > .video-clip {
   animation: none;

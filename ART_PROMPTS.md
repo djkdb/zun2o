@@ -524,3 +524,34 @@ string, rain spots on the glass, one street lamp. Nobody in the frame.
 2. **3층에서 찍힌 "나"** (`booth.webp`, 640×655 근처)
    > 3층 창문에서 내려다본 비 오는 밤의 공중전화 부스, 안에 후드를 쓴 사람이 고개를 숙이고 휴대폰을 보고 있다, 얼굴과 머리 모양은 보이지 않고 화면 불빛만 손과 턱 아래를 비춘다, 창틀이 화면 위쪽을 가린다, 휴대폰으로 몰래 찍은 사진 같은 노이즈
    - 이유: 플레이어 누구든 "나"로 읽혀야 합니다. 지금은 머리 모양 때문에 특정한 사람으로 보일 수 있습니다.
+
+## 9차 — 3라운드 플레이에서 나온 두 장 (선택)
+
+스토리 룸 3라운드에서 에이전트들이 실제로 플레이하며 오래 머문 화면입니다. 없으면 지금처럼 동작합니다(영상이 코드로 어두워짐 / 글만 나옴).
+
+| 우선 | 파일 이름 | 비율 · 크기 | 쓰이는 곳 | 참고 이미지 첨부 |
+|---|---|---|---|---|
+| 1 | `video-frozen` | 9:16 세로, 1080×1920 근처 | 02:00 영상통화가 멈춘 순간(9.2초)부터 끝날 때까지 약 4초. 영상 위로 0.6초에 걸쳐 떠오름. 오른쪽 위 작은 내 화면 창은 그 위에 그대로 그려짐 | `video-chaewon.webp`, `video-behind.webp` |
+| 2 | `ending-home-phone` | 3:2 가로, 1536×1024 | 엔딩 1(이름을 알려 준 경우) 글 "같은 시각, 당신의 집." 위의 사진 | `ending-poweroff.webp` |
+
+### video-frozen
+```
+Front-camera video call frame, vertical 9:16, single image. The call has just frozen on one frame: the same young
+Korean woman as the attached image, face close to the camera, mid-word, lit only from below by her phone. The frame is
+almost entirely dark: her face has sunk into shadow and only her eyes catch the light, wide open, looking past the
+camera at something behind the viewer. Behind her, the rows of old drawers are black. Nothing else in the frame: no
+second face, no figure. Heavy video compression blocks, a slight smear as if the picture stopped between two frames.
+Keep the top-right corner (about 25% width x 17% height) plain dark — a small self-view window sits there.
+```
+- 이유: 지금은 멈춘 영상을 코드로 어둡게 해서 귀신 얼굴이 2.6초 또렷이 남는 문제를 덮습니다. 멈춘 화면에는 **채원의 눈만** 남고, 무서운 것은 바로 다음의 "내 카메라 창이 가려짐"이어야 합니다. 귀신을 넣지 마세요.
+
+### ending-home-phone
+```
+Landscape 3:2 photo (1536x1024), single image. A small dark bedroom at 2 a.m. seen from the doorway: an unmade bed,
+and on the bedside table a smartphone lying face up, its screen lit in the dark. On the screen, large: "02:00" and a
+battery icon at "12%". Nobody in the room. The only light is the phone screen on the ceiling and a faint street-lamp
+glow through the curtains. Quiet, ordinary, a little too still. Phone snapshot, slight grain.
+```
+- 이유: 엔딩 1은 부스의 폰에서 "당신의 휴대폰"으로 장소가 바뀝니다. 그 집이 평범할수록 마지막 "들어오세요."가 차갑습니다. 사람·귀신을 넣지 마세요(화면 안 숫자가 잘 안 나오면 숫자 없이 화면 불빛만이어도 됩니다).
+
+넣는 곳: `src/assets/art/video-frozen.webp`, `src/assets/art/ending-home-phone.webp` (webp, 품질 80 정도).

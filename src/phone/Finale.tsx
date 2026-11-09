@@ -422,6 +422,8 @@ export function Finale() {
               <source src={VIDEO.videocallWebm} type="video/webm" onError={() => setClipOk(false)} />
             </video>
           )}
+          {/* the picture stops: a still made for it, if there is one (otherwise the clip itself darkens) */}
+          {frozen && art('video-frozen') && <img className="video-frozen" src={art('video-frozen')} alt="" draggable={false} />}
           <VideoFeed close={Math.min(close, 0.3)} pip={pip} clip={clipOk} covered={covered} />
           <div className="video-top">
             <strong>채원</strong>
