@@ -10,7 +10,7 @@ import { useGame } from '../hooks/useGame';
 export const APP_META: Record<AppId, { name: string; bg: string }> = {
   messages: { name: '메시지', bg: 'linear-gradient(180deg,#6ff28a,#1fc244)' },
   gallery: { name: '사진', bg: 'linear-gradient(180deg,#ffffff,#eef1f5)' },
-  notes: { name: '메모', bg: 'linear-gradient(180deg,#ffd23f 26%,#ffffff 26%)' },
+  notes: { name: '메모', bg: 'linear-gradient(180deg,#ffe066,#fcc62d 26%,#ffffff 26%)' },
   memos: { name: '녹음', bg: 'linear-gradient(180deg,#2a2a2c,#0b0b0c)' },
   browser: { name: '인터넷', bg: 'linear-gradient(180deg,#ffffff,#e9edf2)' },
   phone: { name: '전화', bg: 'linear-gradient(180deg,#6ff28a,#1fc244)' },
@@ -46,7 +46,19 @@ function Tile({ id, from, to, children, rim = 0.28 }: { id: string; from: string
   );
 }
 
+// Optional icon images: drop src/assets/icons/<app>.png (messages, phone, browser, gallery,
+// notes, memos, settings) and that app uses the image instead of the drawing. Files you add
+// there are yours to have the rights to; the drawings below stay as the fallback.
+const ICON_FILES = import.meta.glob('../assets/icons/*.{png,webp,jpg,jpeg,svg}', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+const ICON_IMG: Partial<Record<AppId, string>> = {};
+for (const [path, url] of Object.entries(ICON_FILES)) ICON_IMG[path.split('/').pop()!.replace(/\.[a-z]+$/i, '') as AppId] = url;
+
 export function AppGlyph({ app }: { app: AppId }) {
+  const img = ICON_IMG[app];
+  return img ? <img className="icon-full" src={img} alt="" draggable={false} /> : <DrawnGlyph app={app} />;
+}
+
+function DrawnGlyph({ app }: { app: AppId }) {
   const id = `i${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
   const chapter = useGame((s) => s.save.chapter);
   const ds = `url(#${id}ds)`;
@@ -82,15 +94,15 @@ export function AppGlyph({ app }: { app: AppId }) {
             </linearGradient>
           </defs>
           <g filter={ds}>
-            <circle cx="30" cy="30" r="22" fill={`url(#${id}dial)`} />
+            <circle cx="30" cy="30" r="24.5" fill={`url(#${id}dial)`} />
             <g transform="translate(30 30)" stroke="#fff" strokeLinecap="round">
               {ticks.map((a) => (
-                <line key={a} x1="0" y1={a % 45 === 0 ? -20.5 : -20.5} x2="0" y2={a % 45 === 0 ? -16.5 : -18.6} strokeWidth={a % 45 === 0 ? 1.1 : 0.55} strokeOpacity={a % 45 === 0 ? 1 : 0.8} transform={`rotate(${a})`} />
+                <line key={a} x1="0" y1="-22.6" x2="0" y2={a % 45 === 0 ? -18.2 : -20.4} strokeWidth={a % 45 === 0 ? 1.2 : 0.6} strokeOpacity={a % 45 === 0 ? 1 : 0.85} transform={`rotate(${a})`} />
               ))}
               {/* the needle points north-east — in chapter 4 it has swung round to face you */}
               <g transform={`rotate(${chapter >= 4 ? 180 + 45 : 45})`} stroke="none">
-                <path d="M0 -15 L3.2 0 L-3.2 0 Z" fill="#ff3b30" />
-                <path d="M0 15 L3.2 0 L-3.2 0 Z" fill="#fff" />
+                <path d="M0 -17 L3.4 0 L-3.4 0 Z" fill="#ff3b30" />
+                <path d="M0 17 L3.4 0 L-3.4 0 Z" fill="#fff" />
               </g>
               <circle r="1.5" fill="#fff" stroke="none" />
             </g>
@@ -100,12 +112,12 @@ export function AppGlyph({ app }: { app: AppId }) {
     }
     case 'gallery': {
       // a flower of eight translucent petals on white; in chapter 4 one of them has gone grey
-      const petals = ['#ffcc00', '#ff9500', '#ff3b30', '#ff2d92', '#af52de', '#5856d6', '#34aadc', '#4cd964'];
+      const petals = ['#ff9f0a', '#ffd60a', '#8fd14f', '#34c7a8', '#30a2ff', '#7d5cf0', '#d24fd8', '#ff4a5a'];
       return (
         <Tile id={id} from="#ffffff" to="#eef1f5" rim={0.6}>
           <g transform="translate(30 30)" style={{ mixBlendMode: 'multiply' }}>
             {petals.map((c, i) => (
-              <ellipse key={c} cx="0" cy="-10.5" rx="6.2" ry="10.5" fill={chapter >= 4 && i === 5 ? '#4b4650' : c} fillOpacity={chapter >= 4 && i === 5 ? 0.9 : 0.78} transform={`rotate(${i * 45})`} />
+              <ellipse key={c} cx="0" cy="-11.4" rx="7.2" ry="11.4" fill={chapter >= 4 && i === 5 ? '#4b4650' : c} fillOpacity={chapter >= 4 && i === 5 ? 0.92 : 0.84} transform={`rotate(${i * 45})`} />
             ))}
           </g>
         </Tile>
@@ -115,10 +127,15 @@ export function AppGlyph({ app }: { app: AppId }) {
       return (
         <Tile id={id} from="#ffffff" to="#f1f1f1" rim={0.6}>
           {/* white paper under a yellow band; from chapter 3 a line is written that nobody wrote */}
-          <rect x="0" y="0" width="60" height="16" fill="#ffd23f" />
-          <path d="M0 16h60" stroke="#e0b21e" strokeWidth="1" />
-          <path d="M8 6.5h44" stroke="#fff" strokeOpacity="0.55" strokeWidth="1.1" strokeDasharray="1.2 2.2" strokeLinecap="round" />
-          <path d="M8 27h44M8 36h44M8 45h44M8 54h44" stroke="#c8c8cc" strokeWidth="1.2" />
+          <defs>
+            <linearGradient id={`${id}band`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor="#ffe066" />
+              <stop offset="1" stopColor="#fcc62d" />
+            </linearGradient>
+          </defs>
+          <rect x="0" y="0" width="60" height="16" fill={`url(#${id}band)`} />
+          <path d="M5 18.6h50" stroke="#b9b9be" strokeWidth="1.3" strokeDasharray="1.1 2.4" strokeLinecap="round" />
+          <path d="M6 28h48M6 37h48M6 46h48M6 55h48" stroke="#d4d4d8" strokeWidth="1.1" />
           {chapter >= 3 && <path d="M9 34c3-3 4 1 7-1s3-3 6 0 4 0 6-2 3 1 5 0" fill="none" stroke={chapter >= 4 ? '#b3261e' : '#5a3d0c'} strokeWidth="1.6" strokeLinecap="round" />}
         </Tile>
       );

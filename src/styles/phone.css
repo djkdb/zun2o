@@ -7366,9 +7366,13 @@ body,
   white-space: nowrap;
 }
 /* app icons: one full-bleed drawing per tile, clipped to the iOS corner (≈ 22.4 % of the side) */
+.app-tile .icon-full,
+.banner-icon .icon-full,
+.avatar-badge .icon-full,
 .app-tile svg.icon-full,
 .banner-icon svg.icon-full,
 .avatar-badge svg.icon-full {
+  object-fit: cover;
   position: absolute;
   inset: 0;
   width: 100%;
