@@ -5716,6 +5716,34 @@ body,
   line-height: 13px;
   color: #ff6b61;
 }
+/* the same red dot, again, over the recall: the night log is writing you down */
+.index-final .recall-rec {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 14px;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: #ff6b61;
+}
+.recall-rec-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff3b30;
+  box-shadow: 0 0 6px rgba(255, 59, 48, 0.8);
+  animation: rec-blink 1.6s steps(2, jump-none) infinite;
+}
+@keyframes rec-blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .recall-rec-dot {
+    animation: none;
+  }
+}
 /* 02:00:00 — nothing moves */
 .brink-7 .home {
   filter: brightness(0.55);

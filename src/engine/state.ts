@@ -33,6 +33,8 @@ export interface Runtime {
   lostNonce: number;
   finale: boolean;
   ending: EndingId | null;
+  /** The ending came back on reload: show it already written, buttons ready. */
+  endingRestored?: boolean;
   dialog: { title: string; body: string } | null;
   /** Text appearing in a reply box by itself. */
   draft: { th: ThreadId; text: string } | null;

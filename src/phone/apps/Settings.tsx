@@ -42,6 +42,7 @@ export function SettingsApp() {
   const save = useGame((s) => s.save);
   const owner = usePhoneOwner();
   const [confirm, setConfirm] = useState(false);
+  const [confirmSwitch, setConfirmSwitch] = useState(false);
 
   const powerOff = () => {
     emit('power:try');
@@ -145,14 +146,19 @@ export function SettingsApp() {
             </div>
           );
         })}
-        {save.endings.some((e) => !e.startsWith('s2-')) && (
-          <button type="button" className="row nav" onClick={() => newGame(save.season === 2 ? 1 : 2)}>
-            <span>
-              <Ico g="star" bg="#30b0c7" />
-              {save.season === 2 ? '시즌 1 다시 하기' : '시즌 2 「귀가」 시작하기'}
-            </span>
-          </button>
-        )}
+        {save.endings.some((e) => !e.startsWith('s2-')) &&
+          (!confirmSwitch ? (
+            <button type="button" className="row nav" onClick={() => setConfirmSwitch(true)}>
+              <span>
+                <Ico g="star" bg="#30b0c7" />
+                {save.season === 2 ? '시즌 1 다시 하기' : '시즌 2 「귀가」 시작하기'}
+              </span>
+            </button>
+          ) : (
+            <button type="button" className="row danger" onClick={() => newGame(save.season === 2 ? 1 : 2)}>
+              지금 하던 이야기가 지워집니다. 넘어갈까요? (엔딩 기록은 유지)
+            </button>
+          ))}
         {!confirm ? (
           <button type="button" className="row nav" onClick={() => setConfirm(true)}>
             <span>

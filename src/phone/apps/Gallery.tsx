@@ -344,7 +344,7 @@ function Viewer({ list, index, onClose, autoId = null }: { list: PhotoItem[]; in
         )}
       </div>
       <p className="viewer-caption">
-        {photo.id === 'p07' && p07Revealed && brightness >= REVEAL_AT ? (art('black-coat') ? '의자에 외투가 걸려 있다. 아까는 없었다.' : '의자 하나가 책상에서 빠져 있다. 아까보다 멀리.') : photo.caption || ' '}
+        {photo.id === 'p07' && p07Revealed && brightness >= REVEAL_AT ? (art('black-coat') || art('black-empty') ? '의자에 외투가 걸려 있다. 아까는 없었다.' : '의자 하나가 책상에서 빠져 있다. 아까보다 멀리.') : photo.caption || ' '}
         {!edit && !photo.video && <small className="viewer-zoomhint">{zoom ? '두 번 탭: 원래대로' : '두 번 탭: 확대'}</small>}
       </p>
       {edit && photo.id === 'p07' ? (

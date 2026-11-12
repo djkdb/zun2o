@@ -184,7 +184,7 @@ export const BEATS: Beat[] = [
       // No face. In the silence after you let go, a chair scrapes right in front of the lens —
       // and the photo changes while you look: the chair is out from the desk (with a coat on it, if there's art).
       { t: 'wait', ms: 900 },
-      { t: 'sound', id: 'creak', caption: '바로 앞에서 의자 끄는 소리가 감지되었습니다.' },
+      { t: 'sound', id: 'creak', caption: '(바로 앞에서 의자 끄는 소리)' },
       { t: 'emit', ev: 'p07:swap' },
       { t: 'vibrate', ms: [40] },
       { t: 'wait', ms: 1200 },
@@ -446,7 +446,7 @@ export const BEATS: Beat[] = [
       { t: 'flag', f: 'h05-far' },
       { t: 'hush', ms: 2600, still: true },
       { t: 'flag', f: 'h05-revealed' },
-      { t: 'sound', id: 'breath', caption: '아주 가까이에서 숨소리가 감지되었습니다.' },
+      { t: 'sound', id: 'breath', caption: '(아주 가까이에서 숨소리)' },
       { t: 'vibrate', ms: [30] },
       { t: 'wait', ms: 2600 },
       // no glitch this time: the clock has just moved on, and you notice it yourself
@@ -541,7 +541,7 @@ export const BEATS: Beat[] = [
       { t: 'msg', th: 'dohyun', text: '학교 앞이에요 부스 쪽으로 가요', typing: 800 },
       { t: 'emit', ev: 'dohyun:late-text' },
       { t: 'wait', ms: 10000 },
-      { t: 'sound', id: 'knock', caption: '유리를 두드리는 소리가 감지되었습니다.' },
+      { t: 'sound', id: 'knock', caption: '(부스 유리를 두드리는 소리)' },
       { t: 'wait', ms: 1800 },
       { t: 'msg', th: 'unknown', text: '방금 유리 두드린 거 도현 씨 아니에요.', typing: 1600 },
       { t: 'wait', ms: 2500 },
@@ -602,6 +602,13 @@ export const BEATS: Beat[] = [
     actions: [{ t: 'wait', ms: 1500 }, { t: 'msg', th: 'unknown', text: '그 기록은 아직 쓰는 중이에요.', typing: 2200 }],
   },
   {
+    // the right order, too early: the record is about you, and it says so
+    id: 'r013-wip',
+    on: 'browser:r013-wip',
+    forbids: ['self-contact'],
+    actions: [{ t: 'wait', ms: 15000 }, { t: 'msg', th: 'unknown', text: '아직 못 봐요. 제가 다 쓰기 전엔.', typing: 1800 }],
+  },
+  {
     id: 'ch4',
     on: 'ch4',
     requires: ['found-key', 'self-contact'],
@@ -627,7 +634,7 @@ export const BEATS: Beat[] = [
         text: '02:00에 삭제 코드와 처음 갇힌 사람의 이름이 필요하다',
         hint: '02:00엔 삭제 코드(기록 013)와 처음 갇힌 사람의 이름이 필요해요. 성은 기록 003에, 이름은 옥상 관측 노트(기록 002)에 있어요. 02:00 화면에서도 기록을 볼 수 있어요.',
       },
-      { t: 'sound', id: 'heartbeat', caption: '심장 박동 같은 소리가 계속 감지됩니다.' },
+      { t: 'sound', id: 'heartbeat', caption: '(심장 박동 같은 소리가 계속 들린다)' },
       // One thing every in-game minute, until 02:00.
       { t: 'wait', ms: 9000 },
       { t: 'time', hm: '01:51' },
@@ -640,7 +647,7 @@ export const BEATS: Beat[] = [
       { t: 'time', hm: '01:52' },
       // the 0200 call from 23:53 (the 38 minutes you lost) never ended: the clock becomes a green call pill
       { t: 'flag', f: 'open-line' },
-      { t: 'sound', id: 'breath', caption: '통화 중인 회선에서 숨소리가 감지되었습니다.' },
+      { t: 'sound', id: 'breath', caption: '(통화 중인 회선에서 숨소리)' },
       { t: 'wait', ms: 2400 },
       { t: 'msg', th: 'unknown', text: '이 전화기는 {clock}인데 거긴 지금 {real}이죠?', typing: 2000 },
       { t: 'wait', ms: 12000 },
@@ -681,7 +688,7 @@ export const BEATS: Beat[] = [
       { t: 'loop', id: 'heartbeat', on: false },
       // the heartbeat stops, and the space where it was is left empty
       { t: 'hush', ms: 2600, still: true },
-      { t: 'notify', app: 'settings', title: '소리 인식', body: '주변에서 소리가 감지되지 않습니다.' },
+      { t: 'notify', app: 'settings', title: '소리 자막', body: '(심장 소리가 멎었다. 주변이 갑자기 조용하다.)', silentOnly: true },
       { t: 'wait', ms: 2200 },
       { t: 'time', hm: '01:55' },
       { t: 'battery', v: 4 },
@@ -868,7 +875,7 @@ export const BEATS: Beat[] = [
     requires: ['kept-out'],
     actions: [
       // not a second knock: the door that wouldn't open from outside moves by itself
-      { t: 'sound', id: 'creak', caption: '부스 문이 삐걱이는 소리가 감지되었습니다.' },
+      { t: 'sound', id: 'creak', caption: '(부스 문이 삐걱이는 소리)' },
       { t: 'wait', ms: 2400 },
       { t: 'msg', th: 'dohyun', text: '방금 부스 문 움직였어요 저 손 안 댔어요', typing: 1100 },
       { t: 'msg', th: 'dohyun', text: '전화부스 옆에 누가 서 있어요', typing: 1400 },
@@ -918,7 +925,7 @@ export const BEATS: Beat[] = [
     on: 'video:v02:end',
     actions: [
       { t: 'wait', ms: 900 },
-      { t: 'sound', id: 'whisper', caption: '가까이에서 속삭이는 소리가 감지되었습니다.' },
+      { t: 'sound', id: 'whisper', caption: '(가까이에서 속삭이는 소리)' },
       { t: 'vibrate', ms: [80, 60, 80] },
     ],
   },
@@ -927,7 +934,7 @@ export const BEATS: Beat[] = [
     on: 'photo:p09:zoom',
     actions: [
       { t: 'wait', ms: 900 },
-      { t: 'sound', id: 'whisper', caption: '가까이에서 속삭이는 소리가 감지되었습니다.' },
+      { t: 'sound', id: 'whisper', caption: '(가까이에서 속삭이는 소리)' },
       { t: 'vibrate', ms: [80, 60, 80] },
       { t: 'msg', th: 'unknown', text: '확대하지 마요. 저도 가까이 가요.', typing: 900 },
     ],

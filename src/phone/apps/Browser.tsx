@@ -86,7 +86,8 @@ export function BrowserApp() {
     if (!indexed && seq.join(',') === ARCHIVE_SEQUENCE.join(',')) {
       // Too early: record 013 is being written about *you*, and you aren't there yet.
       if (!getState().save.flags.includes('self-contact')) {
-        setTimeout(() => setNotice('기록 013 — 작성 중입니다. 나중에 다시 순서대로 열람하세요.'), 900);
+        setTimeout(() => setNotice('기록 013 — 작성 중입니다. 작성자가 아직 안에 있습니다.'), 900);
+        emit('browser:r013-wip');
         return;
       }
       addFlag('r013-indexed');

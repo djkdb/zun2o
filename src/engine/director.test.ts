@@ -146,14 +146,14 @@ describe('director timing', () => {
     expect(getState().rt.banner?.body).toBe('새 메시지 2개');
   });
 
-  it('silent players are told about story sounds (소리 인식)', async () => {
+  it('silent players are told about story sounds (소리 자막)', async () => {
     setSave({ sound: false, flags: ['selfie-scare'] });
     setSpeed(40);
     emit('choice:c3:finder');
     let seen = false;
     for (let i = 0; i < 4000 && !seen; i++) {
       await vi.advanceTimersByTimeAsync(25);
-      seen = getState().rt.banner?.title === '소리 인식';
+      seen = getState().rt.banner?.title === '소리 자막';
     }
     expect(seen).toBe(true);
   });
@@ -292,5 +292,47 @@ describe('director timing', () => {
     expect(getState().save.liveNote).toBeUndefined();
     newGame(2);
     expect(getState().save.liveNote).toBeUndefined();
+  });
+
+  it('round 4: the idle ticker running ahead never makes the clock go back a few minutes', async () => {
+    newGame(1);
+    setSave({ started: true, unlocked: true });
+    setSave({ flags: ['found-key', 'self-contact'], clock: '01:53' });
+    setSpeed(40);
+    emit('ch4');
+    await vi.advanceTimersByTimeAsync(400);
+    // ch4 scripts 01:50; the phone already said 01:53
+    expect(getState().save.clock).toBe('01:53');
+  });
+
+  it('round 4: "sound stopped" is a caption only for players with sound off', async () => {
+    const run = async (sound: boolean) => {
+      initState(false);
+      newGame(1);
+      setSave({ started: true, unlocked: true, sound, flags: ['found-key', 'self-contact'] });
+      setSpeed(40);
+      emit('ch4');
+      let seen = false;
+      for (let i = 0; i < 20000 && !seen && getState().save.clock !== '01:56'; i++) {
+        await vi.advanceTimersByTimeAsync(25);
+        if (getState().rt.dialog) setRt({ dialog: null });
+        if (getState().rt.incoming) setRt({ incoming: null });
+        seen = /심장 소리가 멎었다/.test(getState().rt.banner?.body ?? '');
+      }
+      return seen;
+    };
+    expect(await run(false)).toBe(true);
+    expect(await run(true)).toBe(false);
+  });
+
+  it('round 4: season 2 — a hint 채원 is still typing stops once the copy is armed', async () => {
+    newGame(2);
+    setSave({ started: true, unlocked: true });
+    emit('admin:wrong');
+    await vi.advanceTimersByTimeAsync(2500);
+    setSave((s) => ({ flags: [...s.flags, 'copy-armed'] }));
+    await vi.advanceTimersByTimeAsync(20000);
+    const texts = getState().save.threads.dohyun.map((m) => m.text);
+    expect(texts).not.toContain('그거 아직 서류에 그대로 있대요');
   });
 });

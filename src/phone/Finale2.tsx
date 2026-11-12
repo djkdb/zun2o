@@ -29,9 +29,12 @@ function buildRecall(): string[] {
   return lines;
 }
 
+/** Typed a character every `speed` ms; at least 1.4 s of quiet between lines (2.5 s before the line
+ *  about last year) — each is read before the next starts, as in season 1. */
 function useTyped(lines: string[], active: boolean, speed = 36): string[] {
   const [n, setN] = useState(0);
-  const total = lines.reduce((a, l) => a + l.length + 8, 0);
+  const gap = (l: string, i: number) => (i ? Math.round((/작년/.test(l) ? 2500 : 1400) / speed) : 0);
+  const total = lines.reduce((a, l, i) => a + gap(l, i) + l.length, 0);
   useEffect(() => {
     if (!active) return;
     const iv = setInterval(() => setN((x) => (x >= total ? x : x + 1)), speed);
@@ -39,11 +42,12 @@ function useTyped(lines: string[], active: boolean, speed = 36): string[] {
   }, [active, total, speed]);
   const out: string[] = [];
   let left = n;
-  for (const l of lines) {
-    if (left <= 0) break;
+  lines.forEach((l, i) => {
+    left -= gap(l, i);
+    if (left <= 0) return;
     out.push(l.slice(0, left));
-    left -= l.length + 8;
-  }
+    left -= l.length;
+  });
   return out;
 }
 
@@ -98,7 +102,7 @@ export function Finale2() {
   const done = typed.length === recall.length && typed[typed.length - 1] === recall[recall.length - 1];
   useEffect(() => {
     if (step === 'recall' && done) {
-      const t = setTimeout(() => setStep('choice'), 900);
+      const t = setTimeout(() => setStep('choice'), 3000);
       return () => clearTimeout(t);
     }
   }, [step, done]);

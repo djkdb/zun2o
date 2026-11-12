@@ -1,5 +1,5 @@
 import { memo, useId } from 'react';
-import { GhostCurtain, GhostProfile } from './Ghost';
+import { GhostCurtain } from './Ghost';
 import { art, type ArtSlot } from './photoArt';
 
 // Photos taken on 채원's phone inside the Annex. Phone-camera look: flash
@@ -303,9 +303,13 @@ function ChaewonFigure({ id }: { id: string }) {
   );
 }
 
-/** 채원's selfie in the index room. `stage` 0: just her; 1: something behind her; 2: right behind her shoulder. */
+/**
+ * 채원's selfie in the index room. `stage` 0: just her; 1: someone far back
+ * between the shelves; 2: the aisle is empty again — and the breathing is close.
+ * (No face at her cheek: the screaming close-up read as cheap.)
+ */
 export const SelfiePhoto = memo(function SelfiePhoto({ stage }: { stage: 0 | 1 | 2 }) {
-  const slot = stage === 0 ? 'selfie-alone' : stage === 1 ? 'selfie-far' : 'selfie-close';
+  const slot = stage === 1 ? 'selfie-far' : art('selfie-alone') ? 'selfie-alone' : 'selfie-close';
   const photo = !!art(slot);
   const id = useSvgId();
   return (
@@ -319,21 +323,14 @@ export const SelfiePhoto = memo(function SelfiePhoto({ stage }: { stage: 0 | 1 |
         )}
         {/* her behind 채원 */}
         {photo ? (
-          <ArtImage slot={slot} w={420} h={560} align={stage === 2 ? 'xMaxYMid' : undefined} />
+          <ArtImage slot={slot} w={420} h={560} align={slot === 'selfie-close' ? 'xMaxYMid' : undefined} />
         ) : (
           <>
-        {/* stage 1: far back, between the shelves. stage 2: her cheek against 채원's hair */}
+        {/* stage 1: far back, between the shelves. stage 2: gone again */}
         {stage === 1 && (
           <g filter={`url(#${id}-mb)`} opacity="0.5">
             <g transform="translate(330 180) scale(0.3)">
               <GhostCurtain distort={false} />
-            </g>
-          </g>
-        )}
-        {stage === 2 && (
-          <g filter={`url(#${id}-mb)`} opacity="0.92">
-            <g transform="translate(362 236) scale(0.72)">
-              <GhostProfile distort={false} />
             </g>
           </g>
         )}
@@ -346,6 +343,38 @@ export const SelfiePhoto = memo(function SelfiePhoto({ stage }: { stage: 0 | 1 |
     </svg>
   );
 });
+
+/**
+ * A dark coat thrown over the back of the chair in `black-empty` (until a
+ * drawn `black-coat` photo exists). Positioned for that photo's 420×560 crop.
+ */
+function CoatOnChair() {
+  return (
+    <g className="coat-on-chair" filter="url(#coat-soft)">
+      <defs>
+        <filter id="coat-soft" x="-10%" y="-10%" width="120%" height="120%">
+          <feGaussianBlur stdDeviation="0.9" />
+        </filter>
+        <linearGradient id="coat-shade" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#1b1813" />
+          <stop offset="0.45" stopColor="#0c0b09" />
+          <stop offset="1" stopColor="#050504" />
+        </linearGradient>
+      </defs>
+      {/* body of the coat, hanging from the backrest past the seat */}
+      <path
+        d="M152 334 C156 322 170 316 190 315 C208 315 222 320 228 332 L233 372 C236 400 238 430 241 462 C236 470 228 466 220 474 C210 468 200 478 188 472 C176 480 166 470 156 476 C150 472 146 466 145 460 C147 420 149 380 152 334 Z"
+        fill="url(#coat-shade)"
+      />
+      {/* collar and the fold down the middle */}
+      <path d="M170 318 C178 330 186 336 190 352 C194 336 202 330 212 318" fill="none" stroke="#2a251d" strokeWidth="2" />
+      <path d="M191 352 C192 390 190 430 192 470" fill="none" stroke="#000" strokeWidth="2.5" opacity="0.8" />
+      {/* a sleeve, slipped off the side */}
+      <path d="M228 340 C240 360 246 392 247 428 C244 434 238 434 235 428 C234 400 232 372 226 352 Z" fill="#090807" />
+      <path d="M152 336 C146 352 144 380 147 412" fill="none" stroke="#24201a" strokeWidth="1.5" opacity="0.7" />
+    </g>
+  );
+}
 
 /** The dark photo turns — and the scare is armed — only at full brightness. */
 export const REVEAL_AT = 0.97;
@@ -367,7 +396,10 @@ export const BlackPhoto = memo(function BlackPhoto({ brightness = 0, revealed = 
         {revealed && art('black-coat') ? (
           <ArtImage slot="black-coat" w={420} h={560} />
         ) : art('black-empty') ? (
-          <ArtImage slot="black-empty" w={420} h={560} />
+          <>
+            <ArtImage slot="black-empty" w={420} h={560} />
+            {revealed && <CoatOnChair />}
+          </>
         ) : (
           <>
             <rect width="420" height="560" fill="#15130f" />

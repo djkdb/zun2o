@@ -107,7 +107,8 @@ export type Action =
   | { t: 'wait'; ms: number }
   | { t: 'msg'; th: ThreadId; text: string; from?: 'them' | 'me' | 'system'; typing?: number; attach?: Attach }
   | { t: 'choice'; th: ThreadId; id: string; options: ChoiceOption[] }
-  | { t: 'notify'; app: AppId; title: string; body: string; open?: { thread?: ThreadId } }
+  /** `silentOnly`: a sound caption — shown only to players who have sound off. */
+  | { t: 'notify'; app: AppId; title: string; body: string; open?: { thread?: ThreadId }; silentOnly?: boolean }
   | { t: 'flag'; f: string }
   | { t: 'objective'; text: string; hint: string; nudge?: Nudge; app?: AppId }
   | { t: 'chapter'; n: number; title: string }
@@ -116,7 +117,7 @@ export type Action =
   | { t: 'call'; id: string }
   | { t: 'scare'; kind: ScareKind; look?: 'face' | 'hang' | 'profile' | 'curtain' }
   | { t: 'glitch'; ms: number }
-  /** `caption`: shown as a "소리 인식" notice when the player has sound off. */
+  /** `caption`: shown as a "소리 자막" notice when the player has sound off. */
   | { t: 'sound'; id: SoundId; caption?: string }
   /** Stop (or restart) a repeating sound — a stretch with no heartbeat is a breath before the last minute. */
   | { t: 'loop'; id: 'heartbeat'; on: boolean }
@@ -152,6 +153,8 @@ export interface Beat {
   on: string;
   requires?: string[];
   forbids?: string[];
+  /** Stops the beat between actions once any of these flags is set (a hint that arrives after it was solved). */
+  stopIf?: string[];
   /** Can fire every time (default: once per playthrough). */
   repeat?: boolean;
   actions: Action[];

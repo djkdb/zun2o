@@ -106,6 +106,7 @@ async function run(beat: Beat, from: number): Promise<void> {
   }
   for (let i = from; i < beat.actions.length; i++) {
     if (myEpoch !== epoch) return;
+    if (beat.stopIf?.some((f) => getState().save.flags.includes(f))) break;
     if (!beat.repeat) setSave((s) => ({ running: s.running.map((r) => (r.beat === beat.id ? { ...r, index: i } : r)) }));
     await perform(beat.actions[i], myEpoch);
   }
@@ -123,7 +124,7 @@ export function resume(): void {
   const s = getState().save;
   if (s.flags.includes('finale') && !s.lastEnding && !getState().rt.finale) setRt({ finale: true });
   // the night already ended: a reload comes back to that ending, not to the 02:00 phone
-  else if (s.flags.includes('finale') && s.lastEnding && !getState().rt.ending) setRt({ ending: s.lastEnding });
+  else if (s.flags.includes('finale') && s.lastEnding && !getState().rt.ending) setRt({ ending: s.lastEnding, endingRestored: true });
   // A story call was ringing or in progress when the page went away: ring again.
   // (Also rescues saves stuck after 도현's first call was cut off.)
   const callBeats = ['reveal', 'call1-decline', 'call1-hangup'];
@@ -204,7 +205,7 @@ function putBanner(p: Pending): void {
   const t = setTimeout(() => {
     timers.delete(t);
     if (getState().rt.banner?.id === id) setRt({ banner: null });
-  }, p.title === '소리 인식' ? 6000 : 3200);
+  }, p.title === '소리 자막' ? 6000 : 3200);
   timers.add(t);
   if (bannerQueue.length) scheduleDrain();
 }
@@ -240,13 +241,13 @@ export function showBanner(app: AppId, title: string, body: string, thread?: Thr
   if (same) {
     same.n += 1;
     same.body = body;
-  } else if (urgent || title === '소리 인식') {
+  } else if (urgent || title === '소리 자막') {
     bannerQueue.unshift(p);
   } else {
     bannerQueue.push(p);
     if (bannerQueue.length > 2) {
       // too many waiting: the oldest plain message folds into its thread's count, or goes
-      const drop = bannerQueue.findIndex((q) => !q.urgent && q.title !== '소리 인식');
+      const drop = bannerQueue.findIndex((q) => !q.urgent && q.title !== '소리 자막');
       if (drop >= 0 && drop < bannerQueue.length - 1) {
         const [old] = bannerQueue.splice(drop, 1);
         const keep = bannerQueue.find((q) => q.thread === old.thread && q.title === old.title);
@@ -365,6 +366,7 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
       return;
     }
     case 'notify':
+      if (a.silentOnly && getState().save.sound) return;
       await whenFree(myEpoch);
       showBanner(a.app, a.title, a.body, a.open?.thread);
       return;
@@ -388,10 +390,13 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
       await sleepReal(3000);
       setRt({ chapterCard: null });
       return;
-    case 'time':
-      setSave({ clock: a.hm });
+    case 'time': {
+      // the idle ticker may already have crept past a scripted minute: never wind the clock back a few minutes
+      const back = night(getState().save.clock) - night(a.hm);
+      if (!(back > 0 && back <= 15)) setSave({ clock: a.hm });
       if (a.lost) setRt({ lostNonce: nonce++ });
       return;
+    }
     case 'battery':
       setSave({ battery: a.v });
       return;
@@ -403,7 +408,7 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
     case 'scare':
       setRt({ scare: { kind: a.kind, nonce: nonce++, look: a.look } });
       if (a.kind === 'turn') {
-        if (!getState().save.sound) showBanner('settings', '소리 인식', '바로 뒤에서 숨소리가 감지되었습니다.');
+        if (!getState().save.sound) showBanner('settings', '소리 자막', '(바로 뒤에서 숨소리)');
         sfx('inhale');
         await sleepReal(1100);
         sfx('whisper');
@@ -435,7 +440,7 @@ async function perform(a: Action, myEpoch: number): Promise<void> {
       if (a.id === 'heartbeat') loop('heartbeat', true);
       else sfx(a.id);
       // Playing silently? The phone's own sound recognition tells you what it heard.
-      if (a.caption && !getState().save.sound) showBanner('settings', '소리 인식', a.caption);
+      if (a.caption && !getState().save.sound) showBanner('settings', '소리 자막', a.caption);
       return;
     case 'loop':
       loop(a.id, a.on);
@@ -801,7 +806,7 @@ export function markPhoto(id: string): void {
 export function reachEnding(id: EndingId): void {
   setSave((s) => ({ endings: s.endings.includes(id) ? s.endings : [...s.endings, id], lastEnding: id }));
   flush();
-  setRt({ ending: id, finale: false });
+  setRt({ ending: id, endingRestored: false, finale: false });
 }
 
 export function newGame(season?: 1 | 2): void {

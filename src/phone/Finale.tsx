@@ -484,6 +484,11 @@ export function Finale() {
       )}
       {(step === 'recall' || step === 'choice' || step === 'key' || step === 'name' || step === 'sign') && (
         <div className="index-final">
+          {step === 'recall' && (
+            <p className="recall-rec" aria-label="야간 출입 기록 · 기록 중">
+              <span className="recall-rec-dot" aria-hidden="true" /> 야간 출입 기록 · 기록 중
+            </p>
+          )}
           {(step === 'recall' ? typed : recall.map((l) => l.text)).map((l, i) => (
             <p key={i}>{l}</p>
           ))}

@@ -223,11 +223,14 @@ export function EndingScreen({ id }: { id: EndingId }) {
   // endings found in this season only
   const found = endings.filter((e) => e.startsWith('s2-') === s2).length;
   const bg: ArtSlot | null = s2 ? (id === 's2-daughter' && art('s2-window') ? 's2-window' : (S2_BG[id] ?? null)) : (`ending-${id}` as ArtSlot);
-  const [shown, setShown] = useState(0);
-  const [cardIn, setCardIn] = useState(false);
+  // back after a reload: everything already written, the way out ready (and the scene, once more, on request)
+  const [instant, setInstant] = useState(() => !!getState().rt.endingRestored);
+  const [shown, setShown] = useState(() => (instant ? def.scene.length : 0));
+  const [cardIn, setCardIn] = useState(instant);
   const [windowClip, setWindowClip] = useState(() => !(typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches));
 
   useEffect(() => {
+    if (instant) return;
     sfx('ending');
     // each line stays long enough to be read (aloud, too): a long line holds longer than "(대화 상대를 찾을 수 없습니다)"
     let at = 1400;
@@ -246,7 +249,12 @@ export function EndingScreen({ id }: { id: EndingId }) {
     // the card (and the way out of the story) only after the last line has had its quiet
     ts.push(setTimeout(() => setCardIn(true), at + (id === 'release' || id === 's2-home' ? 5000 : 3500)));
     return () => ts.forEach(clearTimeout);
-  }, [def, id]);
+  }, [def, id, instant]);
+  const replayScene = () => {
+    setShown(0);
+    setCardIn(false);
+    setInstant(false);
+  };
 
   const done = shown >= def.scene.length && cardIn;
   // each new line (and the card at the end) comes into view, like a chat scrolling on its own
@@ -309,6 +317,11 @@ export function EndingScreen({ id }: { id: EndingId }) {
           {s2 && (
             <button type="button" className="secondary" onClick={() => newGame(1)}>
               시즌 1 다시 하기
+            </button>
+          )}
+          {instant && (
+            <button type="button" className="secondary" onClick={replayScene}>
+              엔딩 다시 보기
             </button>
           )}
         </div>

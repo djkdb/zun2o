@@ -20,6 +20,8 @@ export function LockScreen() {
   const clock = useGame((s) => s.save.clock);
   const threads = useGame((s) => s.save.threads);
   const fails = useGame((s) => s.save.passcodeFails);
+  // what the lock screen says counts only tonight's tries on this lock (a reboot starts it over)
+  const [shownFails, setShownFails] = useState(0);
   const wallpaper = useGame((s) => s.save.wallpaper ?? 'annex');
   const [pad, setPad] = useState(false);
   const [code, setCode] = useState('');
@@ -70,6 +72,7 @@ export function LockScreen() {
         logInput(`잠금 암호 ${next} — 틀림`);
         const n = fails + 1;
         setSave({ passcodeFails: n });
+        setShownFails((x) => x + 1);
         if (n >= 3) emit('lock:fail3');
       }
       setCode('');
@@ -208,7 +211,7 @@ export function LockScreen() {
           <button type="button" className="lock-cancel" onClick={() => (setPad(false), setCode(''))}>
             취소
           </button>
-          {fails > 0 && <p className="lock-fails">암호가 틀렸습니다 ({fails}회)</p>}
+          {shownFails > 0 && <p className="lock-fails">암호가 틀렸습니다 ({shownFails}회)</p>}
         </div>
       )}
     </div>

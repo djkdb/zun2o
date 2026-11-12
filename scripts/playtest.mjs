@@ -217,11 +217,11 @@ const selfieIs = (slot, ms) => page.waitForFunction((sl) => document.querySelect
 const sawFar = await selfieIs('selfie-far', 6000);
 mark('SCARE 2 — the selfie changes while you look');
 await snap('scare-selfie');
-const sawClose = await selfieIs('selfie-close', 8000);
+const sawClose = await selfieIs('selfie-alone', 8000);
 await wait(300);
 await snap('selfie-after');
 const selfieAfter = await selfieSrc();
-check('selfie: just 채원, then her far back, then at the cheek — and no lunge', /selfie-alone/.test(selfieBefore ?? '') && sawFar && sawClose && (await page.locator('.scare-lunge').count()) === 0, `${selfieBefore} → ${selfieAfter}`);
+check('selfie: just 채원, then her far back, then gone again (no face) — and no lunge', /selfie-alone/.test(selfieBefore ?? '') && sawFar && sawClose && (await page.locator('.scare-lunge').count()) === 0, `${selfieBefore} → ${selfieAfter}`);
 await page.waitForFunction(() => window.__game.getState().save.threads.self.some((m) => m.text.includes('추워')), null, { timeout: 30000 });
 await wait(600);
 await snap('self-message-banner');

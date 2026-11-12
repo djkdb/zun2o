@@ -28,7 +28,9 @@ export const threadOrder = (): ThreadId[] => pick(THREAD_ORDER, THREAD_ORDER_S2)
 const TONIGHT = 9 * 31 + 27;
 /** Season 1 is 2025; season 2, a year later. */
 const year = () => pick(2025, 2026);
-const weekday = (m: number, d: number) => '일월화수목금토'[new Date(year(), m - 1, d).getDay()];
+const weekday = (m: number, d: number, y = year()) => '일월화수목금토'[new Date(y, m - 1, d).getDay()];
+/** One year on the timeline (12 months of 31 days). */
+const YEAR_DAYS = 12 * 31;
 
 /**
  * The day (9 * 31 + d) and minute of every message in a thread, on one timeline.
@@ -44,7 +46,12 @@ export function timeline(msgs: ChatMsg[]): { day: number; at: number }[] {
     const hm = h * 60 + min;
     const d = m.day && /(\d+)월 (\d+)일/.exec(m.day);
     if (!m.id.startsWith('h')) day = hm >= 12 * 60 ? TONIGHT : TONIGHT + 1;
-    else if (d) day = Number(d[1]) * 31 + Number(d[2]);
+    else if (d) {
+      day = Number(d[1]) * 31 + Number(d[2]);
+      // '2025년 10월 4일' in season 2: last year, before everything else in the thread
+      const y = m.day && /(\d{4})년/.exec(m.day);
+      if (y && Number(y[1]) < year()) day -= YEAR_DAYS;
+    }
     else if (hm < prev) day += 1;
     prev = hm;
     return { day, at: day * 1440 + hm };
@@ -56,11 +63,13 @@ export function lastSent(msgs: ChatMsg[]): number {
   return timeline(msgs).at(-1)?.at ?? -1;
 }
 
-/** '9월 28일 (일)' for a timeline day. */
+/** '9월 28일 (일)' for a timeline day; '2025년 10월 4일 (토)' for one in the year before. */
 export function dayLabel(day: number): string {
-  const m = Math.floor(day / 31);
-  const d = day - m * 31;
-  return `${m}월 ${d}일 (${weekday(m, d)})`;
+  const past = day < 31;
+  const md = past ? day + YEAR_DAYS : day;
+  const m = Math.floor(md / 31);
+  const d = md - m * 31;
+  return past ? `${year() - 1}년 ${m}월 ${d}일 (${weekday(m, d, year() - 1)})` : `${m}월 ${d}일 (${weekday(m, d)})`;
 }
 
 /** The phone's date tonight: the 27th until midnight, the 28th after. */

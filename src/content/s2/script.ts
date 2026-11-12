@@ -67,7 +67,14 @@ export const BEATS_S2: Beat[] = [
     id: 's2-remembers',
     on: 'unlock',
     requires: ['s1-name'],
-    actions: [{ t: 'wait', ms: 30000 }, { t: 'msg', th: 'unknown', text: '{s1name} 씨. 작년에도 이 시간이었죠.', typing: 1500 }],
+    // then, if the letter still isn't open, it points at it (no 2-minute silence for someone who doesn't know where to look)
+    stopIf: ['read-letter'],
+    actions: [
+      { t: 'wait', ms: 30000 },
+      { t: 'msg', th: 'unknown', text: '{s1name} 씨. 작년에도 이 시간이었죠.', typing: 1500 },
+      { t: 'wait', ms: 20000 },
+      { t: 'msg', th: 'unknown', text: '소연 씨가 메모 남겼어요. 맨 위에.', typing: 1400 },
+    ],
   },
   {
     id: 's2-remembers-typed',
@@ -142,7 +149,7 @@ export const BEATS_S2: Beat[] = [
     actions: [
       { t: 'wait', ms: 1200 },
       { t: 'flag', f: 's2-n3-more' },
-      { t: 'sound', id: 'key', caption: '종이를 긁는 소리가 감지되었습니다.' },
+      { t: 'sound', id: 'key', caption: '(볼펜이 종이를 긁는 소리)' },
       { t: 'vibrate', ms: [30] },
       { t: 'wait', ms: 4600 },
       { t: 'emit', ev: 'ch2' },
@@ -464,6 +471,8 @@ export const BEATS_S2: Beat[] = [
   {
     id: 's2-wrong',
     on: 'admin:wrong',
+    // solved while 채원 was still typing: she doesn't finish the hint
+    stopIf: ['copy-armed'],
     actions: [
       { t: 'wait', ms: 1400 },
       { t: 'msg', th: CHAEWON, text: '갑자기 생각났는데', typing: 700 },
