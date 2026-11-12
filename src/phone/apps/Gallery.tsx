@@ -467,7 +467,10 @@ export function GalleryApp() {
   const [album, setAlbum] = useState<'recent' | 'hidden' | null>(() => deepTarget().album);
   const [open, setOpen] = useState<number | null>(() => deepTarget().open);
   // a clip tapped in a chat starts playing; one picked from the album waits for ▶
-  const [autoId, setAutoId] = useState<string | null>(() => getState().rt.deep?.id ?? null);
+  const [autoId, setAutoId] = useState<string | null>(() => {
+    const d = getState().rt.deep;
+    return d && 'id' in d ? d.id : null;
+  });
   useEffect(() => {
     if (getState().rt.deep) setRt({ deep: null });
   }, []);
