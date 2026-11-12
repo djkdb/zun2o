@@ -343,6 +343,10 @@ function qwenRun(args) {
 }
 
 /** TTS=qwen3: anchors per role, several designed takes per line, keep the one most like the anchor that also says the line. */
+// How a line is read aloud when the written form doesn't carry its rhythm (the subtitle stays as written).
+const READ_AS = { '강 도 현.': '강. …… 도. …… 현.' };
+const readAs = (l) => READ_AS[l.say] ?? sayKo(l.say);
+
 async function qwenAuto() {
   const takes = Number(process.env.TAKES ?? 3);
   const work = todo.filter((l) => only(l));
@@ -365,7 +369,7 @@ async function qwenAuto() {
     return `${QWEN_ROLE[l.voice]}.${style ? ` Speaking ${style}.` : ''}`;
   };
   for (const l of work) {
-    const sig = `${instructOf(l)}|${sayKo(l.say)}`;
+    const sig = `${instructOf(l)}|${readAs(l)}`;
     const sigFile = `${TAKES}/wav/${l.n}.sig`;
     if (existsSync(sigFile) && readFileSync(sigFile, 'utf8') !== sig)
       for (let t = 1; t <= 12; t++) for (const f of [`${TAKES}/${l.n}-t${t}.mp3`, `${TAKES}/wav/${l.n}-t${t}.wav`]) if (existsSync(f)) unlinkSync(f);
@@ -375,7 +379,7 @@ async function qwenAuto() {
   for (const l of work)
     for (let t = 1; t <= takes; t++)
       if (!existsSync(`${TAKES}/${l.n}-t${t}.mp3`) || process.env.FORCE)
-        jobs.push({ text: sayKo(l.say), instruct: instructOf(l), out: `${TAKES}/wav/${l.n}-t${t}.wav`, seed: 1000 + t * 17 + Number(l.n) });
+        jobs.push({ text: readAs(l), instruct: instructOf(l), out: `${TAKES}/wav/${l.n}-t${t}.wav`, seed: 1000 + t * 17 + Number(l.n) });
   if (process.env.DRY) return jobs.forEach((j) => console.log(`would make ${j.out}  (${j.instruct}) ${j.text}`));
   if (process.env.FORCE) jobs.forEach((j) => existsSync(j.out) && unlinkSync(j.out));
   writeFileSync(`${TAKES}/jobs.json`, JSON.stringify(jobs));

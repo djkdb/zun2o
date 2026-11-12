@@ -41,10 +41,11 @@ function buildM2(): Memo {
   return { id: 'm2', title: '새 녹음 18', date: '오늘 01:51', duration: at + 9, lines };
 }
 
-function Player({ memo }: { memo: Memo }) {
+/** `autoPlay`: opened by tapping a recording in a chat — the tap was the press of ▶. */
+function Player({ memo, autoPlay = false }: { memo: Memo; autoPlay?: boolean }) {
   const MEMO_M1 = memo;
   const [t, setT] = useState(0);
-  const [playing, setPlaying] = useState(false);
+  const [playing, setPlaying] = useState(autoPlay);
   const fired = useRef(new Set<number>());
   const sound = useGame((s) => s.save.sound);
 
@@ -160,6 +161,8 @@ function deepMemo(): Memo | null {
 export function MemosApp() {
   // Opened from a recording shared in a chat: go straight to it.
   const [open, setOpen] = useState<Memo | null>(deepMemo);
+  // a recording tapped in a chat starts playing; one picked from the list waits for ▶
+  const [autoId, setAutoId] = useState<string | null>(() => deepMemo()?.id ?? null);
   const memos = useGame((s) => s.save.memos);
   const synced = useGame((s) => s.save.flags.includes('call1-done'));
   // season 2: the cassette 소연 never played to the end, until tonight
@@ -176,9 +179,9 @@ export function MemosApp() {
   }, []);
   return (
     <div className="memos-app">
-      <AppHeader title="녹음" onBack={() => (open ? setOpen(null) : openApp(null))} backLabel={open ? '목록' : '홈'} large={!open} />
+      <AppHeader title="녹음" onBack={() => (open ? (setOpen(null), setAutoId(null)) : openApp(null))} backLabel={open ? '목록' : '홈'} large={!open} />
       {open ? (
-        <Player memo={open} />
+        <Player key={open.id} memo={open} autoPlay={open.id === autoId} />
       ) : isS2() ? (
         <ul className="memo-list">
           {memos.includes('s2m1') && (

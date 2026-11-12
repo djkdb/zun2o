@@ -46,7 +46,8 @@ function VideoStill({ id }: { id: string }) {
 }
 
 /** Plays a clip in the viewer. Sound only if the game's sound is on. */
-function ClipVideo({ id }: { id: string }) {
+/** `autoPlay`: opened by tapping the clip in a chat — the tap was the press of ▶. */
+function ClipVideo({ id, autoPlay = false }: { id: string; autoPlay?: boolean }) {
   const c = clipOf(id);
   const sound = useGame((s) => s.save.sound);
   const ref = useRef<HTMLVideoElement>(null);
@@ -60,6 +61,11 @@ function ClipVideo({ id }: { id: string }) {
     setEnded(false);
     void v.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
   };
+  useEffect(() => {
+    if (autoPlay) play();
+    // once, when it opens
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <div className="recovered">
       <video
@@ -172,7 +178,7 @@ export function PhotoView({ id, brightness = 0, changed = false }: { id: string;
   }
 }
 
-function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; onClose: () => void }) {
+function Viewer({ list, index, onClose, autoId = null }: { list: PhotoItem[]; index: number; onClose: () => void; autoId?: string | null }) {
   const [i, setI] = useState(index);
   const [edit, setEdit] = useState(false);
   const [brightness, setBrightness] = useState(0);
@@ -330,7 +336,7 @@ function Viewer({ list, index, onClose }: { list: PhotoItem[]; index: number; on
         onPointerCancel={() => (press.current = null)}
       >
         {photo.video ? (
-          <ClipVideo key={photo.id} id={photo.id} />
+          <ClipVideo key={photo.id} id={photo.id} autoPlay={photo.id === autoId} />
         ) : (
           <div key={photo.id} className="viewer-zoom" style={zoom ? { transform: 'scale(2.5)', transformOrigin: `${zoom.x}% ${zoom.y}%` } : undefined}>
             <PhotoView id={photo.id} brightness={brightness} changed={dwelt === photo.id || hasFlag(`dwell-${photo.id}`)} />
@@ -460,6 +466,8 @@ function deepTarget(): { album: 'recent' | 'hidden' | null; open: number | null 
 export function GalleryApp() {
   const [album, setAlbum] = useState<'recent' | 'hidden' | null>(() => deepTarget().album);
   const [open, setOpen] = useState<number | null>(() => deepTarget().open);
+  // a clip tapped in a chat starts playing; one picked from the album waits for ▶
+  const [autoId, setAutoId] = useState<string | null>(() => getState().rt.deep?.id ?? null);
   useEffect(() => {
     if (getState().rt.deep) setRt({ deep: null });
   }, []);
@@ -478,7 +486,7 @@ export function GalleryApp() {
   const all = photos();
   const hiddenName = isS2() ? '노트' : '숨김';
   const list = album ? all.filter((p) => p.album === album && visible(p)) : [];
-  if (album && open !== null) return <Viewer list={list} index={open} onClose={() => setOpen(null)} />;
+  if (album && open !== null) return <Viewer list={list} index={open} autoId={autoId} onClose={() => (setOpen(null), setAutoId(null))} />;
 
   if (album) {
     return (

@@ -328,8 +328,41 @@ export const BEATS_S2: Beat[] = [
         text: '02:00 전에 정하자 — 사본을 지울지',
         hint: '보관소 관리 → 기록 013 (사본) → 삭제. 이 기록에 처음 남은 문장은 실종 신고서(기록 003)의 신고자, 열한 살 소연의 말입니다. 지우지 않아도 02:00은 옵니다.',
       },
-      { t: 'wait', ms: 75000 },
+      // the first time she reaches you, she asks — you can answer, or let her hear nothing
+      { t: 'wait', ms: 8000 },
+      {
+        t: 'choice',
+        th: 'self',
+        id: 's2c3',
+        options: [
+          { id: 'here', label: '네. 폰 주운 사람이에요.' },
+          { id: 'quiet', label: '(대답하지 않는다)', reply: '' },
+        ],
+      },
+      { t: 'wait', ms: 25000 },
+      { t: 'unchoice', id: 's2c3' },
+      { t: 'wait', ms: 42000 },
       { t: 'emit', ev: 'ch4' },
+    ],
+  },
+  {
+    id: 's2-c3-here',
+    on: 'choice:s2c3:here',
+    actions: [
+      { t: 'flag', f: 'answered-soyeon' },
+      { t: 'wait', ms: 1600 },
+      { t: 'msg', th: 'self', from: 'me', text: '…다행이다', typing: 900 },
+      { t: 'msg', th: 'self', from: 'me', text: '그거 꺼 두지 마세요', typing: 1100 },
+      { t: 'msg', th: 'self', from: 'me', text: '불빛 보이는 동안은 제가 어디쯤인지 알아요', typing: 1800 },
+    ],
+  },
+  {
+    id: 's2-c3-quiet',
+    on: 'choice:s2c3:quiet',
+    actions: [
+      { t: 'wait', ms: 2600 },
+      { t: 'msg', th: 'self', from: 'me', text: '…거기 누구 있는 거 알아요', typing: 1300 },
+      { t: 'msg', th: 'self', from: 'me', text: '대답 안 해도 돼요. 폰만 들고 있어 주세요', typing: 1900 },
     ],
   },
   {
